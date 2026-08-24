@@ -371,3 +371,51 @@ CREATE TABLE IF NOT EXISTS inventory_reservations(
  released_at timestamptz
 );
 CREATE INDEX IF NOT EXISTS idx_inventory_reservations_active ON inventory_reservations(location_id,variant_id,status);
+
+CREATE TABLE IF NOT EXISTS inventory_stocktakes(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ stocktake_no text UNIQUE NOT NULL,
+ location_id uuid NOT NULL REFERENCES inventory_locations(id),
+ status text NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','In Progress','Completed','Cancelled')),
+ notes text NOT NULL DEFAULT '',
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ completed_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ completed_at timestamptz
+);
+CREATE TABLE IF NOT EXISTS inventory_stocktake_lines(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ stocktake_id uuid NOT NULL REFERENCES inventory_stocktakes(id) ON DELETE CASCADE,
+ variant_id uuid NOT NULL REFERENCES product_variants(id),
+ system_qty numeric(14,3) NOT NULL DEFAULT 0,
+ counted_qty numeric(14,3),
+ variance numeric(14,3),
+ reason text NOT NULL DEFAULT '',
+ counted_at timestamptz
+);
+CREATE UNIQUE INDEX IF NOT EXISTS inventory_stocktake_lines_unique ON inventory_stocktake_lines(stocktake_id,variant_id);
+CREATE TABLE IF NOT EXISTS inventory_incidents(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ incident_no text UNIQUE NOT NULL,
+ incident_type text NOT NULL CHECK(incident_type IN ('Damage','Loss','Found','Return')),
+ location_id uuid NOT NULL REFERENCES inventory_locations(id),
+ variant_id uuid NOT NULL REFERENCES product_variants(id),
+ quantity numeric(14,3) NOT NULL CHECK(quantity>0),
+ serials jsonb NOT NULL DEFAULT '[]'::jsonb,
+ reason text NOT NULL,
+ status text NOT NULL DEFAULT 'Open' CHECK(status IN ('Open','Resolved','Cancelled')),
+ resolution_notes text NOT NULL DEFAULT '',
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ resolved_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ resolved_at timestamptz
+);
+CREATE TABLE IF NOT EXISTS product_price_history(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE CASCADE,
+ cost_price numeric(14,2) NOT NULL,
+ selling_price numeric(14,2) NOT NULL,
+ wholesale_price numeric(14,2),
+ changed_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
