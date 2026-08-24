@@ -261,7 +261,7 @@ CREATE TABLE IF NOT EXISTS inventory_movements(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
  variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
  location_id uuid NOT NULL REFERENCES inventory_locations(id) ON DELETE RESTRICT,
- movement_type text NOT NULL CHECK(movement_type IN ('RECEIPT','ADJUSTMENT_IN','ADJUSTMENT_OUT','TRANSFER_OUT','TRANSFER_IN','RESERVE','RELEASE','SALE','RETURN','DAMAGE','LOSS')),
+ movement_type text NOT NULL CHECK(movement_type IN ('RECEIPT','ADJUSTMENT_IN','ADJUSTMENT_OUT','TRANSFER_OUT','TRANSFER_IN','RESERVE','RELEASE','SALE','RETURN','DAMAGE','LOSS','FOUND','STOCKTAKE_IN','STOCKTAKE_OUT')),
  quantity numeric(18,3) NOT NULL CHECK(quantity>0),
  unit_cost numeric(18,2) CHECK(unit_cost IS NULL OR unit_cost>=0),
  before_qty numeric(18,3) NOT NULL DEFAULT 0,
@@ -419,3 +419,285 @@ CREATE TABLE IF NOT EXISTS product_price_history(
  changed_by uuid REFERENCES users(id) ON DELETE SET NULL,
  created_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- Phase 4: Suppliers & Procurement
+CREATE TABLE IF NOT EXISTS suppliers(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ supplier_code text UNIQUE NOT NULL,
+ legal_name text NOT NULL,
+ trading_name text NOT NULL DEFAULT '',
+ registration_no text NOT NULL DEFAULT '',
+ tax_id text NOT NULL DEFAULT '',
+ email text NOT NULL DEFAULT '',
+ phone text NOT NULL DEFAULT '',
+ website text NOT NULL DEFAULT '',
+ country text NOT NULL DEFAULT 'Uganda',
+ default_currency text NOT NULL DEFAULT 'UGX',
+ payment_terms_days int NOT NULL DEFAULT 0 CHECK(payment_terms_days>=0),
+ tax_profile text NOT NULL DEFAULT '',
+ status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Inactive','Blocked','Pending')),
+ notes text NOT NULL DEFAULT '',
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ updated_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_suppliers_status ON suppliers(status);
+CREATE INDEX IF NOT EXISTS idx_suppliers_name ON suppliers(lower(legal_name));
+
+CREATE TABLE IF NOT EXISTS supplier_contacts(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ supplier_id uuid NOT NULL REFERENCES suppliers(id) ON DELETE CASCADE,
+ name text NOT NULL,
+ job_title text NOT NULL DEFAULT '',
+ email text NOT NULL DEFAULT '',
+ phone text NOT NULL DEFAULT '',
+ is_primary boolean NOT NULL DEFAULT false,
+ notes text NOT NULL DEFAULT '',
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_supplier_contacts_supplier ON supplier_contacts(supplier_id);
+
+CREATE TABLE IF NOT EXISTS supplier_addresses(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ supplier_id uuid NOT NULL REFERENCES suppliers(id) ON DELETE CASCADE,
+ label text NOT NULL DEFAULT 'Main',
+ address_line1 text NOT NULL,
+ address_line2 text NOT NULL DEFAULT '',
+ city text NOT NULL DEFAULT '',
+ region text NOT NULL DEFAULT '',
+ country text NOT NULL DEFAULT 'Uganda',
+ postal_code text NOT NULL DEFAULT '',
+ is_primary boolean NOT NULL DEFAULT false,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_supplier_addresses_supplier ON supplier_addresses(supplier_id);
+
+CREATE TABLE IF NOT EXISTS supplier_documents(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ supplier_id uuid NOT NULL REFERENCES suppliers(id) ON DELETE CASCADE,
+ document_type text NOT NULL,
+ document_name text NOT NULL,
+ url text NOT NULL,
+ expires_at date,
+ notes text NOT NULL DEFAULT '',
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS supplier_product_pricing(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ supplier_id uuid NOT NULL REFERENCES suppliers(id) ON DELETE CASCADE,
+ variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
+ supplier_sku text NOT NULL DEFAULT '',
+ min_order_qty numeric(18,3) NOT NULL DEFAULT 1 CHECK(min_order_qty>0),
+ lead_time_days int NOT NULL DEFAULT 0 CHECK(lead_time_days>=0),
+ unit_cost numeric(18,2) NOT NULL CHECK(unit_cost>=0),
+ currency text NOT NULL DEFAULT 'UGX',
+ tax_rate numeric(8,4) NOT NULL DEFAULT 0 CHECK(tax_rate>=0),
+ valid_from date NOT NULL DEFAULT current_date,
+ valid_to date,
+ status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Inactive')),
+ notes text NOT NULL DEFAULT '',
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ CHECK(valid_to IS NULL OR valid_to>=valid_from)
+);
+CREATE INDEX IF NOT EXISTS idx_supplier_pricing_supplier_variant ON supplier_product_pricing(supplier_id,variant_id,created_at DESC);
+
+CREATE TABLE IF NOT EXISTS purchase_requisitions(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ requisition_no text UNIQUE NOT NULL,
+ requester_id uuid NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+ department_id uuid REFERENCES departments(id) ON DELETE SET NULL,
+ status text NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','Submitted','Approved','Rejected','Cancelled')),
+ priority text NOT NULL DEFAULT 'Normal' CHECK(priority IN ('Low','Normal','High','Urgent')),
+ needed_by date,
+ justification text NOT NULL DEFAULT '',
+ notes text NOT NULL DEFAULT '',
+ submitted_at timestamptz,
+ approved_at timestamptz,
+ rejected_at timestamptz,
+ cancelled_at timestamptz,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_requisitions_status ON purchase_requisitions(status,created_at DESC);
+
+CREATE TABLE IF NOT EXISTS purchase_requisition_lines(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ requisition_id uuid NOT NULL REFERENCES purchase_requisitions(id) ON DELETE CASCADE,
+ variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
+ quantity numeric(18,3) NOT NULL CHECK(quantity>0),
+ estimated_unit_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(estimated_unit_cost>=0),
+ preferred_supplier_id uuid REFERENCES suppliers(id) ON DELETE SET NULL,
+ notes text NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS idx_requisition_lines_req ON purchase_requisition_lines(requisition_id);
+
+CREATE TABLE IF NOT EXISTS procurement_approvals(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ entity_type text NOT NULL CHECK(entity_type IN ('Requisition','PurchaseOrder','Invoice')),
+ entity_id uuid NOT NULL,
+ action text NOT NULL CHECK(action IN ('Submitted','Approved','Rejected','Cancelled','Matched','Disputed')),
+ actor_id uuid REFERENCES users(id) ON DELETE SET NULL,
+ comments text NOT NULL DEFAULT '',
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_procurement_approvals_entity ON procurement_approvals(entity_type,entity_id,created_at DESC);
+
+CREATE TABLE IF NOT EXISTS purchase_orders(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ po_no text UNIQUE NOT NULL,
+ supplier_id uuid NOT NULL REFERENCES suppliers(id) ON DELETE RESTRICT,
+ requisition_id uuid REFERENCES purchase_requisitions(id) ON DELETE SET NULL,
+ status text NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','Submitted','Approved','Partially Received','Received','Cancelled')),
+ currency text NOT NULL DEFAULT 'UGX',
+ exchange_rate numeric(18,8) NOT NULL DEFAULT 1 CHECK(exchange_rate>0),
+ tax_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(tax_amount>=0),
+ discount_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(discount_amount>=0),
+ shipping_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(shipping_amount>=0),
+ expected_date date,
+ notes text NOT NULL DEFAULT '',
+ submitted_at timestamptz,
+ approved_at timestamptz,
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ approved_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_purchase_orders_supplier ON purchase_orders(supplier_id,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_purchase_orders_status ON purchase_orders(status,created_at DESC);
+
+CREATE TABLE IF NOT EXISTS purchase_order_lines(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ purchase_order_id uuid NOT NULL REFERENCES purchase_orders(id) ON DELETE CASCADE,
+ variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
+ quantity numeric(18,3) NOT NULL CHECK(quantity>0),
+ unit_price numeric(18,2) NOT NULL CHECK(unit_price>=0),
+ tax_rate numeric(8,4) NOT NULL DEFAULT 0 CHECK(tax_rate>=0),
+ discount_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(discount_amount>=0),
+ received_qty numeric(18,3) NOT NULL DEFAULT 0 CHECK(received_qty>=0),
+ notes text NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS idx_purchase_order_lines_po ON purchase_order_lines(purchase_order_id);
+
+CREATE TABLE IF NOT EXISTS purchase_order_attachments(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ purchase_order_id uuid NOT NULL REFERENCES purchase_orders(id) ON DELETE CASCADE,
+ name text NOT NULL,
+ url text NOT NULL,
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS goods_receipts(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ grn_no text UNIQUE NOT NULL,
+ purchase_order_id uuid NOT NULL REFERENCES purchase_orders(id) ON DELETE RESTRICT,
+ location_id uuid NOT NULL REFERENCES inventory_locations(id) ON DELETE RESTRICT,
+ supplier_delivery_note text NOT NULL DEFAULT '',
+ status text NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','Posted','Cancelled')),
+ notes text NOT NULL DEFAULT '',
+ received_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ received_at timestamptz,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_goods_receipts_po ON goods_receipts(purchase_order_id,created_at DESC);
+
+CREATE TABLE IF NOT EXISTS goods_receipt_lines(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ goods_receipt_id uuid NOT NULL REFERENCES goods_receipts(id) ON DELETE CASCADE,
+ purchase_order_line_id uuid NOT NULL REFERENCES purchase_order_lines(id) ON DELETE RESTRICT,
+ variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
+ ordered_qty numeric(18,3) NOT NULL DEFAULT 0,
+ received_qty numeric(18,3) NOT NULL CHECK(received_qty>0),
+ rejected_qty numeric(18,3) NOT NULL DEFAULT 0 CHECK(rejected_qty>=0),
+ unit_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(unit_cost>=0),
+ serials jsonb NOT NULL DEFAULT '[]'::jsonb,
+ notes text NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS idx_goods_receipt_lines_grn ON goods_receipt_lines(goods_receipt_id);
+
+CREATE TABLE IF NOT EXISTS supplier_invoices(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ invoice_no text UNIQUE NOT NULL,
+ supplier_id uuid NOT NULL REFERENCES suppliers(id) ON DELETE RESTRICT,
+ purchase_order_id uuid REFERENCES purchase_orders(id) ON DELETE SET NULL,
+ invoice_date date NOT NULL DEFAULT current_date,
+ due_date date,
+ currency text NOT NULL DEFAULT 'UGX',
+ subtotal numeric(18,2) NOT NULL DEFAULT 0 CHECK(subtotal>=0),
+ tax_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(tax_amount>=0),
+ discount_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(discount_amount>=0),
+ total_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(total_amount>=0),
+ status text NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','Matched','Partially Paid','Paid','Disputed','Cancelled')),
+ attachment_url text NOT NULL DEFAULT '',
+ notes text NOT NULL DEFAULT '',
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ matched_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ matched_at timestamptz,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_supplier_invoices_supplier ON supplier_invoices(supplier_id,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_supplier_invoices_status ON supplier_invoices(status,created_at DESC);
+
+CREATE TABLE IF NOT EXISTS supplier_invoice_lines(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ invoice_id uuid NOT NULL REFERENCES supplier_invoices(id) ON DELETE CASCADE,
+ purchase_order_line_id uuid REFERENCES purchase_order_lines(id) ON DELETE SET NULL,
+ variant_id uuid REFERENCES product_variants(id) ON DELETE RESTRICT,
+ quantity numeric(18,3) NOT NULL DEFAULT 1 CHECK(quantity>0),
+ unit_price numeric(18,2) NOT NULL DEFAULT 0 CHECK(unit_price>=0),
+ tax_rate numeric(8,4) NOT NULL DEFAULT 0 CHECK(tax_rate>=0),
+ line_total numeric(18,2) NOT NULL DEFAULT 0 CHECK(line_total>=0),
+ notes text NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS idx_supplier_invoice_lines_invoice ON supplier_invoice_lines(invoice_id);
+
+CREATE TABLE IF NOT EXISTS supplier_payments(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ payment_no text UNIQUE NOT NULL,
+ supplier_id uuid NOT NULL REFERENCES suppliers(id) ON DELETE RESTRICT,
+ invoice_id uuid REFERENCES supplier_invoices(id) ON DELETE SET NULL,
+ amount numeric(18,2) NOT NULL CHECK(amount>0),
+ currency text NOT NULL DEFAULT 'UGX',
+ payment_date date NOT NULL DEFAULT current_date,
+ method text NOT NULL DEFAULT 'Bank Transfer',
+ reference text NOT NULL DEFAULT '',
+ status text NOT NULL DEFAULT 'Completed' CHECK(status IN ('Pending','Completed','Reversed','Cancelled')),
+ notes text NOT NULL DEFAULT '',
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_supplier_payments_supplier ON supplier_payments(supplier_id,payment_date DESC);
+
+CREATE TABLE IF NOT EXISTS supplier_performance_reviews(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ supplier_id uuid NOT NULL REFERENCES suppliers(id) ON DELETE CASCADE,
+ review_period_start date NOT NULL,
+ review_period_end date NOT NULL,
+ quality_score numeric(5,2) CHECK(quality_score>=0 AND quality_score<=100),
+ delivery_score numeric(5,2) CHECK(delivery_score>=0 AND delivery_score<=100),
+ price_score numeric(5,2) CHECK(price_score>=0 AND price_score<=100),
+ service_score numeric(5,2) CHECK(service_score>=0 AND service_score<=100),
+ overall_score numeric(5,2) CHECK(overall_score>=0 AND overall_score<=100),
+ comments text NOT NULL DEFAULT '',
+ reviewed_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ CHECK(review_period_end>=review_period_start)
+);
+CREATE INDEX IF NOT EXISTS idx_supplier_performance_supplier ON supplier_performance_reviews(supplier_id,review_period_end DESC);
+
+-- Link the Phase 4 receiving workflow to the existing inventory receipt ledger without breaking Phase 1–3.
+ALTER TABLE stock_receipts ADD COLUMN IF NOT EXISTS purchase_order_id uuid REFERENCES purchase_orders(id) ON DELETE SET NULL;
+ALTER TABLE stock_receipts ADD COLUMN IF NOT EXISTS supplier_id uuid REFERENCES suppliers(id) ON DELETE SET NULL;
+ALTER TABLE stock_receipts ADD COLUMN IF NOT EXISTS goods_receipt_id uuid REFERENCES goods_receipts(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_stock_receipts_po ON stock_receipts(purchase_order_id);
+
+-- Compatibility migration for movement types used by reconciliation and incident workflows.
+DO $$ BEGIN
+  ALTER TABLE inventory_movements DROP CONSTRAINT IF EXISTS inventory_movements_movement_type_check;
+  ALTER TABLE inventory_movements ADD CONSTRAINT inventory_movements_movement_type_check CHECK(movement_type IN ('RECEIPT','ADJUSTMENT_IN','ADJUSTMENT_OUT','TRANSFER_OUT','TRANSFER_IN','RESERVE','RELEASE','SALE','RETURN','DAMAGE','LOSS','FOUND','STOCKTAKE_IN','STOCKTAKE_OUT'));
+EXCEPTION WHEN undefined_table THEN NULL; END $$;
