@@ -1,30 +1,22 @@
-# Amaal Telecoms Admin — Cumulative 1–9
+# Amaal Telecoms Admin
 
-Production-oriented admin console for Amaal Telecoms (Uganda).
+Production-oriented administration console for Amaal Telecoms (Uganda). The application uses a live PostgreSQL database and does not seed mock business records.
 
-## Feature files
-- `phase4.js` — Suppliers & Procurement
-- `phase5.js` — Customers & CRM
-- `phase6.js` — Sales & POS
-- `phase7.js` — Orders & E-commerce
-- `web_and_hosting.js` / `web_and_hosting.sql` — Web & Hosting
-- `phase9_pricing_and_promotions.js` / `phase9_pricing_and_promotions.sql` — Pricing & Promotions
+## Feature modules
+- `server.js` — Core Administration & Security, Catalog, Inventory and shared platform services
+- `suppliers-procurement.js` — Suppliers & Procurement
+- `customers-crm.js` — Customers & CRM
+- `sales-pos.js` — Sales & POS
+- `orders-ecommerce.js` — Orders & E-commerce
+- `web-and-hosting.js` / `web-and-hosting.sql` — Web & Hosting
+- `pricing-and-promotions.js` / `pricing-and-promotions.sql` — Pricing & Promotions
+- `schema.sql` — cumulative PostgreSQL schema for all current modules
+- `public/app.js` — client administration console
 
-## Phase 9
-Pricing and Promotions centralizes:
-- customer-type price lists
-- variant-specific price overrides
-- effective-price calculation
-- percentage/fixed promotions
-- product/category/brand targeting
-- scheduled campaigns
-- coupons
-- pricing export
-- audit events and permissions
+## Module naming rule
+Feature files are named by business module, not development phase. Future modules must follow the same rule so maintenance, debugging and rebuilding can target the responsible business capability directly.
 
-The effective pricing function is also used by the public catalog and default POS/order pricing, while administrators can still explicitly supply an authorized custom unit price where the existing workflow permits it.
+See `MODULE_MAP.md` for the canonical module map and future naming convention.
 
 ## Deployment
-Run `npm install` then `npm start` with `DATABASE_URL` and `JWT_SECRET` configured. The schema is applied automatically at startup.
-
-No mock business records are included. No GitHub workflow/YAML is included in this ZIP.
+Set `DATABASE_URL` and `JWT_SECRET` in the hosting environment. Start with `npm start`.

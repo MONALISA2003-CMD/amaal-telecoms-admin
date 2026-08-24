@@ -88,7 +88,7 @@ CREATE OR REPLACE FUNCTION amaal_effective_variant_price(p_variant_id uuid,p_cus
 RETURNS TABLE(base_price numeric,price_list_price numeric,promotion_id uuid,promotion_name text,discount_amount numeric,final_price numeric) LANGUAGE sql STABLE AS $$
 WITH ctx AS (
  SELECT v.selling_price bp,COALESCE((SELECT i.price FROM price_list_items i JOIN price_lists l ON l.id=i.price_list_id WHERE i.variant_id=v.id AND l.status='Active' AND l.customer_type=p_customer_type AND (l.valid_from IS NULL OR l.valid_from<=now()) AND (l.valid_to IS NULL OR l.valid_to>now()) ORDER BY l.priority ASC,l.updated_at DESC LIMIT 1),v.selling_price) pp,
- p.product_id,pd.category_id,pd.brand_id
+ v.product_id,pd.category_id,pd.brand_id
  FROM product_variants v JOIN products pd ON pd.id=v.product_id WHERE v.id=p_variant_id
 ), promo AS (
  SELECT p.* FROM promotions p CROSS JOIN ctx

@@ -1,4 +1,4 @@
-export function registerPhase6({app,auth,need,q,pool,audit,changeStock}){
+export function registerSalesPos({app,auth,need,q,pool,audit,changeStock}){
   const text=v=>String(v??'').trim();
   const money=v=>{const n=Number(v);return Number.isFinite(n)?Math.round(n*100)/100:0};
   const saleNo=()=>`SAL-${new Date().toISOString().replace(/[-:TZ.]/g,'').slice(0,14)}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;

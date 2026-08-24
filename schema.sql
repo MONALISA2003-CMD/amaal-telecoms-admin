@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS notifications(id uuid PRIMARY KEY DEFAULT gen_random_
 CREATE TABLE IF NOT EXISTS settings(key text PRIMARY KEY, value_json jsonb NOT NULL, updated_by uuid REFERENCES users(id) ON DELETE SET NULL, updated_at timestamptz NOT NULL DEFAULT now());
 
 
--- Phase 1B: international administration and security foundation
+-- Core Administration & Security: international administration and security foundation
 ALTER TABLE users ADD COLUMN IF NOT EXISTS phone text NOT NULL DEFAULT '';
 ALTER TABLE users ADD COLUMN IF NOT EXISTS employee_id text UNIQUE;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS job_title text NOT NULL DEFAULT '';
@@ -126,7 +126,7 @@ CREATE INDEX IF NOT EXISTS idx_security_events_created_at ON security_events(cre
 CREATE INDEX IF NOT EXISTS idx_users_department ON users(department_id);
 
 
--- Phase 2: Product catalog foundation for phones, TVs, appliances, electronics and accessories
+-- Catalog: product foundation for phones, TVs, appliances, electronics and accessories
 CREATE TABLE IF NOT EXISTS product_categories(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
  parent_id uuid REFERENCES product_categories(id) ON DELETE SET NULL,
@@ -420,7 +420,7 @@ CREATE TABLE IF NOT EXISTS product_price_history(
  created_at timestamptz NOT NULL DEFAULT now()
 );
 
--- Phase 4: Suppliers & Procurement
+-- Suppliers & Procurement
 CREATE TABLE IF NOT EXISTS suppliers(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
  supplier_code text UNIQUE NOT NULL,
@@ -690,7 +690,7 @@ CREATE TABLE IF NOT EXISTS supplier_performance_reviews(
 );
 CREATE INDEX IF NOT EXISTS idx_supplier_performance_supplier ON supplier_performance_reviews(supplier_id,review_period_end DESC);
 
--- Link the Phase 4 receiving workflow to the existing inventory receipt ledger without breaking Phase 1–3.
+-- Link supplier receiving to the inventory receipt ledger without breaking core administration, catalog or inventory.
 ALTER TABLE stock_receipts ADD COLUMN IF NOT EXISTS purchase_order_id uuid REFERENCES purchase_orders(id) ON DELETE SET NULL;
 ALTER TABLE stock_receipts ADD COLUMN IF NOT EXISTS supplier_id uuid REFERENCES suppliers(id) ON DELETE SET NULL;
 ALTER TABLE stock_receipts ADD COLUMN IF NOT EXISTS goods_receipt_id uuid REFERENCES goods_receipts(id) ON DELETE SET NULL;
@@ -702,7 +702,7 @@ DO $$ BEGIN
   ALTER TABLE inventory_movements ADD CONSTRAINT inventory_movements_movement_type_check CHECK(movement_type IN ('RECEIPT','ADJUSTMENT_IN','ADJUSTMENT_OUT','TRANSFER_OUT','TRANSFER_IN','RESERVE','RELEASE','SALE','RETURN','DAMAGE','LOSS','FOUND','STOCKTAKE_IN','STOCKTAKE_OUT'));
 EXCEPTION WHEN undefined_table THEN NULL; END $$;
 
--- Phase 5: Customers, CRM, support, privacy and customer 360
+-- Customers & CRM: customers, support, privacy and customer 360
 CREATE TABLE IF NOT EXISTS customers(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
  customer_no text UNIQUE NOT NULL,
@@ -817,7 +817,7 @@ CREATE TABLE IF NOT EXISTS customer_consents(
  UNIQUE(customer_id,consent_type)
 );
 
--- Phase 6: Sales & POS
+-- Sales & POS
 CREATE TABLE IF NOT EXISTS sales(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
  sale_no text UNIQUE NOT NULL,
@@ -880,7 +880,7 @@ CREATE INDEX IF NOT EXISTS idx_sale_lines_sale ON sale_lines(sale_id);
 CREATE INDEX IF NOT EXISTS idx_sale_payments_sale ON sale_payments(sale_id);
 CREATE INDEX IF NOT EXISTS idx_sale_status_history_sale ON sale_status_history(sale_id,created_at);
 
--- Phase 7: Orders & E-commerce
+-- Orders & E-commerce
 ALTER TABLE product_categories ADD COLUMN IF NOT EXISTS icon_url text NOT NULL DEFAULT '';
 ALTER TABLE products ADD COLUMN IF NOT EXISTS promotion_type text NOT NULL DEFAULT 'None' CHECK(promotion_type IN ('None','Flash Sale','Promotional'));
 ALTER TABLE products ADD COLUMN IF NOT EXISTS promotion_label text NOT NULL DEFAULT '';
@@ -1108,7 +1108,7 @@ CREATE OR REPLACE FUNCTION amaal_effective_variant_price(p_variant_id uuid,p_cus
 RETURNS TABLE(base_price numeric,price_list_price numeric,promotion_id uuid,promotion_name text,discount_amount numeric,final_price numeric) LANGUAGE sql STABLE AS $$
 WITH ctx AS (
  SELECT v.selling_price bp,COALESCE((SELECT i.price FROM price_list_items i JOIN price_lists l ON l.id=i.price_list_id WHERE i.variant_id=v.id AND l.status='Active' AND l.customer_type=p_customer_type AND (l.valid_from IS NULL OR l.valid_from<=now()) AND (l.valid_to IS NULL OR l.valid_to>now()) ORDER BY l.priority ASC,l.updated_at DESC LIMIT 1),v.selling_price) pp,
- p.product_id,pd.category_id,pd.brand_id
+ v.product_id,pd.category_id,pd.brand_id
  FROM product_variants v JOIN products pd ON pd.id=v.product_id WHERE v.id=p_variant_id
 ), promo AS (
  SELECT p.* FROM promotions p CROSS JOIN ctx

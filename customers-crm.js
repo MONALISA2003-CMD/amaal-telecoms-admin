@@ -1,4 +1,4 @@
-export function registerPhase5({app,auth,need,q,pool,audit}){
+export function registerCustomersCrm({app,auth,need,q,pool,audit}){
   const text=v=>String(v??'').trim(); const n=v=>Number(v||0);
   const customerNo=()=>`CUS-${new Date().getFullYear()}-${Math.random().toString(36).slice(2,8).toUpperCase()}`;
   const validType=v=>['Individual','Business','Corporate'].includes(v);

@@ -1,5 +1,5 @@
 import crypto from "crypto";
-export function registerPhase7({app,auth,need,q,pool,audit,changeStock}){
+export function registerOrdersEcommerce({app,auth,need,q,pool,audit,changeStock}){
   const text=v=>String(v??'').trim();
   const money=v=>Math.round((Number(v)||0)*100)/100;
   const orderNo=()=>`WEB-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${crypto.randomUUID().slice(0,8).toUpperCase()}`;

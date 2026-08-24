@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-export function registerPhase4({app,auth,need,q,pool,audit,inventoryNo,changeStock}){
+export function registerSuppliersProcurement({app,auth,need,q,pool,audit,inventoryNo,changeStock}){
   const jsonArray=v=>Array.isArray(v)?v:[];
   const text=v=>String(v??'').trim();
   const money=v=>Number(v||0);
