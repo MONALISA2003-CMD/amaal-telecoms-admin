@@ -34,7 +34,7 @@ Browser developer tools cannot be made impossible by a web application. The plat
 
 ## Administrator recovery
 
-Open `/recovery`. The page is always reachable, but destructive recovery is enabled only when `ADMIN_RECOVERY_TOKEN` exists in the deployment environment. The recovery process preserves business records and refuses unsafe user deletion when mandatory historical records depend on user references. Remove/rotate the token immediately after recovery.
+Open `/recovery`. The page is always reachable, but destructive recovery is enabled only when `ADMIN_RECOVERY_TOKEN` exists in the deployment environment. The recovery process preserves business records, revokes security access, deletes administrator users when PostgreSQL permits it, and otherwise safely suspends business-linked historical users. First-time setup is explicitly reopened by the recovery state flag. Remove/rotate the token immediately after recovery.
 
 ## Deployment
 
