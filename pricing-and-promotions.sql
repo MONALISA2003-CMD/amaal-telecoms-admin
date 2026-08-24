@@ -87,17 +87,44 @@ CREATE INDEX IF NOT EXISTS idx_coupon_redemptions_coupon ON coupon_redemptions(c
 CREATE OR REPLACE FUNCTION amaal_effective_variant_price(p_variant_id uuid,p_customer_type text DEFAULT 'Retail')
 RETURNS TABLE(base_price numeric,price_list_price numeric,promotion_id uuid,promotion_name text,discount_amount numeric,final_price numeric) LANGUAGE sql STABLE AS $$
 WITH ctx AS (
- SELECT v.selling_price bp,COALESCE((SELECT i.price FROM price_list_items i JOIN price_lists l ON l.id=i.price_list_id WHERE i.variant_id=v.id AND l.status='Active' AND l.customer_type=p_customer_type AND (l.valid_from IS NULL OR l.valid_from<=now()) AND (l.valid_to IS NULL OR l.valid_to>now()) ORDER BY l.priority ASC,l.updated_at DESC LIMIT 1),v.selling_price) pp,
- v.product_id,pd.category_id,pd.brand_id
- FROM product_variants v JOIN products pd ON pd.id=v.product_id WHERE v.id=p_variant_id
+ SELECT v.selling_price AS bp,
+        COALESCE((SELECT i.price
+                  FROM price_list_items i
+                  JOIN price_lists l ON l.id=i.price_list_id
+                  WHERE i.variant_id=v.id
+                    AND l.status='Active'
+                    AND l.customer_type=p_customer_type
+                    AND (l.valid_from IS NULL OR l.valid_from<=now())
+                    AND (l.valid_to IS NULL OR l.valid_to>now())
+                  ORDER BY l.priority ASC,l.updated_at DESC
+                  LIMIT 1),v.selling_price) AS pp,
+        v.product_id,pd.category_id,pd.brand_id
+ FROM product_variants v
+ JOIN products pd ON pd.id=v.product_id
+ WHERE v.id=p_variant_id
 ), promo AS (
- SELECT p.* FROM promotions p CROSS JOIN ctx
- WHERE p.status IN ('Active','Scheduled') AND (p.starts_at IS NULL OR p.starts_at<=now()) AND (p.ends_at IS NULL OR p.ends_at>now())
- AND (p.scope_type='All' OR (p.scope_type='Product' AND EXISTS(SELECT 1 FROM promotion_products x WHERE x.promotion_id=p.id AND x.product_id=ctx.product_id)) OR (p.scope_type='Category' AND EXISTS(SELECT 1 FROM promotion_categories x WHERE x.promotion_id=p.id AND x.category_id=ctx.category_id)) OR (p.scope_type='Brand' AND EXISTS(SELECT 1 FROM promotion_brands x WHERE x.promotion_id=p.id AND x.brand_id=ctx.brand_id)))
- ORDER BY p.priority ASC,p.updated_at DESC LIMIT 1
+ SELECT pr.id,pr.name,pr.type,pr.value
+ FROM promotions pr
+ CROSS JOIN ctx
+ WHERE pr.status IN ('Active','Scheduled')
+   AND (pr.starts_at IS NULL OR pr.starts_at<=now())
+   AND (pr.ends_at IS NULL OR pr.ends_at>now())
+   AND (
+     pr.scope_type='All'
+     OR (pr.scope_type='Product' AND EXISTS(SELECT 1 FROM promotion_products x WHERE x.promotion_id=pr.id AND x.product_id=ctx.product_id))
+     OR (pr.scope_type='Category' AND EXISTS(SELECT 1 FROM promotion_categories x WHERE x.promotion_id=pr.id AND x.category_id=ctx.category_id))
+     OR (pr.scope_type='Brand' AND EXISTS(SELECT 1 FROM promotion_brands x WHERE x.promotion_id=pr.id AND x.brand_id=ctx.brand_id))
+   )
+ ORDER BY pr.priority ASC,pr.updated_at DESC
+ LIMIT 1
 )
-SELECT ctx.bp,ctx.pp,p.id,p.name,
-CASE WHEN p.id IS NULL THEN 0 WHEN p.type='Percentage' THEN round((ctx.pp*p.value/100)::numeric,2) ELSE LEAST(ctx.pp,round(p.value::numeric,2)) END,
-GREATEST(0,round((ctx.pp-CASE WHEN p.id IS NULL THEN 0 WHEN p.type='Percentage' THEN ctx.pp*p.value/100 ELSE LEAST(ctx.pp,p.value) END)::numeric,2))
-FROM ctx LEFT JOIN promo p ON true;
+SELECT ctx.bp,ctx.pp,promo.id,promo.name,
+       CASE WHEN promo.id IS NULL THEN 0
+            WHEN promo.type='Percentage' THEN round((ctx.pp*promo.value/100)::numeric,2)
+            ELSE LEAST(ctx.pp,round(promo.value::numeric,2)) END,
+       GREATEST(0,round((ctx.pp-CASE WHEN promo.id IS NULL THEN 0
+            WHEN promo.type='Percentage' THEN ctx.pp*promo.value/100
+            ELSE LEAST(ctx.pp,promo.value) END)::numeric,2))
+FROM ctx
+LEFT JOIN promo ON true;
 $$;

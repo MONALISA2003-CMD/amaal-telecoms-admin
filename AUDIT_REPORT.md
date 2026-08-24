@@ -1,65 +1,41 @@
-# Amaal Telecoms — 13–15 Build Audit Report
+# Amaal Telecoms — Access Recovery + 7–15 Integrity Audit
 
-## Scope
-This delivery adds and connects:
+## Immediate defect fixed
+The Render startup failure `42P01 missing FROM-clause entry for table "p"` was traced to the effective-pricing SQL function in `schema.sql` / `pricing-and-promotions.sql`. The promotion CTE has been rewritten with an explicit `pr` source alias and the final projection now joins the CTE without ambiguous alias reuse.
 
-- Credit & Installments
-- Finance & Accounting
-- Business Intelligence
+## Administrator recovery
+A controlled `/recovery` page and `POST /api/recovery/reset` endpoint were added.
 
-The existing modules were preserved.
+- Disabled unless `ADMIN_RECOVERY_TOKEN` exists in the deployment environment.
+- Requires the secret recovery token and exact `AMAAL-RESET` confirmation.
+- Deletes administrator accounts, sessions, trusted devices, MFA credentials, login/security history, notifications, role links and audit logs.
+- Preserves business records.
+- Refuses the operation when mandatory business records still depend on users (`sales.cashier_id`, `sale_payments.received_by`, or `purchase_requisitions.requester_id`).
+- Recovery token hashes are stored so the same token cannot be reused.
+- The token must be rotated/removed immediately after recovery.
 
-## Static verification performed
+## Security review
+- Secure + HttpOnly session cookie.
+- SameSite=Lax.
+- Trusted-device binding.
+- Server-side 10-minute inactivity expiry.
+- MFA for unfamiliar devices when MFA is enabled.
+- CSRF protection for authenticated browser mutations.
+- Security/audit event logging.
+- Production headers and CSP.
+- No developer/debug UI is intentionally exposed.
+- Browser developer tools cannot be disabled as a security boundary; authorization remains server-side.
 
-- `node --check` passed for every JavaScript source file, including `server.js`, all existing business modules, and `public/app.js`.
-- `node --check` passed for the three new modules.
-- A route-registration harness successfully loaded all three new modules and registered **34 Express routes** without syntax/runtime registration errors.
-- Frontend action strings for the new modules were reviewed and wired through the existing `handleAction` dispatcher.
-- No numbered phase source filenames were introduced.
-- The final ZIP will be checked for absence of YAML workflow files.
+## Module integrity
+The source tree uses module names, not numbered phase filenames:
+Core Administration & Security, Catalog, Inventory, Suppliers & Procurement, Customers & CRM, Sales & POS, Orders & E-commerce, Web & Hosting, Pricing & Promotions, Delivery & Logistics, Warranty & Repairs, Returns & Refunds, Document Management, Credit & Installments, Finance & Accounting, Business Intelligence.
 
-## Data integration audit
+## Static verification
+- `node --check` passed for every JavaScript source file and `public/app.js`.
+- No YAML workflow files are included.
+- Public catch-all serves `public/index.html` after API routes.
+- Document upload/download routes remain present.
+- Finance, BI, credit, delivery and warranty modules remain registered.
 
-### Credit
-- Customers → credit profiles → applications → accounts → installments → payments → collections/restructures.
-- Credit payments can be synchronized into Finance.
-
-### Finance
-- Sales and sale payments can be synchronized.
-- E-commerce order payments can be synchronized.
-- Supplier invoices and supplier payments can be synchronized.
-- Refund transactions can be synchronized.
-- Credit payments can be synchronized.
-- Synchronization is idempotent through `finance_sync_log` source references.
-- Double-entry journals are balanced before posting.
-
-### Business Intelligence
-- Sales revenue/margin from Sales & POS.
-- Product performance from Catalog + Sales.
-- Inventory ageing from Inventory balances + receipt movements.
-- Orders and returns from E-commerce + Returns.
-- Delivery cost/unit and partner performance from Delivery & Logistics.
-- Repair partner workload/cost/turnaround from Warranty & Repairs.
-- Credit outstanding from Credit & Installments.
-
-## Security
-
-All new routes use existing authentication and RBAC. Finance, credit and BI data remain admin-only. Mutations are audited. No public API route was added for these internal modules.
-
-## Known live-environment limitation
-
-A real Render PostgreSQL transaction cannot be executed from this packaging environment because the live database credentials are not available here. Therefore the package has been statically and structurally audited, but the final acceptance must exercise the workflows against the live Render database.
-
-## Recommended live acceptance order
-
-1. Deploy.
-2. Open Credit Dashboard and create a real test customer credit profile/application.
-3. Approve it and verify installments.
-4. Record a payment.
-5. Open Finance Dashboard and run synchronization.
-6. Run synchronization a second time and confirm no duplicate journals.
-7. Open Business Intelligence and verify the operational figures.
-8. Export the BI report.
-9. Check Audit for the resulting mutations.
-
-Do not proceed to the next major module until these live checks pass.
+## Live acceptance still required
+This environment does not have the production PostgreSQL credentials, so a live database transaction cannot be executed here. After deployment, verify `/api/health`, `/recovery`, first-time setup, login, MFA, 10-minute timeout, document upload/download, and the module workflows from the Render URL.

@@ -33,3 +33,7 @@ Keep the combined admin service on Render during acceptance. Vercel is better in
 Use the Render root URL as the main client test surface. From the mobile dashboard, open every module and exercise create/update/view actions. Finance synchronization should be tested after creating real sales, payments, supplier invoices/payments, refunds and credit payments. BI should then reflect those records.
 
 No mock business records are created automatically.
+
+
+## Administrator recovery
+If the administrator is locked out and normal MFA/device recovery is unavailable, temporarily set `ADMIN_RECOVERY_TOKEN` in the deployment environment and open `/recovery`. The recovery flow is deliberately disabled when the variable is absent, requires an explicit confirmation string, preserves business records, and refuses to delete users if mandatory business records still depend on them. Rotate/remove the token immediately after successful recovery.
