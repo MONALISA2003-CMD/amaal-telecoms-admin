@@ -1,35 +1,31 @@
-# Amaal Telecoms Admin — Phase 1B
+# Amaal Telecoms Admin — Phase 1C
 
-Phase 1B extends the working Phase 1A administration foundation into an international-ready administration and security layer.
+Uganda-first, production-oriented administration foundation built on the Phase 1A/1B database.
 
-## Included
-- Real PostgreSQL/Neon persistence; no mock business data.
-- First-admin setup and secure login with lockout controls.
-- Password policy and password-history protection.
-- Optional TOTP MFA with encrypted-at-rest MFA secret.
-- Organization profile: legal/trading identity, registration/tax data, country, currency, timezone, locale and contact details.
-- Departments and staff profile metadata.
-- Roles and permissions foundation with expanded administrative permissions.
-- Active session/device visibility and session revocation.
-- Login/security event monitoring.
-- Structured security policy.
-- Feature flag persistence.
-- Expanded audit trail and filtered audit API.
-- Responsive admin console designed to work from a phone.
-- Express 5 compatible SPA fallback route.
-- No external frontend CDN dependencies.
+## Scope
+- Hardened cookie-based authentication (HttpOnly Secure SameSite session cookie)
+- CSRF protection for authenticated state-changing requests
+- Same-origin enforcement
+- Security headers and reduced browser attack surface
+- Login rate limiting and account lockout
+- MFA/TOTP
+- Password policy and password history
+- Session/device administration and revocation
+- Organization profile with Uganda defaults (UG / UGX / Africa/Kampala / en-UG)
+- Department administration
+- Staff profiles
+- Role/permission management
+- Staff invitations with one-time invitation tokens and acceptance endpoint
+- Security posture and login-event monitoring
+- Audit trail
+- Feature flags
+- Existing legacy branch tables are preserved for compatibility, but Phase 1C adds no branch functionality and the admin navigation does not expose branches.
 
 ## Deployment
-Render:
-- Runtime: Node
-- Root Directory: blank
-- Build Command: `npm install`
-- Start Command: `npm start`
+- Build: `npm install`
+- Start: `npm start`
+- `DATABASE_URL` and `JWT_SECRET` are required.
+- Render supplies `PORT`.
 
-Required environment variables:
-- `DATABASE_URL`
-- `JWT_SECRET`
-- `COOKIE_SECURE=true` (reserved for the hardened cookie migration)
-
-## Important
-This release is still the administration/platform layer. Customer, product, inventory, sales, credit and finance modules are deliberately not mixed into Phase 1B.
+No mock business data is included.
+No GitHub workflow/YAML is included in this ZIP. Use the existing repository workflow.
