@@ -1,23 +1,30 @@
-# Amaal Telecoms Admin — Phase 1–7
+# Amaal Telecoms Admin — Cumulative 1–9
 
-Production-oriented cumulative admin console for Amaal Telecoms (Uganda).
+Production-oriented admin console for Amaal Telecoms (Uganda).
 
-## Included
-- Phase 1: administration, authentication, roles, permissions, security, audit, settings
-- Phase 2: catalog, categories, brands, products, variants/SKUs, media, SEO, publishing
-- Phase 3: inventory, receiving, adjustments, transfers, reservations, serialized/IMEI, stocktakes, incidents
-- Phase 4: suppliers, procurement, requisitions, purchase orders, goods receipts, supplier invoices/payments
-- Phase 5: customers, CRM, customer 360, support cases, privacy/consent
-- Phase 6: sales/POS, payments, receipts, voids, inventory deduction, serialized sales
-- Phase 7: orders/e-commerce, payment tracking, order lifecycle, fulfillment, reservations, serialized/IMEI assignment, order export
+## Feature files
+- `phase4.js` — Suppliers & Procurement
+- `phase5.js` — Customers & CRM
+- `phase6.js` — Sales & POS
+- `phase7.js` — Orders & E-commerce
+- `web_and_hosting.js` / `web_and_hosting.sql` — Web & Hosting
+- `phase9_pricing_and_promotions.js` / `phase9_pricing_and_promotions.sql` — Pricing & Promotions
 
-## Catalog additions
-Administrators can create categories with icons, brands with logos, and products with images, descriptions, prices, SKUs, publishing state and promotion type (None, Flash Sale, Promotional).
+## Phase 9
+Pricing and Promotions centralizes:
+- customer-type price lists
+- variant-specific price overrides
+- effective-price calculation
+- percentage/fixed promotions
+- product/category/brand targeting
+- scheduled campaigns
+- coupons
+- pricing export
+- audit events and permissions
 
-## Data policy
-No mock/demo business records are included.
+The effective pricing function is also used by the public catalog and default POS/order pricing, while administrators can still explicitly supply an authorized custom unit price where the existing workflow permits it.
 
 ## Deployment
-Run `npm install` then `npm start`. Set `DATABASE_URL` and a strong `JWT_SECRET`. The application listens on `PORT` when provided by the host.
+Run `npm install` then `npm start` with `DATABASE_URL` and `JWT_SECRET` configured. The schema is applied automatically at startup.
 
-This archive intentionally contains no GitHub workflow/YAML file.
+No mock business records are included. No GitHub workflow/YAML is included in this ZIP.

@@ -950,3 +950,174 @@ CREATE TABLE IF NOT EXISTS order_serial_units(
  UNIQUE(order_line_id,serialized_unit_id)
 );
 CREATE INDEX IF NOT EXISTS idx_order_serial_units_line ON order_serial_units(order_line_id);
+-- Web & Hosting: controlled public-web management, staging, publishing, domains, redirects and media
+CREATE TABLE IF NOT EXISTS web_sites(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), name text NOT NULL, slug text UNIQUE NOT NULL,
+ status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Maintenance','Disabled')),
+ primary_domain text NOT NULL DEFAULT '', description text NOT NULL DEFAULT '',
+ default_locale text NOT NULL DEFAULT 'en-UG', default_currency text NOT NULL DEFAULT 'UGX',
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL, updated_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS web_pages(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), site_id uuid NOT NULL REFERENCES web_sites(id) ON DELETE CASCADE,
+ title text NOT NULL, slug text NOT NULL, template text NOT NULL DEFAULT 'standard', status text NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','In Review','Approved','Published','Archived')),
+ excerpt text NOT NULL DEFAULT '', body_json jsonb NOT NULL DEFAULT '{}'::jsonb, seo_title text NOT NULL DEFAULT '', seo_description text NOT NULL DEFAULT '', canonical_url text NOT NULL DEFAULT '', noindex boolean NOT NULL DEFAULT false,
+ version integer NOT NULL DEFAULT 1, published_at timestamptz, created_by uuid REFERENCES users(id) ON DELETE SET NULL, updated_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), UNIQUE(site_id,slug)
+);
+CREATE TABLE IF NOT EXISTS web_navigation(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), site_id uuid NOT NULL REFERENCES web_sites(id) ON DELETE CASCADE,
+ menu_key text NOT NULL, label text NOT NULL, url text NOT NULL, sort_order int NOT NULL DEFAULT 0, parent_id uuid REFERENCES web_navigation(id) ON DELETE SET NULL,
+ open_new_tab boolean NOT NULL DEFAULT false, enabled boolean NOT NULL DEFAULT true, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS web_banners(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), site_id uuid NOT NULL REFERENCES web_sites(id) ON DELETE CASCADE,
+ title text NOT NULL, subtitle text NOT NULL DEFAULT '', image_media_id uuid, link_url text NOT NULL DEFAULT '', placement text NOT NULL DEFAULT 'home-hero', status text NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','Scheduled','Published','Archived')),
+ starts_at timestamptz, ends_at timestamptz, sort_order int NOT NULL DEFAULT 0, created_by uuid REFERENCES users(id) ON DELETE SET NULL, updated_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS web_content_blocks(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), site_id uuid NOT NULL REFERENCES web_sites(id) ON DELETE CASCADE,
+ key text NOT NULL, title text NOT NULL DEFAULT '', content_json jsonb NOT NULL DEFAULT '{}'::jsonb, status text NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','Approved','Published','Archived')),
+ version int NOT NULL DEFAULT 1, updated_by uuid REFERENCES users(id) ON DELETE SET NULL, updated_at timestamptz NOT NULL DEFAULT now(), UNIQUE(site_id,key)
+);
+CREATE TABLE IF NOT EXISTS web_domains(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), site_id uuid NOT NULL REFERENCES web_sites(id) ON DELETE CASCADE,
+ hostname text UNIQUE NOT NULL, type text NOT NULL DEFAULT 'Custom' CHECK(type IN ('Primary','Custom','Redirect')),
+ verification_token text NOT NULL DEFAULT '', verified_at timestamptz, ssl_status text NOT NULL DEFAULT 'Pending' CHECK(ssl_status IN ('Pending','Provisioned','Error')),
+ status text NOT NULL DEFAULT 'Pending' CHECK(status IN ('Pending','Active','Disabled')), created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS web_redirects(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), site_id uuid NOT NULL REFERENCES web_sites(id) ON DELETE CASCADE,
+ source_path text NOT NULL, destination_url text NOT NULL, status_code int NOT NULL DEFAULT 301 CHECK(status_code IN (301,302,307,308)), enabled boolean NOT NULL DEFAULT true,
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now(), UNIQUE(site_id,source_path)
+);
+CREATE TABLE IF NOT EXISTS web_media(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), site_id uuid REFERENCES web_sites(id) ON DELETE SET NULL,
+ filename text NOT NULL, mime_type text NOT NULL, size_bytes int NOT NULL CHECK(size_bytes>0 AND size_bytes<=5242880), alt_text text NOT NULL DEFAULT '', storage text NOT NULL DEFAULT 'database', data_base64 text NOT NULL,
+ status text NOT NULL DEFAULT 'Private' CHECK(status IN ('Private','Published','Archived')), uploaded_by uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS web_publish_releases(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), site_id uuid NOT NULL REFERENCES web_sites(id) ON DELETE CASCADE,
+ release_name text NOT NULL, environment text NOT NULL DEFAULT 'Staging' CHECK(environment IN ('Staging','Production')), status text NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','Approved','Published','Rolled Back')),
+ notes text NOT NULL DEFAULT '', snapshot_json jsonb NOT NULL DEFAULT '{}'::jsonb, created_by uuid REFERENCES users(id) ON DELETE SET NULL, approved_by uuid REFERENCES users(id) ON DELETE SET NULL, published_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(), approved_at timestamptz, published_at timestamptz
+);
+CREATE TABLE IF NOT EXISTS web_publish_queue(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), site_id uuid NOT NULL REFERENCES web_sites(id) ON DELETE CASCADE,
+ resource_type text NOT NULL, resource_id uuid NOT NULL, action text NOT NULL CHECK(action IN ('publish','unpublish','archive')),
+ requested_by uuid REFERENCES users(id) ON DELETE SET NULL, status text NOT NULL DEFAULT 'Pending' CHECK(status IN ('Pending','Approved','Executed','Rejected')),
+ reviewed_by uuid REFERENCES users(id) ON DELETE SET NULL, reviewed_at timestamptz, executed_at timestamptz, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS web_settings(
+ site_id uuid PRIMARY KEY REFERENCES web_sites(id) ON DELETE CASCADE,
+ settings_json jsonb NOT NULL DEFAULT '{}'::jsonb, updated_by uuid REFERENCES users(id) ON DELETE SET NULL, updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_web_pages_site_status ON web_pages(site_id,status);
+CREATE INDEX IF NOT EXISTS idx_web_banners_site_status ON web_banners(site_id,status);
+CREATE INDEX IF NOT EXISTS idx_web_publish_queue_status ON web_publish_queue(site_id,status);
+CREATE INDEX IF NOT EXISTS idx_web_media_site_status ON web_media(site_id,status);
+CREATE TABLE IF NOT EXISTS price_lists(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ name text NOT NULL,
+ code text UNIQUE NOT NULL,
+ customer_type text NOT NULL DEFAULT 'Retail' CHECK(customer_type IN ('Retail','Wholesale','Corporate','VIP','Custom')),
+ currency text NOT NULL DEFAULT 'UGX',
+ priority int NOT NULL DEFAULT 100,
+ status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Draft','Active','Inactive','Archived')),
+ valid_from timestamptz,
+ valid_to timestamptz,
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now(),
+ CHECK(valid_to IS NULL OR valid_from IS NULL OR valid_to>valid_from)
+);
+CREATE TABLE IF NOT EXISTS price_list_items(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ price_list_id uuid NOT NULL REFERENCES price_lists(id) ON DELETE CASCADE,
+ variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE CASCADE,
+ price numeric(18,2) NOT NULL CHECK(price>=0),
+ compare_at_price numeric(18,2) CHECK(compare_at_price IS NULL OR compare_at_price>=0),
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now(),
+ UNIQUE(price_list_id,variant_id)
+);
+CREATE INDEX IF NOT EXISTS idx_price_list_items_variant ON price_list_items(variant_id);
+CREATE TABLE IF NOT EXISTS promotions(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ name text NOT NULL,
+ code text UNIQUE,
+ type text NOT NULL CHECK(type IN ('Percentage','Fixed Amount')),
+ value numeric(18,2) NOT NULL CHECK(value>=0),
+ scope_type text NOT NULL DEFAULT 'All' CHECK(scope_type IN ('All','Product','Category','Brand')),
+ starts_at timestamptz,
+ ends_at timestamptz,
+ status text NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','Scheduled','Active','Paused','Expired','Archived')),
+ priority int NOT NULL DEFAULT 100,
+ stackable boolean NOT NULL DEFAULT false,
+ max_uses int CHECK(max_uses IS NULL OR max_uses>0),
+ per_customer_limit int CHECK(per_customer_limit IS NULL OR per_customer_limit>0),
+ banner_text text NOT NULL DEFAULT '',
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now(),
+ CHECK(ends_at IS NULL OR starts_at IS NULL OR ends_at>starts_at),
+ CHECK(type<>'Percentage' OR value<=100)
+);
+CREATE INDEX IF NOT EXISTS idx_promotions_active ON promotions(status,starts_at,ends_at,priority);
+CREATE TABLE IF NOT EXISTS promotion_products(
+ promotion_id uuid NOT NULL REFERENCES promotions(id) ON DELETE CASCADE,
+ product_id uuid NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+ PRIMARY KEY(promotion_id,product_id)
+);
+CREATE TABLE IF NOT EXISTS promotion_categories(
+ promotion_id uuid NOT NULL REFERENCES promotions(id) ON DELETE CASCADE,
+ category_id uuid NOT NULL REFERENCES product_categories(id) ON DELETE CASCADE,
+ PRIMARY KEY(promotion_id,category_id)
+);
+CREATE TABLE IF NOT EXISTS promotion_brands(
+ promotion_id uuid NOT NULL REFERENCES promotions(id) ON DELETE CASCADE,
+ brand_id uuid NOT NULL REFERENCES brands(id) ON DELETE CASCADE,
+ PRIMARY KEY(promotion_id,brand_id)
+);
+CREATE TABLE IF NOT EXISTS coupons(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ code text UNIQUE NOT NULL,
+ promotion_id uuid NOT NULL REFERENCES promotions(id) ON DELETE CASCADE,
+ status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Inactive','Expired')),
+ max_redemptions int CHECK(max_redemptions IS NULL OR max_redemptions>0),
+ per_customer_limit int CHECK(per_customer_limit IS NULL OR per_customer_limit>0),
+ starts_at timestamptz,
+ ends_at timestamptz,
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ CHECK(ends_at IS NULL OR starts_at IS NULL OR ends_at>starts_at)
+);
+CREATE TABLE IF NOT EXISTS coupon_redemptions(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ coupon_id uuid NOT NULL REFERENCES coupons(id) ON DELETE CASCADE,
+ customer_id uuid REFERENCES customers(id) ON DELETE SET NULL,
+ order_id uuid REFERENCES orders(id) ON DELETE SET NULL,
+ sale_id uuid REFERENCES sales(id) ON DELETE SET NULL,
+ amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(amount>=0),
+ redeemed_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_coupon_redemptions_coupon ON coupon_redemptions(coupon_id);
+CREATE OR REPLACE FUNCTION amaal_effective_variant_price(p_variant_id uuid,p_customer_type text DEFAULT 'Retail')
+RETURNS TABLE(base_price numeric,price_list_price numeric,promotion_id uuid,promotion_name text,discount_amount numeric,final_price numeric) LANGUAGE sql STABLE AS $$
+WITH ctx AS (
+ SELECT v.selling_price bp,COALESCE((SELECT i.price FROM price_list_items i JOIN price_lists l ON l.id=i.price_list_id WHERE i.variant_id=v.id AND l.status='Active' AND l.customer_type=p_customer_type AND (l.valid_from IS NULL OR l.valid_from<=now()) AND (l.valid_to IS NULL OR l.valid_to>now()) ORDER BY l.priority ASC,l.updated_at DESC LIMIT 1),v.selling_price) pp,
+ p.product_id,pd.category_id,pd.brand_id
+ FROM product_variants v JOIN products pd ON pd.id=v.product_id WHERE v.id=p_variant_id
+), promo AS (
+ SELECT p.* FROM promotions p CROSS JOIN ctx
+ WHERE p.status IN ('Active','Scheduled') AND (p.starts_at IS NULL OR p.starts_at<=now()) AND (p.ends_at IS NULL OR p.ends_at>now())
+ AND (p.scope_type='All' OR (p.scope_type='Product' AND EXISTS(SELECT 1 FROM promotion_products x WHERE x.promotion_id=p.id AND x.product_id=ctx.product_id)) OR (p.scope_type='Category' AND EXISTS(SELECT 1 FROM promotion_categories x WHERE x.promotion_id=p.id AND x.category_id=ctx.category_id)) OR (p.scope_type='Brand' AND EXISTS(SELECT 1 FROM promotion_brands x WHERE x.promotion_id=p.id AND x.brand_id=ctx.brand_id)))
+ ORDER BY p.priority ASC,p.updated_at DESC LIMIT 1
+)
+SELECT ctx.bp,ctx.pp,p.id,p.name,
+CASE WHEN p.id IS NULL THEN 0 WHEN p.type='Percentage' THEN round((ctx.pp*p.value/100)::numeric,2) ELSE LEAST(ctx.pp,round(p.value::numeric,2)) END,
+GREATEST(0,round((ctx.pp-CASE WHEN p.id IS NULL THEN 0 WHEN p.type='Percentage' THEN ctx.pp*p.value/100 ELSE LEAST(ctx.pp,p.value) END)::numeric,2))
+FROM ctx LEFT JOIN promo p ON true;
+$$;
