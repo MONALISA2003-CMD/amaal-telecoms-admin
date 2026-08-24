@@ -1,38 +1,6 @@
-# Amaal Telecoms Admin — Phase 1C
+# Amaal Telecoms Admin — Phase 3 Inventory
 
-Uganda-first, production-oriented administration foundation built on the Phase 1A/1B database.
+Builds on Phase 2 Catalog. Adds real PostgreSQL-backed inventory locations, stock balances, movement ledger, receipts, transfers, adjustments, reservations and serialized IMEI/serial tracking. No mock inventory records are seeded. Branch functionality is not expanded.
 
-## Scope
-- Hardened cookie-based authentication (HttpOnly Secure SameSite session cookie)
-- CSRF protection for authenticated state-changing requests
-- Same-origin enforcement
-- Security headers and reduced browser attack surface
-- Login rate limiting and account lockout
-- MFA/TOTP
-- Password policy and password history
-- Session/device administration and revocation
-- Organization profile with Uganda defaults (UG / UGX / Africa/Kampala / en-UG)
-- Department administration
-- Staff profiles
-- Role/permission management
-- Staff invitations with one-time invitation tokens and acceptance endpoint
-- Security posture and login-event monitoring
-- Audit trail
-- Feature flags
-- Existing legacy branch tables are preserved for compatibility, but Phase 1C adds no branch functionality and the admin navigation does not expose branches.
-
-## Final audit hardening
-- Server-side CSRF validation for cookie-authenticated state-changing requests
-- Initial administrator setup guarded against concurrent bootstrap races
-- Session cookie lifetime follows configured session duration
-- Audit CSV export endpoint protected by `audit.export` permission
-- Audit UI exposes CSV export only to authorized administrators
-
-## Deployment
-- Build: `npm install`
-- Start: `npm start`
-- `DATABASE_URL` and `JWT_SECRET` are required.
-- Render supplies `PORT`.
-
-No mock business data is included.
-No GitHub workflow/YAML is included in this ZIP. Use the existing repository workflow.
+## Deploy
+Use the existing GitHub ZIP replacement workflow. This ZIP intentionally contains no workflow YAML.
