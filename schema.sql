@@ -1259,3 +1259,63 @@ DO $$ BEGIN
    INSERT INTO settings(key,value_json) VALUES('securityHardeningVersion','1'::jsonb) ON CONFLICT(key) DO NOTHING;
  END IF;
 END $$;
+CREATE TABLE IF NOT EXISTS credit_profiles(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), customer_id uuid NOT NULL UNIQUE REFERENCES customers(id) ON DELETE CASCADE,
+ credit_limit numeric(14,2) NOT NULL DEFAULT 0 CHECK(credit_limit>=0), risk_grade text NOT NULL DEFAULT 'Unrated', status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Suspended','Closed')),
+ notes text NOT NULL DEFAULT '', created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS credit_applications(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), application_no text UNIQUE NOT NULL, customer_id uuid NOT NULL REFERENCES customers(id), requested_amount numeric(14,2) NOT NULL CHECK(requested_amount>0), approved_amount numeric(14,2), down_payment numeric(14,2) NOT NULL DEFAULT 0 CHECK(down_payment>=0), term_months int NOT NULL DEFAULT 1 CHECK(term_months>0), status text NOT NULL DEFAULT 'Pending' CHECK(status IN ('Pending','Approved','Rejected','Cancelled')),
+ purpose text NOT NULL DEFAULT '', decision_note text NOT NULL DEFAULT '', applied_at timestamptz NOT NULL DEFAULT now(), decided_at timestamptz, decided_by uuid REFERENCES users(id) ON DELETE SET NULL
+);
+CREATE TABLE IF NOT EXISTS credit_accounts(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), account_no text UNIQUE NOT NULL, application_id uuid NOT NULL UNIQUE REFERENCES credit_applications(id), customer_id uuid NOT NULL REFERENCES customers(id), principal numeric(14,2) NOT NULL CHECK(principal>0), outstanding_principal numeric(14,2) NOT NULL CHECK(outstanding_principal>=0), status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Paid','Defaulted','Restructured','Cancelled')), opened_at timestamptz NOT NULL DEFAULT now(), closed_at timestamptz
+);
+CREATE TABLE IF NOT EXISTS credit_installments(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), credit_account_id uuid NOT NULL REFERENCES credit_accounts(id) ON DELETE CASCADE, installment_no int NOT NULL, due_date date NOT NULL, principal_due numeric(14,2) NOT NULL DEFAULT 0, fee_due numeric(14,2) NOT NULL DEFAULT 0, penalty_due numeric(14,2) NOT NULL DEFAULT 0, paid_amount numeric(14,2) NOT NULL DEFAULT 0, status text NOT NULL DEFAULT 'Due' CHECK(status IN ('Due','Partially Paid','Paid','Overdue','Waived')), UNIQUE(credit_account_id,installment_no)
+);
+CREATE TABLE IF NOT EXISTS credit_payments(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), receipt_no text UNIQUE NOT NULL, credit_account_id uuid NOT NULL REFERENCES credit_accounts(id), amount numeric(14,2) NOT NULL CHECK(amount>0), method text NOT NULL DEFAULT 'Cash', reference text NOT NULL DEFAULT '', paid_at timestamptz NOT NULL DEFAULT now(), received_by uuid REFERENCES users(id) ON DELETE SET NULL
+);
+CREATE TABLE IF NOT EXISTS credit_payment_allocations(
+ payment_id uuid NOT NULL REFERENCES credit_payments(id) ON DELETE CASCADE, installment_id uuid NOT NULL REFERENCES credit_installments(id) ON DELETE CASCADE, amount numeric(14,2) NOT NULL CHECK(amount>0), PRIMARY KEY(payment_id,installment_id)
+);
+CREATE TABLE IF NOT EXISTS credit_collection_tasks(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), credit_account_id uuid NOT NULL REFERENCES credit_accounts(id) ON DELETE CASCADE, assigned_to uuid REFERENCES users(id) ON DELETE SET NULL, due_at timestamptz, status text NOT NULL DEFAULT 'Open' CHECK(status IN ('Open','In Progress','Resolved','Cancelled')), priority text NOT NULL DEFAULT 'Normal' CHECK(priority IN ('Low','Normal','High','Critical')), note text NOT NULL DEFAULT '', created_at timestamptz NOT NULL DEFAULT now(), resolved_at timestamptz
+);
+CREATE TABLE IF NOT EXISTS credit_restructures(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), credit_account_id uuid NOT NULL REFERENCES credit_accounts(id) ON DELETE CASCADE, old_balance numeric(14,2) NOT NULL, new_term_months int NOT NULL, new_installment_amount numeric(14,2) NOT NULL, reason text NOT NULL, approved_by uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_credit_installments_due ON credit_installments(due_date,status);
+CREATE INDEX IF NOT EXISTS idx_credit_payments_account ON credit_payments(credit_account_id,paid_at);
+CREATE TABLE IF NOT EXISTS finance_accounts(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), code text UNIQUE NOT NULL, name text NOT NULL, account_type text NOT NULL CHECK(account_type IN ('Asset','Liability','Equity','Revenue','Expense')), parent_id uuid REFERENCES finance_accounts(id) ON DELETE SET NULL, active boolean NOT NULL DEFAULT true, system boolean NOT NULL DEFAULT false, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS finance_periods(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), name text UNIQUE NOT NULL, starts_on date NOT NULL, ends_on date NOT NULL, status text NOT NULL DEFAULT 'Open' CHECK(status IN ('Open','Closed')), closed_by uuid REFERENCES users(id) ON DELETE SET NULL, closed_at timestamptz
+);
+CREATE TABLE IF NOT EXISTS finance_journals(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), journal_no text UNIQUE NOT NULL, journal_date date NOT NULL DEFAULT CURRENT_DATE, description text NOT NULL, source_type text NOT NULL DEFAULT 'Manual', source_id text, source_ref text UNIQUE, status text NOT NULL DEFAULT 'Posted' CHECK(status IN ('Draft','Posted','Voided')), created_by uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS finance_journal_lines(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), journal_id uuid NOT NULL REFERENCES finance_journals(id) ON DELETE CASCADE, account_id uuid NOT NULL REFERENCES finance_accounts(id), description text NOT NULL DEFAULT '', debit numeric(14,2) NOT NULL DEFAULT 0 CHECK(debit>=0), credit numeric(14,2) NOT NULL DEFAULT 0 CHECK(credit>=0), customer_id uuid REFERENCES customers(id) ON DELETE SET NULL, supplier_id uuid REFERENCES suppliers(id) ON DELETE SET NULL, CHECK((debit=0 AND credit>0) OR (credit=0 AND debit>0))
+);
+CREATE TABLE IF NOT EXISTS finance_cash_accounts(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), name text NOT NULL, account_type text NOT NULL DEFAULT 'Cash' CHECK(account_type IN ('Cash','Bank','Mobile Money')), currency text NOT NULL DEFAULT 'UGX', finance_account_id uuid REFERENCES finance_accounts(id), active boolean NOT NULL DEFAULT true, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS finance_tax_rates(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), name text UNIQUE NOT NULL, rate numeric(7,4) NOT NULL CHECK(rate>=0), code text NOT NULL DEFAULT '', active boolean NOT NULL DEFAULT true, effective_from date NOT NULL DEFAULT CURRENT_DATE
+);
+CREATE TABLE IF NOT EXISTS finance_bank_transactions(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), cash_account_id uuid NOT NULL REFERENCES finance_cash_accounts(id), transaction_date date NOT NULL, reference text NOT NULL DEFAULT '', description text NOT NULL DEFAULT '', amount numeric(14,2) NOT NULL, direction text NOT NULL CHECK(direction IN ('In','Out')), reconciled boolean NOT NULL DEFAULT false, matched_journal_id uuid REFERENCES finance_journals(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS finance_reconciliations(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), cash_account_id uuid NOT NULL REFERENCES finance_cash_accounts(id), statement_date date NOT NULL, statement_balance numeric(14,2) NOT NULL, book_balance numeric(14,2) NOT NULL, difference numeric(14,2) NOT NULL, status text NOT NULL DEFAULT 'Open' CHECK(status IN ('Open','Reconciled')), reconciled_by uuid REFERENCES users(id) ON DELETE SET NULL, reconciled_at timestamptz
+);
+CREATE TABLE IF NOT EXISTS finance_sync_log(source_type text NOT NULL, source_id text NOT NULL, journal_id uuid NOT NULL REFERENCES finance_journals(id) ON DELETE CASCADE, created_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(source_type,source_id));
+CREATE INDEX IF NOT EXISTS idx_finance_journal_date ON finance_journals(journal_date);
+CREATE INDEX IF NOT EXISTS idx_finance_lines_account ON finance_journal_lines(account_id);
+CREATE TABLE IF NOT EXISTS bi_report_snapshots(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), report_key text NOT NULL, period_start date NOT NULL, period_end date NOT NULL, payload jsonb NOT NULL, generated_by uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_bi_snapshots_key_date ON bi_report_snapshots(report_key,period_end DESC);

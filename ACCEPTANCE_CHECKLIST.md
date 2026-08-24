@@ -1,96 +1,54 @@
-# Amaal Telecoms — Mobile Acceptance Checklist
+# Amaal Telecoms — Acceptance Checklist
 
-Use the Render root URL. Complete these checks in order and record any error message exactly.
+## 13–15: Credit & Installments
+- [ ] Open Credit Dashboard.
+- [ ] Create/update a customer credit profile.
+- [ ] Create a credit application.
+- [ ] Approve an application and confirm an account is created.
+- [ ] Confirm installment schedule is generated.
+- [ ] Record a payment and confirm it is allocated.
+- [ ] Confirm outstanding balance changes.
+- [ ] Open account details and verify payment history.
+- [ ] Restructure an account and verify the schedule is rebuilt while paid installments remain protected.
+- [ ] Test collection workflow against an overdue account.
 
-## Access & security
+## 13–15: Finance & Accounting
+- [ ] Open Finance Dashboard.
+- [ ] Confirm system chart of accounts loads.
+- [ ] Create a custom finance account.
+- [ ] Create and open a balanced manual journal.
+- [ ] Create cash/bank account metadata.
+- [ ] Add a tax rate.
+- [ ] Create an accounting period and close it.
+- [ ] Create at least one real sale with payment.
+- [ ] Create a supplier invoice/payment if the procurement workflow is available.
+- [ ] Create a return/refund if applicable.
+- [ ] Create a credit payment.
+- [ ] Run **Sync operations to finance** twice; the second run must not duplicate journals.
+- [ ] Verify source journals and debit/credit totals.
 
-- [ ] Sign in successfully.
-- [ ] Security shows the current session/trusted device.
-- [ ] Enable MFA with an authenticator app.
-- [ ] Sign out and sign back in from the same device.
-- [ ] Open the service from a different device/browser and confirm MFA is requested.
-- [ ] Leave the system idle for more than 10 minutes and confirm the session expires.
-- [ ] Revoke a trusted device and confirm its sessions are ended.
-- [ ] Change password and confirm other sessions are revoked.
+## 13–15: Business Intelligence
+- [ ] Open Business Intelligence.
+- [ ] Verify revenue, gross margin, orders, refunds, delivery, warranty, inventory and credit figures load.
+- [ ] Open Sales Trend.
+- [ ] Open Product Performance.
+- [ ] Open Inventory Ageing.
+- [ ] Open Delivery Performance.
+- [ ] Open Warranty Performance.
+- [ ] Export the BI sales CSV.
 
-## Catalog
+## Integration checks
+- [ ] Catalog products appear in sales reporting after completed sales.
+- [ ] Inventory stock affects inventory BI.
+- [ ] Delivery partner/unit-cost data appears in BI.
+- [ ] Repair partner/job data appears in BI.
+- [ ] Credit balances appear in BI.
+- [ ] Finance sync remains idempotent.
+- [ ] Audit events are created for mutations.
+- [ ] Public website routes cannot access admin-only BI/finance/credit data.
 
-- [ ] Add a category and icon.
-- [ ] Add a brand and logo.
-- [ ] Add a product image and description.
-- [ ] Add a variant/SKU and price.
-- [ ] Mark a product as Flash Sale, Promotional or None.
-- [ ] Confirm unpublished content does not appear on public routes.
-
-## Inventory
-
-- [ ] Add a location.
-- [ ] Receive stock.
-- [ ] Verify balance.
-- [ ] Reserve stock for an order.
-- [ ] Test serialized/IMEI stock where applicable.
-- [ ] Perform a stocktake and reconcile a variance.
-- [ ] Record and resolve a damage/loss incident.
-
-## Commerce
-
-- [ ] Create a customer.
-- [ ] Create an order.
-- [ ] Record payment.
-- [ ] Move the order through its permitted lifecycle.
-- [ ] Test POS sale and void.
-- [ ] Confirm audit events are created.
-
-## Delivery & Logistics
-
-- [ ] Add a delivery partner.
-- [ ] Suspend the partner.
-- [ ] Reactivate the partner.
-- [ ] Create an eligible shipment.
-- [ ] Assign the partner.
-- [ ] Enter units and unit cost.
-- [ ] Progress shipment statuses.
-- [ ] Record a delivery attempt.
-- [ ] Complete delivery.
-- [ ] Open partner Activity and confirm units, destination, date/time and costs.
-
-## Warranty & Repairs
-
-- [ ] Add a repair partner.
-- [ ] Suspend/reactivate the partner.
-- [ ] Create a warranty claim.
-- [ ] Open a repair ticket.
-- [ ] Assign repair partner.
-- [ ] Enter full item description.
-- [ ] Enter repair location.
-- [ ] Enter expected return date.
-- [ ] Record external reference and partner cost.
-- [ ] Progress the repair.
-- [ ] Open partner Activity and verify active/completed job counts.
-
-## Returns & Refunds
-
-- [ ] Create a return from a valid source order/sale.
-- [ ] Inspect it.
-- [ ] Restock it where applicable.
-- [ ] Process the refund.
-- [ ] Confirm duplicate restocking is prevented.
-
-## Documents
-
-- [ ] Upload a PDF.
-- [ ] Upload a supported image/document format.
-- [ ] Confirm a duplicate upload is rejected for the same record.
-- [ ] Download a document.
-- [ ] Edit metadata.
-- [ ] Delete a document.
-- [ ] Confirm document operations appear in Audit.
-
-## Governance
-
-- [ ] Open Audit.
-- [ ] Open Security events.
-- [ ] Open Sessions.
-- [ ] Open Settings.
-- [ ] Confirm role permissions control visible operations.
-- [ ] Confirm all client-facing wording is professional and contains no development notes.
+## Client-facing quality
+- [ ] No developer instructions are shown in the normal UI.
+- [ ] Every visible button is clickable.
+- [ ] Mobile layout remains usable.
+- [ ] No numbered phase filenames are introduced.
