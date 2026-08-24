@@ -17,3 +17,7 @@ The recovery page is intentionally **visible but disabled** until `ADMIN_RECOVER
 11. Remove or rotate `ADMIN_RECOVERY_TOKEN` immediately.
 
 The recovery endpoint uses the secret token plus the confirmation phrase as its authorization and is exempted from the normal browser CSRF check because the recovery secret itself is the explicit authorization factor. It also clears stale authentication cookies after a successful reset.
+
+## Recovery page loading fix
+
+The recovery page must load its JavaScript from `/recovery.js`. Do not place an inline `<script>` on this page because the platform Content-Security-Policy intentionally allows `script-src 'self'` and blocks inline scripts. If the page remains on “Checking recovery availability…”, deploy this version and reload `/recovery` after Render finishes.
