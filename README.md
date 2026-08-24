@@ -21,6 +21,13 @@ Uganda-first, production-oriented administration foundation built on the Phase 1
 - Feature flags
 - Existing legacy branch tables are preserved for compatibility, but Phase 1C adds no branch functionality and the admin navigation does not expose branches.
 
+## Final audit hardening
+- Server-side CSRF validation for cookie-authenticated state-changing requests
+- Initial administrator setup guarded against concurrent bootstrap races
+- Session cookie lifetime follows configured session duration
+- Audit CSV export endpoint protected by `audit.export` permission
+- Audit UI exposes CSV export only to authorized administrators
+
 ## Deployment
 - Build: `npm install`
 - Start: `npm start`
