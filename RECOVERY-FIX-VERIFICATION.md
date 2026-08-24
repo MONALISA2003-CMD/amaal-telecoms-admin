@@ -1,52 +1,36 @@
-# Administrator Recovery — Deep Fix Verification
+# Administrator Recovery — Verification
 
-## Root cause found
+## Problem fixed
 
-The recovery page itself was fixed previously, but the recovery workflow still had a second failure mode: the reset operation could complete or partially conflict with existing administrator foreign-key references while the first-time setup gate continued to decide access using only `COUNT(users)`. That could leave the browser showing the normal sign-in screen instead of the first-time setup screen.
+Recovery could successfully clear authentication state while the first-time setup flow still failed when the original administrator row could not be physically deleted because historical business records referenced that user with `ON DELETE RESTRICT`.
 
-## Corrected behavior
+The repaired flow now treats administrator setup as a **logical authentication state**, not as a requirement that the `users` table contain zero rows.
 
-1. `/recovery` renders the recovery form server-side when `ADMIN_RECOVERY_TOKEN` exists. It does not wait for a client-side availability request.
-2. A new database setting, `administratorSetupRequired`, explicitly controls whether first-time administrator setup is open.
-3. `init()` automatically opens first-time setup when the database contains zero users.
-4. `/api/setup/status` is now cache-free and reports `configured`, `setupRequired`, and the current user count.
-5. `/api/setup` permits setup whenever `administratorSetupRequired=true`, including a recovery where old business-linked users must remain as suspended historical references.
-6. Successful first-time setup immediately changes `administratorSetupRequired` to `false`.
-7. Recovery clears authentication/security records and attempts to remove administrator users.
-8. If PostgreSQL prevents user deletion because a business record requires a user reference, recovery safely rolls back only the user-delete operation and suspends those old accounts instead. Business records are never deleted to make recovery easier.
-9. Recovery records that the administrator setup gate is open.
-10. If the same recovery token was already used and the system is already in the recovery/setup state, the endpoint is idempotent and returns success instead of trapping the owner in a dead-end.
-11. Authentication cookies are cleared after recovery.
-12. `app.js` is explicitly sent with `Cache-Control: no-store` so an old cached frontend cannot keep showing the previous login state.
+## Recovery behavior
 
-## Static checks completed
+1. `ADMIN_RECOVERY_TOKEN` enables `/recovery`.
+2. Recovery clears sessions, trusted devices, MFA credentials, role links, notifications and security/login/audit history.
+3. If PostgreSQL allows user deletion, administrator rows are deleted.
+4. If business history prevents deletion, the user rows are safely suspended instead of destroying business records.
+5. `administratorSetupRequired=true` is written in the same transaction.
+6. The recovery token hash is stored so the same token cannot silently perform a second reset.
 
-- `node --check server.js` — passed.
-- `node --check recovery.js` — passed.
-- `node --check public/app.js` — passed.
-- Recovery route is before the public catch-all.
-- Recovery POST remains protected by the private environment token and `AMAAL-RESET` confirmation.
-- Recovery token is not stored in GitHub/source files.
-- Business tables are not deleted by the recovery operation.
+## First-time setup behavior after recovery
 
-## Render acceptance test
+- `/api/setup/status` returns `setupRequired=true` whenever the explicit setup flag is true, even if suspended historical user rows remain.
+- `/api/setup` is allowed while that flag is true.
+- If the owner wants to reuse the exact email address that existed before recovery, setup now **reclaims the suspended row** instead of failing on the unique email constraint.
+- Reclaiming clears the password, sessions/devices/MFA state and role links for that account and assigns the Super Admin role again.
+- A new email can also be used normally; a suspended historical account does not block first-time setup.
+- After successful setup, `administratorSetupRequired=false` is written and the new session is issued immediately.
 
-After deploying this ZIP:
+## Important operational step
 
-1. Keep `ADMIN_RECOVERY_TOKEN` in Render Environment.
-2. Redeploy the service.
-3. Open `/recovery`.
-4. Enter the exact Render token and `AMAAL-RESET`.
-5. Expect a green success message saying first-time setup is ready.
-6. Open the root admin URL.
-7. Expect **Set up the first administrator account**, not **Secure administrator sign in**.
-8. Create the administrator.
-9. Expect the dashboard to open automatically.
-10. Sign out and confirm the normal login screen appears.
-11. Remove/rotate `ADMIN_RECOVERY_TOKEN` after recovery.
+After successfully creating the new administrator, remove or rotate `ADMIN_RECOVERY_TOKEN` in Render. Never commit the recovery secret to GitHub.
 
-If step 5 reports success but step 7 still shows login, open `/api/setup/status` in the same browser. The expected response is `configured:false` and `setupRequired:true`. That endpoint is intentionally cache-free.
+## Static verification performed
 
-## Important
-
-This build has been audited statically. A live PostgreSQL transaction cannot honestly be claimed as tested from this environment because the production database credentials are not available here. The Render acceptance sequence above is therefore the final live verification step.
+- `node --check` passed for `server.js` and every JavaScript module in the project.
+- Recovery frontend remains same-origin and compatible with the CSP (`/recovery.js`, no inline script).
+- Recovery endpoint remains CSRF-exempt because possession of the high-entropy recovery secret is the explicit recovery authorization factor.
+- The public application continues to use server-side authorization and validation; browser developer tools cannot be disabled by a web application.

@@ -1,66 +1,61 @@
-# Amaal Telecoms — Modules 7–16 Audit
+# Amaal Telecoms Admin — Recovery and Cross-Module Audit
 
-## Module naming
-All implementation files use business/module names rather than numbered phase filenames.
+## Release scope
 
-## Recovery defect rectified
-The old `/recovery` route returned `404 Not Found` whenever `ADMIN_RECOVERY_TOKEN` was absent. The route now always renders a controlled recovery page. It clearly reports whether recovery is enabled. The destructive POST remains unavailable until the environment secret exists.
+This release is a **recovery/setup reliability correction** across the existing feature modules. It does not intentionally remove business functionality.
 
-The recovery POST is excluded from the normal browser CSRF check because authorization requires the private recovery token plus the exact confirmation phrase. Successful recovery clears stale auth cookies.
+## Critical correction
 
-## Reporting & Business Intelligence — completed
-Added live management intelligence for:
-- Executive KPI summary
-- Date-range sales trend
-- Product/variant performance and gross margin
-- Inventory ageing
-- Delivery partner performance and cost per unit
-- Warranty/repair partner performance and turnaround
-- Customer performance
-- Category performance
-- Procurement/supplier performance
-- Returns/refund analysis
-- Credit ageing
-- Finance/account performance
-- Saved management snapshots
-- CSV exports for sales, products and delivery reports
+The administrator recovery process and first-time setup process are now decoupled from physical deletion of the `users` table rows. This is required because some historical business records intentionally use `ON DELETE RESTRICT` for accountability.
 
-BI data is read from operational tables and does not create mock business records.
+### Before
 
-## Cross-module connectivity verified statically
-- Sales/POS → BI revenue, units, product, customer and category reports.
-- Catalog → BI product/brand/category dimensions.
-- Inventory → BI stock valuation and ageing.
-- Orders → BI order status KPIs.
-- Procurement → BI supplier purchasing report.
-- Delivery → BI partner, shipment, unit and cost reporting.
-- Warranty → BI repair partner workload/cost/turnaround.
-- Returns → BI refund/status reporting.
-- Credit → BI outstanding and ageing reporting.
-- Finance → BI posted-account activity.
-- Documents remain database-backed with upload/download routes.
+- Recovery could suspend users when deletion was blocked.
+- Setup could still fail when the owner attempted to reuse the same email because `users.email` is unique.
+- The UI therefore appeared to remain locked after a successful recovery.
+
+### After
+
+- Recovery explicitly enables first-time setup.
+- Setup accepts the explicit setup flag even when suspended historical rows remain.
+- A suspended account with the requested email can be reclaimed safely.
+- Reclaimed accounts receive a new password, are reactivated, have MFA reset, receive the Super Admin role and receive a new trusted-device/session context.
+- Business records are not deleted.
 
 ## Security checks
-- HttpOnly + Secure session cookies.
-- SameSite protection.
-- CSRF protection for authenticated mutations.
-- Trusted-device binding.
-- MFA/new-device verification.
-- Ten-minute idle timeout.
-- Session revocation.
-- Rate limiting for authentication.
-- Security and audit event logging.
-- CSP and production security headers.
-- Server-side authorization for every protected module.
 
-## Static verification completed
-- `node --check` passed for every JavaScript source file.
-- `public/app.js` passed syntax validation after the BI UI expansion.
-- No YAML files are included.
-- Recovery routes are registered before the public catch-all.
-- BI routes are registered in the server.
-- BI permissions are seeded and granted to Super Admin/Administrator; Manager receives BI view access.
-- Document upload/download routes remain registered.
+- Recovery token is read only from deployment environment.
+- Recovery uses constant-time token comparison.
+- Recovery confirmation requires `AMAAL-RESET`.
+- Recovery clears authentication sessions and trusted devices.
+- MFA credentials are cleared during recovery/reclaim.
+- Normal authenticated state remains protected by HttpOnly/Secure/SameSite session cookies and CSRF tokens.
+- Session/device mismatch invalidates the session.
+- Idle timeout invalidates inactive sessions.
+- Browser developer tools are treated as untrusted; authorization is enforced server-side.
 
-## Live acceptance still required
-A production PostgreSQL connection is not available inside this build environment, so database transactions cannot be honestly claimed as live-tested here. After deploying this ZIP to Render, test `/api/health`, `/recovery`, first-time setup, login/MFA, then every module from the mobile dashboard. Finally create real test records and confirm they propagate into BI reports.
+## Cross-module static audit
+
+The following server modules remain registered in `server.js`:
+
+- Catalog / Products
+- Inventory
+- Suppliers & Procurement
+- Customers & CRM
+- Sales & POS
+- Orders & E-commerce
+- Web & Hosting
+- Pricing & Promotions
+- Delivery & Logistics
+- Warranty & Repairs
+- Returns & Refunds
+- Document Management
+- Credit & Installments
+- Finance & Accounting
+- Business Intelligence
+
+All project JavaScript files passed Node syntax checking during this release audit.
+
+## Deployment validation
+
+A real PostgreSQL/Render integration test cannot be honestly claimed from the source archive alone because it requires the live Render environment and its production database. The source-level release is therefore marked **static-audited**, not falsely labeled as a live-production test.

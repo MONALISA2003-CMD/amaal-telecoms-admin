@@ -60,7 +60,59 @@ async function auth(req,res,next){try{const h=req.headers.authorization||'';cons
 const need=p=> (req,res,next)=>req.permissions.has(p)?next():res.status(403).json({error:'Permission denied'});
 app.get('/healthz',(_req,res)=>res.status(200).json({status:'ok'}));
 app.get('/api/health',async(req,res)=>{try{await q('SELECT 1');res.json({ok:true})}catch(e){res.status(503).json({ok:false})}});
-app.post('/api/setup',async(req,res)=>{const lock=await q("SELECT pg_try_advisory_lock(hashtext('amaal_initial_setup')) AS locked");if(!lock[0].locked)return res.status(409).json({error:'Initial setup is already in progress'});try{const existing=await q('SELECT count(*)::int c FROM users');const setupFlag=safeJson((await q("SELECT value_json FROM settings WHERE key='administratorSetupRequired'"))[0]?.value_json);if(existing[0].c>0&&!Boolean(setupFlag))return res.status(409).json({error:'Administrator already configured'});const {companyName='Amaal Telecoms',email,password,phone='',address=''}=req.body;const policy=Object.fromEntries(Object.entries(baseSettings).filter(([k])=>k.startsWith('password')));const pErr=passwordError(password,policy);if(!email||pErr)return res.status(400).json({error:pErr||'Email is required'});const role=(await q("SELECT id FROM roles WHERE name='Super Admin'"))[0];const hash=await bcrypt.hash(password,12);const u=(await q('INSERT INTO users(name,email,password_hash) VALUES($1,$2,$3) RETURNING id,name,email,status,created_at',['Administrator',email.toLowerCase().trim(),hash]))[0];await pool.query('INSERT INTO user_roles(user_id,role_id) VALUES($1,$2)',[u.id,role.id]);for(const [k,v] of Object.entries({...baseSettings,companyName,companyEmail:u.email,companyPhone:phone,companyAddress:address})) await pool.query('INSERT INTO settings(key,value_json) VALUES($1,$2) ON CONFLICT(key) DO NOTHING',[k,JSON.stringify(v)]);await pool.query("UPDATE organizations SET legal_name=$1,trading_name=$1,email=$2,phone=$3,address=$4,updated_at=now() WHERE id=(SELECT id FROM organizations ORDER BY created_at LIMIT 1)",[companyName,u.email,phone,address]);await audit(u,'INITIAL_SETUP','System',null,'Created the first administrator',null,{email:u.email});await pool.query("INSERT INTO settings(key,value_json) VALUES('administratorSetupRequired','false') ON CONFLICT(key) DO UPDATE SET value_json='false'::jsonb,updated_at=now(),updated_by=$1",[u.id]);const deviceId=getOrCreateDeviceId(req);const dHash=deviceHash(deviceId);await pool.query('INSERT INTO trusted_devices(user_id,device_hash,label,last_ip,user_agent) VALUES($1,$2,$3,$4,$5) ON CONFLICT(user_id,device_hash) DO UPDATE SET last_seen_at=now(),last_ip=EXCLUDED.last_ip,user_agent=EXCLUDED.user_agent,revoked_at=NULL',[u.id,dHash,'Initial setup device',req.ip,req.get('user-agent')||'']);const sid=crypto.randomUUID();await pool.query('INSERT INTO sessions(id,user_id,token_hash,device_hash,user_agent_hash,expires_at,ip,user_agent) VALUES($1,$2,$3,$4,$5,now()+($6 || \' minutes\')::interval,$7,$8)',[sid,u.id,crypto.createHash('sha256').update(sid+JWT_SECRET).digest('hex'),dHash,userAgentHash(req.get('user-agent')),Number(baseSettings.sessionMinutes),req.ip,req.get('user-agent')]);setAuthCookie(res,sign(u,sid),Number(baseSettings.sessionMinutes)*60,deviceId);res.json({user:u});}finally{await pool.query("SELECT pg_advisory_unlock(hashtext('amaal_initial_setup'))")}});
+app.post('/api/setup',async(req,res)=>{
+  const lock=await q("SELECT pg_try_advisory_lock(hashtext('amaal_initial_setup')) AS locked");
+  if(!lock[0].locked)return res.status(409).json({error:'Initial setup is already in progress'});
+  const client=await pool.connect();
+  try{
+    const existing=await client.query('SELECT count(*)::int c FROM users').then(r=>r.rows[0].c);
+    const setupFlag=safeJson((await client.query("SELECT value_json FROM settings WHERE key='administratorSetupRequired'")).rows[0]?.value_json);
+    if(existing>0&&!Boolean(setupFlag))return res.status(409).json({error:'Administrator already configured'});
+    const {companyName='Amaal Telecoms',email,password,phone='',address=''}=req.body||{};
+    const normalized=String(email||'').toLowerCase().trim();
+    const policy=Object.fromEntries(Object.entries(baseSettings).filter(([k])=>k.startsWith('password')));
+    const pErr=passwordError(password,policy);
+    if(!normalized||pErr)return res.status(400).json({error:pErr||'Email is required'});
+    await client.query('BEGIN');
+    const role=(await client.query("SELECT id FROM roles WHERE name='Super Admin'")).rows[0];
+    if(!role)throw new Error('Super Admin role is missing. Restart the service so the database schema/bootstrap can finish.');
+    const existingByEmail=(await client.query('SELECT * FROM users WHERE email=$1 FOR UPDATE',[normalized])).rows[0];
+    const hash=await bcrypt.hash(password,12);
+    let u;
+    if(existingByEmail){
+      if(existingByEmail.status!=='Suspended')throw new Error('An administrator account with this email is already active. Use another email or complete administrator recovery first.');
+      u=(await client.query(`UPDATE users SET name='Administrator',password_hash=$1,status='Active',failed_attempts=0,locked_until=NULL,last_login_at=NULL,mfa_enabled=false,phone=$2,updated_at=now(),updated_by=NULL WHERE id=$3 RETURNING id,name,email,status,created_at`,[hash,phone,existingByEmail.id])).rows[0];
+      await client.query('DELETE FROM user_roles WHERE user_id=$1',[u.id]);
+      await client.query('DELETE FROM user_branches WHERE user_id=$1',[u.id]);
+      await client.query('DELETE FROM mfa_credentials WHERE user_id=$1',[u.id]);
+    }else{
+      u=(await client.query('INSERT INTO users(name,email,password_hash) VALUES($1,$2,$3) RETURNING id,name,email,status,created_at',['Administrator',normalized,hash])).rows[0];
+    }
+    await client.query('INSERT INTO user_roles(user_id,role_id) VALUES($1,$2) ON CONFLICT DO NOTHING',[u.id,role.id]);
+    for(const [k,v] of Object.entries({...baseSettings,companyName,companyEmail:u.email,companyPhone:phone,companyAddress:address})) await client.query('INSERT INTO settings(key,value_json) VALUES($1,$2) ON CONFLICT(key) DO UPDATE SET value_json=EXCLUDED.value_json,updated_at=now(),updated_by=NULL',[k,JSON.stringify(v)]);
+    await client.query("UPDATE organizations SET legal_name=$1,trading_name=$1,email=$2,phone=$3,address=$4,updated_at=now(),updated_by=NULL WHERE id=(SELECT id FROM organizations ORDER BY created_at LIMIT 1)",[companyName,u.email,phone,address]);
+    await client.query("INSERT INTO settings(key,value_json) VALUES('administratorSetupRequired','false') ON CONFLICT(key) DO UPDATE SET value_json='false'::jsonb,updated_at=now(),updated_by=$1",[u.id]);
+    await client.query("INSERT INTO password_history(user_id,password_hash) VALUES($1,$2)",[u.id,hash]);
+    const deviceId=getOrCreateDeviceId(req);
+    const dHash=deviceHash(deviceId);
+    await client.query('INSERT INTO trusted_devices(user_id,device_hash,label,last_ip,user_agent) VALUES($1,$2,$3,$4,$5) ON CONFLICT(user_id,device_hash) DO UPDATE SET last_seen_at=now(),last_ip=EXCLUDED.last_ip,user_agent=EXCLUDED.user_agent,revoked_at=NULL',[u.id,dHash,'Initial setup device',req.ip,req.get('user-agent')||'']);
+    const sid=crypto.randomUUID();
+    await client.query("INSERT INTO sessions(id,user_id,token_hash,device_hash,user_agent_hash,expires_at,ip,user_agent) VALUES($1,$2,$3,$4,$5,now()+($6 || ' minutes')::interval,$7,$8)",[sid,u.id,crypto.createHash('sha256').update(sid+JWT_SECRET).digest('hex'),dHash,userAgentHash(req.get('user-agent')),Number(baseSettings.sessionMinutes),req.ip,req.get('user-agent')]);
+    await client.query('COMMIT');
+    await audit(u,'INITIAL_SETUP','System',null,existingByEmail?'Reactivated the recovered administrator account':'Created the first administrator',null,{email:u.email});
+    setAuthCookie(res,sign(u,sid),Number(baseSettings.sessionMinutes)*60,deviceId);
+    res.setHeader('Cache-Control','no-store, max-age=0');
+    res.json({user:u,recoveredExistingAccount:Boolean(existingByEmail)});
+  }catch(e){
+    try{await client.query('ROLLBACK')}catch{}
+    const msg=String(e?.message||'Initial setup failed');
+    console.error('Initial setup failed:',e);
+    res.status(msg.includes('already active')?409:400).json({error:msg});
+  }finally{
+    client.release();
+    await pool.query("SELECT pg_advisory_unlock(hashtext('amaal_initial_setup'))");
+  }
+});
 app.get('/api/setup/status',async(req,res)=>{try{const u=await q('SELECT count(*)::int c FROM users');const flag=safeJson((await q("SELECT value_json FROM settings WHERE key='administratorSetupRequired'"))[0]?.value_json);const configured=u[0].c>0&&!Boolean(flag);res.setHeader('Cache-Control','no-store, max-age=0');res.json({configured,setupRequired:!configured,activeUsers:u[0].c})}catch(e){res.status(503).json({error:'Database unavailable'})}});
 
 // One-time, explicitly enabled administrator recovery. Keep ADMIN_RECOVERY_TOKEN out of source control.
