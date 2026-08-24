@@ -1,42 +1,35 @@
-# Amaal Telecoms Admin — Phase 1 Cloud Foundation
+# Amaal Telecoms Admin — Phase 1B
 
-This phase replaces browser-only persistence with a real Express API and PostgreSQL database. There are no seeded business records.
+Phase 1B extends the working Phase 1A administration foundation into an international-ready administration and security layer.
 
-## Deploy from a phone
+## Included
+- Real PostgreSQL/Neon persistence; no mock business data.
+- First-admin setup and secure login with lockout controls.
+- Password policy and password-history protection.
+- Optional TOTP MFA with encrypted-at-rest MFA secret.
+- Organization profile: legal/trading identity, registration/tax data, country, currency, timezone, locale and contact details.
+- Departments and staff profile metadata.
+- Roles and permissions foundation with expanded administrative permissions.
+- Active session/device visibility and session revocation.
+- Login/security event monitoring.
+- Structured security policy.
+- Feature flag persistence.
+- Expanded audit trail and filtered audit API.
+- Responsive admin console designed to work from a phone.
+- Express 5 compatible SPA fallback route.
+- No external frontend CDN dependencies.
 
-Recommended simple flow:
-1. Create a PostgreSQL database with any hosted PostgreSQL provider (Supabase, Neon, Railway, Render, etc.).
-2. Create a GitHub repository and upload this folder.
-3. Deploy the repository as a Node web service on a provider that supports Node.
-4. Add environment variables from `.env.example`.
-5. Set `DATABASE_URL` to the provider's PostgreSQL connection string and set a long random `JWT_SECRET`.
-6. Open the deployed URL. The first screen creates the real administrator account.
+## Deployment
+Render:
+- Runtime: Node
+- Root Directory: blank
+- Build Command: `npm install`
+- Start Command: `npm start`
 
-The server automatically applies `schema.sql` on startup. No fake products, orders, customers or inventory are inserted.
+Required environment variables:
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `COOKIE_SECURE=true` (reserved for the hardened cookie migration)
 
-## Local
-
-`npm install`
-
-Set `.env`, then `npm start`.
-
-## Phase 1 API
-
-- POST /api/setup
-- POST /api/login
-- POST /api/logout
-- GET /api/me
-- GET /api/dashboard
-- GET/POST /api/staff (GET is /api/staff; creation is /api/users)
-- GET /api/roles
-- GET /api/permissions
-- POST /api/roles
-- GET/POST/PATCH /api/branches
-- GET /api/audit
-- GET/POST/PATCH /api/notifications
-- GET/PUT /api/settings
-- GET/DELETE /api/sessions
-
-## Security note
-
-Use HTTPS in production, a strong JWT_SECRET, a managed PostgreSQL database, and provider secret/environment-variable storage. Do not commit `.env`.
+## Important
+This release is still the administration/platform layer. Customer, product, inventory, sales, credit and finance modules are deliberately not mixed into Phase 1B.

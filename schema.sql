@@ -10,3 +10,100 @@ CREATE TABLE IF NOT EXISTS sessions(id uuid PRIMARY KEY DEFAULT gen_random_uuid(
 CREATE TABLE IF NOT EXISTS audit_logs(id uuid PRIMARY KEY DEFAULT gen_random_uuid(), actor_id uuid REFERENCES users(id) ON DELETE SET NULL, action text NOT NULL, resource_type text NOT NULL, resource_id text, detail text NOT NULL DEFAULT '', before_json jsonb, after_json jsonb, branch_id uuid REFERENCES branches(id) ON DELETE SET NULL, request_id text NOT NULL, ip text, user_agent text, created_at timestamptz NOT NULL DEFAULT now());
 CREATE TABLE IF NOT EXISTS notifications(id uuid PRIMARY KEY DEFAULT gen_random_uuid(), user_id uuid REFERENCES users(id) ON DELETE CASCADE, title text NOT NULL, body text NOT NULL DEFAULT '', read_at timestamptz, created_at timestamptz NOT NULL DEFAULT now());
 CREATE TABLE IF NOT EXISTS settings(key text PRIMARY KEY, value_json jsonb NOT NULL, updated_by uuid REFERENCES users(id) ON DELETE SET NULL, updated_at timestamptz NOT NULL DEFAULT now());
+
+
+-- Phase 1B: international administration and security foundation
+ALTER TABLE users ADD COLUMN IF NOT EXISTS phone text NOT NULL DEFAULT '';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS employee_id text UNIQUE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS job_title text NOT NULL DEFAULT '';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS department_id uuid;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS country_code text NOT NULL DEFAULT 'UG';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS locale text NOT NULL DEFAULT 'en-UG';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS timezone text NOT NULL DEFAULT 'Africa/Kampala';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at timestamptz;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified_at timestamptz;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS mfa_enabled boolean NOT NULL DEFAULT false;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS updated_by uuid REFERENCES users(id) ON DELETE SET NULL;
+
+CREATE TABLE IF NOT EXISTS organizations(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ legal_name text NOT NULL,
+ trading_name text NOT NULL DEFAULT '',
+ registration_number text NOT NULL DEFAULT '',
+ tax_number text NOT NULL DEFAULT '',
+ country_code text NOT NULL DEFAULT 'UG',
+ currency text NOT NULL DEFAULT 'UGX',
+ timezone text NOT NULL DEFAULT 'Africa/Kampala',
+ locale text NOT NULL DEFAULT 'en-UG',
+ address text NOT NULL DEFAULT '',
+ city text NOT NULL DEFAULT '',
+ region text NOT NULL DEFAULT '',
+ postal_code text NOT NULL DEFAULT '',
+ phone text NOT NULL DEFAULT '',
+ email text NOT NULL DEFAULT '',
+ website text NOT NULL DEFAULT '',
+ status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Suspended')),
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS departments(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ name text UNIQUE NOT NULL,
+ code text UNIQUE NOT NULL,
+ description text NOT NULL DEFAULT '',
+ manager_id uuid REFERENCES users(id) ON DELETE SET NULL,
+ status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Inactive')),
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+DO $$ BEGIN
+ ALTER TABLE users ADD CONSTRAINT users_department_fk FOREIGN KEY(department_id) REFERENCES departments(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+CREATE TABLE IF NOT EXISTS login_events(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ user_id uuid REFERENCES users(id) ON DELETE SET NULL,
+ email text NOT NULL DEFAULT '',
+ success boolean NOT NULL,
+ reason text NOT NULL DEFAULT '',
+ ip text,
+ user_agent text,
+ request_id text NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS mfa_credentials(
+ user_id uuid PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+ secret_encrypted text NOT NULL,
+ enabled_at timestamptz,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS password_history(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+ password_hash text NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS invitations(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ email text NOT NULL,
+ name text NOT NULL DEFAULT '',
+ role_id uuid REFERENCES roles(id) ON DELETE SET NULL,
+ branch_id uuid REFERENCES branches(id) ON DELETE SET NULL,
+ token_hash text UNIQUE NOT NULL,
+ expires_at timestamptz NOT NULL,
+ accepted_at timestamptz,
+ revoked_at timestamptz,
+ invited_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS feature_flags(
+ key text PRIMARY KEY,
+ enabled boolean NOT NULL DEFAULT false,
+ description text NOT NULL DEFAULT '',
+ updated_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_audit_created_at ON audit_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_actor ON audit_logs(actor_id,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_login_events_created_at ON login_events(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_sessions_user_active ON sessions(user_id,revoked_at,expires_at);
