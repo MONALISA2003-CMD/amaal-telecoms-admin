@@ -22,3 +22,10 @@ Public content follows `Draft -> Request -> Approve -> Execute`. Editing an admi
 
 ## Future modules
 Use business names for new files, for example `delivery-logistics.js`, `warranty-repairs.js`, `returns-refunds.js`, `credit-installments.js`, `finance-accounting.js`, and `business-intelligence.js`.
+| Delivery & Logistics | `delivery-logistics.js` | Delivery zones, shipment creation, driver assignment, tracking, status history, delivery attempts and order-delivery synchronization |
+| Warranty & Repairs | `warranty-repairs.js` | Warranty policies, claims, serialized-device service, repair jobs, technicians and resolution history |
+| Returns & Refunds | `returns-refunds.js` | Return requests, source-line validation, inspection, restocking, serialized returns and refunds |
+| Document Management | `document-management.js` | Durable database-backed document upload, metadata, attachment to records, download and deletion |
+
+## Document storage rule
+Documents are stored in PostgreSQL `bytea` storage rather than the Render filesystem. This makes uploads durable across deploys/restarts. Uploads are limited to 15 MB and restricted to PDF, JPG, PNG, WEBP, TXT, CSV, DOCX and XLSX. Downloads are authenticated and permission controlled.

@@ -1,22 +1,23 @@
 # Amaal Telecoms Admin
 
-Production-oriented administration console for Amaal Telecoms (Uganda). The application uses a live PostgreSQL database and does not seed mock business records.
+Business administration platform for Amaal Telecoms, Uganda.
 
-## Feature modules
-- `server.js` — Core Administration & Security, Catalog, Inventory and shared platform services
-- `suppliers-procurement.js` — Suppliers & Procurement
-- `customers-crm.js` — Customers & CRM
-- `sales-pos.js` — Sales & POS
-- `orders-ecommerce.js` — Orders & E-commerce
-- `web-and-hosting.js` / `web-and-hosting.sql` — Web & Hosting
-- `pricing-and-promotions.js` / `pricing-and-promotions.sql` — Pricing & Promotions
-- `schema.sql` — cumulative PostgreSQL schema for all current modules
-- `public/app.js` — client administration console
+## Canonical module naming
+Source files use business feature names, not phase numbers. See `MODULE_MAP.md` before changing or adding functionality.
 
-## Module naming rule
-Feature files are named by business module, not development phase. Future modules must follow the same rule so maintenance, debugging and rebuilding can target the responsible business capability directly.
-
-See `MODULE_MAP.md` for the canonical module map and future naming convention.
+## Current modules
+Core Administration & Security; Catalog; Inventory; Suppliers & Procurement; Customers & CRM; Sales & POS; Orders & E-commerce; Web & Hosting; Pricing & Promotions; Delivery & Logistics; Warranty & Repairs; Returns & Refunds; Document Management.
 
 ## Deployment
-Set `DATABASE_URL` and `JWT_SECRET` in the hosting environment. Start with `npm start`.
+- Node.js 20.x
+- Express 5
+- PostgreSQL / Neon-compatible `DATABASE_URL`
+- `JWT_SECRET` required
+- Run with `npm start`
+
+## Important architecture rules
+- No mock business records.
+- Public website endpoints must expose only public/published data.
+- Admin mutations are permission controlled and audited.
+- Documents are stored in PostgreSQL, not ephemeral Render disk.
+- Do not rename source files to `phaseN.*`; use the actual business module name.

@@ -1121,3 +1121,60 @@ CASE WHEN p.id IS NULL THEN 0 WHEN p.type='Percentage' THEN round((ctx.pp*p.valu
 GREATEST(0,round((ctx.pp-CASE WHEN p.id IS NULL THEN 0 WHEN p.type='Percentage' THEN ctx.pp*p.value/100 ELSE LEAST(ctx.pp,p.value) END)::numeric,2))
 FROM ctx LEFT JOIN promo p ON true;
 $$;
+-- Delivery & Logistics
+CREATE TABLE IF NOT EXISTS delivery_zones(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), name text UNIQUE NOT NULL, region text NOT NULL DEFAULT '', fee numeric(18,2) NOT NULL DEFAULT 0 CHECK(fee>=0), eta_hours int NOT NULL DEFAULT 24 CHECK(eta_hours>0), status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Inactive')), created_by uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS delivery_shipments(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), shipment_no text UNIQUE NOT NULL, order_id uuid NOT NULL UNIQUE REFERENCES orders(id) ON DELETE RESTRICT, zone_id uuid REFERENCES delivery_zones(id) ON DELETE SET NULL, method text NOT NULL DEFAULT 'Delivery' CHECK(method IN ('Delivery','Pickup')), carrier text NOT NULL DEFAULT '', tracking_number text NOT NULL DEFAULT '', driver_id uuid REFERENCES users(id) ON DELETE SET NULL, status text NOT NULL DEFAULT 'Pending' CHECK(status IN ('Pending','Assigned','Picked Up','In Transit','Out for Delivery','Delivered','Failed','Returned','Cancelled')), recipient_name text NOT NULL DEFAULT '', recipient_phone text NOT NULL DEFAULT '', address text NOT NULL DEFAULT '', scheduled_at timestamptz, delivered_at timestamptz, failure_reason text NOT NULL DEFAULT '', notes text NOT NULL DEFAULT '', created_by uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_delivery_shipments_status ON delivery_shipments(status,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_delivery_shipments_driver ON delivery_shipments(driver_id,status);
+CREATE TABLE IF NOT EXISTS delivery_events(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), shipment_id uuid NOT NULL REFERENCES delivery_shipments(id) ON DELETE CASCADE, status text NOT NULL, note text NOT NULL DEFAULT '', location_text text NOT NULL DEFAULT '', actor_id uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_delivery_events_shipment ON delivery_events(shipment_id,created_at);
+CREATE TABLE IF NOT EXISTS delivery_attempts(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), shipment_id uuid NOT NULL REFERENCES delivery_shipments(id) ON DELETE CASCADE, attempt_no int NOT NULL, attempted_at timestamptz NOT NULL DEFAULT now(), outcome text NOT NULL CHECK(outcome IN ('Delivered','Failed','Rescheduled')), recipient_name text NOT NULL DEFAULT '', note text NOT NULL DEFAULT '', created_by uuid REFERENCES users(id) ON DELETE SET NULL, UNIQUE(shipment_id,attempt_no)
+);
+-- Warranty & Repairs
+CREATE TABLE IF NOT EXISTS warranty_policies(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), name text NOT NULL, brand_id uuid REFERENCES brands(id) ON DELETE SET NULL, category_id uuid REFERENCES product_categories(id) ON DELETE SET NULL, duration_days int NOT NULL CHECK(duration_days>0), coverage text NOT NULL DEFAULT '', exclusions text NOT NULL DEFAULT '', status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Inactive')), created_by uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS warranty_claims(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), claim_no text UNIQUE NOT NULL, customer_id uuid REFERENCES customers(id) ON DELETE SET NULL, order_id uuid REFERENCES orders(id) ON DELETE SET NULL, sale_id uuid REFERENCES sales(id) ON DELETE SET NULL, serialized_unit_id uuid REFERENCES serialized_units(id) ON DELETE SET NULL, variant_id uuid REFERENCES product_variants(id) ON DELETE SET NULL, policy_id uuid REFERENCES warranty_policies(id) ON DELETE SET NULL, issue text NOT NULL, status text NOT NULL DEFAULT 'Submitted' CHECK(status IN ('Submitted','Under Review','Approved','Rejected','In Repair','Ready for Collection','Resolved','Cancelled')), warranty_status text NOT NULL DEFAULT 'Pending' CHECK(warranty_status IN ('Pending','Covered','Not Covered','Goodwill')), estimated_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(estimated_cost>=0), approved_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(approved_cost>=0), resolution text NOT NULL DEFAULT '', received_at timestamptz, resolved_at timestamptz, created_by uuid REFERENCES users(id) ON DELETE SET NULL, assigned_to uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_warranty_claims_status ON warranty_claims(status,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_warranty_claims_customer ON warranty_claims(customer_id,created_at DESC);
+CREATE TABLE IF NOT EXISTS repair_jobs(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), job_no text UNIQUE NOT NULL, claim_id uuid NOT NULL UNIQUE REFERENCES warranty_claims(id) ON DELETE CASCADE, technician_id uuid REFERENCES users(id) ON DELETE SET NULL, status text NOT NULL DEFAULT 'Queued' CHECK(status IN ('Queued','Diagnosing','Repairing','Awaiting Parts','Quality Check','Completed','Cancelled')), diagnosis text NOT NULL DEFAULT '', work_done text NOT NULL DEFAULT '', parts_used jsonb NOT NULL DEFAULT '[]'::jsonb, labor_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(labor_cost>=0), parts_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(parts_cost>=0), started_at timestamptz, completed_at timestamptz, notes text NOT NULL DEFAULT '', created_by uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS warranty_events(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), claim_id uuid NOT NULL REFERENCES warranty_claims(id) ON DELETE CASCADE, status text NOT NULL, note text NOT NULL DEFAULT '', actor_id uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_warranty_events_claim ON warranty_events(claim_id,created_at);
+-- Returns & Refunds
+CREATE TABLE IF NOT EXISTS return_requests(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), return_no text UNIQUE NOT NULL, customer_id uuid REFERENCES customers(id) ON DELETE SET NULL, order_id uuid REFERENCES orders(id) ON DELETE SET NULL, sale_id uuid REFERENCES sales(id) ON DELETE SET NULL, location_id uuid REFERENCES inventory_locations(id) ON DELETE SET NULL, status text NOT NULL DEFAULT 'Requested' CHECK(status IN ('Requested','Approved','Rejected','Received','Inspected','Refund Pending','Refunded','Restocked','Cancelled')), reason text NOT NULL, notes text NOT NULL DEFAULT '', refund_method text NOT NULL DEFAULT 'Original Payment', refund_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(refund_amount>=0), requested_by uuid REFERENCES users(id) ON DELETE SET NULL, approved_by uuid REFERENCES users(id) ON DELETE SET NULL, received_by uuid REFERENCES users(id) ON DELETE SET NULL, inspected_by uuid REFERENCES users(id) ON DELETE SET NULL, refunded_by uuid REFERENCES users(id) ON DELETE SET NULL, approved_at timestamptz, received_at timestamptz, inspected_at timestamptz, refunded_at timestamptz, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), CHECK(order_id IS NOT NULL OR sale_id IS NOT NULL)
+);
+CREATE INDEX IF NOT EXISTS idx_returns_status ON return_requests(status,created_at DESC);
+CREATE TABLE IF NOT EXISTS return_lines(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), return_id uuid NOT NULL REFERENCES return_requests(id) ON DELETE CASCADE, variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT, order_line_id uuid REFERENCES order_lines(id) ON DELETE SET NULL, sale_line_id uuid REFERENCES sale_lines(id) ON DELETE SET NULL, serialized_unit_id uuid REFERENCES serialized_units(id) ON DELETE SET NULL, quantity numeric(18,3) NOT NULL CHECK(quantity>0), unit_price numeric(18,2) NOT NULL DEFAULT 0 CHECK(unit_price>=0), reason text NOT NULL DEFAULT '', condition text NOT NULL DEFAULT 'Unknown' CHECK(condition IN ('New','Good','Used','Damaged','Defective','Unknown')), disposition text NOT NULL DEFAULT 'Restock' CHECK(disposition IN ('Restock','Repair','Scrap','Return to Supplier','Quarantine')), refund_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(refund_amount>=0), restocked_at timestamptz, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_return_lines_return ON return_lines(return_id);
+CREATE TABLE IF NOT EXISTS refund_transactions(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), refund_no text UNIQUE NOT NULL, return_id uuid NOT NULL REFERENCES return_requests(id) ON DELETE RESTRICT, amount numeric(18,2) NOT NULL CHECK(amount>0), method text NOT NULL CHECK(method IN ('Cash','Mobile Money','Card','Bank Transfer','Original Payment','Store Credit','Other')), reference text NOT NULL DEFAULT '', status text NOT NULL DEFAULT 'Completed' CHECK(status IN ('Pending','Completed','Failed','Reversed')), processed_by uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS return_events(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), return_id uuid NOT NULL REFERENCES return_requests(id) ON DELETE CASCADE, status text NOT NULL, note text NOT NULL DEFAULT '', actor_id uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_return_events_return ON return_events(return_id,created_at);
+-- Document Management: durable database-backed uploads/downloads
+CREATE TABLE IF NOT EXISTS documents(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), entity_type text NOT NULL DEFAULT 'General', entity_id uuid, name text NOT NULL, mime_type text NOT NULL, size_bytes bigint NOT NULL CHECK(size_bytes>0), description text NOT NULL DEFAULT '', visibility text NOT NULL DEFAULT 'Private' CHECK(visibility IN ('Private','Internal','Public')), checksum_sha256 text NOT NULL, storage text NOT NULL DEFAULT 'database' CHECK(storage='database'), created_by uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_documents_entity ON documents(entity_type,entity_id,created_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_documents_checksum_entity ON documents(entity_type,entity_id,checksum_sha256);
+CREATE TABLE IF NOT EXISTS document_blobs(
+ document_id uuid PRIMARY KEY REFERENCES documents(id) ON DELETE CASCADE, data bytea NOT NULL
+);
