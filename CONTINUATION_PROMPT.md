@@ -47,3 +47,15 @@ Never create filenames such as `phase-19.js`. Use feature/module names such as `
 10. Review the whole project for regressions before creating the ZIP.
 
 Do not claim production verification unless a real test/production database was actually connected.
+
+## Latest audit continuation notes — 2026-08-24
+The previous build had three frontend scope failures (`n`, `aiView`, `integrationView`) and a database migration/bootstrap gap. These have been fixed in the current ZIP.
+
+- AI and Integration renderers are explicitly registered across JavaScript closures.
+- BI/Finance/Credit owns its numeric helper locally.
+- `server.js` now applies the feature SQL migrations on every startup, not only `schema.sql`.
+- Additional backward-compatible column guards protect BI queries on older databases.
+- CSP-blocked inline website picker/image handlers were removed in favor of JavaScript event binding.
+- Do not remove the migration bootstrap; it is required for Render upgrades.
+- Keep Gemini server-side and use the stable Interactions API. Default model is `gemini-3.7-flash`.
+- Do not claim live production verification unless connected to the actual Render service/database.

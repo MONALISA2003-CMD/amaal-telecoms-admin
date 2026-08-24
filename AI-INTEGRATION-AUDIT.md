@@ -49,3 +49,9 @@ The existing modules remain in the same files and are still registered by `serve
 This archive was audited statically in the build environment. No live Render PostgreSQL database was available to this audit, so production database execution, Gemini quota, external webhook delivery and Render deployment were not falsely marked as live-verified.
 
 The next acceptance step is to deploy this archive to the existing Render service, configure `GEMINI_API_KEY` and `INTEGRATION_ENCRYPTION_KEY`, then test the mobile UI and live database workflows.
+
+## 2026-08-24 repair audit
+- Confirmed Gemini integration uses the stable Interactions API `/v1/interactions` with `system_instruction`, `input`, `store:false`, and bounded generation output.
+- Default model remains `gemini-3.7-flash` and is configurable by Super Admin.
+- Confirmed frontend AI/Integration renderer scope defects were corrected.
+- Confirmed module SQL is now applied during startup so AI/Integration/BI tables are not silently missing on Render.

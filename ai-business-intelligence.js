@@ -30,11 +30,11 @@ export function registerAIBusinessIntelligence({app,auth,need,q,pool,audit,super
     if(!key) throw new Error('Gemini is not configured. Add GEMINI_API_KEY as a server-side Render secret.');
     const response=await fetch('https://generativelanguage.googleapis.com/v1/interactions',{
       method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},
-      body:JSON.stringify({model:safeModel(model),store:false,system_instruction:systemPrompt,input})
+      body:JSON.stringify({model:safeModel(model),store:false,system_instruction:systemPrompt,input,generation_config:{max_output_tokens:12000}})
     });
     const body=await response.json().catch(()=>({}));
     if(!response.ok) throw new Error(body?.error?.message||`Gemini request failed (${response.status})`);
-    const out=text(body.output_text)||text(body.steps?.slice?.().reverse?.().find?.(x=>x.type==='model_output')?.content?.find?.(x=>x.type==='text')?.text);
+    const out=text(body.output_text)||text(body.steps?.slice?.().reverse?.().find?.(x=>x.type==='model_output')?.content?.find?.(x=>x.type==='text')?.text)||text(body.steps?.slice?.().reverse?.().find?.(x=>Array.isArray(x.content))?.content?.find?.(x=>x.type==='text')?.text);
     if(!out) throw new Error('Gemini returned no text output');
     return {text:out,raw:body};
   }
