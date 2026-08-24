@@ -1,0 +1,168 @@
+name: Replace Project From ZIP
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+    paths:
+      - "*.zip"
+
+permissions:
+  contents: write
+
+jobs:
+  replace-project:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find project ZIP
+        id: find_zip
+        shell: bash
+        run: |
+          set -e
+
+          ZIP_FILE=$(find . -maxdepth 1 -type f -name "*.zip" -printf "%T@ %p\n" \
+            | sort -nr \
+            | head -n 1 \
+            | cut -d' ' -f2-)
+
+          if [ -z "$ZIP_FILE" ]; then
+            echo "ERROR: No project ZIP found."
+            exit 1
+          fi
+
+          echo "Using: $ZIP_FILE"
+          echo "ZIP_FILE=$ZIP_FILE" >> "$GITHUB_ENV"
+
+      - name: Extract ZIP
+        shell: bash
+        run: |
+          set -e
+
+          rm -rf /tmp/new-project
+          mkdir -p /tmp/new-project
+
+          unzip -o "$ZIP_FILE" -d /tmp/new-project
+
+      - name: Detect project root
+        shell: bash
+        run: |
+          set -e
+
+          if [ -f "/tmp/new-project/package.json" ]; then
+            echo "PROJECT_ROOT=/tmp/new-project" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          PACKAGE=$(find /tmp/new-project \
+            -mindepth 1 \
+            -maxdepth 3 \
+            -type f \
+            -name "package.json" \
+            | head -n 1)
+
+          if [ -z "$PACKAGE" ]; then
+            echo "ERROR: package.json not found."
+            exit 1
+          fi
+
+          echo "PROJECT_ROOT=$(dirname "$PACKAGE")" >> "$GITHUB_ENV"
+
+      - name: Validate project
+        shell: bash
+        run: |
+          set -e
+
+          test -f "$PROJECT_ROOT/package.json"
+          test -f "$PROJECT_ROOT/server.js"
+
+          echo "Project validation passed."
+
+      - name: Validate Express route
+        shell: bash
+        run: |
+          set -e
+
+          if grep -F "app.get('*'" "$PROJECT_ROOT/server.js"; then
+            echo "ERROR: Old Express wildcard route detected."
+            exit 1
+          fi
+
+          if grep -F "app.get('/{*splat}'" "$PROJECT_ROOT/server.js"; then
+            echo "Express 5 route verified."
+          else
+            echo "ERROR: Express 5 route not found."
+            exit 1
+          fi
+
+      - name: Remove old application
+        shell: bash
+        run: |
+          set -e
+
+          echo "Removing old application files..."
+
+          find . -mindepth 1 -maxdepth 1 \
+            ! -name ".git" \
+            ! -name ".github" \
+            -exec rm -rf {} +
+
+      - name: Install new application
+        shell: bash
+        run: |
+          set -e
+
+          cp -a "$PROJECT_ROOT"/. .
+
+          rm -f "$ZIP_FILE"
+
+          echo "New application installed."
+
+      - name: Final verification
+        shell: bash
+        run: |
+          set -e
+
+          test -f package.json
+          test -f server.js
+          test -f schema.sql
+          test -d public
+
+          if grep -F "app.get('*'" server.js; then
+            echo "ERROR: Old route exists."
+            exit 1
+          fi
+
+          if ! grep -F "app.get('/{*splat}'" server.js; then
+            echo "ERROR: Correct Express 5 route is missing."
+            exit 1
+          fi
+
+          echo "================================"
+          echo "PROJECT VERIFIED SUCCESSFULLY"
+          echo "================================"
+
+      - name: Commit new project
+        shell: bash
+        run: |
+          set -e
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes detected."
+            exit 0
+          fi
+
+          git commit -m "Replace application with latest project"
+          git push
