@@ -701,3 +701,252 @@ DO $$ BEGIN
   ALTER TABLE inventory_movements DROP CONSTRAINT IF EXISTS inventory_movements_movement_type_check;
   ALTER TABLE inventory_movements ADD CONSTRAINT inventory_movements_movement_type_check CHECK(movement_type IN ('RECEIPT','ADJUSTMENT_IN','ADJUSTMENT_OUT','TRANSFER_OUT','TRANSFER_IN','RESERVE','RELEASE','SALE','RETURN','DAMAGE','LOSS','FOUND','STOCKTAKE_IN','STOCKTAKE_OUT'));
 EXCEPTION WHEN undefined_table THEN NULL; END $$;
+
+-- Phase 5: Customers, CRM, support, privacy and customer 360
+CREATE TABLE IF NOT EXISTS customers(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ customer_no text UNIQUE NOT NULL,
+ name text NOT NULL,
+ customer_type text NOT NULL DEFAULT 'Individual' CHECK(customer_type IN ('Individual','Business','Corporate')),
+ company_name text NOT NULL DEFAULT '',
+ email text NOT NULL DEFAULT '',
+ phone text NOT NULL DEFAULT '',
+ alternate_phone text NOT NULL DEFAULT '',
+ tax_number text NOT NULL DEFAULT '',
+ country_code text NOT NULL DEFAULT 'UG',
+ preferred_currency text NOT NULL DEFAULT 'UGX',
+ address_line1 text NOT NULL DEFAULT '',
+ address_line2 text NOT NULL DEFAULT '',
+ city text NOT NULL DEFAULT '',
+ region text NOT NULL DEFAULT '',
+ postal_code text NOT NULL DEFAULT '',
+ status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Inactive','Blocked','Anonymized')),
+ notes text NOT NULL DEFAULT '',
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ updated_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_customers_name ON customers(lower(name));
+CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(phone);
+CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(lower(email));
+CREATE TABLE IF NOT EXISTS customer_balances(
+ customer_id uuid PRIMARY KEY REFERENCES customers(id) ON DELETE CASCADE,
+ balance numeric(18,2) NOT NULL DEFAULT 0,
+ credit_limit numeric(18,2) NOT NULL DEFAULT 0,
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS customer_addresses(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ customer_id uuid NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+ label text NOT NULL DEFAULT 'Address',
+ address_line1 text NOT NULL,
+ address_line2 text NOT NULL DEFAULT '',
+ city text NOT NULL,
+ region text NOT NULL DEFAULT '',
+ postal_code text NOT NULL DEFAULT '',
+ country_code text NOT NULL DEFAULT 'UG',
+ is_default boolean NOT NULL DEFAULT false,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_customer_addresses_customer ON customer_addresses(customer_id,is_default DESC);
+CREATE TABLE IF NOT EXISTS customer_contacts(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ customer_id uuid NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+ name text NOT NULL,
+ role text NOT NULL DEFAULT '',
+ email text NOT NULL DEFAULT '',
+ phone text NOT NULL,
+ is_primary boolean NOT NULL DEFAULT false,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS customer_interactions(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ customer_id uuid NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+ type text NOT NULL,
+ subject text NOT NULL DEFAULT '',
+ summary text NOT NULL,
+ channel text NOT NULL DEFAULT '',
+ outcome text NOT NULL DEFAULT '',
+ next_follow_up date,
+ assigned_to uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_customer_interactions_customer ON customer_interactions(customer_id,created_at DESC);
+CREATE TABLE IF NOT EXISTS customer_tags(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ name text UNIQUE NOT NULL,
+ description text NOT NULL DEFAULT '',
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS customer_tag_assignments(
+ customer_id uuid NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+ tag_id uuid NOT NULL REFERENCES customer_tags(id) ON DELETE CASCADE,
+ assigned_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ PRIMARY KEY(customer_id,tag_id)
+);
+CREATE TABLE IF NOT EXISTS support_cases(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ case_no text UNIQUE NOT NULL,
+ customer_id uuid NOT NULL REFERENCES customers(id) ON DELETE RESTRICT,
+ title text NOT NULL,
+ description text NOT NULL,
+ priority text NOT NULL DEFAULT 'Normal' CHECK(priority IN ('Low','Normal','High','Urgent')),
+ channel text NOT NULL DEFAULT 'Phone',
+ status text NOT NULL DEFAULT 'Open' CHECK(status IN ('Open','In Progress','Pending Customer','Resolved','Closed')),
+ assigned_to uuid REFERENCES users(id) ON DELETE SET NULL,
+ resolution text NOT NULL DEFAULT '',
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now(),
+ resolved_at timestamptz
+);
+CREATE INDEX IF NOT EXISTS idx_support_cases_status ON support_cases(status,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_support_cases_customer ON support_cases(customer_id,created_at DESC);
+CREATE TABLE IF NOT EXISTS customer_consents(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ customer_id uuid NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+ consent_type text NOT NULL,
+ granted boolean NOT NULL DEFAULT false,
+ source text NOT NULL DEFAULT 'Admin',
+ recorded_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now(),
+ UNIQUE(customer_id,consent_type)
+);
+
+-- Phase 6: Sales & POS
+CREATE TABLE IF NOT EXISTS sales(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ sale_no text UNIQUE NOT NULL,
+ idempotency_key text UNIQUE,
+ customer_id uuid REFERENCES customers(id) ON DELETE SET NULL,
+ location_id uuid NOT NULL REFERENCES inventory_locations(id),
+ status text NOT NULL DEFAULT 'Completed' CHECK(status IN ('Draft','Completed','Voided')),
+ subtotal numeric(18,2) NOT NULL DEFAULT 0 CHECK(subtotal>=0),
+ discount_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(discount_amount>=0),
+ tax_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(tax_amount>=0),
+ grand_total numeric(18,2) NOT NULL DEFAULT 0 CHECK(grand_total>=0),
+ currency text NOT NULL DEFAULT 'UGX',
+ cashier_id uuid NOT NULL REFERENCES users(id),
+ notes text NOT NULL DEFAULT '',
+ voided_at timestamptz,
+ voided_by uuid REFERENCES users(id),
+ void_reason text,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ completed_at timestamptz DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS sale_lines(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ sale_id uuid NOT NULL REFERENCES sales(id) ON DELETE CASCADE,
+ variant_id uuid NOT NULL REFERENCES product_variants(id),
+ quantity numeric(18,3) NOT NULL CHECK(quantity>0),
+ unit_price numeric(18,2) NOT NULL CHECK(unit_price>=0),
+ discount_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(discount_amount>=0),
+ tax_rate numeric(8,4) NOT NULL DEFAULT 0 CHECK(tax_rate>=0),
+ tax_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(tax_amount>=0),
+ line_total numeric(18,2) NOT NULL CHECK(line_total>=0),
+ cost_price numeric(18,2) NOT NULL DEFAULT 0 CHECK(cost_price>=0),
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS sale_payments(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ sale_id uuid NOT NULL REFERENCES sales(id) ON DELETE CASCADE,
+ method text NOT NULL CHECK(method IN ('Cash','Mobile Money','Card','Bank Transfer','Online Payment')),
+ amount numeric(18,2) NOT NULL CHECK(amount>0),
+ reference text NOT NULL DEFAULT '',
+ received_by uuid NOT NULL REFERENCES users(id),
+ received_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS sale_serial_units(
+ sale_line_id uuid PRIMARY KEY REFERENCES sale_lines(id) ON DELETE CASCADE,
+ serialized_unit_id uuid NOT NULL UNIQUE REFERENCES serialized_units(id)
+);
+CREATE TABLE IF NOT EXISTS sale_status_history(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ sale_id uuid NOT NULL REFERENCES sales(id) ON DELETE CASCADE,
+ status text NOT NULL,
+ actor_id uuid REFERENCES users(id),
+ notes text NOT NULL DEFAULT '',
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_sales_created ON sales(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_sales_customer ON sales(customer_id,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_sales_location ON sales(location_id,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_sale_lines_sale ON sale_lines(sale_id);
+CREATE INDEX IF NOT EXISTS idx_sale_payments_sale ON sale_payments(sale_id);
+CREATE INDEX IF NOT EXISTS idx_sale_status_history_sale ON sale_status_history(sale_id,created_at);
+
+-- Phase 7: Orders & E-commerce
+ALTER TABLE product_categories ADD COLUMN IF NOT EXISTS icon_url text NOT NULL DEFAULT '';
+ALTER TABLE products ADD COLUMN IF NOT EXISTS promotion_type text NOT NULL DEFAULT 'None' CHECK(promotion_type IN ('None','Flash Sale','Promotional'));
+ALTER TABLE products ADD COLUMN IF NOT EXISTS promotion_label text NOT NULL DEFAULT '';
+ALTER TABLE products ADD COLUMN IF NOT EXISTS promotion_start timestamptz;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS promotion_end timestamptz;
+CREATE INDEX IF NOT EXISTS idx_products_promotion ON products(promotion_type,promotion_start,promotion_end);
+
+CREATE TABLE IF NOT EXISTS orders(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ order_no text UNIQUE NOT NULL,
+ customer_id uuid REFERENCES customers(id) ON DELETE SET NULL,
+ location_id uuid NOT NULL REFERENCES inventory_locations(id),
+ status text NOT NULL DEFAULT 'Pending Payment' CHECK(status IN ('Pending Payment','Paid','Processing','Packed','Ready for Dispatch','Dispatched','Delivered','Cancelled','Refunded','Returned')),
+ payment_status text NOT NULL DEFAULT 'Pending' CHECK(payment_status IN ('Pending','Partially Paid','Paid','Failed','Refunded')),
+ fulfillment_status text NOT NULL DEFAULT 'Unfulfilled' CHECK(fulfillment_status IN ('Unfulfilled','Processing','Packed','Ready for Dispatch','Dispatched','Delivered','Returned')),
+ subtotal numeric(18,2) NOT NULL DEFAULT 0 CHECK(subtotal>=0),
+ discount_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(discount_amount>=0),
+ tax_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(tax_amount>=0),
+ shipping_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(shipping_amount>=0),
+ grand_total numeric(18,2) NOT NULL DEFAULT 0 CHECK(grand_total>=0),
+ currency text NOT NULL DEFAULT 'UGX',
+ shipping_name text NOT NULL DEFAULT '',
+ shipping_phone text NOT NULL DEFAULT '',
+ shipping_email text NOT NULL DEFAULT '',
+ shipping_address text NOT NULL DEFAULT '',
+ notes text NOT NULL DEFAULT '',
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ cancelled_at timestamptz,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_orders_customer ON orders(customer_id,created_at DESC);
+CREATE TABLE IF NOT EXISTS order_lines(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), order_id uuid NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+ variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
+ quantity numeric(18,3) NOT NULL CHECK(quantity>0), unit_price numeric(18,2) NOT NULL CHECK(unit_price>=0),
+ discount_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(discount_amount>=0), tax_rate numeric(8,4) NOT NULL DEFAULT 0 CHECK(tax_rate>=0),
+ tax_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(tax_amount>=0), line_total numeric(18,2) NOT NULL DEFAULT 0 CHECK(line_total>=0), cost_price numeric(18,2) NOT NULL DEFAULT 0 CHECK(cost_price>=0), created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_order_lines_order ON order_lines(order_id);
+CREATE TABLE IF NOT EXISTS order_payments(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), order_id uuid NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+ method text NOT NULL, amount numeric(18,2) NOT NULL CHECK(amount>0), reference text NOT NULL DEFAULT '', status text NOT NULL DEFAULT 'Completed' CHECK(status IN ('Pending','Completed','Failed','Refunded')),
+ received_by uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_order_payments_order ON order_payments(order_id);
+CREATE TABLE IF NOT EXISTS order_status_history(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), order_id uuid NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+ status text NOT NULL, actor_id uuid REFERENCES users(id) ON DELETE SET NULL, notes text NOT NULL DEFAULT '', created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_order_status_history_order ON order_status_history(order_id,created_at);
+CREATE TABLE IF NOT EXISTS order_fulfillments(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), order_id uuid NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+ method text NOT NULL DEFAULT 'Delivery', carrier text NOT NULL DEFAULT '', tracking_number text NOT NULL DEFAULT '', assigned_to uuid REFERENCES users(id) ON DELETE SET NULL,
+ status text NOT NULL DEFAULT 'Pending' CHECK(status IN ('Pending','Assigned','Picked Up','In Transit','Delivered','Failed','Cancelled')),
+ notes text NOT NULL DEFAULT '', created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_order_fulfillments_order ON order_fulfillments(order_id,created_at DESC);
+
+CREATE TABLE IF NOT EXISTS order_serial_units(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ order_line_id uuid NOT NULL REFERENCES order_lines(id) ON DELETE CASCADE,
+ serialized_unit_id uuid NOT NULL UNIQUE REFERENCES serialized_units(id) ON DELETE RESTRICT,
+ assigned_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ UNIQUE(order_line_id,serialized_unit_id)
+);
+CREATE INDEX IF NOT EXISTS idx_order_serial_units_line ON order_serial_units(order_line_id);
