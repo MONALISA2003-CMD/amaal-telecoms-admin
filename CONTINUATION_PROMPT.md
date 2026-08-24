@@ -1,63 +1,51 @@
-# Continuation Prompt — Amaal Telecoms Administration
+# Continuation Prompt for the Next LLM
 
-Continue an existing **Amaal Telecoms, Uganda** administration platform. The current ZIP is the source of truth. Do not rebuild from memory.
+You are continuing the Amaal Telecoms Administration Platform for Amaal Telecoms, Uganda.
 
-## Business
-Amaal Telecoms sells phones (Infinix, Samsung, Tecno, iPhone, itel), TVs (TCL, Hisense, Samsung, LG, Global Star, CHiQ, SPJ and others), appliances, kitchen/home appliances, speakers, electronics and phone accessories.
+The current ZIP is the authoritative working source. Do not replace working modules with mock screens, do not rename files to Phase 17/18/etc., and do not remove existing functionality.
 
-The admin console will eventually control approved content on the public websites.
+## Completed business modules
+Core Administration & Security; Catalog; Inventory; Suppliers & Procurement; Customers & CRM; Sales & POS; Orders & E-commerce; Web & Hosting; Pricing & Promotions; Delivery & Logistics; Warranty & Repairs; Returns & Refunds; Document Management; Credit & Installments; Finance & Accounting; Reporting & Business Intelligence.
 
-## Architecture
-- Node.js 20.x
-- Express 5
-- PostgreSQL / Neon-compatible `DATABASE_URL`
-- Secure cookie sessions
-- CSRF protection
-- RBAC
-- MFA/TOTP
-- Trusted-device binding
-- 10-minute inactivity timeout
-- Audit/security logging
-- Database-backed documents
-- Mobile-first professional UI
+## Current state
+- Node.js 20.x, Express 5 and PostgreSQL/Neon-compatible database.
+- Render is the primary acceptance environment.
+- The admin is mobile-first and intended to be testable entirely from a phone.
+- No mock business records should be created automatically.
+- Business/module filenames must be preserved.
+- Document files are stored in PostgreSQL-backed binary storage so they survive Render redeploys.
+- Authentication uses secure HttpOnly sessions, trusted-device binding, MFA/TOTP, CSRF validation, rate limiting and a ten-minute inactivity timeout.
+- Browser developer tools are not treated as a security boundary; authorization must remain server-side.
 
-## Completed modules
-Core Administration & Security; Catalog; Inventory; Suppliers & Procurement; Customers & CRM; Sales & POS; Orders & E-commerce; Web & Hosting; Pricing & Promotions; Delivery & Logistics; Warranty & Repairs; Returns & Refunds; Document Management; Credit & Installments; Finance & Accounting; Business Intelligence.
+## Recovery
+`/recovery` is always reachable as a controlled page, but destructive recovery is enabled only when `ADMIN_RECOVERY_TOKEN` exists in the deployment environment. Recovery requires the secret plus `AMAAL-RESET`, preserves business records and refuses unsafe user deletion. Remove/rotate the token after recovery.
 
-## Important rules
-- Never use numbered phase filenames. Use names such as `finance-accounting.js`.
-- Preserve working modules.
-- Use safe `CREATE TABLE IF NOT EXISTS` / `ALTER TABLE ... IF NOT EXISTS` migrations.
-- No mock business records.
-- All admin mutations require RBAC and audit logging.
-- Public routes must expose only explicitly published public data.
-- Do not expose supplier costs, credit records, finance records, staff, permissions, security events or audit logs publicly.
-- Never claim browser security can make session hijacking or developer tools mathematically impossible. Use server-side security controls instead.
-- Run `node --check` on every JavaScript file before packaging.
-- Audit all frontend `data-action` buttons and route mappings.
-- Update `MODULE_MAP.md`, `README.md`, `AUDIT_REPORT.md`, `ACCEPTANCE_CHECKLIST.md` and this prompt for every major delivery.
+## Reporting & BI currently includes
+- Executive KPI dashboard with selectable date range.
+- Sales trend.
+- Product/variant performance and margin.
+- Inventory ageing.
+- Delivery partner performance and cost per unit.
+- Warranty/repair partner performance.
+- Customer performance.
+- Category performance.
+- Procurement/supplier performance.
+- Returns/refund analysis.
+- Credit ageing.
+- Finance/account performance.
+- Saved report snapshots.
+- CSV exports for sales/products/delivery.
 
-## Current 13–15 build details
+## Your job when continuing
+1. Read the complete ZIP before coding.
+2. Preserve every working API, database table, permission, security control and frontend action.
+3. Audit the existing module for missing workflows before adding a new module.
+4. Use business/module filenames, not numbered phase filenames.
+5. Ensure every visible button has a working action and every action has a server endpoint where required.
+6. Keep all mutations server-authorized and audited.
+7. Keep the application mobile-first and client-presentable; do not expose developer/debug UI.
+8. Do not claim live database verification unless you actually have a production/test database connection.
+9. Before delivering a ZIP, run syntax checks on every JavaScript file and inspect route/action consistency.
+10. Provide a concise audit report and a mobile acceptance checklist in the ZIP.
 
-### Credit & Installments — `credit-installments.js`
-Includes customer credit profiles, credit applications, approval/rejection, account opening, installment schedules, payments, allocation to installments, collections tasks and restructuring.
-
-### Finance & Accounting — `finance-accounting.js`
-Includes chart of accounts, journals, cash/bank accounts, tax rates, accounting periods and operational synchronization. Finance synchronization is idempotent by source reference and currently connects sales, sale payments, order payments, supplier invoices, supplier payments, refunds and credit payments.
-
-### Business Intelligence — `business-intelligence.js`
-Includes management summary, sales trend, product performance, inventory ageing, delivery performance, warranty/repair performance and CSV export.
-
-## Next build direction
-Do not jump directly into AI. First finish:
-
-1. **AI Operations** — demand forecasting, low-stock recommendations, margin/anomaly detection, delivery insights, repair triage and management summaries. AI must be advisory first; no automatic operational mutation without explicit human approval.
-2. **Marketing Automation** — customer segments, consent-aware campaigns, campaign templates, coupon/promotion linkage, campaign results and attribution.
-3. **Public Web Integration** — controlled publication boundary between admin and public websites; published catalog/prices/promotions/stock, public order intake, status synchronization, media publication, staging/preview and approval workflow.
-4. **Advanced Platform Integrations** — payment gateways, messaging, accounting exports, webhooks and other external integrations after the above are stable.
-
-## Testing rule
-The Render admin URL remains the primary integrated test surface while the combined Express/PostgreSQL backend is being accepted. Do not migrate the admin to Vercel just to get a prettier URL. Vercel can later host a separate public frontend if needed.
-
-## Handoff instruction
-Before the next build, inspect the current ZIP, audit all existing routes/schema/frontend handlers, plan the requested module, implement it without deleting working functionality, run static checks, and package only after the complete requested module is connected to the existing system.
+The next module should only begin after confirming that modules 1–16 still interconnect correctly.
