@@ -2,50 +2,48 @@
 
 You are continuing the Amaal Telecoms Administration Platform for Amaal Telecoms, Uganda.
 
-The current ZIP is the authoritative working source. Do not replace working modules with mock screens, do not rename files to Phase 17/18/etc., and do not remove existing functionality.
+The current ZIP is the authoritative working source. Read the complete ZIP before coding. Preserve every working module and do not replace real workflows with mock screens.
 
-## Completed business modules
-Core Administration & Security; Catalog; Inventory; Suppliers & Procurement; Customers & CRM; Sales & POS; Orders & E-commerce; Web & Hosting; Pricing & Promotions; Delivery & Logistics; Warranty & Repairs; Returns & Refunds; Document Management; Credit & Installments; Finance & Accounting; Reporting & Business Intelligence.
+## Business modules already present
+Core Administration & Security; Catalog; Inventory; Suppliers & Procurement; Customers & CRM; Sales & POS; Orders & E-commerce; Web & Hosting; Pricing & Promotions; Delivery & Logistics; Warranty & Repairs; Returns & Refunds; Document Management; Credit & Installments; Finance & Accounting; Reporting & Business Intelligence; AI Business Intelligence; Integration Hub.
 
-## Current state
-- Node.js 20.x, Express 5 and PostgreSQL/Neon-compatible database.
-- Render is the primary acceptance environment.
-- The admin is mobile-first and intended to be testable entirely from a phone.
-- No mock business records should be created automatically.
-- Business/module filenames must be preserved.
-- Document files are stored in PostgreSQL-backed binary storage so they survive Render redeploys.
-- Authentication uses secure HttpOnly sessions, trusted-device binding, MFA/TOTP, CSRF validation, rate limiting and a ten-minute inactivity timeout.
-- Browser developer tools are not treated as a security boundary; authorization must remain server-side.
+## Naming rule
+Never create filenames such as `phase-19.js`. Use feature/module names such as `public-ai.js`, `integration-hub.js`, `delivery-logistics.js`, etc. Keep this rule for all future work.
 
-## Recovery
-`/recovery` is always reachable as a controlled page, but destructive recovery is enabled only when `ADMIN_RECOVERY_TOKEN` exists in the deployment environment. Recovery requires the secret plus `AMAAL-RESET`, preserves business records and refuses unsafe user deletion. Remove/rotate the token after recovery.
+## AI architecture
+- Gemini is called only from server-side code.
+- Current integration uses Google's Gemini Interactions API at the stable `/v1/interactions` endpoint.
+- Default model: `gemini-3.7-flash`; model is configurable.
+- Key is read from `GEMINI_API_KEY` or `GOOGLE_API_KEY` and never placed in browser code.
+- Super Admin can edit AI configuration and governed training examples.
+- Scheduled AI reports use live business snapshots and are saved in `ai_generated_reports`.
+- Public website AI is exposed through `/api/public/ai/ask` and receives only published catalog data.
+- AI is not allowed to directly mutate business records.
 
-## Reporting & BI currently includes
-- Executive KPI dashboard with selectable date range.
-- Sales trend.
-- Product/variant performance and margin.
-- Inventory ageing.
-- Delivery partner performance and cost per unit.
-- Warranty/repair partner performance.
-- Customer performance.
-- Category performance.
-- Procurement/supplier performance.
-- Returns/refund analysis.
-- Credit ageing.
-- Finance/account performance.
-- Saved report snapshots.
-- CSV exports for sales/products/delivery.
+## Integration Hub architecture
+- External connections are HTTPS-only.
+- Private/link-local destinations are blocked to reduce SSRF risk.
+- Integration secrets are encrypted at rest.
+- Inbound/outbound webhooks support HMAC signatures.
+- Every audited mutation is recorded in `integration_events`.
+- Outbound webhook delivery is processed by the Integration Hub worker and stored in `integration_deliveries`.
 
-## Your job when continuing
-1. Read the complete ZIP before coding.
-2. Preserve every working API, database table, permission, security control and frontend action.
-3. Audit the existing module for missing workflows before adding a new module.
-4. Use business/module filenames, not numbered phase filenames.
-5. Ensure every visible button has a working action and every action has a server endpoint where required.
-6. Keep all mutations server-authorized and audited.
-7. Keep the application mobile-first and client-presentable; do not expose developer/debug UI.
-8. Do not claim live database verification unless you actually have a production/test database connection.
-9. Before delivering a ZIP, run syntax checks on every JavaScript file and inspect route/action consistency.
-10. Provide a concise audit report and a mobile acceptance checklist in the ZIP.
+## Security rules
+- Keep server-side authorization authoritative.
+- Preserve secure HttpOnly sessions, CSRF validation, trusted-device binding, MFA, ten-minute inactivity timeout and rate limiting.
+- Never put Gemini or integration secrets in GitHub or frontend JavaScript.
+- Browser developer tools are not a security boundary.
 
-The next module should only begin after confirming that modules 1–16 still interconnect correctly.
+## Acceptance rules before delivering another ZIP
+1. Run `node --check` on every JavaScript file.
+2. Check every frontend `data-action` has a handler or is intentionally handled by a module.
+3. Check every API route's permission exists in the permissions seed.
+4. Check every SQL table/column used by new modules exists in `schema.sql` and is idempotent.
+5. Check every visible button is clickable and produces a result or a clear error.
+6. Check public AI cannot return private business data.
+7. Check Gemini API failures degrade gracefully without exposing keys or raw provider errors to public users.
+8. Check integration health tests cannot reach private network destinations.
+9. Check webhook secrets are never returned to the browser.
+10. Review the whole project for regressions before creating the ZIP.
+
+Do not claim production verification unless a real test/production database was actually connected.

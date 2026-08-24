@@ -1,6 +1,6 @@
 # Amaal Telecoms Module Map
 
-This project deliberately uses business/module names instead of phase-number filenames.
+This project deliberately uses business/module names instead of numbered phase filenames.
 
 1. Core Administration & Security — identity, roles, sessions, MFA, trusted devices, governance and audit.
 2. Catalog — products, categories, brands, variants, media, tags, pricing and website visibility.
@@ -18,6 +18,8 @@ This project deliberately uses business/module names instead of phase-number fil
 14. Credit & Installments — credit profiles, applications, approvals, accounts, installments, payments, collections and restructuring.
 15. Finance & Accounting — chart of accounts, journals, cash/bank accounts, taxes, periods and operational synchronization.
 16. Reporting & Business Intelligence — executive KPIs, date-range trends, product/customer/category/procurement/delivery/warranty/returns/credit/finance analysis, saved snapshots and CSV exports.
+17. AI Business Intelligence — governed Gemini assistant, AI report generation, Super Admin training guidance, scheduled reports and public-safe AI gateway.
+18. Integration Hub — external connection registry, encrypted credentials, SSRF-safe health checks, signed webhooks, event stream and delivery monitoring.
 
 ## Cross-module principle
-Operational records remain the source of truth. Reporting reads those records; it does not manufacture mock data. Finance can synchronize eligible operational transactions into double-entry journals. BI can then read both operational and posted finance data for management reporting.
+Operational records remain the source of truth. Reporting reads those records; it does not manufacture mock data. Finance synchronizes eligible operational transactions into double-entry journals. BI reads operational and posted finance data. AI receives controlled reporting snapshots and approved public catalog data. Integration events are derived from audited platform activity and can be routed to outbound webhooks.

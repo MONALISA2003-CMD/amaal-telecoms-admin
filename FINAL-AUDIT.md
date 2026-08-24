@@ -19,3 +19,8 @@ PASS — Existing Render PostgreSQL database remains usable; no new database is 
 PASS — ZIP contains no YAML deployment workflow.
 
 IMPORTANT: This package fixes the exact database error shown during first-administrator creation. After deployment, Render must finish successfully before testing setup again.
+
+## AI Business Intelligence & Integration Hub extension
+The project now includes the AI Business Intelligence and Integration Hub modules. The code audit confirms JavaScript syntax and permission-reference consistency. Gemini is integrated server-side through the stable Interactions API v1 format, with the key held in Render environment variables. Super Admin-only governance controls allow configuration and governed training examples. The public AI gateway is limited to published catalog context. Integration connections use encrypted secrets, HTTPS-only destination validation, SSRF protection, signed webhooks and delivery logging.
+
+Live Render/PostgreSQL execution was not available in this build environment; therefore production connectivity is intentionally listed as an acceptance test rather than falsely claimed as verified.
