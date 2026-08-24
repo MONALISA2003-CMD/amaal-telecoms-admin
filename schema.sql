@@ -47,8 +47,10 @@ CREATE TABLE IF NOT EXISTS organizations(
  website text NOT NULL DEFAULT '',
  status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Suspended')),
  created_at timestamptz NOT NULL DEFAULT now(),
- updated_at timestamptz NOT NULL DEFAULT now()
+ updated_at timestamptz NOT NULL DEFAULT now(),
+ updated_by uuid REFERENCES users(id) ON DELETE SET NULL
 );
+ALTER TABLE organizations ADD COLUMN IF NOT EXISTS updated_by uuid REFERENCES users(id) ON DELETE SET NULL;
 CREATE TABLE IF NOT EXISTS departments(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
  name text UNIQUE NOT NULL,
