@@ -2,6 +2,11 @@
 
 This release completes the client-facing administration console for the first three phases.
 
+### Stabilization patch
+- Fixed client-side view registration so every Phase 1–3 navigation section resolves to its correct renderer.
+- Verified the frontend JavaScript parses successfully and all registered views reference existing render functions.
+- No developer-facing diagnostics are displayed in the client UI.
+
 ## Included
 
 ### Administration and security
