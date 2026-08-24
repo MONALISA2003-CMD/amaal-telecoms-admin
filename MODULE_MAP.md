@@ -1,31 +1,58 @@
-# Amaal Telecoms Module Map
+# Amaal Telecoms — Canonical Module Map
 
-This is the canonical naming system for the project. Do not name future source files `phase1`, `phase2`, etc.
+This project uses **business module names**, not numbered phase names. Future source files must follow this rule.
 
-| Module | Primary source | Main purpose |
-|---|---|---|
-| Core Administration & Security | `server.js` + `schema.sql` | Identity, RBAC, organization, departments, sessions, MFA, security, audit and system governance |
-| Catalog | `server.js` + `schema.sql` | Products, variants, categories, category icons, brands, logos, product images, descriptions and catalog publishing controls |
-| Inventory | `server.js` + `schema.sql` | Stock, receipts, adjustments, transfers, reservations, serial/IMEI tracking, stocktakes and incidents |
-| Suppliers & Procurement | `suppliers-procurement.js` | Suppliers, requisitions, purchase orders, receiving, invoices and supplier payments |
-| Customers & CRM | `customers-crm.js` | Customers, addresses, interactions, support, privacy and CRM tasks |
-| Sales & POS | `sales-pos.js` | POS, payments, receipts, serialized sales, voids and sales reporting |
-| Orders & E-commerce | `orders-ecommerce.js` | Orders, order lifecycle, fulfillment, reservations, payments and serial assignment |
-| Web & Hosting | `web-and-hosting.js` | Websites, pages, navigation, media, domains, settings and controlled publication |
-| Pricing & Promotions | `pricing-and-promotions.js` | Price lists, promotions, coupons and centralized effective-price rules |
+## Core modules
 
-## Public website safety boundary
-Public endpoints must expose only published, public-facing data. Internal costs, supplier data, staff, permissions, audit/security records and customer-private information must never be exposed through public website routes.
+- **Core Administration & Security** — `server.js` + `schema.sql`
+  - Identity, RBAC, staff, roles, organization, departments, sessions, MFA, trusted devices, security events, audit and settings.
+- **Catalog** — `server.js` + `schema.sql`
+  - Products, variants, categories, category icons, brands, logos, images, descriptions, pricing and website publishing.
+- **Inventory** — `server.js` + `schema.sql`
+  - Stock, receiving, adjustments, transfers, reservations, serialized devices/IMEI, stocktakes, incidents and movement ledger.
+- **Suppliers & Procurement** — `suppliers-procurement.js`
+  - Suppliers, requisitions, purchase orders, goods receipts, invoices, supplier payments and performance.
+- **Customers & CRM** — `customers-crm.js`
+  - Customers, addresses, interactions, support, CRM tasks, tags, privacy and anonymization.
+- **Sales & POS** — `sales-pos.js`
+  - Point of sale, payments, receipts, serialized sales, voids and sales reporting.
+- **Orders & E-commerce** — `orders-ecommerce.js`
+  - Orders, payments, order lifecycle, fulfillment, reservations and serialized assignment.
+- **Web & Hosting** — `web-and-hosting.js`
+  - Websites, pages, navigation, media, domains, redirects, staging and controlled publication.
+- **Pricing & Promotions** — `pricing-and-promotions.js`
+  - Price lists, promotions, coupons and effective-price rules.
+- **Delivery & Logistics** — `delivery-logistics.js`
+  - Delivery zones, delivery partners, shipment assignment, unit counts, unit costs, destinations, status history, attempts and partner performance.
+- **Warranty & Repairs** — `warranty-repairs.js`
+  - Warranty policies, claims, serialized service, repair jobs, repair partners, item descriptions, locations, expected returns and partner cost tracking.
+- **Returns & Refunds** — `returns-refunds.js`
+  - Return requests, source-line validation, inspection, restocking, serialized returns and refunds.
+- **Document Management** — `document-management.js`
+  - Database-backed upload, attachment, metadata, authenticated download and deletion.
 
-## Publication rule
-Public content follows `Draft -> Request -> Approve -> Execute`. Editing an admin record must not directly make private content public.
+## Security rules
+
+1. Browser sessions are cookie-based and HttpOnly.
+2. Sessions are bound to a trusted device context and checked server-side.
+3. Inactivity timeout defaults to **10 minutes**.
+4. New devices require MFA when the account has MFA enabled.
+5. Security policy can require MFA for every sign-in after enrollment.
+6. Password changes revoke other active sessions.
+7. Revoking a trusted device revokes its active sessions.
+8. CSRF protection is applied to authenticated state-changing browser requests.
+9. Public website routes must expose only published/public-facing data.
+10. Internal costs, suppliers, staff, permissions, security events and audit records must never be exposed by public routes.
 
 ## Future modules
-Use business names for new files, for example `delivery-logistics.js`, `warranty-repairs.js`, `returns-refunds.js`, `credit-installments.js`, `finance-accounting.js`, and `business-intelligence.js`.
-| Delivery & Logistics | `delivery-logistics.js` | Delivery zones, shipment creation, driver assignment, tracking, status history, delivery attempts and order-delivery synchronization |
-| Warranty & Repairs | `warranty-repairs.js` | Warranty policies, claims, serialized-device service, repair jobs, technicians and resolution history |
-| Returns & Refunds | `returns-refunds.js` | Return requests, source-line validation, inspection, restocking, serialized returns and refunds |
-| Document Management | `document-management.js` | Durable database-backed document upload, metadata, attachment to records, download and deletion |
 
-## Document storage rule
-Documents are stored in PostgreSQL `bytea` storage rather than the Render filesystem. This makes uploads durable across deploys/restarts. Uploads are limited to 15 MB and restricted to PDF, JPG, PNG, WEBP, TXT, CSV, DOCX and XLSX. Downloads are authenticated and permission controlled.
+Use names such as:
+
+- `credit-installments.js`
+- `finance-accounting.js`
+- `business-intelligence.js`
+- `ai-operations.js`
+- `marketing-automation.js`
+- `public-web-integration.js`
+
+Never create `phase10.js`, `phase11.js`, etc.

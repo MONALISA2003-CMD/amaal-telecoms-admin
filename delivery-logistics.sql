@@ -14,3 +14,21 @@ CREATE INDEX IF NOT EXISTS idx_delivery_events_shipment ON delivery_events(shipm
 CREATE TABLE IF NOT EXISTS delivery_attempts(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(), shipment_id uuid NOT NULL REFERENCES delivery_shipments(id) ON DELETE CASCADE, attempt_no int NOT NULL, attempted_at timestamptz NOT NULL DEFAULT now(), outcome text NOT NULL CHECK(outcome IN ('Delivered','Failed','Rescheduled')), recipient_name text NOT NULL DEFAULT '', note text NOT NULL DEFAULT '', created_by uuid REFERENCES users(id) ON DELETE SET NULL, UNIQUE(shipment_id,attempt_no)
 );
+
+-- Delivery partners, assignments and unit-cost performance tracking
+CREATE TABLE IF NOT EXISTS delivery_partners(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ name text NOT NULL,
+ partner_type text NOT NULL DEFAULT 'Individual' CHECK(partner_type IN ('Individual','Company')),
+ phone text NOT NULL DEFAULT '', email text NOT NULL DEFAULT '', address text NOT NULL DEFAULT '', service_area text NOT NULL DEFAULT '',
+ default_unit_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(default_unit_cost>=0),
+ status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Suspended')),
+ notes text NOT NULL DEFAULT '', created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS partner_id uuid;
+ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS unit_count numeric(18,3) NOT NULL DEFAULT 0 CHECK(unit_count>=0);
+ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS unit_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(unit_cost>=0);
+ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS total_delivery_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(total_delivery_cost>=0);
+DO $$ BEGIN ALTER TABLE delivery_shipments ADD CONSTRAINT delivery_shipments_partner_fk FOREIGN KEY(partner_id) REFERENCES delivery_partners(id) ON DELETE SET NULL; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+CREATE INDEX IF NOT EXISTS idx_delivery_shipments_partner ON delivery_shipments(partner_id,status,created_at DESC);

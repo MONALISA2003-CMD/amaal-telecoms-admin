@@ -14,3 +14,23 @@ CREATE TABLE IF NOT EXISTS warranty_events(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(), claim_id uuid NOT NULL REFERENCES warranty_claims(id) ON DELETE CASCADE, status text NOT NULL, note text NOT NULL DEFAULT '', actor_id uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_warranty_events_claim ON warranty_events(claim_id,created_at);
+
+-- External repair partner management and repair tracking
+CREATE TABLE IF NOT EXISTS repair_partners(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ name text NOT NULL,
+ partner_type text NOT NULL DEFAULT 'Repair Centre' CHECK(partner_type IN ('Repair Centre','Technician','Authorized Service Centre')),
+ phone text NOT NULL DEFAULT '', email text NOT NULL DEFAULT '', address text NOT NULL DEFAULT '', service_area text NOT NULL DEFAULT '',
+ default_labor_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(default_labor_cost>=0),
+ status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Suspended')),
+ notes text NOT NULL DEFAULT '', created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE repair_jobs ADD COLUMN IF NOT EXISTS partner_id uuid;
+ALTER TABLE repair_jobs ADD COLUMN IF NOT EXISTS item_description text NOT NULL DEFAULT '';
+ALTER TABLE repair_jobs ADD COLUMN IF NOT EXISTS repair_location text NOT NULL DEFAULT '';
+ALTER TABLE repair_jobs ADD COLUMN IF NOT EXISTS expected_return_at timestamptz;
+ALTER TABLE repair_jobs ADD COLUMN IF NOT EXISTS external_reference text NOT NULL DEFAULT '';
+ALTER TABLE repair_jobs ADD COLUMN IF NOT EXISTS partner_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(partner_cost>=0);
+DO $$ BEGIN ALTER TABLE repair_jobs ADD CONSTRAINT repair_jobs_partner_fk FOREIGN KEY(partner_id) REFERENCES repair_partners(id) ON DELETE SET NULL; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+CREATE INDEX IF NOT EXISTS idx_repair_jobs_partner ON repair_jobs(partner_id,status,created_at DESC);

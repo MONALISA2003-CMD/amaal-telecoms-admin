@@ -261,7 +261,7 @@ CREATE TABLE IF NOT EXISTS inventory_movements(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
  variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
  location_id uuid NOT NULL REFERENCES inventory_locations(id) ON DELETE RESTRICT,
- movement_type text NOT NULL CHECK(movement_type IN ('RECEIPT','ADJUSTMENT_IN','ADJUSTMENT_OUT','TRANSFER_OUT','TRANSFER_IN','RESERVE','RELEASE','SALE','RETURN','DAMAGE','LOSS','FOUND','STOCKTAKE_IN','STOCKTAKE_OUT')),
+ movement_type text NOT NULL CHECK(movement_type IN ('RECEIPT','ADJUSTMENT_IN','ADJUSTMENT_OUT','TRANSFER_OUT','TRANSFER_IN','RESERVE','RELEASE','SALE','RETURN','DAMAGE','LOSS','FOUND','STOCKTAKE_IN','STOCKTAKE_OUT','SALE_VOID','ORDER_FULFILLMENT')),
  quantity numeric(18,3) NOT NULL CHECK(quantity>0),
  unit_cost numeric(18,2) CHECK(unit_cost IS NULL OR unit_cost>=0),
  before_qty numeric(18,3) NOT NULL DEFAULT 0,
@@ -699,7 +699,7 @@ CREATE INDEX IF NOT EXISTS idx_stock_receipts_po ON stock_receipts(purchase_orde
 -- Compatibility migration for movement types used by reconciliation and incident workflows.
 DO $$ BEGIN
   ALTER TABLE inventory_movements DROP CONSTRAINT IF EXISTS inventory_movements_movement_type_check;
-  ALTER TABLE inventory_movements ADD CONSTRAINT inventory_movements_movement_type_check CHECK(movement_type IN ('RECEIPT','ADJUSTMENT_IN','ADJUSTMENT_OUT','TRANSFER_OUT','TRANSFER_IN','RESERVE','RELEASE','SALE','RETURN','DAMAGE','LOSS','FOUND','STOCKTAKE_IN','STOCKTAKE_OUT'));
+  ALTER TABLE inventory_movements ADD CONSTRAINT inventory_movements_movement_type_check CHECK(movement_type IN ('RECEIPT','ADJUSTMENT_IN','ADJUSTMENT_OUT','TRANSFER_OUT','TRANSFER_IN','RESERVE','RELEASE','SALE','RETURN','DAMAGE','LOSS','FOUND','STOCKTAKE_IN','STOCKTAKE_OUT','SALE_VOID','ORDER_FULFILLMENT'));
 EXCEPTION WHEN undefined_table THEN NULL; END $$;
 
 -- Customers & CRM: customers, support, privacy and customer 360
@@ -1178,3 +1178,84 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_documents_checksum_entity ON documents(enti
 CREATE TABLE IF NOT EXISTS document_blobs(
  document_id uuid PRIMARY KEY REFERENCES documents(id) ON DELETE CASCADE, data bytea NOT NULL
 );
+
+-- Security hardening: device-bound browser sessions and trusted-device MFA challenges
+ALTER TABLE sessions ADD COLUMN IF NOT EXISTS device_hash text;
+ALTER TABLE sessions ADD COLUMN IF NOT EXISTS user_agent_hash text;
+CREATE INDEX IF NOT EXISTS idx_sessions_device_hash ON sessions(user_id,device_hash,revoked_at);
+CREATE TABLE IF NOT EXISTS trusted_devices(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+ device_hash text NOT NULL,
+ label text NOT NULL DEFAULT '',
+ first_seen_at timestamptz NOT NULL DEFAULT now(),
+ last_seen_at timestamptz NOT NULL DEFAULT now(),
+ last_ip text NOT NULL DEFAULT '',
+ user_agent text NOT NULL DEFAULT '',
+ revoked_at timestamptz,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ UNIQUE(user_id,device_hash)
+);
+CREATE INDEX IF NOT EXISTS idx_trusted_devices_user ON trusted_devices(user_id,revoked_at,last_seen_at DESC);
+
+-- Delivery & Logistics partner management and cost/unit tracking
+ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS partner_id uuid;
+ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS unit_count numeric(18,3) NOT NULL DEFAULT 0 CHECK(unit_count>=0);
+ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS unit_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(unit_cost>=0);
+ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS total_delivery_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(total_delivery_cost>=0);
+CREATE TABLE IF NOT EXISTS delivery_partners(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ name text NOT NULL,
+ partner_type text NOT NULL DEFAULT 'Individual' CHECK(partner_type IN ('Individual','Company')),
+ phone text NOT NULL DEFAULT '',
+ email text NOT NULL DEFAULT '',
+ address text NOT NULL DEFAULT '',
+ service_area text NOT NULL DEFAULT '',
+ default_unit_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(default_unit_cost>=0),
+ status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Suspended')),
+ notes text NOT NULL DEFAULT '',
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+DO $$ BEGIN
+ ALTER TABLE delivery_shipments ADD CONSTRAINT delivery_shipments_partner_fk FOREIGN KEY(partner_id) REFERENCES delivery_partners(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+CREATE INDEX IF NOT EXISTS idx_delivery_shipments_partner ON delivery_shipments(partner_id,status,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_delivery_partners_status ON delivery_partners(status,name);
+
+-- Warranty & Repairs partner management and complete external repair tracking
+ALTER TABLE repair_jobs ADD COLUMN IF NOT EXISTS partner_id uuid;
+ALTER TABLE repair_jobs ADD COLUMN IF NOT EXISTS item_description text NOT NULL DEFAULT '';
+ALTER TABLE repair_jobs ADD COLUMN IF NOT EXISTS repair_location text NOT NULL DEFAULT '';
+ALTER TABLE repair_jobs ADD COLUMN IF NOT EXISTS expected_return_at timestamptz;
+ALTER TABLE repair_jobs ADD COLUMN IF NOT EXISTS external_reference text NOT NULL DEFAULT '';
+ALTER TABLE repair_jobs ADD COLUMN IF NOT EXISTS partner_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(partner_cost>=0);
+CREATE TABLE IF NOT EXISTS repair_partners(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ name text NOT NULL,
+ partner_type text NOT NULL DEFAULT 'Repair Centre' CHECK(partner_type IN ('Repair Centre','Technician','Authorized Service Centre')),
+ phone text NOT NULL DEFAULT '',
+ email text NOT NULL DEFAULT '',
+ address text NOT NULL DEFAULT '',
+ service_area text NOT NULL DEFAULT '',
+ default_labor_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(default_labor_cost>=0),
+ status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Suspended')),
+ notes text NOT NULL DEFAULT '',
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+DO $$ BEGIN
+ ALTER TABLE repair_jobs ADD CONSTRAINT repair_jobs_partner_fk FOREIGN KEY(partner_id) REFERENCES repair_partners(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+CREATE INDEX IF NOT EXISTS idx_repair_jobs_partner ON repair_jobs(partner_id,status,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_repair_partners_status ON repair_partners(status,name);
+
+-- Security policy migration: tighten the legacy 30-minute inactivity default to 10 minutes once.
+DO $$ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM settings WHERE key='securityHardeningVersion') THEN
+   UPDATE settings SET value_json='10'::jsonb WHERE key='idleTimeoutMinutes' AND value_json='30'::jsonb;
+   INSERT INTO settings(key,value_json) VALUES('securityHardeningVersion','1'::jsonb) ON CONFLICT(key) DO NOTHING;
+ END IF;
+END $$;
