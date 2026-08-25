@@ -230,24 +230,104 @@ Preserve canonical `purchase_requisitions`.
 
 Never reintroduce `procurement_requisitions` into runtime code.
 
-## Completion gate for Phase 40C
+## Phase 40C status — Monitoring, Health & Observability
 
-Do not begin Backup & Recovery until Monitoring & Observability has:
+Phase 40C is now built and integrated. The cumulative system was audited before and after the implementation.
 
-- additive database schema/migration
-- backend monitoring APIs
-- authorization
-- safe operational visibility
-- alert configuration and history
-- integration with System Operations
-- integration with Integration Hub
-- cumulative regression audit
-- JavaScript syntax pass
-- module registration pass
-- duplicate-route check
-- Render preflight pass
-- README update
-- fresh continuation prompt
-- clean rezip
+Implemented:
+- application/API performance telemetry
+- database health
+- background-job telemetry
+- integration failure telemetry
+- notification backlog telemetry
+- payment failure telemetry
+- finance-posting telemetry with safe Unknown handling when no failure source exists
+- inventory anomaly telemetry using actual inventory movement quantities
+- alert rules with severity, threshold, cooldown and enabled state
+- Open/Acknowledged/Resolved alert lifecycle
+- alert deduplication/cooldown
+- auditable monitoring snapshots
+- permission-protected monitoring APIs
+- responsive Monitoring & Observability UI
+- System Operations integration
 
-The next archive must again contain only useful Markdown documentation: `README.md` and `CONTINUATION.md`.
+A Phase 40B defect was also corrected: job retry/cancel row locks are now executed inside real PostgreSQL transactions rather than using `FOR UPDATE` outside a transaction.
+
+### Mandatory audit performed
+- Full cumulative JavaScript syntax audit
+- Route registration audit: **526 unique route signatures, no duplicates detected**
+- Cross-module registration audit
+- Security/authorization boundary review
+- Monitoring schema/index review
+- Canonical `purchase_requisitions` verification
+- Legacy `procurement_requisitions` runtime reference check
+- Render preflight
+- MFA boundary verification
+
+### MFA boundary
+MFA is still completely excluded. Do not add, modify, activate, enforce or redesign MFA in the next phase.
+
+## Next build — Phase 40D: Backup & Recovery
+
+Before writing new code, perform the complete cumulative audit again. Then build Backup & Recovery as a controlled production capability.
+
+### Backup scope
+Build support for:
+- PostgreSQL/database backups
+- configuration backups where safe and appropriate
+- media/file backup strategy
+- scheduled backups
+- manually initiated backups where safe
+- backup history
+- status
+- size
+- duration
+- checksum/integrity verification
+- verification status
+
+### Retention
+Implement explicit retention policies:
+- daily
+- weekly
+- monthly
+
+Never silently delete backups. Every retention/deletion action must follow the configured policy and be auditable.
+
+### Recovery
+Build a controlled recovery workflow with:
+- backup selection
+- integrity verification before recovery
+- environment awareness
+- explicit confirmation
+- permission checks
+- audit logging
+- safe failure handling
+
+Never expose arbitrary shell commands, arbitrary SQL execution or unrestricted filesystem access through the UI.
+
+### Media recovery
+Account for the Phase 40A database-backed media assets. Ensure backup and recovery preserves media metadata, relationships and binary data.
+
+### Production safety
+Do not perform destructive recovery automatically. Prefer a verified restore workflow and clearly separate backup creation, verification and restoration.
+
+### Completion gate for Phase 40D
+Do not declare Phase 40D complete until:
+- backup schema/migrations are additive
+- backup APIs exist and are permission-protected
+- backup integrity verification exists
+- retention policy exists
+- recovery workflow exists with safeguards
+- media backup/recovery is covered
+- cumulative regression audit passes
+- JavaScript syntax passes
+- route duplicate check passes
+- Render preflight passes
+- README is updated
+- this continuation prompt is replaced with the next exact continuation instructions
+- only useful Markdown remains: `README.md` and `CONTINUATION.md`
+- final ZIP integrity passes
+
+Every rezip must follow:
+
+**audit entire cumulative project → debug → build → regression test → remove obsolete Markdown → update README → create fresh CONTINUATION.md → verify → ZIP**

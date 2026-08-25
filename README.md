@@ -3,7 +3,7 @@
 Cumulative enterprise telecom retail administration platform.
 
 ## Current release
-**Phase 40B — System Operations — built, audited and integrated**
+**Phase 40C — Monitoring, Health & Observability — built, audited and integrated**
 
 This is a cumulative continuation build. Existing business modules, authentication/security boundaries, operational workflows, Phase 39 Global Search/UX and Phase 40A Media Management are preserved.
 
@@ -23,9 +23,25 @@ This is a cumulative continuation build. Existing business modules, authenticati
 - Added `operations.view` and `operations.manage` permissions; Manager receives view access, while existing administrative roles inherit the appropriate controls through the normal role bootstrap.
 - Preserved all existing business records and the canonical `purchase_requisitions` boundary.
 
+
+### Phase 40C delivered
+- Added a dedicated Monitoring & Observability layer integrated with System Operations.
+- Added application/API performance telemetry: requests per minute, average response time, slow requests and server-error indicators.
+- Added PostgreSQL health visibility and operational health aggregation.
+- Added background-job, integration, notification, payment, finance-posting and inventory anomaly telemetry with safe Unknown handling when a source is unavailable.
+- Added normalized Healthy, Warning, Critical and Unknown health states.
+- Added configurable alert rules with severity, threshold, cooldown and enable/disable controls.
+- Added alert lifecycle: Open, Acknowledged and Resolved.
+- Added alert deduplication/cooldown logic to reduce alert storms.
+- Added auditable point-in-time health snapshots.
+- Added permission-protected monitoring APIs and administrative alert/rule actions.
+- Added a responsive Monitoring & Observability dashboard.
+- Hardened the Phase 40B safe job retry/cancel endpoints by moving row locks into real database transactions.
+- MFA remains untouched and deferred.
+
 ### Cumulative audit and debugging performed before packaging
 - Audited the complete cumulative backend module set and registration dependencies before Phase 40B changes.
-- Registered every cumulative module, including System Operations, against a route-registration harness: **382 unique routes registered with no duplicate route signatures detected**.
+- Registered every cumulative module, including System Operations, against a route-registration harness: **526 unique routes registered with no duplicate route signatures detected**.
 - Ran JavaScript syntax validation across every application JavaScript file.
 - Ran Render preflight successfully.
 - Verified the runtime has no legacy `procurement_requisitions` reference; the preflight check itself retains the forbidden-name assertion by design.
@@ -46,6 +62,7 @@ Catalog · Inventory · Suppliers & Procurement · Customers & CRM · Sales & PO
 - `schema.sql` contains the cumulative bootstrap schema.
 - `media-management.sql` contains the isolated Phase 40A media schema segment.
 - `system-operations.sql` contains the isolated Phase 40B operations schema segment.
+- `monitoring-observability.sql` contains the isolated Phase 40C monitoring schema segment.
 - The server applies the additive operations schema during startup without resetting PostgreSQL.
 - Never reset PostgreSQL.
 - Never delete financial or operational records to make a migration pass.
@@ -56,6 +73,6 @@ Catalog · Inventory · Suppliers & Procurement · Customers & CRM · Sales & PO
 MFA is intentionally deferred. This build does not implement, activate, redesign or extend MFA. Existing authentication, authorization, CSRF, session and security controls remain the active security boundary. Existing MFA-related artifacts are left untouched.
 
 ## Next phase
-**Phase 40C — Monitoring, Health & Observability**
+**Phase 40D — Backup & Recovery**
 
-The next continuation must begin with another complete cumulative audit and regression pass before extending the System Operations control plane with deeper monitoring, actionable alerts, application/database performance indicators, integration failure telemetry, storage/backup health and business-operation anomaly monitoring.
+The next continuation must begin with another complete cumulative audit and regression pass before building controlled backup, integrity verification, retention and recovery capabilities. Do not weaken existing financial, operational, authentication or MFA boundaries.

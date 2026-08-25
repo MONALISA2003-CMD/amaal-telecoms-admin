@@ -774,3 +774,27 @@ handleAction=async function(a,b){try{
     return oldAction(a,b);
   };
 })();
+
+/* Phase 40C: Monitoring & Observability. */
+(function(){
+  const oldLoad=load, oldRender=renderView;
+  navGroups.push(['Monitoring',['Monitoring & Observability']]);
+  routeMap['Monitoring & Observability']='/monitoring/overview';
+  function monitoringView(d){
+    const h=d||{}; const checks=h.checks||[], alerts=h.alerts||[], rules=h.rules||[];
+    const statusClass=x=>x==='Critical'?'status critical':x==='Warning'?'status warning':x==='Healthy'?'status healthy':'status unknown';
+    const checkCards=checks.map(x=>`<div class="card"><div class="toolbar"><b>${esc(x.name)}</b><span class="${statusClass(x.status)}">${esc(x.status)}</span></div><p class="muted">${esc(x.detail)}</p></div>`).join('');
+    const open=alerts.filter(x=>x.status!=='Resolved');
+    return `<div class="hero"><div class="kicker">Phase 40C · Monitoring & Observability</div><h2 style="margin:6px 0">Operational visibility</h2><p class="muted">Actionable application, database, job, integration, payment, finance and inventory health signals. No secrets or arbitrary debugging access are exposed.</p><div class="toolbar"><span class="${statusClass(h.overall)}"><b>Overall: ${esc(h.overall||'Unknown')}</b></span><span class="muted">${esc(h.serverTime||'')}</span>${has('monitoring.manage')?btn('Capture snapshot','monitor-snapshot','btn primary'):''}</div></div><div class="grid">${[['Checks',checks.length],['Open alerts',open.length],['Failed jobs · 24h',h.metrics?.failedJobs24h||0],['Integration errors',h.metrics?.integrationErrors||0],['Failed payments · 1h',h.metrics?.failedPayments||0],['Finance failures · 1h',h.metrics?.failedFinancePostings||0]].map(x=>`<div class="card"><div class="label">${esc(x[0])}</div><div class="metric">${num(x[1])}</div></div>`).join('')}</div><div class="grid2">${checkCards}</div><div class="card"><h3 class="sectiontitle">Alerts</h3>${table(['Severity','Alert','Status','Value','Last seen','Actions'],alerts.map(x=>`<tr><td>${pill(x.severity)}</td><td><b>${esc(x.title)}</b><br><span class="muted">${esc(x.detail)}</span></td><td>${pill(x.status)}</td><td>${esc(x.value??'—')} / ${esc(x.threshold??'—')}</td><td>${new Date(x.last_seen_at).toLocaleString()}</td><td class="actions">${x.status==='Open'&&has('monitoring.manage')?btn('Acknowledge','monitor-ack:'+x.id):''}${x.status!=='Resolved'&&has('monitoring.manage')?btn('Resolve','monitor-resolve:'+x.id):''}</td></tr>`),'No alerts','No active or historical alerts have been recorded.')}</div><div class="card"><h3 class="sectiontitle">Alert rules</h3>${table(['Rule','Severity','Threshold','Cooldown','Enabled','Action'],rules.map(x=>`<tr><td><b>${esc(x.name)}</b><br><span class="muted">${esc(x.key)}</span></td><td>${pill(x.severity)}</td><td>${esc(x.threshold??'—')}</td><td>${num(x.cooldown_minutes)} min</td><td>${pill(x.enabled?'Enabled':'Disabled')}</td><td>${has('monitoring.manage')?btn(x.enabled?'Disable':'Enable','monitor-rule:'+x.id+':'+x.enabled):''}</td></tr>`),'No alert rules','Alert rules will appear here.')}</div><div class="card"><h3 class="sectiontitle">Recent health snapshots</h3>${table(['Time','Overall','Metrics'],(h.history||[]).map(x=>`<tr><td>${new Date(x.created_at).toLocaleString()}</td><td>${pill(x.overall_status)}</td><td>${esc(JSON.stringify(x.metrics_json||{}))}</td></tr>`),'No snapshots','Capture a snapshot when you want an auditable point-in-time health record.')}</div>`;
+  }
+  load=async function(v){if(v==='Monitoring & Observability'){state.loading=true;render();try{state.data=await api('/monitoring/overview')}catch(e){state.message=e.message}finally{state.loading=false;renderView();flash()}return}return oldLoad(v)};
+  renderView=function(){if(state.view==='Monitoring & Observability'){const c=$('#content');if(c){c.innerHTML=monitoringView(state.data);bindView();flash()}return}return oldRender()};
+  const oldAction=handleAction;
+  handleAction=async function(a,b){
+    if(a==='monitor-snapshot'){await api('/monitoring/snapshot',{method:'POST',body:JSON.stringify({})});state.message='Monitoring snapshot captured';return load('Monitoring & Observability')}
+    if(a.startsWith('monitor-ack:')){await api('/monitoring/alerts/'+a.split(':')[1]+'/acknowledge',{method:'PATCH',body:JSON.stringify({})});state.message='Alert acknowledged';return load('Monitoring & Observability')}
+    if(a.startsWith('monitor-resolve:')){if(!confirm('Resolve this alert?'))return;await api('/monitoring/alerts/'+a.split(':')[1]+'/resolve',{method:'PATCH',body:JSON.stringify({})});state.message='Alert resolved';return load('Monitoring & Observability')}
+    if(a.startsWith('monitor-rule:')){const [id,enabled]=a.split(':').slice(1);await api('/monitoring/rules/'+id,{method:'PATCH',body:JSON.stringify({enabled:enabled!=='true'})});state.message='Alert rule updated';return load('Monitoring & Observability')}
+    return oldAction(a,b);
+  };
+})();

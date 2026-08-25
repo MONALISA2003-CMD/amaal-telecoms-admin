@@ -6,7 +6,7 @@ const required = [
   'server.js','schema.sql','package.json','public/index.html','public/app.js',
   'suppliers-procurement.js','customers-crm.js','sales-pos.js','delivery-logistics.js','warranty-repairs.js',
   'document-management.js','business-intelligence.js','ai-business-intelligence.js','integration-hub.js',
-  'public/password-reset.html','public/password-reset.js','public/invite.html','public/invite.js','media-management.js','media-management.sql','system-operations.js','system-operations.sql'
+  'public/password-reset.html','public/password-reset.js','public/invite.html','public/invite.js','media-management.js','media-management.sql','system-operations.js','system-operations.sql','monitoring-observability.js','monitoring-observability.sql'
 ];
 const errors=[];
 for(const f of required) if(!fs.existsSync(path.join(root,f))) errors.push(`Missing required file: ${f}`);
@@ -28,6 +28,9 @@ if(!/row_number\(\) OVER \(PARTITION BY customer_id ORDER BY id\)/i.test(schema)
 if(!/ALTER TABLE orders ADD COLUMN IF NOT EXISTS idempotency_key/i.test(schema)) errors.push('Orders idempotency hardening is missing.');
 if(!/ALTER TABLE orders ADD COLUMN IF NOT EXISTS cancellation_reason/i.test(schema)) errors.push('Orders cancellation reason field is missing.');
 if(!/inventory_reservations_status_check CHECK\(status IN \('Active','Released','Consumed','Cancelled','Expired'\)\)/i.test(schema)) errors.push('Inventory reservation expiry status constraint is missing.');
+if(!/registerMonitoringObservability\(\{app,auth,need,q,audit\}\)/.test(server)) errors.push('Monitoring/observability registration is missing.');
+if(!/CREATE TABLE IF NOT EXISTS monitoring_alert_rules/i.test(fs.readFileSync(path.join(root,'monitoring-observability.sql'),'utf8'))) errors.push('Monitoring alert rules schema is missing.');
+if(!/monitoring.view/.test(server)) errors.push('Monitoring permissions are missing.');
 if(!/registerSalesPos\(\{app,auth,need,q,pool,audit,changeStock\}\)/.test(server)) errors.push('Sales/POS registration is missing.');
 if(!/const MFA_LOGIN_ENABLED=false;/.test(server)) errors.push('Build is not configured for temporary MFA-disabled development login.');
 if(/Authenticator code \(if enabled\)/.test(app) || /MFA is required before signing in/.test(app)) errors.push('Login UI still contains MFA enforcement copy.');
