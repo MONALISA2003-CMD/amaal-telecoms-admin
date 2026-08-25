@@ -170,37 +170,39 @@ Live Render and production PostgreSQL execution cannot be performed from the loc
 - External payment gateway refund APIs remain under Integration Hub.
 - Document evidence remains under Document Management.
 
+## Cross-module integration audit and hardening
+
+Before the next business module, the cumulative build was audited across Catalog, Inventory, Suppliers & Procurement, Customers & CRM, Sales & POS, Orders & E-commerce, Pricing & Promotions, Delivery & Logistics, Warranty & Repairs and Returns & Refunds. The following missing links/regressions were identified and corrected:
+
+- Orders can no longer be moved directly to Delivered through the generic order-status endpoint while an active delivery shipment is still open. Delivery completion must occur through the Delivery workflow, preventing duplicate inventory consumption and duplicate finance completion.
+- The Orders → Returns refund handoff now forwards the existing CSRF token when it internally calls the canonical Returns endpoint. This fixes the authenticated internal handoff that previously could be rejected by the global CSRF middleware.
+- Warranty claims now enforce source consistency: a supplied customer must match the selected order or sale; an order and sale cannot both be supplied; cancelled orders are rejected; only completed sales can be warranty purchase sources.
+- Warranty claims now verify that a supplied serialized unit actually belongs to the selected order or sale before moving the unit into Service.
+- Delivery shipment creation continues to synchronize the existing order fulfillment record rather than creating a duplicate fulfillment engine.
+- Existing inventory reservation, serialized-unit, return, warranty and finance transaction paths were re-audited for duplicate completion risks.
+
+## Audit status
+
+- JavaScript syntax: PASS for every application JavaScript file.
+- Render preflight: PASS after the same runtime preflight command used by Render.
+- PostgreSQL UUID aggregate scan: PASS; no application `min(uuid)`/`max(uuid)` pattern remains.
+- YAML: no application YAML files. Dependency YAML is excluded from preflight and packaging.
+- `node_modules`: excluded from the deliverable.
+- Git metadata: excluded from the deliverable.
+- Canonical procurement entity: `purchase_requisitions` preserved.
+- MFA: untouched and still final-phase only.
+- Destructive startup reset: none.
+- Cross-module order/delivery completion: hardened against duplicate completion.
+- Order refund → Returns handoff: CSRF-safe.
+- Warranty customer/order/sale/IMEI linkage: hardened.
+- Documentation cleanup: only `README.md` and this `CONTINUATION.md` retained.
+
+Live Render and production PostgreSQL execution remain outside the local archive environment, so no false live-production claim is made.
+
 ## Next module
 
 **Document Management**
 
 ## Next-module continuation prompt
 
-Continue from this cumulative ZIP.
-
-1. Inspect the complete project and read `README.md` and this `CONTINUATION.md` first.
-2. Audit all completed modules, especially Customers & CRM, Sales & POS, Orders & E-commerce, Pricing & Promotions, Delivery & Logistics, Warranty & Repairs and Returns & Refunds.
-3. Fix regressions before adding anything new.
-4. Preserve existing architecture and operational data.
-5. Never reset PostgreSQL.
-6. Never create database or Git branches.
-7. Never commit secrets.
-8. Do not introduce YAML files.
-9. Do not implement, enable or modify MFA. MFA remains final-phase only.
-10. Preserve canonical `purchase_requisitions`.
-11. Build Document Management fully around the existing `documents` and `document_blobs` architecture.
-12. Support secure document metadata, upload, download, replacement/versioning where appropriate, entity attachment, document visibility, retention, verification, expiry, duplicate detection, access control and audit history.
-13. Integrate documents with Customers, Suppliers, Procurement, Sales, Orders, Warranty, Returns, Finance and Web/Hosting without creating duplicate attachment stores.
-14. Keep binary data in the existing durable database-backed document system rather than ephemeral Render filesystem storage.
-15. Protect document download and sensitive-document access server-side.
-16. Audit MIME/type validation, size limits, checksums, duplicate detection, filename handling and path traversal safety.
-17. Preserve historical documents and avoid destructive deletion unless explicitly permitted and audited.
-18. Run full JavaScript syntax checks.
-19. Install dependencies and run Render preflight exactly as Render does.
-20. Confirm `node_modules` is excluded from the ZIP and dependency YAML does not break preflight.
-21. Confirm there are no application YAML files.
-22. Audit PostgreSQL migrations for UUID/type compatibility and safe deployment against existing data.
-23. Run regression checks across every business module.
-24. Keep only `README.md` and the current `CONTINUATION.md` as Markdown documentation.
-25. Package the complete cumulative project only after the audit and bug checks pass.
-26. Produce the next `CONTINUATION.md` naming the next business module exactly.
+Continue from this cumulative ZIP. Inspect the complete project and this continuation file first. Audit every completed business module and repair regressions before adding Document Management. Preserve all existing architecture and operational data. Never reset PostgreSQL, never create database or Git branches, never commit secrets, do not introduce YAML, and do not implement or modify MFA. Preserve canonical `purchase_requisitions`. Build Document Management around the existing `documents` and `document_blobs` architecture with secure metadata, durable database-backed storage, upload/download/replacement/versioning where appropriate, entity attachment, visibility, retention, verification, expiry, checksum/duplicate detection, access control and audit history. Integrate documents with Customers, Suppliers, Procurement, Sales, Orders, Warranty, Returns, Finance and Web/Hosting without creating duplicate attachment stores. Run complete syntax, migration/static, integration, security, regression and Render preflight checks. Keep only README.md and CONTINUATION.md. Produce the next cumulative ZIP only after all checks pass and update CONTINUATION.md for the next business module.
