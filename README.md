@@ -120,3 +120,13 @@ Permanent account deletion is intentionally unavailable to ordinary administrato
 ## Build-stage MFA setting
 
 MFA sign-in enforcement is intentionally disabled during the current build phase. The server defaults to `MFA_LOGIN_ENABLED=false`, allowing email + password sign-in only. Enable MFA only during the final security phase.
+
+
+## Current build security mode
+- MFA login enforcement is intentionally **disabled during the build**. Administrator login is email + password only.
+- Do not add `MFA_LOGIN_ENABLED=true` to Render for this build; the application hard-disables login enforcement until the final security phase.
+- MFA tables, setup endpoints and trusted-device infrastructure remain in the codebase for the final security phase.
+- Resend/email delivery variables remain deferred until the production domain and sender email are available.
+
+## Render deployment note
+This build fixes a database bootstrap typo where the startup migration referenced `procurement_requisitions`; the actual table is `purchase_requisitions`. A failed startup means Render continues serving the previous successful deployment, so the login screen can appear unchanged until this corrected commit successfully deploys.
