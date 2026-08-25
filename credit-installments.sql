@@ -27,3 +27,37 @@ CREATE TABLE IF NOT EXISTS credit_restructures(
 );
 CREATE INDEX IF NOT EXISTS idx_credit_installments_due ON credit_installments(due_date,status);
 CREATE INDEX IF NOT EXISTS idx_credit_payments_account ON credit_payments(credit_account_id,paid_at);
+
+
+-- Credit integration and lifecycle hardening (additive/backward-compatible)
+ALTER TABLE credit_applications ADD COLUMN IF NOT EXISTS source_type text NOT NULL DEFAULT 'Manual';
+ALTER TABLE credit_applications ADD COLUMN IF NOT EXISTS source_id uuid;
+ALTER TABLE credit_applications ADD COLUMN IF NOT EXISTS eligibility_snapshot jsonb NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE credit_accounts ADD COLUMN IF NOT EXISTS source_type text;
+ALTER TABLE credit_accounts ADD COLUMN IF NOT EXISTS source_id uuid;
+ALTER TABLE credit_accounts ADD COLUMN IF NOT EXISTS down_payment numeric(14,2) NOT NULL DEFAULT 0 CHECK(down_payment>=0);
+ALTER TABLE credit_accounts ADD COLUMN IF NOT EXISTS total_due numeric(14,2) NOT NULL DEFAULT 0 CHECK(total_due>=0);
+ALTER TABLE credit_accounts ADD COLUMN IF NOT EXISTS total_paid numeric(14,2) NOT NULL DEFAULT 0 CHECK(total_paid>=0);
+ALTER TABLE credit_accounts ADD COLUMN IF NOT EXISTS last_payment_at timestamptz;
+ALTER TABLE credit_accounts ADD COLUMN IF NOT EXISTS next_due_date date;
+ALTER TABLE credit_installments ADD COLUMN IF NOT EXISTS notes text NOT NULL DEFAULT '';
+ALTER TABLE credit_payments ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'Completed';
+ALTER TABLE credit_payments ADD COLUMN IF NOT EXISTS reversed_at timestamptz;
+ALTER TABLE credit_payments ADD COLUMN IF NOT EXISTS reversed_by uuid REFERENCES users(id) ON DELETE SET NULL;
+ALTER TABLE credit_restructures ADD COLUMN IF NOT EXISTS approved_at timestamptz;
+CREATE TABLE IF NOT EXISTS credit_account_links(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), credit_account_id uuid NOT NULL REFERENCES credit_accounts(id) ON DELETE CASCADE,
+ source_type text NOT NULL CHECK(source_type IN ('Sale','Order')),
+ source_id uuid NOT NULL, linked_at timestamptz NOT NULL DEFAULT now(), linked_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ UNIQUE(source_type,source_id), UNIQUE(credit_account_id,source_type,source_id)
+);
+CREATE TABLE IF NOT EXISTS credit_payment_reversals(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), payment_id uuid NOT NULL UNIQUE REFERENCES credit_payments(id),
+ amount numeric(14,2) NOT NULL CHECK(amount>0), reason text NOT NULL, reversed_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ reversed_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_credit_accounts_customer_status ON credit_accounts(customer_id,status);
+CREATE INDEX IF NOT EXISTS idx_credit_accounts_source ON credit_accounts(source_type,source_id);
+CREATE INDEX IF NOT EXISTS idx_credit_applications_customer_status ON credit_applications(customer_id,status);
+CREATE INDEX IF NOT EXISTS idx_credit_collection_due ON credit_collection_tasks(status,due_at);
+CREATE INDEX IF NOT EXISTS idx_credit_links_source ON credit_account_links(source_type,source_id);
