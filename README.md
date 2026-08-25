@@ -89,3 +89,29 @@ Integration Hub provides:
 Set `INTEGRATION_ENCRYPTION_KEY` to a long random secret in Render. If it is absent, the platform derives the encryption key from `JWT_SECRET`; set the dedicated variable before production use.
 
 For a separate Vercel/public website, set `PUBLIC_WEB_ORIGINS` on Render to the exact HTTPS origin(s) of the public website. The public AI endpoint is the only intentionally cross-origin API surface; admin APIs remain same-origin protected.
+
+## Email / password reset — production setup later
+
+Password recovery is implemented in the application, but Amaal Telecoms is currently being tested without a custom domain or production mail sender.
+
+When the company domain and email delivery are ready, configure these Render environment variables:
+- `RESEND_API_KEY` — server-side Resend API key; never commit it to GitHub.
+- `EMAIL_FROM` — a sender address verified/authorized by the email provider.
+- `APP_BASE_URL` — the public HTTPS URL used to construct password-reset links.
+
+For the current Render-only testing stage, these email variables may remain unset. Do not place the future Resend key, sender credentials or domain secrets in the repository.
+
+## Phase B — Identity & Account Lifecycle
+
+Phase B strengthens staff account lifecycle without introducing branch-specific access rules. It includes:
+- Staff profiles and invitations.
+- Account activation/suspension.
+- Role assignment and replacement from the staff screen.
+- Super Admin-only granting/removal of the Super Admin role.
+- Protection against removing the final active Super Admin.
+- Super Admin permanent staff-account deletion with explicit email confirmation.
+- Automatic revocation/deletion of sessions, trusted devices, MFA credentials, password history, roles and notifications through database relationships when an account is deleted.
+- Historical business records are preserved where the database model permits it; user attribution fields are detached rather than deleting the business transaction itself.
+- Staff deletion is audited before the account is removed.
+
+Permanent account deletion is intentionally unavailable to ordinary administrators and cannot be used to delete the currently signed-in Super Admin account.

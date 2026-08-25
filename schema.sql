@@ -510,7 +510,7 @@ CREATE INDEX IF NOT EXISTS idx_supplier_pricing_supplier_variant ON supplier_pro
 CREATE TABLE IF NOT EXISTS purchase_requisitions(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
  requisition_no text UNIQUE NOT NULL,
- requester_id uuid NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+ requester_id uuid REFERENCES users(id) ON DELETE SET NULL,
  department_id uuid REFERENCES departments(id) ON DELETE SET NULL,
  status text NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','Submitted','Approved','Rejected','Cancelled')),
  priority text NOT NULL DEFAULT 'Normal' CHECK(priority IN ('Low','Normal','High','Urgent')),
