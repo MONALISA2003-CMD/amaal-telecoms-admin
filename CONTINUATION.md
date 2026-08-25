@@ -2,138 +2,205 @@
 
 ## Current system state
 
-Cumulative Node.js 20 / Express 5 / PostgreSQL enterprise administration platform. Completed business modules remain integrated and operational. PostgreSQL is never reset by startup. The canonical procurement requisition entity is `purchase_requisitions`. MFA is deliberately deferred to the final security phase and was not implemented or modified in this module.
+Cumulative Node.js 20 / Express 5 / PostgreSQL enterprise administration platform. Completed business modules remain integrated and operational. PostgreSQL is never reset by startup. The canonical procurement requisition entity is `purchase_requisitions`. MFA remains final-phase only and was not enabled or expanded by Warranty & Repairs.
 
-## Completed module: Delivery & Logistics
+## Completed module: Warranty & Repairs
 
-Built and audited Delivery & Logistics as the operational bridge between paid orders, dispatch, inventory, customers and finance.
+Warranty & Repairs is now the operational service layer for serialized telecom/device products. It connects warranty claims to existing Customers, Sales, Orders, Inventory serialized units, Documents, Returns and Finance reporting without creating duplicate business engines.
 
 Implemented:
 
-- Delivery zones with fees, regions, ETA and activation status
-- Shipment creation from eligible orders
-- Duplicate shipment protection at application and database levels
-- Delivery partners and partner status management
-- Driver assignment
-- Unit count, unit delivery cost and total delivery cost tracking
-- Delivery tracking number and carrier information
-- Scheduled delivery times
-- Recipient details
-- Delivery status lifecycle
-- Assignment, pickup, transit, out-for-delivery, failed, returned, cancelled and delivered workflows
-- Delivery status history and audit events
-- Delivery attempts with concurrency-safe attempt numbering
-- Failed delivery reasons and rescheduling support
-- Proof-of-delivery type, reference and notes
-- Serialized product and IMEI validation before delivery completion
-- Inventory reservation consumption exactly once on successful delivery
-- Serialized inventory transition to Sold on successful delivery
-- Finance completion journal synchronization through the existing order finance engine
-- Order status synchronization
-- Shipment cancellation/return handoff back to the dispatch queue
-- Delivery partner performance reporting
-- Delivery cost analytics
-- Delivery dashboard and responsive management UI
-- Server-side permission enforcement
+- Warranty policy management by brand/category with coverage duration, coverage text, exclusions and active/inactive state
+- Warranty claim creation from an existing customer, sale or order
+- Serialized unit and IMEI verification
+- Product/variant consistency validation
+- Policy eligibility calculation using real sale/order dates
+- Coverage start/end tracking and eligibility reason
+- Active-claim duplicate protection for the same serialized unit and issue
+- Transaction-safe movement of a serialized unit into `Service`
+- Previous serialized status/location preservation for rejected/cancelled claims
+- Controlled claim lifecycle: Submitted → Under Review → Approved → In Repair → Ready for Collection → Resolved, with guarded rejection/cancellation paths
+- Server-side coverage/status validation
+- Repair job creation with technician or active external repair partner
+- Repair partner assignment, location, item description, expected return and external reference
+- Controlled repair job lifecycle
+- Repair diagnosis, work done, labour cost, partner cost and parts cost tracking
+- Actual inventory consumption for repair parts through the existing `changeStock` engine
+- Repair part usage ledger linked to claim and repair job
+- Stock availability validation before part consumption
+- Serialized item restoration after rejected/cancelled claims
+- Serialized item completion handling after successful repair/collection
+- Customer collection workflow
+- Warranty event history and audit logging
+- Warranty claim detail including events, repair job, consumed parts and attached Document Management records
+- Repair partner management and performance reporting
+- Warranty dashboard summary and partner analytics
+- Existing Business Intelligence warranty reporting remains based on operational data
 
 ## Important bug fixes and audit findings
 
-- Fixed an undefined `unitCount` / `unitCost` / `totalDeliveryCost` shipment creation path that would crash valid delivery creation requests.
-- New shipments are forced to begin in `Pending`; callers cannot bypass the delivery lifecycle by creating a shipment directly as Delivered.
-- Delivery completion now requires the parent order to actually be `Dispatched`.
-- Delivery completion remains transactional and locks the shipment and order.
-- Inventory reservation consumption occurs only for active reservations and is performed inside the same transaction as delivery completion.
-- Serialized order lines are verified before completion.
-- Delivery attempts are serialized with a shipment row lock to avoid duplicate attempt numbers under concurrent requests.
-- Closed shipments cannot accept further delivery attempts.
-- Failed attempts require a reason.
-- Cancelled/returned shipments return dispatched orders to `Ready for Dispatch` so the order can be dispatched again without creating a second order.
-- Partner and zone references are validated server-side and only active records can be selected.
-- Delivery cost fields are validated as finite, non-negative numbers.
-- Proof-of-delivery fields were added without introducing file storage or a duplicate document system.
-- Existing UUID aggregate startup fix remains intact; no `min(uuid)` or equivalent invalid UUID aggregate was introduced.
-- Render preflight was executed after dependency installation and passed while correctly excluding `node_modules` from the YAML scan.
+- Removed unsafe UUID aggregate patterns; no `min(uuid)`/`max(uuid)` style aggregate remains in application SQL.
+- Replaced the previous non-transactional serialized-unit mutation during claim creation with a transaction and row lock.
+- Added PostgreSQL transaction advisory locking for serialized-unit + issue claim creation to prevent concurrent duplicate active claims without requiring destructive cleanup of existing historical data.
+- Avoided a migration-time unique-index failure that could occur if historical production data already contained duplicate active claims; duplicate prevention is enforced transactionally in application logic and by a supporting non-unique index.
+- Added guarded claim state transitions so arbitrary status jumps cannot bypass operational controls.
+- Added guarded repair-job state transitions.
+- Rejected invalid dates and non-finite/negative money values.
+- Validated brands, categories, policies, customers, orders, sales, serialized units, repair partners and inventory locations before use.
+- Prevented repair jobs from being opened on rejected/cancelled claims.
+- Prevented repair parts from being consumed after a repair job is completed/cancelled.
+- Repair part consumption now checks real inventory and uses the existing inventory movement engine inside the same transaction.
+- Rejected/cancelled warranty claims restore the serialized unit to its recorded pre-service status/location.
+- Successful collection returns the serialized unit to its sold/service-complete lifecycle state.
+- Added collection timestamp and collection notes.
+- Preserved existing Returns & Refunds, Documents, Finance, Delivery and Sales/POS architecture rather than creating duplicates.
+- Render preflight was run after dependency installation and passed.
 
 ## Database changes
 
 Additive changes only:
 
-- Delivery zones
-- Delivery shipments
-- Delivery events
-- Delivery attempts
-- Delivery partners
-- Partner and shipment indexes
-- Shipment tracking and scheduling indexes
-- Proof-of-delivery fields on delivery shipments
+- Warranty coverage start/end timestamps
+- Warranty eligibility reason
+- Serialized-unit prior status/location for safe service rollback
+- Warranty collection timestamp/notes
+- Active warranty claim lookup index
+- `warranty_part_usage` table for real repair-part consumption records
+- Claim/job/part usage indexes
 
-No database reset, branch, destructive migration or duplicate procurement requisition implementation was introduced.
+No PostgreSQL reset, branch, destructive migration or duplicate procurement requisition implementation was introduced.
 
 ## Integrations
 
-- Orders: shipment eligibility, order fulfillment status, dispatch queue and delivery completion
-- Inventory: active reservation consumption and serialized-unit lifecycle
-- Customers: recipient/customer information comes from the existing order/customer records
-- Finance: existing idempotent order completion journal is reused
-- Returns: returned delivery state hands the order back for the existing Returns & Refunds workflow
-- Integration Hub: no duplicate integration framework was created
-- Business Intelligence: existing delivery reporting can consume real shipment and partner data
+- Customers: existing customer records are referenced directly.
+- Sales: warranty claims can reference completed sales and their serialized units.
+- Orders: warranty claims can reference actual orders.
+- Inventory: serialized lifecycle and repair-part stock consumption use existing inventory infrastructure.
+- Returns & Refunds: warranty does not create a second return engine; future return/refund decisions continue through the canonical Returns module.
+- Documents: claim detail reads documents attached to `WarrantyClaim` through the existing Document Management module.
+- Finance: warranty/repair costs remain operational cost data and are available to existing reporting; no fake accounting entries are created. Finance posting remains subject to the existing Finance accounting workflow.
+- Business Intelligence: warranty reporting uses actual claims, jobs and partner costs.
 
 ## Testing and validation
 
-- JavaScript syntax checks passed for all backend and frontend JavaScript files.
-- Render preflight passed.
-- Clean dependency-install simulation was checked before preflight.
-- No application YAML files are present in the final source tree.
-- No `node_modules` directory is included in the deliverable.
+- All application JavaScript files pass `node --check`.
+- `render-preflight.js` passes after dependency installation.
+- No application YAML files are present.
+- `node_modules` is excluded from the deliverable.
+- Git metadata is excluded from the deliverable.
 - Only `README.md` and this `CONTINUATION.md` remain as Markdown documentation.
-- `purchase_requisitions` remains canonical.
-- MFA remains untouched and deferred.
-- Static searches for TODO/FIXME markers in application JS/SQL returned no results.
-- Route and delivery lifecycle logic was manually audited for duplicate creation, illegal transitions, concurrency and transactional integrity.
+- Canonical `purchase_requisitions` remains intact.
+- MFA remains deferred.
+- Static UUID aggregate audit passed.
+- Warranty transaction, transition, duplicate-claim, serialized-unit, inventory-part and partner-validation paths were manually audited.
 
 Live Render and production PostgreSQL execution cannot be performed from the local archive environment, so this package does not claim a false live-production pass.
 
 ## Known limitations
 
-- External courier APIs and webhook delivery are handled by the existing Integration Hub roadmap rather than a second delivery integration framework.
-- Proof-of-delivery attachments are represented by controlled references/notes; actual binary evidence remains under the existing Document Management module.
-- Delivery fee calculation remains informational for orders already paid and does not silently rewrite historical order totals.
+- Actual binary warranty evidence remains stored through the existing Document Management module rather than a second attachment system.
+- Finance does not receive invented warranty journals. If the business requires automatic repair-expense posting, the next Finance integration audit should add it through the existing accounting engine and configured accounts.
+- External repair-partner APIs/webhooks remain under Integration Hub.
+
+## Completed module: Returns & Refunds
+
+Returns & Refunds was audited and hardened as the canonical post-sale return and refund engine. It reuses original Sales and Orders lines, existing Inventory movements and serialized-unit records, and the existing Finance refund transaction stream.
+
+Implemented and audited:
+
+- Order-or-sale source validation with no mixed source references
+- Original transaction status validation
+- Customer/source consistency checks
+- Line-level return quantity validation against previously returned quantities
+- Serialized-unit ownership verification against the original line
+- Serialized-unit status validation before return
+- Return quantity concurrency protection using transaction advisory locks
+- Return lifecycle controls
+- Inspection and disposition handling
+- Inventory restocking through the existing stock engine
+- Serialized-unit return lifecycle updates
+- Partial refunds
+- Cumulative refund ceiling enforcement
+- Duplicate/full-refund prevention
+- Refund method/reference capture
+- Refund event history and audit logging
+- Real refund transactions suitable for the existing Finance synchronization process
+- Return and refund analytics based on actual operational data
+
+## Returns bug fixes
+
+- Fixed the previous refund logic that could mark a partially refunded return as fully refunded.
+- Refunds now calculate the remaining eligible balance from completed refund transactions.
+- Refunds can be processed incrementally without exceeding the approved return amount.
+- Invalid money values are rejected instead of silently becoming zero.
+- Return requests now verify that the original order/sale exists and is eligible.
+- Customer mismatch is rejected.
+- Duplicate returned quantity is locked and checked transactionally.
+- Serialized return verification now uses valid explicit joins and row locks.
+- Inventory restocking remains transactional with the return status change.
+- Fixed an earlier inventory movement compatibility bug discovered during the cumulative audit: procurement receipt reversal uses `RECEIPT_REVERSAL`, which is now explicitly supported by the existing movement-type constraint.
+
+## Database changes
+
+Additive/compatibility changes only:
+
+- Inventory movement compatibility includes `RECEIPT_REVERSAL` because an existing procurement reversal workflow already uses that legitimate movement type.
+- Warranty hardening fields and `warranty_part_usage` remain included.
+- No destructive migration or PostgreSQL reset.
+
+## Testing and validation
+
+- All application JavaScript files pass `node --check`.
+- Render preflight passes.
+- No application YAML files are present.
+- No `node_modules` directory is included in the deliverable.
+- No Git metadata is included.
+- Only `README.md` and this `CONTINUATION.md` remain as Markdown documentation.
+- Canonical `purchase_requisitions` remains intact.
+- MFA remains deferred and untouched.
+- Static UUID aggregate audit passed.
+- Returns SQL/query construction was manually audited, including serialized joins, transaction locking and refund calculations.
+- Warranty and Returns integration paths were manually audited for cross-module regressions.
+
+Live Render and production PostgreSQL execution cannot be performed from the local archive environment, so this package does not claim a false live-production pass.
+
+## Known limitations
+
+- Finance automatically consumes real `refund_transactions` through the existing Finance synchronization workflow; no fake accounting entries are generated.
+- External payment gateway refund APIs remain under Integration Hub.
+- Document evidence remains under Document Management.
 
 ## Next module
 
-**Warranty & Repairs**
+**Document Management**
 
 ## Next-module continuation prompt
 
 Continue from this cumulative ZIP.
 
-1. Inspect the complete project and read `README.md` and this `CONTINUATION.md` before changing anything.
-2. Audit Catalog, Inventory, Suppliers & Procurement, Customers & CRM, Sales & POS, Orders & E-commerce, Pricing & Promotions and Delivery & Logistics before building.
-3. Fix every regression before adding functionality.
-4. Preserve existing architecture and real operational data.
+1. Inspect the complete project and read `README.md` and this `CONTINUATION.md` first.
+2. Audit all completed modules, especially Customers & CRM, Sales & POS, Orders & E-commerce, Pricing & Promotions, Delivery & Logistics, Warranty & Repairs and Returns & Refunds.
+3. Fix regressions before adding anything new.
+4. Preserve existing architecture and operational data.
 5. Never reset PostgreSQL.
 6. Never create database or Git branches.
 7. Never commit secrets.
 8. Do not introduce YAML files.
-9. Do not implement, modify or partially build MFA. MFA remains final-phase only.
-10. Preserve canonical `purchase_requisitions` and all existing business entities.
-11. Build Warranty & Repairs as an integrated module connected to Customers, serialized inventory/IMEI, Sales, Orders, Returns, Documents, Finance and Delivery where applicable.
-12. Support warranty policies, eligibility checks, claims, coverage periods, serial/IMEI verification, inspections, repair jobs, statuses, technicians/repair partners, estimates, approvals, parts usage, repair costs, customer communication notes, replacement handling, completion, collection and warranty history.
-13. Prevent duplicate warranty claims for the same active issue and serialized unit where business rules prohibit duplication.
-14. Preserve serialized-unit lifecycle integrity and never create a second IMEI/serial record unnecessarily.
-15. Integrate parts consumption with Inventory and financial costs with Finance using real transactions.
-16. Integrate returns/exchanges without creating a duplicate returns engine.
-17. Use the existing Document Management module for warranty documents and evidence.
-18. Protect approvals, cost changes, warranty overrides and closure operations server-side.
-19. Audit all claim and repair state changes.
-20. Run full regression checks across all previous modules.
-21. Run all JavaScript syntax checks.
-22. Run Render preflight after dependency installation.
-23. Search for YAML files while excluding dependency-owned files correctly.
-24. Audit PostgreSQL bootstrap SQL for UUID/type compatibility and safe additive migrations.
-25. Audit route ordering and dynamic route collisions.
-26. Remove obsolete Markdown documentation, retaining only `README.md` and the new `CONTINUATION.md`.
-27. Produce the next `CONTINUATION.md` with the completed Warranty & Repairs state and the next business module.
-28. Package the complete cumulative project, not only changed files.
-29. Do not deliver a ZIP until the complete audit, bug checks and preflight pass.
+9. Do not implement, enable or modify MFA. MFA remains final-phase only.
+10. Preserve canonical `purchase_requisitions`.
+11. Build Document Management fully around the existing `documents` and `document_blobs` architecture.
+12. Support secure document metadata, upload, download, replacement/versioning where appropriate, entity attachment, document visibility, retention, verification, expiry, duplicate detection, access control and audit history.
+13. Integrate documents with Customers, Suppliers, Procurement, Sales, Orders, Warranty, Returns, Finance and Web/Hosting without creating duplicate attachment stores.
+14. Keep binary data in the existing durable database-backed document system rather than ephemeral Render filesystem storage.
+15. Protect document download and sensitive-document access server-side.
+16. Audit MIME/type validation, size limits, checksums, duplicate detection, filename handling and path traversal safety.
+17. Preserve historical documents and avoid destructive deletion unless explicitly permitted and audited.
+18. Run full JavaScript syntax checks.
+19. Install dependencies and run Render preflight exactly as Render does.
+20. Confirm `node_modules` is excluded from the ZIP and dependency YAML does not break preflight.
+21. Confirm there are no application YAML files.
+22. Audit PostgreSQL migrations for UUID/type compatibility and safe deployment against existing data.
+23. Run regression checks across every business module.
+24. Keep only `README.md` and the current `CONTINUATION.md` as Markdown documentation.
+25. Package the complete cumulative project only after the audit and bug checks pass.
+26. Produce the next `CONTINUATION.md` naming the next business module exactly.

@@ -10,7 +10,7 @@ The codebase uses business/module filenames rather than numbered phase filenames
 
 ## Current module
 
-Orders & E-commerce is the current completed business module. The next module is Pricing & Promotions. See `CONTINUATION.md` for the authoritative continuation instructions.
+Returns & Refunds is the current completed business module. The next module is Document Management. See `CONTINUATION.md` for the authoritative continuation instructions.
 
 ## Reporting & Business Intelligence
 
@@ -32,7 +32,7 @@ The BI layer is connected to operational data and provides:
 
 ## Security
 
-Secure HttpOnly sessions, trusted-device binding, CSRF protection, MFA/TOTP, ten-minute inactivity timeout, session revocation, rate limiting, audit/security events and least-privilege permissions are implemented server-side.
+Secure HttpOnly sessions, trusted-device binding, CSRF protection, inactivity timeout, session revocation, rate limiting, audit/security events and least-privilege permissions are implemented server-side. MFA/TOTP remains deliberately deferred to the final security phase and must not be enabled or expanded during business-module development.
 
 Browser developer tools cannot be made impossible by a web application. The platform therefore treats the browser as untrusted and enforces authorization and validation on the server.
 

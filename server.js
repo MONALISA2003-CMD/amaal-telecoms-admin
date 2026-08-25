@@ -695,7 +695,7 @@ const ordersModule=registerOrdersEcommerce({app,auth,need,q,pool,audit,changeSto
 registerWebHosting({app,auth,need,q,pool,audit});
 registerPricingPromotions({app,auth,need,q,pool,audit});
 registerDeliveryLogistics({app,auth,need,q,pool,audit,changeStock,postOrderCompletionFinance:ordersModule?.postOrderCompletionFinance});
-registerWarrantyRepairs({app,auth,need,q,pool,audit});
+registerWarrantyRepairs({app,auth,need,q,pool,audit,changeStock});
 registerReturnsRefunds({app,auth,need,q,pool,audit,changeStock});
 registerDocumentManagement({app,auth,need,q,pool,audit,upload:multipartSingle});
 registerCreditInstallments({app,auth,need,q,pool,audit});

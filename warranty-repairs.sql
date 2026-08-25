@@ -34,3 +34,16 @@ ALTER TABLE repair_jobs ADD COLUMN IF NOT EXISTS external_reference text NOT NUL
 ALTER TABLE repair_jobs ADD COLUMN IF NOT EXISTS partner_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(partner_cost>=0);
 DO $$ BEGIN ALTER TABLE repair_jobs ADD CONSTRAINT repair_jobs_partner_fk FOREIGN KEY(partner_id) REFERENCES repair_partners(id) ON DELETE SET NULL; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 CREATE INDEX IF NOT EXISTS idx_repair_jobs_partner ON repair_jobs(partner_id,status,created_at DESC);
+
+ALTER TABLE warranty_claims ADD COLUMN IF NOT EXISTS coverage_starts_at timestamptz;
+ALTER TABLE warranty_claims ADD COLUMN IF NOT EXISTS coverage_ends_at timestamptz;
+ALTER TABLE warranty_claims ADD COLUMN IF NOT EXISTS eligibility_reason text NOT NULL DEFAULT '';
+ALTER TABLE warranty_claims ADD COLUMN IF NOT EXISTS prior_serial_status text;
+ALTER TABLE warranty_claims ADD COLUMN IF NOT EXISTS prior_serial_location_id uuid REFERENCES inventory_locations(id) ON DELETE SET NULL;
+ALTER TABLE warranty_claims ADD COLUMN IF NOT EXISTS collected_at timestamptz;
+ALTER TABLE warranty_claims ADD COLUMN IF NOT EXISTS collection_notes text NOT NULL DEFAULT '';
+CREATE INDEX IF NOT EXISTS idx_warranty_claims_serial_active ON warranty_claims(serialized_unit_id,status) WHERE serialized_unit_id IS NOT NULL AND status IN ('Submitted','Under Review','Approved','In Repair','Ready for Collection');
+CREATE INDEX IF NOT EXISTS idx_warranty_active_issue_serial ON warranty_claims(serialized_unit_id,lower(trim(issue)),status) WHERE serialized_unit_id IS NOT NULL AND status IN ('Submitted','Under Review','Approved','In Repair','Ready for Collection');
+CREATE TABLE IF NOT EXISTS warranty_part_usage(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),claim_id uuid NOT NULL REFERENCES warranty_claims(id) ON DELETE CASCADE,repair_job_id uuid NOT NULL REFERENCES repair_jobs(id) ON DELETE CASCADE,variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,location_id uuid NOT NULL REFERENCES inventory_locations(id) ON DELETE RESTRICT,quantity numeric(18,3) NOT NULL CHECK(quantity>0),unit_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(unit_cost>=0),reason text NOT NULL DEFAULT '',created_by uuid REFERENCES users(id) ON DELETE SET NULL,created_at timestamptz NOT NULL DEFAULT now());
+CREATE INDEX IF NOT EXISTS idx_warranty_part_usage_claim ON warranty_part_usage(claim_id,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_warranty_part_usage_job ON warranty_part_usage(repair_job_id,created_at DESC);
