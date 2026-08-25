@@ -139,3 +139,22 @@
 
 ## Runtime verification boundary
 The build audit validates source syntax and cross-reference consistency. Render/PostgreSQL, Gemini quota and external webhook delivery must be verified in the deployed environment before production use.
+
+
+## Hardening 1–20 — Live acceptance
+- [ ] Login works on Android with email + password only.
+- [ ] Forgot password displays a non-enumerating response.
+- [ ] Reset link expires and is single-use.
+- [ ] Reset invalidates prior sessions.
+- [ ] Staff invitation can be accepted.
+- [ ] Suspended account cannot authenticate.
+- [ ] Existing suspended-user sessions stop working.
+- [ ] Super Admin can delete a test user without deleting historical business records.
+- [ ] Role changes affect API permissions, not only UI visibility.
+- [ ] Session revoke controls work from phone.
+- [ ] Unknown API route returns JSON 404.
+- [ ] API failures show safe messages without PostgreSQL/stack details.
+- [ ] Document upload/download works with an authorized account.
+- [ ] Unauthorized document download is rejected.
+- [ ] 10-minute inactivity is enforced.
+- [ ] MFA remains disabled during development.
