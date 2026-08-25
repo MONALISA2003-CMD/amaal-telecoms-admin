@@ -34,7 +34,7 @@ Browser developer tools cannot be made impossible by a web application. The plat
 
 ## Administrator recovery
 
-Open `/recovery`. The page is always reachable, but destructive recovery is enabled only when `ADMIN_RECOVERY_TOKEN` exists in the deployment environment. The recovery process preserves business records, revokes security access, deletes administrator users when PostgreSQL permits it, and otherwise safely suspends business-linked historical users. First-time setup is explicitly reopened by the recovery state flag. Remove/rotate the token immediately after recovery.
+Open `/recovery`. The page is always reachable, but destructive recovery is enabled only when `ADMIN_RECOVERY_TOKEN` exists in the deployment environment. The recovery process preserves business records, revokes security access, suspends administrator accounts, clears authentication relationships, and never deletes business data or user rows needed for historical foreign-key attribution. First-time setup is explicitly reopened by the recovery state flag. Remove/rotate the token immediately after recovery.
 
 ## Deployment
 
@@ -101,20 +101,33 @@ When the company domain and email delivery are ready, configure these Render env
 
 For the current Render-only testing stage, these email variables may remain unset. Do not place the future Resend key, sender credentials or domain secrets in the repository.
 
+## Password recovery lifecycle
+
+Normal users recover access from **Forgot password?** on the sign-in screen. The application uses single-use, 30-minute, hashed reset tokens, rate limits reset requests, rejects token reuse, checks password history, and revokes all active sessions and trusted devices after a successful reset.
+
+Email delivery is intentionally deferred until the custom domain and sender are ready. Configure `RESEND_API_KEY`, `EMAIL_FROM`, and `APP_BASE_URL` in Render. The Resend API key must remain server-side and must never be committed to GitHub.
+
+## Staff invitations
+
+Invitations use single-use 48-hour hashed tokens and the dedicated `/invite.html` acceptance screen. When Resend is configured, the invitation link is emailed automatically. Until Resend is configured, the authenticated inviter receives the one-time invitation token so the build can continue without a domain. Once Resend is configured, the token is no longer returned unless `ALLOW_MANUAL_INVITATION_TOKENS=true` is explicitly enabled.
+
 ## Phase B — Identity & Account Lifecycle
 
 Phase B strengthens staff account lifecycle without introducing branch-specific access rules. It includes:
 - Staff profiles and invitations.
-- Account activation/suspension.
+- Account activation/suspension, with immediate session/device revocation on suspension.
 - Role assignment and replacement from the staff screen.
 - Super Admin-only granting/removal of the Super Admin role.
 - Protection against removing the final active Super Admin.
-- Super Admin permanent staff-account deletion with explicit email confirmation.
-- Automatic revocation/deletion of sessions, trusted devices, MFA credentials, password history, roles and notifications through database relationships when an account is deleted.
-- Historical business records are preserved where the database model permits it; user attribution fields are detached rather than deleting the business transaction itself.
-- Staff deletion is audited before the account is removed.
+- Super Admin permanent staff-access removal with explicit email confirmation.
+- The deletion workflow uses an anonymized identity tombstone rather than physically deleting the user row. This preserves historical business records whose actor fields are NOT NULL, such as sales cashier attribution.
+- Sessions, trusted devices, MFA credentials, roles, notifications and reset tokens are revoked/removed. Personal identity fields are scrubbed and the login is permanently disabled.
+- Historical business records remain intact and continue to point to the anonymized historical actor.
+- Custom roles can be deleted only when unassigned; system roles are protected.
+- Departments can be deleted only when no users remain assigned.
+- Staff deletion is audited after the safe tombstone transaction commits.
 
-Permanent account deletion is intentionally unavailable to ordinary administrators and cannot be used to delete the currently signed-in Super Admin account.
+Permanent account removal is unavailable to ordinary administrators and cannot be used to remove the currently signed-in Super Admin or the final active Super Admin account.
 
 
 ## Build-stage MFA setting

@@ -1227,6 +1227,33 @@ CREATE TABLE IF NOT EXISTS trusted_devices(
 );
 CREATE INDEX IF NOT EXISTS idx_trusted_devices_user ON trusted_devices(user_id,revoked_at,last_seen_at DESC);
 
+-- Account recovery and email delivery lifecycle
+CREATE TABLE IF NOT EXISTS password_reset_tokens(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+ token_hash text UNIQUE NOT NULL,
+ expires_at timestamptz NOT NULL,
+ used_at timestamptz,
+ requested_ip text NOT NULL DEFAULT '',
+ user_agent text NOT NULL DEFAULT '',
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_password_reset_user_created ON password_reset_tokens(user_id,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_password_reset_active ON password_reset_tokens(token_hash,used_at,expires_at);
+CREATE TABLE IF NOT EXISTS email_delivery_logs(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ user_id uuid REFERENCES users(id) ON DELETE SET NULL,
+ email text NOT NULL,
+ purpose text NOT NULL,
+ provider text NOT NULL DEFAULT 'resend',
+ status text NOT NULL CHECK(status IN ('Queued','Sent','Failed','Skipped')),
+ provider_message_id text NOT NULL DEFAULT '',
+ error_message text NOT NULL DEFAULT '',
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_email_delivery_created ON email_delivery_logs(created_at DESC);
+
+
 -- Delivery & Logistics partner management and cost/unit tracking
 ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS partner_id uuid;
 ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS unit_count numeric(18,3) NOT NULL DEFAULT 0 CHECK(unit_count>=0);

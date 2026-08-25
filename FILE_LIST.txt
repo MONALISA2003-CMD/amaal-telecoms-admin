@@ -7,11 +7,11 @@ CONTINUATION_PROMPT.md
 CONTINUATION_PROMPT_PHASE_B.md
 DATABASE-SCHEMA-FIX.md
 DEPLOYMENT-BOOTSTRAP-FIX.md
-FILE_CHECKSUMS.txt
 FILE_LIST.txt
 FINAL-AUDIT-DEPLOY-FIX.md
 FINAL-AUDIT.md
 MODULE_MAP.md
+PHASE-A-B-FINAL-AUDIT.md
 PHASE-B-IDENTITY-ACCOUNT-LIFECYCLE.md
 README.md
 RECOVERY-ACCESS.md
@@ -39,6 +39,10 @@ pricing-and-promotions.js
 pricing-and-promotions.sql
 public/app.js
 public/index.html
+public/invite.html
+public/invite.js
+public/password-reset.html
+public/password-reset.js
 recovery.js
 render-preflight.js
 returns-refunds.js
