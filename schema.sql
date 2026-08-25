@@ -1952,6 +1952,8 @@ CREATE TABLE IF NOT EXISTS sales_quotes(
  created_at timestamptz NOT NULL DEFAULT now(),
  updated_at timestamptz NOT NULL DEFAULT now()
 );
+ALTER TABLE sales_quotes ADD COLUMN IF NOT EXISTS created_at timestamptz NOT NULL DEFAULT now();
+ALTER TABLE sales_quotes ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now();
 ALTER TABLE sales_quotes ADD COLUMN IF NOT EXISTS promotion_id uuid REFERENCES promotions(id) ON DELETE SET NULL;
 ALTER TABLE sales_quotes ADD COLUMN IF NOT EXISTS coupon_code text;
 CREATE INDEX IF NOT EXISTS idx_sales_quotes_promotion ON sales_quotes(promotion_id,created_at DESC);
@@ -2036,7 +2038,7 @@ CREATE INDEX IF NOT EXISTS idx_finance_journals_source ON finance_journals(sourc
 -- Reporting & Business Intelligence performance indexes
 CREATE INDEX IF NOT EXISTS idx_sales_bi_status_date_location ON sales(status,created_at,location_id);
 CREATE INDEX IF NOT EXISTS idx_sale_lines_bi_sale_variant ON sale_lines(sale_id,variant_id);
-CREATE INDEX IF NOT EXISTS idx_sale_payments_bi_sale_method ON sale_payments(sale_id,method,created_at);
+CREATE INDEX IF NOT EXISTS idx_sale_payments_bi_sale_method ON sale_payments(sale_id,method,received_at);
 CREATE INDEX IF NOT EXISTS idx_orders_bi_status_date_location ON orders(status,created_at,location_id);
 CREATE INDEX IF NOT EXISTS idx_returns_bi_date_status ON return_requests(created_at,status);
 CREATE INDEX IF NOT EXISTS idx_delivery_bi_date_status ON delivery_shipments(created_at,status);

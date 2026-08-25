@@ -38,6 +38,37 @@ if(!/CREATE TABLE IF NOT EXISTS password_reset_tokens/.test(schema)) errors.push
 if(!/app.delete\('\/api\/roles\/:id'/.test(server)) errors.push('Custom role deletion lifecycle is missing.');
 if(!/app.delete\('\/api\/departments\/:id'/.test(server)) errors.push('Department deletion lifecycle is missing.');
 if(!/app.delete\('\/api\/users\/:id'/.test(server)) errors.push('Super Admin user removal endpoint is missing.');
+// Static schema/index compatibility audit. Catch indexes that reference columns
+// absent from the current schema definition. This is intentionally conservative.
+const tableColumns=new Map();
+function addTableColumns(table,body){
+  const cols=new Set(); let cur=''; let depth=0;
+  const parts=[];
+  for(const ch of body+','){
+    if(ch==='(') depth++;
+    else if(ch===')') depth--;
+    if(ch===',' && depth===0){parts.push(cur);cur='';} else cur+=ch;
+  }
+  for(const part of parts){
+    const cm=part.trim().match(/^([a-zA-Z_]\w*)\s+/);
+    if(cm && !/^(CONSTRAINT|PRIMARY|UNIQUE|CHECK|FOREIGN)$/i.test(cm[1])) cols.add(cm[1]);
+  }
+  tableColumns.set(table,cols);
+}
+for(const m of schema.matchAll(/CREATE TABLE IF NOT EXISTS\s+(\w+)\s*\(([\s\S]*?)\);/gi)) addTableColumns(m[1],m[2]);
+for(const m of schema.matchAll(/ALTER TABLE\s+(\w+)\s+ADD COLUMN IF NOT EXISTS\s+(\w+)/gi)){
+  if(!tableColumns.has(m[1])) tableColumns.set(m[1],new Set());
+  tableColumns.get(m[1]).add(m[2]);
+}
+for(const m of schema.matchAll(/CREATE (?:UNIQUE )?INDEX IF NOT EXISTS\s+\w+\s+ON\s+(\w+)\s*\(([^)]*)\)/gi)){
+  const table=m[1], expr=m[2];
+  if(/\b(lower|upper|trim|coalesce)\s*\(/i.test(expr)) continue;
+  const known=tableColumns.get(table)||new Set();
+  for(const part of expr.split(',')){
+    const cm=part.trim().match(/^([a-zA-Z_]\w*)\b/);
+    if(cm && !known.has(cm[1])) errors.push(`Index references missing column: ${table}.${cm[1]}`);
+  }
+}
 const yamlFiles=[];
 const ignoredDirs=new Set(['node_modules','.git','.github']);
 (function walk(d){
