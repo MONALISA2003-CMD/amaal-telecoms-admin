@@ -4,14 +4,14 @@
 
 The project is now at:
 
-**Phase 40E — Production Readiness & Deployment Validation Build — implemented and cumulatively audited.**
+**Phase 40G — AI Activation + Cross-Module Frontend Scoping Fix — implemented, audited and debugged.**
 
 Continue from this exact codebase.
 
 Do not rebuild the application.
 Do not replace the existing architecture.
 Do not reset PostgreSQL.
-Do not fabricate live deployment or restore verification.
+Do not fabricate live deployment, Gemini, email, backup or restore verification.
 
 ## Mandatory rezip discipline
 
@@ -20,18 +20,20 @@ Before every future rezip:
 1. Inspect the entire cumulative project first.
 2. Audit every existing module, route, permission and schema dependency.
 3. Trace cross-module workflows for inventory, sales, orders, procurement, returns, warranty, credit and finance.
-4. Check missing tables, columns, foreign keys, indexes and inconsistent state transitions.
-5. Debug confirmed issues before adding functionality.
-6. Run `node --check` across every application JavaScript file.
-7. Run the route-registration/static route audit and check duplicate route signatures.
+4. Audit frontend module boundaries for cross-IIFE/closure references and shared helper dependencies.
+5. Check missing tables, columns, foreign keys, indexes and inconsistent state transitions.
+6. Debug confirmed issues before adding functionality.
+7. Run `node --check` across every application JavaScript file.
 8. Run `node render-preflight.js`.
-9. Check for forbidden legacy `procurement_requisitions` runtime references.
-10. Review authorization, CSRF, file access, backup access, recovery safeguards and sensitive-data exposure.
-11. Remove useless/obsolete Markdown files.
-12. Keep only useful `README.md` and `CONTINUATION.md` documentation.
-13. Update `README.md` to describe the actual cumulative release.
-14. Replace this file with the exact next continuation instructions.
-15. Verify the final ZIP before delivery.
+9. Run a route-registration/static route audit and check duplicate signatures.
+10. Run a cumulative frontend view/render audit where practical.
+11. Check for forbidden legacy `procurement_requisitions` runtime references.
+12. Review authorization, CSRF, file access, backup access, recovery safeguards and sensitive-data exposure.
+13. Remove useless/obsolete Markdown files.
+14. Keep only useful `README.md` and `CONTINUATION.md` documentation.
+15. Update `README.md` to describe the actual cumulative release and every environment variable actually consumed by the code.
+16. Replace this file with the exact next continuation instructions.
+17. Verify ZIP integrity before delivery.
 
 ## MFA — STRICTLY OUT OF SCOPE
 
@@ -50,33 +52,61 @@ Do not add or change:
 
 MFA remains postponed until after domain acquisition, deployment, public testing and production feedback.
 
-## Phase 40E delivered
+## Phase 40G delivered
 
-### Deployment readiness
-- Added `deployment-readiness.js`.
-- Added `npm run readiness`.
-- Added explicit backup/recovery environment variables to `.env.example`.
-- The readiness command reports actual local capabilities and fails honestly when required deployment dependencies are unavailable.
+### AI activation
 
-### Safe backup scheduling
-Integrated the existing System Operations scheduler with predefined server-side tasks only:
+The cumulative AI layer includes:
 
-- `backup-daily` — create and immediately verify a daily PostgreSQL backup.
-- `backup-retention` — apply configured backup retention.
+- authenticated AI Assistant
+- conversation history
+- live business-data grounding
+- AI Business Intelligence health/configuration
+- Gemini connection testing
+- AI reports
+- AI training/governance
+- AI schedules
+- public catalog AI
+- AI usage/cost governance foundations
 
-The scheduler uses database row locking with `SKIP LOCKED` to claim due tasks safely. It cannot execute arbitrary task names, SQL, shell commands or code supplied through task metadata.
+The Gemini credential is read server-side from `GEMINI_API_KEY`, with `GOOGLE_API_KEY` supported as fallback. Never expose the credential to the browser.
 
-### Monitoring integration
-Monitoring now exposes:
-- last verified backup age
-- backup freshness status
-- failed backups in the last 24 hours
-- configured stale-backup threshold
+### Frontend scoping fix
 
-No fabricated backup status is allowed.
+Render testing exposed:
 
-### Backup safety
-Preserve:
+- `aiView is not defined`
+- `integrationView is not defined`
+
+Root cause: AI and Integration view renderers were declared inside one feature closure but consumed from another closure. A shared `cardGrid()` helper was also referenced by a top-level view outside the closure that originally defined it.
+
+Fixed by:
+
+- exposing the AI renderer through `window.aiView`
+- exposing the Integration renderer through `window.integrationView`
+- changing consuming code to use those explicit interfaces
+- adding a global shared `cardGrid()` helper for top-level consumers
+
+A cumulative frontend render audit covered **113 unique admin views with zero rendering exceptions** using safe mock data. The temporary test harness was removed before packaging.
+
+## Environment variables
+
+The README is the authoritative inventory. Current code references:
+
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `ADMIN_RECOVERY_TOKEN`
+- `INTEGRATION_ENCRYPTION_KEY`
+- `GEMINI_API_KEY`
+- `GOOGLE_API_KEY`
+- `RESEND_API_KEY`
+- `EMAIL_FROM`
+- `APP_BASE_URL`
+- `PUBLIC_WEB_ORIGINS`
+- `NODE_ENV`
+- `PORT`
+- `RENDER`
+- `ALLOW_MANUAL_INVITATION_TOKENS`
 - `BACKUP_ENABLED`
 - `BACKUP_DIR`
 - `PG_DUMP_BIN`
@@ -85,118 +115,99 @@ Preserve:
 - `ALLOW_DATABASE_RECOVERY`
 - `RECOVERY_TARGET_ENVIRONMENT`
 
-Recovery must remain disabled unless deployment policy explicitly enables it after isolated restore validation.
+Do not add invented provider keys.
 
-## Required next work — Final Production Validation
+## Immediate next step — real staging validation
 
-Before changing application functionality, perform the full cumulative audit again.
+Do not add another major feature until the deployed application is validated.
 
-### 1. Deployment environment validation
-In the actual staging/deployment environment, verify:
+### 1. Deploy the corrected build
 
-- Node version matches the declared deployment engine.
-- PostgreSQL connectivity works.
-- `pg_dump` is installed and executable.
-- `pg_restore` is installed and executable.
-- `DATABASE_URL` is configured securely.
-- `BACKUP_DIR` is private and writable.
-- Backup storage has sufficient free space.
-- Backup files are not served by the public/static web server.
-- Recovery target environment is explicitly configured only where approved.
+Connect the corrected repository to the staging/deployment service and configure the required non-domain environment variables.
 
-Do not claim any of these until actually verified.
+### 2. Validate the frontend
 
-### 2. Isolated restore drill
+Open every major module and specifically verify:
 
-Use a dedicated non-production PostgreSQL database.
+- AI Assistant
+- AI Business Intelligence
+- AI Reports
+- AI Training
+- AI Schedules
+- Integration Hub
+- Integrations
+- Webhooks
+- Integration Events
+- Integration Deliveries
+- Media Management
+- System Operations
+- Monitoring & Observability
+- Backup & Recovery
 
-Perform:
+The previous `aiView is not defined` and `integrationView is not defined` errors must not return.
 
-1. Create a real verified backup.
-2. Restore it into the isolated target.
-3. Verify schema and constraints.
-4. Verify products, inventory and serialized/IMEI data.
-5. Verify customers and CRM records.
-6. Verify orders, sales, returns and warranty records.
-7. Verify finance and credit records.
-8. Verify media binaries and media relationships.
-9. Verify monitoring, operations and backup metadata where applicable.
-10. Verify authentication-related records without enabling MFA.
-11. Run application smoke tests against the restored database.
+### 3. Validate Gemini for real
 
-Never use production as the restore-drill target.
+With a real `GEMINI_API_KEY` or supported `GOOGLE_API_KEY`:
 
-### 3. Scheduled backup validation
+1. Open AI Business Intelligence.
+2. Run **Test Gemini connection**.
+3. Open AI Assistant.
+4. Ask a question about live business data.
+5. Confirm the answer is grounded in returned platform data.
+6. Confirm the AI cannot mutate operational records.
+7. Generate an AI report.
 
-Confirm in staging/deployment:
+Do not mark Gemini as production-ready until the real request succeeds.
 
-- `backup-daily` executes successfully.
-- The generated backup is automatically checksum/size verified.
-- Verification failures are recorded.
-- Scheduled-task failure counts increase on failure.
-- Monitoring reports stale backups.
-- Backup failures produce monitoring signals.
-- `backup-retention` archives only expired backups under the configured policy.
+### 4. Validate PostgreSQL
 
-### 4. Recovery safety validation
+Verify:
 
-Test that recovery is rejected when:
+- connection
+- migrations
+- transactions
+- indexes
+- foreign keys
+- operational workflows
+- financial posting
+- backup creation
 
-- the backup is not verified
-- the confirmation phrase is wrong
-- `ALLOW_DATABASE_RECOVERY` is false
-- `RECOVERY_TARGET_ENVIRONMENT` is missing
-- the requested target differs from the configured target
+### 5. Validate email
 
-Only after an isolated restore drill passes may controlled recovery be enabled for an explicitly approved environment.
+After the production sender/domain is ready, configure:
 
-### 5. Final regression
+- `RESEND_API_KEY`
+- `EMAIL_FROM`
+- `APP_BASE_URL`
 
-Audit all cumulative modules and verify:
+Then test invitation and password-reset email flows.
 
-- Catalog → Inventory
-- Procurement → Inventory → Finance
-- POS → Inventory → Customer → Finance
-- E-commerce → Payment → Inventory → Delivery → Finance
-- Returns → Inventory → Refund → Finance
-- Warranty → Inventory → Customer → Finance
-- Credit → Installments → Collections → Finance
-- Media → Catalog/Web/Document relationships
-- Operations → Scheduler → Monitoring
-- Backup → Verification → Monitoring → Recovery
+### 6. Domain configuration later
 
-### Completion gate
+After domain acquisition configure:
 
-Do not declare final production readiness complete until:
+- `APP_BASE_URL`
+- `PUBLIC_WEB_ORIGINS`
+- production email sender/domain
+- HTTPS
+- DNS
+- webhook URLs
+- OAuth callbacks only for integrations actually implemented
 
-- cumulative audit passes
-- staging PostgreSQL is actually verified
-- `pg_dump` is actually verified
-- `pg_restore` is actually verified
-- isolated restore drill passes
-- scheduled backup passes
-- automatic backup verification passes
-- retention execution passes
-- monitoring integration passes
-- security regression passes
-- JavaScript syntax passes
-- duplicate route check passes
-- Render preflight passes
-- README is updated
-- this continuation prompt is replaced with exact next instructions
-- only useful Markdown remains
-- final ZIP integrity passes
+### 7. Final backup/restore validation
 
-Every rezip must follow:
+Only in the actual deployment environment:
 
-**audit entire cumulative project → debug → build → regression test → remove obsolete Markdown → update README → create fresh CONTINUATION.md → verify → ZIP**
+- create a real PostgreSQL backup
+- verify checksum
+- verify backup freshness
+- test an isolated restore
+- document the result
+- only then consider enabling controlled recovery
 
+Never perform a destructive production restore as a test.
 
-## README configuration requirement carried forward
+## Final rule
 
-Before the next rezip, keep the README's production configuration inventory current. It must list every API key/provider credential actually used by the application, clearly distinguish secrets from non-secret settings, and identify all values that can only be finalized after the production domain is acquired and DNS/email verification is complete. Never place real secret values in the repository.
-
-
-## Next build: Phase 40F — Final Staging Validation + AI Activation Gate
-
-Start with a complete cumulative audit and regression pass. Before declaring the platform production-ready, validate the AI layer with a real staging `GEMINI_API_KEY`: confirm the AI health endpoint, run the Gemini connectivity test, open the governed AI Assistant, send grounded business questions, generate an AI report, verify report persistence, and verify scheduled AI reporting. Then validate the production environment with real PostgreSQL tooling, durable backup storage, the final acquired domain, verified HTTPS/DNS, transactional email, and an isolated restore drill. Re-run deployment readiness after secrets and domain-dependent configuration are populated. Update README.md with the final configuration status but never place real secret values in the repository. Keep MFA outside this phase.
+The next build must prioritize **real deployment validation and debugging of the cumulative platform** over adding another large feature. Any newly discovered cross-module defect must be fixed and regression-tested before continuing.

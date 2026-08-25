@@ -3,6 +3,7 @@ const $=s=>document.querySelector(s);const esc=x=>String(x??'').replace(/[&<>"']
 const money=x=>Number(x||0).toLocaleString('en-UG',{maximumFractionDigits:2})+' UGX';
 const n=x=>Number(x||0);
 const num=x=>n(x).toLocaleString('en-UG',{maximumFractionDigits:3});
+function cardGrid(items){return `<div class="grid">${items.map(x=>`<div class="card"><div class="label">${esc(x[0])}</div><div class="metric">${esc(String(x[1]??0))}</div>${x[2]?`<div class="muted">${esc(x[2])}</div>`:''}</div>`).join('')}</div>`}
 function cookie(name){return document.cookie.split(';').map(x=>x.trim()).find(x=>x.startsWith(name+'='))?.slice(name.length+1)||''}
 async function api(path,opt={}){const headers={...(opt.headers||{})};if(!(opt.body instanceof FormData))headers['Content-Type']='application/json';const csrf=cookie('amaal_csrf');if(csrf)headers['X-CSRF-Token']=csrf;const r=await fetch('/api'+path,{...opt,headers,credentials:'same-origin'});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||`Request failed (${r.status})`);return d}
 function has(p){return state.permissions.has(p)}
@@ -401,6 +402,9 @@ boot();
     if(v==='Web Publishing')return `<div class="hero"><div class="kicker">Release control</div><h2 style="margin:6px 0">Publication approvals</h2><p class="muted">Nothing reaches the public website directly from an edit. Request → approve → execute.</p></div>${siteBar()}<div class="toolbar">${has('web.publish.request')?btn('Create release','web-create-release','btn primary'):''}</div>${table(['Resource','Action','Requester','Status','Created','Actions'],(d||[]).map(x=>`<tr><td>${esc(x.resource_type)}<br><span class="muted">${esc(x.resource_id)}</span></td><td>${pill(x.action)}</td><td>${esc(x.requester||'—')}</td><td>${pill(x.status)}</td><td>${new Date(x.created_at).toLocaleString()}</td><td class="actions">${x.status==='Pending'&&has('web.publish.approve')?btn('Approve','web-approve:'+x.id):''}${x.status==='Approved'&&has('web.publish.execute')?btn('Execute','web-execute:'+x.id,'btn primary'):''}</td></tr>`),'No publication requests','Publication requests will appear here before production changes are made.')}`;
     return `<div class="hero"><div class="kicker">Website configuration</div><h2 style="margin:6px 0">Settings</h2><p class="muted">Only public-facing configuration belongs here. Secrets and internal administration settings remain outside the public website API.</p></div>${siteBar()}<div class="card"><form id="webSettingsForm"><div class="formgrid">${area('Public website settings JSON','settings',JSON.stringify(d||{},null,2),'required')}</div><div class="toolbar"><button class="btn primary" data-action="web-save-settings">Save settings</button></div></form></div>`;
   }
+  window.aiView=aiView;
+  window.integrationView=integrationView;
+
   const oldHandle=handleAction;
   handleAction=async function(a,b){
     if(a.startsWith('web-select-site:')){state.webSiteId=a.split(':')[1];state.view='Web Pages';render();return load('Web Pages')}
@@ -651,8 +655,8 @@ handleAction=async function(a,b){try{
     if(creditViews.has(state.view)){const c=$('#content');if(c){c.innerHTML=creditView(state.view,state.data);bindView();flash()}return}
     if(financeViews.has(state.view)){const c=$('#content');if(c){c.innerHTML=financeView(state.view,state.data);bindView();flash()}return}
     if(biViews.has(state.view)){const c=$('#content');if(c){c.innerHTML=biView(state.view,state.data);bindView();flash()}return}
-    if(aiViews.has(state.view)){const c=$('#content');if(c){c.innerHTML=aiView(state.view,state.data);bindView();flash()}return}
-    if(integrationViews.has(state.view)){const c=$('#content');if(c){c.innerHTML=integrationView(state.view,state.data);bindView();flash()}return}
+    if(aiViews.has(state.view)){const c=$('#content');if(c){c.innerHTML=window.aiView(state.view,state.data);bindView();flash()}return}
+    if(integrationViews.has(state.view)){const c=$('#content');if(c){c.innerHTML=window.integrationView(state.view,state.data);bindView();flash()}return}
     return oldRender();
   };
 
