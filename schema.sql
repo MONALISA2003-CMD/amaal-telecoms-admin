@@ -1481,3 +1481,119 @@ CREATE INDEX IF NOT EXISTS idx_integration_connections_status ON integration_con
 CREATE INDEX IF NOT EXISTS idx_integration_webhooks_active ON integration_webhooks(active,direction);
 CREATE INDEX IF NOT EXISTS idx_integration_events_created ON integration_events(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_integration_deliveries_event ON integration_deliveries(event_id,attempted_at DESC);
+
+
+-- Phase 23 procurement deep-build extensions. Additive only; never reset operational data.
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS qualification_status text NOT NULL DEFAULT 'Pending';
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS risk_rating text NOT NULL DEFAULT 'Unrated';
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS approved_at timestamptz;
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS approved_by uuid REFERENCES users(id) ON DELETE SET NULL;
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS blocked_reason text NOT NULL DEFAULT '';
+ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS onboarding_completed_at timestamptz;
+CREATE INDEX IF NOT EXISTS idx_suppliers_qualification ON suppliers(qualification_status,risk_rating);
+
+CREATE TABLE IF NOT EXISTS supplier_qualification_records(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ supplier_id uuid NOT NULL REFERENCES suppliers(id) ON DELETE CASCADE,
+ status text NOT NULL DEFAULT 'Pending' CHECK(status IN ('Pending','Approved','Rejected','Expired')),
+ risk_rating text NOT NULL DEFAULT 'Unrated' CHECK(risk_rating IN ('Unrated','Low','Medium','High','Critical')),
+ registration_verified boolean NOT NULL DEFAULT false,
+ tax_verified boolean NOT NULL DEFAULT false,
+ bank_verified boolean NOT NULL DEFAULT false,
+ documents_verified boolean NOT NULL DEFAULT false,
+ notes text NOT NULL DEFAULT '',
+ reviewed_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ reviewed_at timestamptz,
+ expires_at date,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_supplier_qualification_supplier ON supplier_qualification_records(supplier_id,created_at DESC);
+
+CREATE TABLE IF NOT EXISTS procurement_approval_rules(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ name text NOT NULL,
+ entity_type text NOT NULL CHECK(entity_type IN ('Requisition','PurchaseOrder','Invoice')),
+ department_id uuid REFERENCES departments(id) ON DELETE SET NULL,
+ min_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(min_amount>=0),
+ max_amount numeric(18,2),
+ required_permission text NOT NULL DEFAULT 'procurement.approve',
+ active boolean NOT NULL DEFAULT true,
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ CHECK(max_amount IS NULL OR max_amount>=min_amount)
+);
+CREATE INDEX IF NOT EXISTS idx_procurement_approval_rules ON procurement_approval_rules(entity_type,department_id,active,min_amount);
+
+CREATE TABLE IF NOT EXISTS procurement_budgets(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ name text NOT NULL,
+ department_id uuid REFERENCES departments(id) ON DELETE SET NULL,
+ starts_on date NOT NULL,
+ ends_on date NOT NULL,
+ amount numeric(18,2) NOT NULL CHECK(amount>=0),
+ active boolean NOT NULL DEFAULT true,
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ CHECK(ends_on>=starts_on)
+);
+CREATE INDEX IF NOT EXISTS idx_procurement_budgets_period ON procurement_budgets(department_id,starts_on,ends_on,active);
+
+CREATE TABLE IF NOT EXISTS purchase_order_revisions(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ purchase_order_id uuid NOT NULL REFERENCES purchase_orders(id) ON DELETE CASCADE,
+ revision_number int NOT NULL CHECK(revision_number>0),
+ reason text NOT NULL DEFAULT '',
+ snapshot jsonb NOT NULL,
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ UNIQUE(purchase_order_id,revision_number)
+);
+CREATE INDEX IF NOT EXISTS idx_po_revisions_po ON purchase_order_revisions(purchase_order_id,revision_number DESC);
+
+CREATE TABLE IF NOT EXISTS purchase_order_backorders(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ purchase_order_line_id uuid NOT NULL REFERENCES purchase_order_lines(id) ON DELETE CASCADE,
+ quantity numeric(18,3) NOT NULL CHECK(quantity>0),
+ status text NOT NULL DEFAULT 'Open' CHECK(status IN ('Open','Fulfilled','Cancelled')),
+ notes text NOT NULL DEFAULT '',
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ resolved_at timestamptz
+);
+CREATE INDEX IF NOT EXISTS idx_po_backorders_line ON purchase_order_backorders(purchase_order_line_id,status);
+
+CREATE TABLE IF NOT EXISTS supplier_payment_allocations(
+ payment_id uuid NOT NULL REFERENCES supplier_payments(id) ON DELETE CASCADE,
+ invoice_id uuid NOT NULL REFERENCES supplier_invoices(id) ON DELETE RESTRICT,
+ amount numeric(18,2) NOT NULL CHECK(amount>0),
+ created_at timestamptz NOT NULL DEFAULT now(),
+ PRIMARY KEY(payment_id,invoice_id)
+);
+CREATE INDEX IF NOT EXISTS idx_supplier_payment_allocations_invoice ON supplier_payment_allocations(invoice_id);
+
+CREATE TABLE IF NOT EXISTS procurement_invoice_match_exceptions(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ invoice_id uuid NOT NULL REFERENCES supplier_invoices(id) ON DELETE CASCADE,
+ exception_type text NOT NULL,
+ field_name text NOT NULL DEFAULT '',
+ expected_value text NOT NULL DEFAULT '',
+ actual_value text NOT NULL DEFAULT '',
+ tolerance numeric(18,4) NOT NULL DEFAULT 0,
+ status text NOT NULL DEFAULT 'Open' CHECK(status IN ('Open','Resolved','Waived')),
+ resolution text NOT NULL DEFAULT '',
+ resolved_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ resolved_at timestamptz,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_invoice_match_exceptions ON procurement_invoice_match_exceptions(invoice_id,status);
+
+
+-- Additional Phase 23 lifecycle controls.
+ALTER TABLE purchase_orders DROP CONSTRAINT IF EXISTS purchase_orders_status_check;
+ALTER TABLE purchase_orders ADD CONSTRAINT purchase_orders_status_check CHECK(status IN ('Draft','Submitted','Approved','Partially Received','Received','Closed','Cancelled'));
+ALTER TABLE purchase_orders ADD COLUMN IF NOT EXISTS supplier_reference text NOT NULL DEFAULT '';
+ALTER TABLE supplier_product_pricing ADD COLUMN IF NOT EXISTS is_preferred boolean NOT NULL DEFAULT false;
+ALTER TABLE supplier_documents ADD COLUMN IF NOT EXISTS verification_status text NOT NULL DEFAULT 'Pending';
+ALTER TABLE supplier_documents ADD COLUMN IF NOT EXISTS verified_by uuid REFERENCES users(id) ON DELETE SET NULL;
+ALTER TABLE supplier_documents ADD COLUMN IF NOT EXISTS verified_at timestamptz;
+CREATE INDEX IF NOT EXISTS idx_supplier_documents_expiry ON supplier_documents(expires_at,verification_status);
