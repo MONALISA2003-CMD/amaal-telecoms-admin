@@ -4,7 +4,7 @@
 
 The project is now at:
 
-**Phase 40B — System Operations — built, audited and integrated.**
+**Phase 40D — Backup & Recovery — built, audited and integrated.**
 
 Continue from this exact codebase.
 
@@ -24,16 +24,15 @@ Before every future rezip:
 4. Check for missing tables, columns, foreign keys, indexes and inconsistent state transitions.
 5. Debug confirmed issues before adding new functionality.
 6. Run `node --check` across every application JavaScript file.
-7. Import every registration module and execute it against a route-registration harness.
-8. Check for duplicate route signatures.
-9. Run `node render-preflight.js`.
-10. Check for forbidden legacy `procurement_requisitions` runtime references.
-11. Review security boundaries, authorization, CSRF, file access and sensitive-data exposure.
-12. Remove useless or obsolete Markdown files.
-13. Keep only useful `README.md` and `CONTINUATION.md` documentation.
-14. Update `README.md` to describe the actual cumulative release.
-15. Replace this file with the exact next continuation instructions.
-16. Only then create the new ZIP.
+7. Run a route-registration/static route audit and check duplicate route signatures.
+8. Run `node render-preflight.js`.
+9. Check for forbidden legacy `procurement_requisitions` runtime references.
+10. Review security boundaries, authorization, CSRF, file access, backup-file access and sensitive-data exposure.
+11. Remove useless or obsolete Markdown files.
+12. Keep only useful `README.md` and `CONTINUATION.md` documentation.
+13. Update `README.md` to describe the actual cumulative release.
+14. Replace this file with the exact next continuation instructions.
+15. Only then create the new ZIP.
 
 ## MFA — STRICTLY OUT OF SCOPE
 
@@ -55,15 +54,43 @@ Existing MFA-related artifacts must remain untouched.
 
 MFA remains postponed until after domain acquisition, deployment, public testing and production feedback.
 
-## Phase 40A status — Media Management
+## Completed cumulative modules
 
-Completed and preserved:
+Preserve all previously completed modules:
+
+- Security Hardening
+- Catalog
+- Inventory
+- Suppliers & Procurement
+- Customers & CRM
+- Sales & POS
+- Orders & E-commerce
+- Pricing & Promotions
+- Delivery & Logistics
+- Warranty & Repairs
+- Returns & Refunds
+- Document Management
+- Credit & Installments
+- Finance & Accounting
+- Reporting & Business Intelligence
+- AI Business Intelligence
+- Web & Hosting
+- Integration Hub
+- Cross-module Workflow & Automation
+- Global Search, UX & Operational Polish
+- Media Management
+- System Operations
+- Monitoring & Observability
+- Backup & Recovery
+
+## Phase 40A — Media Management
+
+Preserved and integrated:
 
 - Enterprise media asset model
-- Media folders
-- Media tags
+- Media folders and tags
 - Media relationships
-- Media version history
+- Media versions
 - SHA-256 duplicate detection
 - Server-side MIME/content validation
 - Image dimensions
@@ -72,260 +99,207 @@ Completed and preserved:
 - Explicit Public + Active media delivery
 - Metadata management
 - Search/filtering
-- Bulk tagging
-- Bulk archive
+- Bulk tagging/archive
 - Admin Media Library UI
 - Media permissions
 - Global Search integration
-- Audit/integration-event recording
+- Audit/integration events
 
-The existing Web & Hosting `web_media` system remains intact. Do not delete or silently replace it.
+Media binaries currently use PostgreSQL-backed storage. Phase 40D backup therefore includes the media binaries and metadata through the PostgreSQL database backup.
 
-## Phase 40B status — System Operations
+## Phase 40B — System Operations
 
-Completed:
+Preserved and integrated:
 
-- System Operations control plane
 - Application/API/database/media/integration/notification health checks
-- Healthy/Warning/Critical/Unknown normalization
-- Background job telemetry schema and UI
-- Safe retry/cancel controls guarded by explicit job safety flags
-- Scheduled task management and audit logging
-- Safe operational configuration management
-- Existing feature-flag integration
-- Operations event storage
+- Background-job telemetry
+- Safe retry/cancel controls
+- Scheduled task management
+- Safe operational configuration
+- Feature-flag controls
+- Operations event history
 - Operations permissions
-- Existing authentication, permission and audit infrastructure integration
 
 Do not introduce arbitrary SQL execution, arbitrary code execution or unsafe job execution.
 
-## Next build — Phase 40C: Monitoring, Health & Observability
+## Phase 40C — Monitoring & Observability
 
-First perform the mandatory cumulative audit above. Then extend the existing System Operations control plane into a proper Monitoring and Observability layer.
+Preserved and integrated:
 
-Do not replace `/api/operations/health`. Extend and normalize it where appropriate.
+- Application/API telemetry
+- Database health
+- Background-job telemetry
+- Integration failure telemetry
+- Notification/payment/finance/inventory operational signals
+- Healthy/Warning/Critical/Unknown states
+- Configurable alert rules
+- Alert cooldown/deduplication
+- Open/Acknowledged/Resolved lifecycle
+- Auditable monitoring snapshots
+- Monitoring UI
 
-### Application monitoring
+## Phase 40D — Backup & Recovery
 
-Add actionable visibility for:
+Completed:
 
-- request health
-- API error rates
-- response-time indicators
-- slow-request indicators
-- application exceptions
-- route-level failures where safely measurable
-- recent operational incidents
+- PostgreSQL backup management through `pg_dump`
+- Backup metadata and history
+- Backup status
+- Backup size and duration
+- SHA-256 checksum
+- Backup integrity verification
+- Daily/weekly/monthly/manual retention policies
+- Audited retention policy changes
+- Recovery planning
+- Exact recovery confirmation phrase
+- Environment-aware recovery safeguards
+- Controlled recovery execution through `pg_restore` only when explicitly enabled by deployment policy
+- Backup health endpoint
+- Permission-protected backup APIs
+- Backup audit events
+- Media backup strategy through database-backed media storage
 
-Do not expose stack traces, secrets, SQL, tokens or internal credentials to ordinary administrators.
+### Backup safety rules
 
-### Database monitoring
+Never expose:
 
-Add safe indicators for:
+- backup filesystem paths to ordinary administrators
+- database connection strings
+- database credentials
+- arbitrary SQL execution
+- arbitrary shell execution
+- unrestricted filesystem access
 
-- database connectivity
-- query failures
-- transaction failures
-- connection-pool pressure where available
-- slow-query indicators where safely measurable
+Backup creation requires `backup.manage`.
+Backup viewing requires `backup.view`.
+Recovery planning/execution requires `backup.manage`.
 
-Do not expose raw SQL debugging consoles.
+Recovery execution is blocked unless all of the following are true:
 
-### Background jobs
+- backup status is `Verified`
+- verification status is `Verified`
+- exact confirmation phrase is supplied
+- `ALLOW_DATABASE_RECOVERY=true`
+- `RECOVERY_TARGET_ENVIRONMENT` is configured
+- recovery target exactly matches the plan target
 
-Strengthen the existing operations job telemetry with:
+Do not weaken these safeguards.
 
-- queue depth
-- failure rate
-- retry rate
-- processing duration
-- stale-running-job detection
-- recent failures
-- operational trend indicators
+### Runtime dependency note
 
-Do not invent execution history. Only show records that actually exist.
+The development container used for this build does not have `pg_dump` or `pg_restore` installed. Therefore no live backup/restore execution was falsely claimed. In a deployment environment where those utilities exist, the API uses them directly and fails safely when they are unavailable.
 
-### Integration monitoring
+## Cumulative audit completed for Phase 40D
 
-Integrate with the existing Integration Hub to surface:
+- Full cumulative JavaScript syntax audit: PASS
+- Route/static registration audit: **536 unique route signatures, 0 duplicates**
+- Backup routes: 10
+- Render preflight: PASS
+- Canonical `purchase_requisitions`: preserved
+- Legacy `procurement_requisitions` runtime reference: absent
+- Backup security review: PASS
+- Secret-pattern scan: PASS
+- MFA boundary: preserved
+- Markdown hygiene: only `README.md` and `CONTINUATION.md`
+- No destructive PostgreSQL reset introduced
+- No automatic destructive recovery introduced
 
-- failed webhooks
-- failed API calls
-- timeouts
-- retry counts
-- dead-letter events
-- pending delivery backlog
-- integration connections in Error state
+## Next build — Deployment Validation & Production Readiness
 
-Respect integration permissions and never expose integration secrets.
+Before writing new code, perform the complete cumulative audit again.
 
-### Storage monitoring
+Then focus on production-environment validation rather than blindly adding another large module.
+
+### 1. Backup runtime validation
+
+Verify in the target deployment environment:
+
+- `pg_dump` availability
+- `pg_restore` availability
+- `DATABASE_URL` availability
+- backup directory/storage availability
+- backup file permissions
+- adequate storage capacity
+- backup duration
+- checksum verification
+
+Do not claim these are available until actually verified.
+
+### 2. Isolated restore drill
+
+Perform a restore test only against an isolated non-production database.
+
+Verify:
+
+- schema restoration
+- business records
+- finance records
+- inventory records
+- customer records
+- media binaries
+- media relationships
+- indexes and constraints
+- authentication-related records
+- operational/monitoring records
+
+Do not restore over production during a test.
+
+### 3. Backup scheduling
+
+Integrate backup execution with the existing System Operations scheduler only if the scheduler can safely execute the predefined backup task.
+
+Do not add arbitrary job execution.
 
 Add:
 
-- media/storage usage indicators
-- upload failures
-- storage availability
-- backup status when Phase 40D exists
+- backup success/failure telemetry
+- stale backup detection
+- backup verification alerts
+- retention execution telemetry
 
-Do not expose private media contents merely for monitoring.
+### 4. Monitoring integration
 
-### Business-operation monitoring
+Extend Phase 40C monitoring to surface:
 
-Surface actionable anomalies already represented by actual platform data, including:
+- last successful backup age
+- last verification age
+- failed backups
+- failed verification
+- storage exhaustion risk
+- overdue scheduled backup
 
-- failed payments
-- failed orders
-- failed deliveries
-- negative-stock attempts
-- stock synchronization failures
-- reconciliation failures
-- failed financial postings
-- overdue background tasks
+Never fabricate these values.
 
-Never fabricate business anomalies.
+### 5. Production readiness
 
-### Alerting
+Audit:
 
-Build configurable alerts for important operational conditions.
+- environment variables
+- filesystem permissions
+- backup retention behavior
+- recovery safeguards
+- authentication/authorization
+- CSRF
+- sensitive data exposure
+- logging
+- audit trails
+- startup migrations
+- deployment behavior
 
-Each alert should support:
+### Completion gate
 
-- severity
-- threshold
-- notification channel
-- recipients
-- cooldown
-- acknowledgement
-- resolution
-- history
+Do not declare the next phase complete until:
 
-Prevent alert storms through cooldown/deduplication.
-
-Alert actions must be permission-protected and audited.
-
-### Monitoring UI
-
-Extend System Operations with:
-
-- Health overview
-- Application monitoring
-- Database monitoring
-- Jobs monitoring
-- Integrations monitoring
-- Storage monitoring
-- Business anomalies
-- Alerts
-- Incident history
-
-The UI must remain responsive on desktop, tablet and mobile.
-
-## Database rules
-
-Use additive migrations only.
-
-Preserve all existing records.
-
-Preserve canonical `purchase_requisitions`.
-
-Never reintroduce `procurement_requisitions` into runtime code.
-
-## Phase 40C status — Monitoring, Health & Observability
-
-Phase 40C is now built and integrated. The cumulative system was audited before and after the implementation.
-
-Implemented:
-- application/API performance telemetry
-- database health
-- background-job telemetry
-- integration failure telemetry
-- notification backlog telemetry
-- payment failure telemetry
-- finance-posting telemetry with safe Unknown handling when no failure source exists
-- inventory anomaly telemetry using actual inventory movement quantities
-- alert rules with severity, threshold, cooldown and enabled state
-- Open/Acknowledged/Resolved alert lifecycle
-- alert deduplication/cooldown
-- auditable monitoring snapshots
-- permission-protected monitoring APIs
-- responsive Monitoring & Observability UI
-- System Operations integration
-
-A Phase 40B defect was also corrected: job retry/cancel row locks are now executed inside real PostgreSQL transactions rather than using `FOR UPDATE` outside a transaction.
-
-### Mandatory audit performed
-- Full cumulative JavaScript syntax audit
-- Route registration audit: **526 unique route signatures, no duplicates detected**
-- Cross-module registration audit
-- Security/authorization boundary review
-- Monitoring schema/index review
-- Canonical `purchase_requisitions` verification
-- Legacy `procurement_requisitions` runtime reference check
-- Render preflight
-- MFA boundary verification
-
-### MFA boundary
-MFA is still completely excluded. Do not add, modify, activate, enforce or redesign MFA in the next phase.
-
-## Next build — Phase 40D: Backup & Recovery
-
-Before writing new code, perform the complete cumulative audit again. Then build Backup & Recovery as a controlled production capability.
-
-### Backup scope
-Build support for:
-- PostgreSQL/database backups
-- configuration backups where safe and appropriate
-- media/file backup strategy
-- scheduled backups
-- manually initiated backups where safe
-- backup history
-- status
-- size
-- duration
-- checksum/integrity verification
-- verification status
-
-### Retention
-Implement explicit retention policies:
-- daily
-- weekly
-- monthly
-
-Never silently delete backups. Every retention/deletion action must follow the configured policy and be auditable.
-
-### Recovery
-Build a controlled recovery workflow with:
-- backup selection
-- integrity verification before recovery
-- environment awareness
-- explicit confirmation
-- permission checks
-- audit logging
-- safe failure handling
-
-Never expose arbitrary shell commands, arbitrary SQL execution or unrestricted filesystem access through the UI.
-
-### Media recovery
-Account for the Phase 40A database-backed media assets. Ensure backup and recovery preserves media metadata, relationships and binary data.
-
-### Production safety
-Do not perform destructive recovery automatically. Prefer a verified restore workflow and clearly separate backup creation, verification and restoration.
-
-### Completion gate for Phase 40D
-Do not declare Phase 40D complete until:
-- backup schema/migrations are additive
-- backup APIs exist and are permission-protected
-- backup integrity verification exists
-- retention policy exists
-- recovery workflow exists with safeguards
-- media backup/recovery is covered
-- cumulative regression audit passes
+- cumulative audit passes
+- isolated restore drill is actually performed where infrastructure allows
+- backup runtime capability is verified where infrastructure allows
+- monitoring integration passes
 - JavaScript syntax passes
-- route duplicate check passes
+- duplicate route check passes
 - Render preflight passes
 - README is updated
-- this continuation prompt is replaced with the next exact continuation instructions
-- only useful Markdown remains: `README.md` and `CONTINUATION.md`
+- this continuation prompt is replaced with the exact next instructions
+- only useful Markdown remains
 - final ZIP integrity passes
 
 Every rezip must follow:

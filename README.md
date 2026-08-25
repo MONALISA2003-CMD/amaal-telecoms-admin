@@ -3,7 +3,7 @@
 Cumulative enterprise telecom retail administration platform.
 
 ## Current release
-**Phase 40C — Monitoring, Health & Observability — built, audited and integrated**
+**Phase 40D — Backup & Recovery — built, audited and integrated**
 
 This is a cumulative continuation build. Existing business modules, authentication/security boundaries, operational workflows, Phase 39 Global Search/UX and Phase 40A Media Management are preserved.
 
@@ -76,3 +76,31 @@ MFA is intentionally deferred. This build does not implement, activate, redesign
 **Phase 40D — Backup & Recovery**
 
 The next continuation must begin with another complete cumulative audit and regression pass before building controlled backup, integrity verification, retention and recovery capabilities. Do not weaken existing financial, operational, authentication or MFA boundaries.
+
+
+### Phase 40D delivered
+- Added controlled PostgreSQL backup management using the standard `pg_dump` utility when available in the deployment environment.
+- Added backup metadata, status, size, duration, SHA-256 checksum and verification state.
+- Added explicit daily, weekly, monthly and manual retention policies with audited policy changes.
+- Added controlled recovery-plan workflow requiring a verified backup, exact confirmation phrase, permission checks and environment policy.
+- Database-backed Phase 40A media binaries and metadata are included in PostgreSQL backups; no separate unverified media copy is claimed.
+- Added backup health visibility without exposing backup files, database credentials, arbitrary SQL or shell execution to administrators.
+- Added permission-controlled Backup & Recovery administration and audit events.
+- Recovery execution remains disabled unless the deployment explicitly enables `ALLOW_DATABASE_RECOVERY=true` and provides a matching `RECOVERY_TARGET_ENVIRONMENT`.
+- Added integrity verification before a backup may enter recovery planning.
+
+### Phase 40D cumulative audit gate
+- **536 unique application route signatures** detected across the cumulative JavaScript application set; no duplicate signatures detected.
+- All application JavaScript files passed `node --check`.
+- Render preflight: **PASS**.
+- Legacy `procurement_requisitions` runtime reference: **absent**.
+- Backup module contains no MFA implementation or MFA dependency.
+- Secret-pattern scan: **no findings** in application JS/SQL.
+- Only useful Markdown files retained: `README.md` and `CONTINUATION.md`.
+- No destructive PostgreSQL reset or automatic destructive recovery was introduced.
+- Live database backup execution was not falsely claimed in this build environment because `pg_dump` is not installed here; the application reports the capability at runtime and fails safely when unavailable.
+
+## Next phase
+**Post-Phase 40D production readiness / deployment validation**
+
+The next continuation must begin with another complete cumulative audit. Focus on deployment-environment validation of `pg_dump`/`pg_restore`, backup storage durability, scheduled backup execution, restore drills in an isolated environment, monitoring integration for backup failures, and final production-readiness regression. Do not enable destructive recovery against production without an isolated restore validation first.
