@@ -272,6 +272,25 @@ CREATE TABLE IF NOT EXISTS inventory_balances(
 CREATE INDEX IF NOT EXISTS idx_inventory_balances_location ON inventory_balances(location_id);
 CREATE INDEX IF NOT EXISTS idx_inventory_balances_variant ON inventory_balances(variant_id);
 
+-- Phase 22 inventory controls: replenishment policy and serialized stocktake ledger.
+CREATE TABLE IF NOT EXISTS inventory_reorder_rules(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
+ location_id uuid NOT NULL REFERENCES inventory_locations(id) ON DELETE RESTRICT,
+ reorder_point numeric(18,3) NOT NULL DEFAULT 0 CHECK(reorder_point>=0),
+ reorder_quantity numeric(18,3) NOT NULL DEFAULT 0 CHECK(reorder_quantity>=0),
+ max_stock numeric(18,3) CHECK(max_stock IS NULL OR max_stock>=0),
+ safety_stock numeric(18,3) NOT NULL DEFAULT 0 CHECK(safety_stock>=0),
+ enabled boolean NOT NULL DEFAULT true,
+ updated_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now(),
+ UNIQUE(variant_id,location_id),
+ CHECK(max_stock IS NULL OR max_stock>=reorder_point)
+);
+CREATE INDEX IF NOT EXISTS idx_inventory_reorder_rules_location ON inventory_reorder_rules(location_id,enabled);
+CREATE INDEX IF NOT EXISTS idx_inventory_reorder_rules_variant ON inventory_reorder_rules(variant_id,enabled);
+
 CREATE TABLE IF NOT EXISTS inventory_movements(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
  variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
@@ -409,6 +428,23 @@ CREATE TABLE IF NOT EXISTS inventory_stocktake_lines(
  counted_at timestamptz
 );
 CREATE UNIQUE INDEX IF NOT EXISTS inventory_stocktake_lines_unique ON inventory_stocktake_lines(stocktake_id,variant_id);
+
+-- Phase 22 serialized stocktake ledger.
+CREATE TABLE IF NOT EXISTS inventory_stocktake_serial_lines(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ stocktake_id uuid NOT NULL REFERENCES inventory_stocktakes(id) ON DELETE CASCADE,
+ serialized_unit_id uuid REFERENCES serialized_units(id) ON DELETE RESTRICT,
+ variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
+ expected_present boolean NOT NULL DEFAULT true,
+ counted_present boolean,
+ serial_snapshot jsonb NOT NULL DEFAULT '{}'::jsonb,
+ reason text NOT NULL DEFAULT '',
+ counted_at timestamptz,
+ UNIQUE(stocktake_id,serialized_unit_id)
+);
+CREATE INDEX IF NOT EXISTS idx_inventory_stocktake_serial_stocktake ON inventory_stocktake_serial_lines(stocktake_id);
+
+
 CREATE TABLE IF NOT EXISTS inventory_incidents(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
  incident_no text UNIQUE NOT NULL,
