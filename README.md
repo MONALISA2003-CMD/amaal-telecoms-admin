@@ -136,7 +136,7 @@ A live staging test exposed a database compatibility defect in the AI Assistant 
 
 The query has been corrected to use the canonical reorder-rule table, include reserved stock in available-stock calculations, and fall back to the platform default reorder point when no enabled rule exists. This is a code/schema-alignment fix; it does not require domain-dependent environment variables.
 
-The AI assistant must be retested against the real PostgreSQL database after deployment. Gemini requests use a 30-second server timeout and low thinking level for responsive operational chat; the browser gives up after 45 seconds with a clear error instead of hanging indefinitely.
+The AI assistant must be retested against the real PostgreSQL database after deployment. Gemini operational chat now uses the standard `generateContent` REST endpoint with low thinking, a bounded output size, conversation history, and a 30-second server timeout. The browser gives up after 45 seconds with a clear error instead of hanging indefinitely. The Interactions API remains documented separately but is not used for the synchronous admin chat path.
 
 ## Verification performed for this release
 

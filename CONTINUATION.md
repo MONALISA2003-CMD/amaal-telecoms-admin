@@ -222,3 +222,10 @@ The next build must prioritize **real deployment validation and debugging of the
 ## AI responsiveness hardening
 
 The AI chat path now uses Gemini Interactions API with `thinking_level: low`, a 30-second server-side request timeout, and a 45-second browser timeout. If Gemini or upstream networking stalls, the UI must show a clear timeout/error instead of remaining indefinitely on the loading state.
+
+
+## Latest AI connectivity correction
+
+The synchronous admin AI path was changed from the Interactions API to Google's standard `generateContent` REST endpoint. This is intentional: short operational questions should complete as a normal synchronous generation request, while the application retains clear timeout/error handling. Google documents `generateContent` for text generation and system instructions, including `gemini-3.7-flash` and low thinking configuration.
+
+Before declaring AI production-ready, deploy this build and run **Test Gemini connection**. A successful test must return `READY`. If it times out again, inspect the Render service logs and confirm the API key/project restrictions, Gemini quota, model availability, and outbound HTTPS connectivity from Render. A timeout alone does not prove that the key is invalid; invalid authentication normally returns an HTTP error response.

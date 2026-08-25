@@ -25,27 +25,54 @@ export function registerAIBusinessIntelligence({app,auth,need,q,pool,audit,super
   async function trainingContext(){
     return q("SELECT title,instruction,expected_behavior FROM ai_training_examples WHERE active=true ORDER BY created_at DESC LIMIT 25");
   }
-  async function callGemini({systemPrompt,input,model,timeoutMs=30000}){
+  async function callGemini({systemPrompt,input,model,timeoutMs=30000,history=[]}){
     const key=getApiKey();
     if(!key) throw new Error('Gemini is not configured. Add GEMINI_API_KEY as a server-side Render secret.');
     const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),Math.max(5000,Number(timeoutMs)||30000));
-    let response;
+    const timeout=Math.max(8000,Number(timeoutMs)||30000);
+    const timer=setTimeout(()=>controller.abort(),timeout);
+    const selectedModel=safeModel(model);
+    const contents=[];
+    for(const item of Array.isArray(history)?history:[]){
+      const role=item?.role==='assistant'||item?.role==='model'?'model':'user';
+      const content=text(item?.content);
+      if(content)contents.push({role,parts:[{text:content}]});
+    }
+    contents.push({role:'user',parts:[{text:String(input??'')}]});
     try{
-      response=await fetch('https://generativelanguage.googleapis.com/v1/interactions',{
-        method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},
+      // Use Google's stable, widely supported content-generation endpoint for the
+      // synchronous admin assistant. Interactions remains available elsewhere,
+      // but a normal request is preferable for short operational questions.
+      const endpoint=`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(selectedModel)}:generateContent`;
+      const payload={
+        system_instruction:{parts:[{text:String(systemPrompt||'')}]},
+        contents,
+        generationConfig:{
+          thinkingConfig:{thinkingLevel:'low'},
+          maxOutputTokens:800
+        }
+      };
+      const response=await fetch(endpoint,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-goog-api-key':key},
         signal:controller.signal,
-        body:JSON.stringify({model:safeModel(model),store:false,system_instruction:systemPrompt,input,generation_config:{thinking_level:'low'}})
+        body:JSON.stringify(payload)
       });
+      const body=await response.json().catch(()=>({}));
+      if(!response.ok){
+        const code=body?.error?.status||body?.error?.code||response.status;
+        const message=body?.error?.message||`Gemini request failed (${response.status})`;
+        throw new Error(`Gemini ${code}: ${message}`);
+      }
+      const out=text(body?.candidates?.[0]?.content?.parts?.map?.(x=>x?.text||'').join(''));
+      if(!out)throw new Error('Gemini returned no text output');
+      return {text:out,raw:body};
     }catch(e){
-      if(e?.name==='AbortError') throw new Error('Gemini request timed out after 30 seconds. Check Gemini availability/key configuration and try again.');
-      throw new Error(`Gemini network request failed: ${e?.message||'unknown error'}`);
+      if(e?.name==='AbortError'){
+        throw new Error(`Gemini request timed out after ${Math.round(timeout/1000)} seconds. This indicates the Render server did not receive a Gemini response in time. Check the Render outbound connection, API key/project restrictions, Gemini quota, and model availability.`);
+      }
+      throw new Error(e?.message||'Gemini network request failed');
     }finally{clearTimeout(timer)}
-    const body=await response.json().catch(()=>({}));
-    if(!response.ok) throw new Error(body?.error?.message||`Gemini request failed (${response.status})`);
-    const out=text(body.output_text)||text(body.steps?.slice?.().reverse?.().find?.(x=>x.type==='model_output')?.content?.find?.(x=>x.type==='text')?.text);
-    if(!out) throw new Error('Gemini returned no text output');
-    return {text:out,raw:body};
   }
 
   async function businessSnapshot(start,end){
@@ -111,7 +138,7 @@ ${JSON.stringify(snapshot,null,2)}\n\nGOVERNANCE:
 - Give concise, useful management guidance.`;
     await q("INSERT INTO ai_messages(conversation_id,role,content) VALUES($1,'user',$2)",[conversation.id,message]);
     try{
-      const out=await callGemini({systemPrompt:c.system_prompt,input,model:c.model});
+      const out=await callGemini({systemPrompt:c.system_prompt,input,model:c.model,history:history.map(x=>({role:x.role,content:x.content}))});
       await q("INSERT INTO ai_messages(conversation_id,role,content,model) VALUES($1,'assistant',$2,$3)",[conversation.id,out.text,safeModel(c.model)]);
       await q("UPDATE ai_conversations SET updated_at=now(),last_interaction_id=$1 WHERE id=$2",[text(out.raw?.id)||null,conversation.id]);
       return {conversationId:conversation.id,answer:out.text,model:safeModel(c.model)};
