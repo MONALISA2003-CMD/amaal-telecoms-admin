@@ -40,7 +40,7 @@ export function registerAIBusinessIntelligence({app,auth,need,q,pool,audit,super
   }
 
   async function businessSnapshot(start,end){
-    const [sales,margin,inventory,delivery,warranty,credit,procurement,finance,orders,returns]=await Promise.all([
+    const [sales,margin,inventory,delivery,warranty,credit,procurement,finance,orders,returns,paymentMethods]=await Promise.all([
       q("SELECT COALESCE(sum(grand_total),0)::numeric revenue,count(*)::int transactions,COALESCE(sum(discount_amount),0)::numeric discounts FROM sales WHERE status='Completed' AND created_at::date BETWEEN $1 AND $2",[start,end]),
       q("SELECT COALESCE(sum((sl.unit_price*sl.quantity)-sl.discount_amount),0)::numeric revenue,COALESCE(sum(sl.cost_price*sl.quantity),0)::numeric cost,COALESCE(sum(((sl.unit_price*sl.quantity)-sl.discount_amount)-(sl.cost_price*sl.quantity)),0)::numeric gross_margin FROM sale_lines sl JOIN sales s ON s.id=sl.sale_id WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2",[start,end]),
       q("SELECT COALESCE(sum(b.on_hand*COALESCE(v.cost_price,0)),0)::numeric stock_value,COALESCE(sum(b.on_hand),0)::numeric units,COUNT(DISTINCT b.variant_id)::int variants FROM inventory_balances b JOIN product_variants v ON v.id=b.variant_id"),
@@ -50,9 +50,10 @@ export function registerAIBusinessIntelligence({app,auth,need,q,pool,audit,super
       q("SELECT count(DISTINCT p.id)::int orders,COALESCE(sum((l.quantity*l.unit_price)-l.discount_amount),0)::numeric merchandise_value FROM purchase_orders p JOIN purchase_order_lines l ON l.purchase_order_id=p.id WHERE p.status<>'Cancelled' AND p.created_at::date BETWEEN $1 AND $2",[start,end]),
       q("SELECT COALESCE(sum(CASE WHEN a.account_type='Revenue' THEN l.credit-l.debit WHEN a.account_type='Expense' THEN l.debit-l.credit ELSE 0 END),0)::numeric net_activity FROM finance_journal_lines l JOIN finance_accounts a ON a.id=l.account_id JOIN finance_journals j ON j.id=l.journal_id WHERE j.status='Posted' AND j.journal_date BETWEEN $1 AND $2",[start,end]),
       q("SELECT count(*)::int total,count(*) FILTER(WHERE status IN ('Pending Payment','Paid','Processing','Packed','Ready for Dispatch','Dispatched'))::int open FROM orders WHERE created_at::date BETWEEN $1 AND $2",[start,end]),
-      q("SELECT count(*)::int total,COALESCE(sum(refund_amount),0)::numeric refunded FROM return_requests WHERE created_at::date BETWEEN $1 AND $2",[start,end])
+      q("SELECT count(*)::int total,COALESCE(sum(refund_amount),0)::numeric refunded FROM return_requests WHERE created_at::date BETWEEN $1 AND $2",[start,end]),
+      q("SELECT method,COALESCE(sum(amount),0)::numeric amount,count(*)::int transactions FROM sale_payments sp JOIN sales s ON s.id=sp.sale_id WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 GROUP BY method ORDER BY amount DESC",[start,end])
     ]);
-    return {range:{start,end},sales:sales[0],margin:margin[0],inventory:inventory[0],delivery:delivery[0],warranty:warranty[0],credit:credit[0],procurement:procurement[0],finance:finance[0],orders:orders[0],returns:returns[0]};
+    return {range:{start,end},sales:sales[0],margin:margin[0],netSales:Math.max(Number(sales[0]?.revenue||0)-Number(returns[0]?.refunded||0),0),inventory:inventory[0],delivery:delivery[0],warranty:warranty[0],credit:credit[0],procurement:procurement[0],finance:finance[0],orders:orders[0],returns:returns[0],paymentMethods:paymentMethods[0]};
   }
 
   async function generateReport({reportType='executive',start,end,generatedBy=null}){

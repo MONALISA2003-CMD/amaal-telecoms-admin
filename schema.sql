@@ -2008,3 +2008,15 @@ CREATE INDEX IF NOT EXISTS idx_finance_bank_reconciled ON finance_bank_transacti
 CREATE INDEX IF NOT EXISTS idx_finance_lines_customer ON finance_journal_lines(customer_id);
 CREATE INDEX IF NOT EXISTS idx_finance_lines_supplier ON finance_journal_lines(supplier_id);
 CREATE INDEX IF NOT EXISTS idx_finance_journals_source ON finance_journals(source_type,source_id);
+
+-- Reporting & Business Intelligence performance indexes
+CREATE INDEX IF NOT EXISTS idx_sales_bi_status_date_location ON sales(status,created_at,location_id);
+CREATE INDEX IF NOT EXISTS idx_sale_lines_bi_sale_variant ON sale_lines(sale_id,variant_id);
+CREATE INDEX IF NOT EXISTS idx_sale_payments_bi_sale_method ON sale_payments(sale_id,method,created_at);
+CREATE INDEX IF NOT EXISTS idx_orders_bi_status_date_location ON orders(status,created_at,location_id);
+CREATE INDEX IF NOT EXISTS idx_returns_bi_date_status ON return_requests(created_at,status);
+CREATE INDEX IF NOT EXISTS idx_delivery_bi_date_status ON delivery_shipments(created_at,status);
+CREATE INDEX IF NOT EXISTS idx_warranty_bi_date_status ON warranty_claims(created_at,status);
+CREATE INDEX IF NOT EXISTS idx_purchase_orders_bi_date_status_supplier ON purchase_orders(created_at,status,supplier_id);
+CREATE INDEX IF NOT EXISTS idx_finance_journals_bi_date_status ON finance_journals(journal_date,status);
+CREATE INDEX IF NOT EXISTS idx_credit_installments_bi_due_status ON credit_installments(due_date,status,credit_account_id);
