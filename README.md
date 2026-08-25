@@ -8,6 +8,10 @@ Core Administration & Security · Catalog · Inventory · Suppliers & Procuremen
 
 The codebase uses business/module filenames rather than numbered phase filenames so future maintenance can target the actual feature area.
 
+## Current module
+
+Orders & E-commerce is the current completed business module. The next module is Pricing & Promotions. See `CONTINUATION.md` for the authoritative continuation instructions.
+
 ## Reporting & Business Intelligence
 
 The BI layer is connected to operational data and provides:
@@ -142,7 +146,7 @@ MFA sign-in enforcement is intentionally disabled during the current build phase
 - Resend/email delivery variables remain deferred until the production domain and sender email are available.
 
 ## Render deployment note
-This build fixes a database bootstrap typo where the startup migration referenced `procurement_requisitions`; the actual table is `purchase_requisitions`. A failed startup means Render continues serving the previous successful deployment, so the login screen can appear unchanged until this corrected commit successfully deploys.
+The application runs `render-preflight.js` before `server.js` on startup. The current bootstrap audit specifically guards against the historical PostgreSQL `min(uuid)` customer-address repair error and verifies the canonical `purchase_requisitions` table.
 
 
 ## Phase A-C Hardening Notes

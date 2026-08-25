@@ -691,10 +691,10 @@ app.get('/api/catalog/variants/:id/price-history',auth,need('catalog.view'),asyn
 registerSuppliersProcurement({app,auth,need,q,pool,audit,inventoryNo,changeStock});
 registerCustomersCrm({app,auth,need,q,pool,audit});
 registerSalesPos({app,auth,need,q,pool,audit,changeStock});
-registerOrdersEcommerce({app,auth,need,q,pool,audit,changeStock});
+const ordersModule=registerOrdersEcommerce({app,auth,need,q,pool,audit,changeStock,reserveStock,releaseReservation});
 registerWebHosting({app,auth,need,q,pool,audit});
 registerPricingPromotions({app,auth,need,q,pool,audit});
-registerDeliveryLogistics({app,auth,need,q,pool,audit,changeStock});
+registerDeliveryLogistics({app,auth,need,q,pool,audit,changeStock,postOrderCompletionFinance:ordersModule?.postOrderCompletionFinance});
 registerWarrantyRepairs({app,auth,need,q,pool,audit});
 registerReturnsRefunds({app,auth,need,q,pool,audit,changeStock});
 registerDocumentManagement({app,auth,need,q,pool,audit,upload:multipartSingle});

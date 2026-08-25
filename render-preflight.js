@@ -18,6 +18,11 @@ if(!/CREATE TABLE IF NOT EXISTS purchase_requisitions\s*\(/i.test(schema)) error
 if(!/CREATE TABLE IF NOT EXISTS sales_quotes\s*\(/i.test(schema)) errors.push('Sales quotations schema is missing.');
 if(!/CREATE TABLE IF NOT EXISTS till_shifts\s*\(/i.test(schema)) errors.push('Till shift schema is missing.');
 if(!/CREATE TABLE IF NOT EXISTS sale_receipts\s*\(/i.test(schema)) errors.push('Receipt lifecycle schema is missing.');
+if(/min\s*\(\s*id\s*\)/i.test(schema)) errors.push('Schema contains unsupported UUID aggregate usage.');
+if(!/row_number\(\) OVER \(PARTITION BY customer_id ORDER BY id\)/i.test(schema)) errors.push('Customer address duplicate-default repair must use row_number(), not min(uuid).');
+if(!/ALTER TABLE orders ADD COLUMN IF NOT EXISTS idempotency_key/i.test(schema)) errors.push('Orders idempotency hardening is missing.');
+if(!/ALTER TABLE orders ADD COLUMN IF NOT EXISTS cancellation_reason/i.test(schema)) errors.push('Orders cancellation reason field is missing.');
+if(!/inventory_reservations_status_check CHECK\(status IN \('Active','Released','Consumed','Cancelled','Expired'\)\)/i.test(schema)) errors.push('Inventory reservation expiry status constraint is missing.');
 if(!/registerSalesPos\(\{app,auth,need,q,pool,audit,changeStock\}\)/.test(server)) errors.push('Sales/POS registration is missing.');
 if(!/const MFA_LOGIN_ENABLED=false;/.test(server)) errors.push('Build is not configured for temporary MFA-disabled development login.');
 if(/Authenticator code \(if enabled\)/.test(app) || /MFA is required before signing in/.test(app)) errors.push('Login UI still contains MFA enforcement copy.');

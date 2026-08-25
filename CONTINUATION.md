@@ -1,275 +1,265 @@
-# CONTINUATION.md
+# Amaal Telecoms Admin System Continuation
 
 ## Current system state
 
-Amaal Telecoms Admin System continues from the Customers & CRM deep build. The cumulative architecture remains intact across Catalog, Inventory, Suppliers & Procurement, Customers & CRM, Orders & E-commerce, Pricing, Delivery, Warranty, Returns, Documents, Credit, Finance, BI, AI BI, Integration Hub and existing security hardening.
+The cumulative Amaal Telecoms Admin System is a Node.js 20 / Express 5 / PostgreSQL administration platform. Existing business modules remain integrated rather than rebuilt. The current completed business area is **Orders & E-commerce**.
 
-The application remains a single Node.js/Express service with PostgreSQL and the existing browser administration console. No PostgreSQL reset, database branch, Git branch, YAML file, or MFA implementation was introduced.
+The platform continues to use business/module-oriented code organization. PostgreSQL is never reset by application startup. No Git branches, database branches, new YAML files or new MFA implementation were introduced in this build.
 
 ## Completed module
 
-### Sales & POS
+### Orders & E-commerce
 
-The Sales & POS module was deepened into an operational retail workflow while preserving the existing sales implementation.
+The Orders & E-commerce module was audited and hardened into an operational order workflow connected to Catalog, Inventory, Customers & CRM, Sales & POS, Delivery, Returns & Refunds and Finance.
 
-Implemented:
+Implemented and verified:
 
-- POS product, SKU and barcode-ready lookup
-- Customer selection using the existing Customers & CRM records
-- Cart and payment capture
-- Cart-level discount handling
-- Server-side discount and price-override approval controls
-- Sale idempotency
-- Serialized product and IMEI validation
-- Inventory consumption using the existing stock transaction logic
-- Suspended sales with retrieval and cancellation
-- Cashier till shifts
-- Opening cash
-- Cash additions and removals
-- Expected cash, actual cash and variance
-- Shift closing and reconciliation
-- Multiple payment methods
-- Partial payment support where explicitly enabled by the request
-- Controlled receipt issuance
-- Receipt reprint authorization and history
-- Sales quotations
-- Quote approval and conversion to real sales
-- Integration with the existing Orders & E-commerce order entity through sales order links
-- Controlled sale voiding
-- Payment reversal records
-- Existing Returns & Refunds integration from a sale
-- Sales finance journal synchronization
-- Sales analytics
-- End-of-day sales reconciliation
-- Sales approvals and audit history
+- Real order creation using active catalog variants and configured effective pricing
+- Customer linkage to the existing Customers & CRM records
+- Guest orders without creating duplicate customer records
+- Inventory availability checks and transactional stock reservations
+- Reservation expiry compatibility with the existing reservation cleanup process
+- Order idempotency using `Idempotency-Key` / `idempotency_key`
+- Controlled order payment lifecycle
+- Cash, Mobile Money, Card, Bank Transfer and Online Payment methods
+- Partial payment state
+- Full payment state transition
+- Payment idempotency protection
+- Payment finance synchronization using the existing Finance tables
+- Controlled order status lifecycle
+- Server-side payment gating before fulfillment
+- Cancellation with mandatory reason and reservation release
+- Serialized product and IMEI assignment
+- Prevention of duplicate serialized allocation through existing unique constraints and transactional locking
+- Fulfillment records
+- Delivery integration
+- Delivery completion inventory consumption
+- Delivery completion finance synchronization
+- Order-to-sale conversion for fully paid orders
+- Sale linkage without creating a second order entity
+- Sale receipt creation during order-to-sale conversion
+- Order refund handoff to the canonical Returns & Refunds module
+- Order analytics based on operational records
+- Order CSV export
+- Order audit events
+- Responsive Orders UI actions for payment, status, cancellation, fulfillment, sale conversion and refund handoff
 
-## Files changed
+## Critical deployment fix
 
-### Backend
+The previous Render failure was traced to PostgreSQL attempting to execute `min(id)` where `id` is UUID while bootstrapping the customer-address duplicate-default repair.
 
-- `sales-pos.js`
-  - Deepened operational sales routes
-  - Added suspended sales
-  - Added till management
-  - Added quotation lifecycle
-  - Added pricing approval workflow
-  - Added receipt lifecycle
-  - Added payment reversal records
-  - Added order linking
-  - Added finance synchronization
-  - Added analytics and reconciliation
+The schema now uses `row_number()` to select a deterministic keeper instead of a UUID aggregate.
 
-- `server.js`
-  - Added Sales & POS permissions:
-    - `sales.approve_discount`
-    - `sales.approve_price`
-    - `sales.shift`
-    - `sales.cash_adjust`
-    - `sales.reconcile`
-    - `sales.receipts`
-    - `sales.quotes`
-    - `sales.orders`
-    - `sales.refund`
+`npm start` now runs the Render preflight before starting the application. The preflight explicitly rejects unsupported UUID aggregate usage and verifies the corrected repair logic.
 
-- `render-preflight.js`
-  - Added Sales/POS structural checks
-  - Added recursive YAML detection
-  - Added required Sales/POS file verification
-
-### Database
-
-- `schema.sql`
-  - Added additive Sales & POS structures
-  - Added safe sales status expansion
-  - Added payment reversal status fields
-  - Added sales approval controls
-  - Added suspended sales
-  - Added till shifts and till cash movements
-  - Added receipts and receipt reprint history
-  - Added payment reversal records
-  - Added quotations and quote lines
-  - Added sale links to quotes, orders and till shifts
-  - Added operational indexes
-
-### Frontend
-
-- `public/app.js`
-  - Added Sales & POS navigation
-  - Added quotation view
-  - Added suspended-sales view
-  - Added till and shift view
-  - Added reconciliation view
-  - Added POS hold/retrieve workflow
-  - Added quotation creation and conversion
-  - Added till opening/closing/reconciliation
-  - Added receipt reprint control
-  - Added sale return handoff to the canonical Returns module
-  - Added cart discount handling
+This prevents the application from reaching the database startup path with the known invalid bootstrap expression.
 
 ## Database changes
 
-All changes are additive and designed for the existing PostgreSQL database.
+Additive and migration-safe changes include:
 
-Important new structures:
+- `orders.idempotency_key`
+- `orders.cancellation_reason`
+- Unique partial index for non-null order idempotency keys
+- Order payment status indexes
+- Order fulfillment status indexes
+- `order_payments.reversed_at`
+- `order_payments.reversed_by`
+- Hardened customer-address duplicate-default repair using `row_number()`
 
-- `sales_controls`
-- `sales_approvals`
-- `suspended_sales`
-- `till_shifts`
-- `till_cash_movements`
-- `sale_receipts`
-- `receipt_reprints`
-- `payment_reversals`
-- `sales_quotes`
-- `sales_quote_lines`
+Existing canonical entities remain intact:
+
+- `purchase_requisitions`
+- `orders`
+- `order_lines`
+- `order_payments`
+- `order_status_history`
+- `inventory_reservations`
+- `order_fulfillments`
+- `order_serial_units`
 - `sales_order_links`
 
-Existing `sales` received:
-
-- `quote_id`
-- `order_id`
-- `till_shift_id`
-
-Existing `sale_payments` received:
-
-- `status`
-- `reversed_at`
-- `reversed_by`
-
-The canonical procurement table `purchase_requisitions` remains unchanged and was not duplicated.
+No PostgreSQL reset or destructive migration was introduced.
 
 ## API changes
 
-Sales/POS now exposes operational endpoints for:
+Important Orders endpoints include:
 
-- Sales summary and analytics
-- Product and serialized-unit lookup
-- Sales creation
-- Sale voiding
-- Suspended sales
-- Pricing approval requests and decisions
-- Till shifts and cash movements
-- Quotations and quote conversion
-- Existing Orders linkage
-- Receipt reprint history
-- Payment reversals
-- End-of-day reconciliation
-- Finance synchronization
+- `GET /api/orders/summary`
+- `GET /api/orders`
+- `GET /api/orders/analytics`
+- `GET /api/orders/export`
+- `GET /api/orders/:id`
+- `POST /api/orders`
+- `POST /api/orders/:id/payment`
+- `POST /api/orders/:id/serials`
+- `POST /api/orders/:id/status`
+- `POST /api/orders/:id/cancel`
+- `POST /api/orders/:id/fulfillment`
+- `POST /api/orders/:id/convert-to-sale`
+- `POST /api/orders/:id/refund`
 
-Sensitive operations remain protected by server-side permissions and existing authentication middleware.
+Static route ordering was audited so `/api/orders/analytics` and `/api/orders/export` are registered before `/api/orders/:id` and cannot be swallowed by the dynamic route.
 
 ## Frontend changes
 
 The existing design system was preserved.
 
-Sales & POS now contains:
+Orders now supports:
 
-- Sales register
-- New sale POS
-- Hold/retrieve workflow
-- Quotations
-- Till & Shifts
-- Sales Reconciliation
+- Order dashboard
+- Search
+- New order creation
+- Customer selection
+- Location selection
+- Product selection
+- Reservation-backed order creation
+- Payment capture
+- Status management
+- Cancellation with reason
+- Fulfillment management
+- Serialized/IMEI assignment
+- Conversion to Sales/POS sale
+- Refund handoff to Returns & Refunds
+- Order detail and history
 
-The POS continues to use the existing Customer and Catalog/Inventory APIs rather than creating duplicate business entities.
+The frontend no longer submits catalog selling prices as authoritative order prices. The server resolves effective pricing, preventing promotion/pricing mismatches and client-side price manipulation.
 
 ## Integrations
 
 ### Catalog
 
-Sales reads real product variants, selling prices, tax rates, SKUs and serialized flags.
+Orders use active product variants, SKUs, effective pricing and configured tax rates.
 
 ### Inventory
 
-Sales uses the existing `changeStock` transaction helper. Stock is consumed only through operational sales and restored on controlled voids.
+Orders reserve real stock and consume the reservation during fulfillment or order-to-sale conversion. Reservations are released on cancellation and remain compatible with the existing expiry cleanup job.
 
 ### Customers & CRM
 
-Sales references the existing `customers` table and therefore feeds the existing Customer 360 history.
+Orders reference the existing customer entity and therefore remain visible through Customer 360 rather than creating a second customer system.
 
-### Orders & E-commerce
+### Sales & POS
 
-Existing `orders` remains the canonical order entity. Sales uses `sales_order_links` rather than creating a duplicate order table.
+Fully paid orders can be converted into a completed retail sale. The conversion preserves the original order relationship through `sales_order_links` and `sales.order_id`.
+
+### Delivery & Logistics
+
+Delivery completion consumes order reservations, marks serialized units sold and synchronizes the order completion journal through the shared Orders finance callback.
 
 ### Returns & Refunds
 
-Sale returns hand off to the existing Returns & Refunds module. No separate duplicate returns engine was introduced.
+Order refunds hand off to the existing canonical Returns & Refunds workflow rather than creating a second return engine.
 
 ### Finance
 
-Completed and partially paid operational sales can create real finance journals using the existing Finance account structure. No synthetic BI data is generated.
-
-### Audit and Integration Hub
-
-Important Sales/POS mutations use the existing audit mechanism, which also records integration events where configured.
-
-## Testing
-
-Static validation completed:
-
-- All JavaScript files: PASS with `node --check`
-- Render preflight: PASS
-- Sales/POS route registration: verified
-- Canonical `purchase_requisitions`: preserved
-- YAML files introduced by this build: 0
-- MFA references introduced in Sales/POS: 0
-- Secret-like credential scan: no hardcoded credential patterns found
-
-Live PostgreSQL and Render execution were not available from the source archive environment, so live deployment validation is not falsely claimed.
+Order payments create real finance journals. Fulfilled orders create a balanced order-completion journal. Order-to-sale conversion records the sale against the existing order finance journal so the same economic event is not posted twice by the Sales finance synchronization path.
 
 ## Security
 
-Completed checks include:
+- Authentication preserved
+- Server-side permissions preserved
+- Orders protected by `orders.view`, `orders.create`, `orders.manage` and `orders.export`
+- Sale conversion requires `sales.create`
+- Refund handoff requires `returns.manage`
+- Manual order price overrides rejected
+- Manual order tax overrides rejected
+- Manual order discounts rejected
+- Payment methods validated server-side
+- Payment amounts cannot exceed outstanding balance
+- Idempotency supported for order creation and payments
+- Serialized allocation is locked and validated server-side
+- Cancellation requires a reason
+- Audit logging covers important order mutations
+- MFA remains deferred to the final security module
 
-- Existing authentication and authorization preserved
-- New endpoints use the existing `auth` and `need(...)` middleware
-- Pricing approvals are server-side
-- Till cash adjustments require dedicated permissions
-- Receipt reprints are explicitly audited
-- Sale voiding is server-side and preserves transaction history
-- Serialized/IMEI allocation is locked and validated server-side
-- Sale creation supports idempotency
-- No MFA was implemented or advanced
+## Audit and bug checks performed
+
+- Complete source archive inspected before modification
+- Existing continuation state reviewed
+- Orders & E-commerce implementation audited
+- Sales/POS integration audited
+- Delivery integration audited
+- Returns integration audited
+- Finance integration audited
+- PostgreSQL bootstrap failure investigated
+- UUID aggregate failure removed
+- JavaScript syntax checked across the project
+- Frontend JavaScript syntax checked
+- Render preflight passed
+- Route collision / ordering audit performed
+- Canonical `purchase_requisitions` verified
+- YAML scan completed: zero YAML files
+- Hardcoded secret pattern scan completed
+- `node_modules` excluded from package
+- No PostgreSQL reset introduced
+- No MFA implementation introduced
+
+Live Render execution and live production PostgreSQL execution cannot be performed from the local archive environment. The package therefore does not claim a false live-production pass.
+
+## Documentation cleanup
+
+Historical build/audit Markdown files were removed from the deliverable to reduce clutter.
+
+The package intentionally retains only:
+
+- `README.md`
+- `CONTINUATION.md`
 
 ## Known limitations
 
-- Live Render/PostgreSQL execution still needs to be performed against the deployed environment.
-- POS barcode input is backend-ready through SKU/barcode lookup, but dedicated hardware scanner UX is still a browser-device integration concern.
-- Advanced payment gateway confirmations remain dependent on future Integration Hub connectors.
-- Quote conversion requires serial/IMEI selection for serialized products at conversion time.
-- Credit sales remain dependent on the existing Credit & Installments engine and should be deepened when that business module is revisited.
-- Dynamic customer-group rule evaluation remains intentionally outside Sales.
+- Live Render deployment must be performed from the corrected project contents.
+- External payment gateway confirmation remains an Integration Hub responsibility.
+- Public storefront checkout remains dependent on the future public Web & Hosting/frontend deployment architecture.
+- Advanced promotion approval workflows belong to the next Pricing & Promotions module.
 
 ## Next module
 
-### Orders & E-commerce
-
-The next developer/LLM must treat Orders & E-commerce as the next business module.
+**Pricing & Promotions**
 
 ## Next-module continuation prompt
 
-Continue directly from this ZIP.
+Continue directly from this cumulative ZIP.
 
-1. Inspect the complete project before changing code.
-2. Read this `CONTINUATION.md` and the latest Sales & POS audit.
-3. Audit Catalog, Inventory, Suppliers & Procurement, Customers & CRM and Sales & POS before extending Orders.
-4. Preserve all existing functionality.
+1. Inspect the complete project before changing anything.
+2. Read `README.md` and this `CONTINUATION.md`.
+3. Audit Catalog, Inventory, Suppliers & Procurement, Customers & CRM, Sales & POS and Orders & E-commerce before building.
+4. Fix every regression discovered before adding new functionality.
 5. Do not rebuild the application.
 6. Do not reset PostgreSQL.
-7. Do not create database or Git branches.
+7. Do not create database branches or Git branches.
 8. Do not commit secrets.
 9. Do not introduce YAML files.
-10. Keep MFA deferred until the final security phase.
-11. Reuse the canonical `orders` and `order_lines` implementation already present.
-12. Do not create a duplicate order entity merely to satisfy the roadmap.
-13. Integrate Orders deeply with Catalog, Inventory, Customers & CRM, Sales & POS, Delivery, Returns, Credit and Finance.
-14. Use real operational data.
-15. Add safe migrations only where genuinely missing structures are required.
-16. Preserve `purchase_requisitions` as the canonical procurement requisition implementation.
-17. Run JavaScript syntax checks.
-18. Run Render preflight.
-19. Test order creation, payment, reservation, fulfillment, cancellation, delivery handoff, returns and customer linkage.
-20. Run regression tests for all previous modules.
-21. Check the complete project for YAML files.
-22. Verify MFA remains untouched.
-23. Produce the next `CONTINUATION.md` after completing Orders & E-commerce.
+10. Do not implement MFA. MFA remains final-phase only.
+11. Preserve the canonical `purchase_requisitions` implementation.
+12. Preserve the canonical `orders` implementation. Do not create a duplicate order engine.
+13. Use real operational data rather than demo/fake BI records.
+14. Preserve the existing design system and architecture.
+15. Audit the existing effective-price function and pricing structures before adding new pricing entities.
+16. Build Pricing & Promotions as a controlled business module integrated with Catalog, Customers, Sales/POS, Orders, Finance and BI.
+17. Support price books, customer pricing where appropriate, promotion eligibility, scheduled promotions, percentage/fixed discounts, product/category promotions, minimum quantities, date windows and approval controls without bypassing server-side validation.
+18. Ensure Sales and Orders consume one authoritative effective-price calculation rather than implementing separate pricing formulas.
+19. Prevent promotions from creating negative prices or invalid tax calculations.
+20. Preserve historical transaction prices. Changing a price must never rewrite completed sales or completed orders.
+21. Add audit history for price creation, modification, activation, deactivation, promotion approval and promotion usage where appropriate.
+22. Add database constraints and indexes for real pricing query patterns.
+23. Ensure concurrent checkout/POS operations cannot apply stale or conflicting prices.
+24. Test Catalog → Pricing → Order and Catalog → Pricing → POS workflows.
+25. Test customer-specific pricing without duplicating Customers & CRM.
+26. Test promotion stacking rules and make the stacking policy explicit and server-enforced.
+27. Test expiry and future scheduling.
+28. Test cancelled, returned and historical transactions to ensure their original prices remain unchanged.
+29. Test Finance and BI calculations against real operational records.
+30. Run every available JavaScript syntax check.
+31. Run Render preflight.
+32. Search the complete project for YAML files.
+33. Verify `purchase_requisitions` remains canonical.
+34. Verify MFA remains untouched.
+35. Audit route ordering for static endpoints before dynamic `/:id` routes.
+36. Audit database bootstrap SQL for PostgreSQL type compatibility, especially UUID operations.
+37. Perform regression testing across all previous business modules.
+38. Remove obsolete temporary Markdown documentation before delivery, retaining only `README.md` and the current `CONTINUATION.md`.
+39. Update `README.md` only when genuinely useful for the current cumulative system.
+40. Produce the next `CONTINUATION.md` describing the completed Pricing & Promotions module and the following business module.
+41. Package the complete cumulative project, not only changed files.
+42. Deliver the ZIP only after the audit and preflight pass.

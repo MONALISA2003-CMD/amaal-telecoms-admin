@@ -405,6 +405,8 @@ CREATE TABLE IF NOT EXISTS inventory_reservations(
  released_at timestamptz
 );
 CREATE INDEX IF NOT EXISTS idx_inventory_reservations_active ON inventory_reservations(location_id,variant_id,status);
+ALTER TABLE inventory_reservations DROP CONSTRAINT IF EXISTS inventory_reservations_status_check;
+ALTER TABLE inventory_reservations ADD CONSTRAINT inventory_reservations_status_check CHECK(status IN ('Active','Released','Consumed','Cancelled','Expired'));
 
 CREATE TABLE IF NOT EXISTS inventory_stocktakes(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -965,6 +967,11 @@ CREATE TABLE IF NOT EXISTS orders(
 );
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status,created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_orders_customer ON orders(customer_id,created_at DESC);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS idempotency_key text;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS cancellation_reason text NOT NULL DEFAULT '';
+CREATE UNIQUE INDEX IF NOT EXISTS uq_orders_idempotency_key ON orders(idempotency_key) WHERE idempotency_key IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_orders_payment_status ON orders(payment_status,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_orders_fulfillment_status ON orders(fulfillment_status,created_at DESC);
 CREATE TABLE IF NOT EXISTS order_lines(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(), order_id uuid NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
  variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
@@ -979,6 +986,9 @@ CREATE TABLE IF NOT EXISTS order_payments(
  received_by uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_order_payments_order ON order_payments(order_id);
+ALTER TABLE order_payments ADD COLUMN IF NOT EXISTS reversed_at timestamptz;
+ALTER TABLE order_payments ADD COLUMN IF NOT EXISTS reversed_by uuid REFERENCES users(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_order_payments_status ON order_payments(order_id,status,created_at DESC);
 CREATE TABLE IF NOT EXISTS order_status_history(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(), order_id uuid NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
  status text NOT NULL, actor_id uuid REFERENCES users(id) ON DELETE SET NULL, notes text NOT NULL DEFAULT '', created_at timestamptz NOT NULL DEFAULT now()
@@ -1640,8 +1650,7 @@ CREATE INDEX IF NOT EXISTS idx_customer_notes_customer ON customer_notes(custome
 DO $$
 DECLARE r record;
 BEGIN
-  -- PostgreSQL has no min(uuid) aggregate. Use row_number() to choose the
-  -- deterministic oldest UUID value when repairing legacy duplicate defaults.
+  -- Use row_number() to choose a deterministic keeper when repairing legacy duplicate defaults.
   FOR r IN
     SELECT customer_id, id AS keep_id
     FROM (
@@ -1859,3 +1868,4 @@ CREATE INDEX IF NOT EXISTS idx_sales_till_shift ON sales(till_shift_id,created_a
 
 -- Keep canonical procurement implementation unchanged.
 -- purchase_requisitions is the only canonical procurement requisition entity.
+
