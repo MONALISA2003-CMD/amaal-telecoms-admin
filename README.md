@@ -130,6 +130,14 @@ Never commit:
 
 Only useful project Markdown documentation should be retained: `README.md` and `CONTINUATION.md`.
 
+## AI staging fix — 25 August 2026
+
+A live staging test exposed a database compatibility defect in the AI Assistant low-stock grounding query. The query referenced `product_variants.reorder_level`, but the canonical inventory design stores replenishment thresholds in `inventory_reorder_rules`.
+
+The query has been corrected to use the canonical reorder-rule table, include reserved stock in available-stock calculations, and fall back to the platform default reorder point when no enabled rule exists. This is a code/schema-alignment fix; it does not require domain-dependent environment variables.
+
+The AI assistant must be retested against the real PostgreSQL database after deployment.
+
 ## Verification performed for this release
 
 - All application JavaScript files passed `node --check`.
@@ -138,6 +146,7 @@ Only useful project Markdown documentation should be retained: `README.md` and `
 - Legacy `procurement_requisitions` runtime reference: **absent**.
 - Frontend cumulative view audit: **113 unique admin views rendered without exceptions** using safe mock data.
 - AI and Integration cross-closure rendering defect: **fixed**.
+- AI low-stock grounding query/schema mismatch: **fixed** using `inventory_reorder_rules`.
 - Temporary browser test harness: **removed before packaging**.
 - MFA: **untouched**.
 - No destructive database reset introduced.

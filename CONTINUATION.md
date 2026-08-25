@@ -4,7 +4,7 @@
 
 The project is now at:
 
-**Phase 40G — AI Activation + Cross-Module Frontend Scoping Fix — implemented, audited and debugged.**
+**Phase 40G — AI Activation + Cross-Module Frontend Scoping Fix + Live AI Database Compatibility Fix — implemented, audited and debugged.**
 
 Continue from this exact codebase.
 
@@ -116,6 +116,12 @@ The README is the authoritative inventory. Current code references:
 - `RECOVERY_TARGET_ENVIRONMENT`
 
 Do not add invented provider keys.
+
+## Latest staging defect fixed
+
+A real AI Assistant request exposed `column v.reorder_level does not exist`. The deployed database follows the canonical inventory model in which reorder thresholds are stored in `inventory_reorder_rules`, not `product_variants.reorder_level`. The AI low-stock grounding query has been corrected accordingly.
+
+Before the next rezip/deployment, repeat the full cumulative audit and specifically test the AI grounding query against the real PostgreSQL schema.
 
 ## Immediate next step — real staging validation
 
