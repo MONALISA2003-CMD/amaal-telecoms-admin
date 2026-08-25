@@ -2,212 +2,138 @@
 
 ## Current system state
 
-The cumulative Amaal Telecoms Admin System is a Node.js 20 / Express 5 / PostgreSQL administration platform. Business modules are cumulative and integrated. PostgreSQL is never reset by application startup. The canonical procurement requisition entity is `purchase_requisitions`. MFA remains deferred to the final security phase.
+Cumulative Node.js 20 / Express 5 / PostgreSQL enterprise administration platform. Completed business modules remain integrated and operational. PostgreSQL is never reset by startup. The canonical procurement requisition entity is `purchase_requisitions`. MFA is deliberately deferred to the final security phase and was not implemented or modified in this module.
 
-## Completed module
+## Completed module: Delivery & Logistics
 
-### Pricing & Promotions
-
-Pricing & Promotions is implemented as the authoritative commercial pricing layer used by Sales/POS, Orders & E-commerce and the public catalog pricing path.
+Built and audited Delivery & Logistics as the operational bridge between paid orders, dispatch, inventory, customers and finance.
 
 Implemented:
 
-- Customer-type price lists for Retail, Wholesale, Corporate, VIP and Custom pricing
-- Safe price-list validity windows and priorities
-- Variant-level price-list entries
-- Compare-at price validation
-- Central effective-price calculation
-- Customer-type normalization between CRM customer types and commercial price types
-- Product, category and brand promotions
-- Percentage and fixed-amount promotions
-- Promotion customer eligibility
-- Minimum quantity eligibility
-- Promotion scheduling and expiry
-- Explicit server-enforced single-promotion policy
-- Promotion activation approval workflow
-- Promotion approval history
-- Promotion target validation
-- Coupon creation and validation
-- Coupon usage limits
-- Per-customer coupon limits
-- Coupon date windows
-- Coupon redemption records
-- Coupon integration with Sales/POS
-- Coupon integration with Orders
-- Historical transaction prices remain immutable
-- Pricing export
-- Pricing summary and operational promotion data
-- Pricing and promotion audit events
+- Delivery zones with fees, regions, ETA and activation status
+- Shipment creation from eligible orders
+- Duplicate shipment protection at application and database levels
+- Delivery partners and partner status management
+- Driver assignment
+- Unit count, unit delivery cost and total delivery cost tracking
+- Delivery tracking number and carrier information
+- Scheduled delivery times
+- Recipient details
+- Delivery status lifecycle
+- Assignment, pickup, transit, out-for-delivery, failed, returned, cancelled and delivered workflows
+- Delivery status history and audit events
+- Delivery attempts with concurrency-safe attempt numbering
+- Failed delivery reasons and rescheduling support
+- Proof-of-delivery type, reference and notes
+- Serialized product and IMEI validation before delivery completion
+- Inventory reservation consumption exactly once on successful delivery
+- Serialized inventory transition to Sold on successful delivery
+- Finance completion journal synchronization through the existing order finance engine
+- Order status synchronization
+- Shipment cancellation/return handoff back to the dispatch queue
+- Delivery partner performance reporting
+- Delivery cost analytics
+- Delivery dashboard and responsive management UI
+- Server-side permission enforcement
+
+## Important bug fixes and audit findings
+
+- Fixed an undefined `unitCount` / `unitCost` / `totalDeliveryCost` shipment creation path that would crash valid delivery creation requests.
+- New shipments are forced to begin in `Pending`; callers cannot bypass the delivery lifecycle by creating a shipment directly as Delivered.
+- Delivery completion now requires the parent order to actually be `Dispatched`.
+- Delivery completion remains transactional and locks the shipment and order.
+- Inventory reservation consumption occurs only for active reservations and is performed inside the same transaction as delivery completion.
+- Serialized order lines are verified before completion.
+- Delivery attempts are serialized with a shipment row lock to avoid duplicate attempt numbers under concurrent requests.
+- Closed shipments cannot accept further delivery attempts.
+- Failed attempts require a reason.
+- Cancelled/returned shipments return dispatched orders to `Ready for Dispatch` so the order can be dispatched again without creating a second order.
+- Partner and zone references are validated server-side and only active records can be selected.
+- Delivery cost fields are validated as finite, non-negative numbers.
+- Proof-of-delivery fields were added without introducing file storage or a duplicate document system.
+- Existing UUID aggregate startup fix remains intact; no `min(uuid)` or equivalent invalid UUID aggregate was introduced.
+- Render preflight was executed after dependency installation and passed while correctly excluding `node_modules` from the YAML scan.
 
 ## Database changes
 
-Additive migration-safe structures include:
+Additive changes only:
 
-- `price_lists`
-- `price_list_items`
-- `promotions` commercial eligibility fields
-- `promotion_products`
-- `promotion_categories`
-- `promotion_brands`
-- `promotion_approvals`
-- `coupons`
-- `coupon_redemptions`
-- Sales promotion/coupon linkage
-- Order promotion/coupon linkage
-- `amaal_effective_variant_price_qty(...)`
-- Backward-compatible `amaal_effective_variant_price(...)` wrapper
-- Pricing indexes
+- Delivery zones
+- Delivery shipments
+- Delivery events
+- Delivery attempts
+- Delivery partners
+- Partner and shipment indexes
+- Shipment tracking and scheduling indexes
+- Proof-of-delivery fields on delivery shipments
 
-No PostgreSQL reset or destructive migration was introduced.
-
-## API changes
-
-Pricing:
-
-- `GET /api/pricing/summary`
-- `GET /api/pricing/lists`
-- `POST /api/pricing/lists`
-- `PATCH /api/pricing/lists/:id`
-- `GET /api/pricing/lists/:id/items`
-- `POST /api/pricing/lists/:id/items`
-- `DELETE /api/pricing/lists/:id/items/:itemId`
-- `GET /api/pricing/variants`
-- `GET /api/pricing/effective/:variantId`
-- `GET /api/pricing/export`
-- `GET /api/pricing/approvals`
-
-Promotions:
-
-- `GET /api/promotions`
-- `POST /api/promotions`
-- `PATCH /api/promotions/:id`
-- `POST /api/promotions/:id/request-approval`
-- `POST /api/promotions/:id/approve`
-- `POST /api/promotions/:id/reject`
-- `POST /api/promotions/:id/targets/:type`
-- `DELETE /api/promotions/:id/targets/:type/:targetId`
-- `GET /api/promotions/:id/targets`
-
-Coupons:
-
-- `GET /api/coupons`
-- `POST /api/coupons`
-- `POST /api/coupons/validate`
+No database reset, branch, destructive migration or duplicate procurement requisition implementation was introduced.
 
 ## Integrations
 
-### Catalog
+- Orders: shipment eligibility, order fulfillment status, dispatch queue and delivery completion
+- Inventory: active reservation consumption and serialized-unit lifecycle
+- Customers: recipient/customer information comes from the existing order/customer records
+- Finance: existing idempotent order completion journal is reused
+- Returns: returned delivery state hands the order back for the existing Returns & Refunds workflow
+- Integration Hub: no duplicate integration framework was created
+- Business Intelligence: existing delivery reporting can consume real shipment and partner data
 
-Catalog base selling prices remain the source fallback price. Pricing does not overwrite completed transaction prices.
+## Testing and validation
 
-### Customers & CRM
-
-CRM customer types are normalized into the commercial pricing types without creating a duplicate customer system.
-
-### Sales & POS
-
-Sales resolve the authoritative effective price server-side and can apply a validated coupon. Manual price overrides and ordinary discount approvals remain governed by the existing Sales controls.
-
-### Orders & E-commerce
-
-Orders use the same effective-price function as Sales/POS. Coupon redemption is recorded only when an order becomes fully paid, preventing abandoned or partially paid orders from consuming coupon limits.
-
-### Web & Hosting
-
-The public catalog continues to expose effective retail prices from the same database pricing function.
-
-### Finance and BI
-
-Existing financial and BI modules consume the actual sale/order totals. No fake analytical records are generated.
-
-## Security
-
-- Authentication preserved
-- Server-side pricing permissions preserved
-- `pricing.view`
-- `pricing.manage`
-- `pricing.export`
-- `promotions.view`
-- `promotions.manage`
-- `promotions.approve`
-- Promotion activation requires appropriate approval
-- Promotion targets are validated server-side
-- Coupon limits are checked server-side under transaction locks
-- Promotion stacking is explicitly disabled
-- Historical sale/order pricing is not recalculated
-- Audit logging covers pricing and promotion mutations
-- MFA remains deferred
-
-## Audit and bug checks
-
-- Complete cumulative project inspected
-- Previous modules retained
-- Pricing structures audited
-- Customer-type mismatch corrected
-- UUID aggregate startup issue retained as fixed
-- Pricing/order/sales price calculation unified
-- Coupon abandoned-order consumption bug prevented
-- Promotion target invalid-type crash path corrected
-- Price-list compare-at validation added
-- Promotion date and quantity validation added
-- Promotion approval lifecycle checked
-- JavaScript syntax checked across all JavaScript files
-- Render preflight passed
-- Application YAML scan passed with dependency and repository tooling exclusions
-- Final package contains no `node_modules`
-- Only `README.md` and `CONTINUATION.md` remain as Markdown documentation
-- Canonical `purchase_requisitions` verified
-- MFA verified as deferred
+- JavaScript syntax checks passed for all backend and frontend JavaScript files.
+- Render preflight passed.
+- Clean dependency-install simulation was checked before preflight.
+- No application YAML files are present in the final source tree.
+- No `node_modules` directory is included in the deliverable.
+- Only `README.md` and this `CONTINUATION.md` remain as Markdown documentation.
+- `purchase_requisitions` remains canonical.
+- MFA remains untouched and deferred.
+- Static searches for TODO/FIXME markers in application JS/SQL returned no results.
+- Route and delivery lifecycle logic was manually audited for duplicate creation, illegal transitions, concurrency and transactional integrity.
 
 Live Render and production PostgreSQL execution cannot be performed from the local archive environment, so this package does not claim a false live-production pass.
 
 ## Known limitations
 
-- Promotion stacking is intentionally disabled. Only one promotion is applied per line.
-- External payment gateway confirmation remains an Integration Hub responsibility.
-- Advanced public storefront campaign presentation remains part of the Web & Hosting work.
+- External courier APIs and webhook delivery are handled by the existing Integration Hub roadmap rather than a second delivery integration framework.
+- Proof-of-delivery attachments are represented by controlled references/notes; actual binary evidence remains under the existing Document Management module.
+- Delivery fee calculation remains informational for orders already paid and does not silently rewrite historical order totals.
 
 ## Next module
 
-**Delivery & Logistics**
+**Warranty & Repairs**
 
 ## Next-module continuation prompt
 
-Continue directly from this cumulative ZIP.
+Continue from this cumulative ZIP.
 
-1. Inspect the complete project before changing anything.
-2. Read `README.md` and this `CONTINUATION.md`.
-3. Audit Catalog, Inventory, Suppliers & Procurement, Customers & CRM, Sales & POS, Orders & E-commerce and Pricing & Promotions before building.
-4. Fix every regression before adding new functionality.
-5. Do not rebuild the application.
-6. Do not reset PostgreSQL.
-7. Do not create database branches or Git branches.
-8. Do not commit secrets.
-9. Do not introduce YAML files.
-10. Do not implement MFA. MFA remains final-phase only.
-11. Preserve the canonical `purchase_requisitions` implementation.
-12. Preserve the canonical `orders` implementation.
-13. Preserve the authoritative pricing function and do not create a second pricing engine.
-14. Use real operational data rather than fake dashboard records.
-15. Build Delivery & Logistics as an integrated operational module connected to Orders, Sales, Inventory, Customers, Finance and Web & Hosting.
-16. Support delivery zones, delivery fees, shipment creation, assignment, tracking, dispatch, delivery attempts, proof of delivery, failed deliveries, cancellations, returns handoff and delivery status history.
-17. Ensure delivery completion consumes the correct inventory reservation exactly once and synchronizes finance exactly once.
-18. Prevent duplicate shipment creation and duplicate delivery completion under concurrent requests.
-19. Preserve serialized and IMEI lifecycle integrity through delivery.
-20. Integrate delivery partners through the existing Integration Hub rather than creating duplicate integration infrastructure.
-21. Protect delivery fee changes and operational overrides server-side.
-22. Audit all delivery mutations and status transitions.
-23. Test Orders → Delivery → Inventory → Finance and Delivery → Returns workflows.
-24. Test failed delivery and retry workflows.
-25. Test cancellation and duplicate webhook/idempotency scenarios.
-26. Run all JavaScript syntax checks.
-27. Run Render preflight.
-28. Search the complete project for YAML files and confirm no application YAML was introduced.
-29. Verify `purchase_requisitions` remains canonical.
-30. Verify MFA remains untouched.
-31. Audit database bootstrap SQL for PostgreSQL type compatibility.
-32. Audit route ordering before dynamic `/:id` routes.
-33. Remove obsolete Markdown documentation before delivery, retaining only `README.md` and the new `CONTINUATION.md`.
-34. Produce the next `CONTINUATION.md` describing Delivery & Logistics and the following module.
-35. Package the complete cumulative project, not only changed files.
-36. Deliver the ZIP only after the complete audit, bug checks and Render preflight pass.
+1. Inspect the complete project and read `README.md` and this `CONTINUATION.md` before changing anything.
+2. Audit Catalog, Inventory, Suppliers & Procurement, Customers & CRM, Sales & POS, Orders & E-commerce, Pricing & Promotions and Delivery & Logistics before building.
+3. Fix every regression before adding functionality.
+4. Preserve existing architecture and real operational data.
+5. Never reset PostgreSQL.
+6. Never create database or Git branches.
+7. Never commit secrets.
+8. Do not introduce YAML files.
+9. Do not implement, modify or partially build MFA. MFA remains final-phase only.
+10. Preserve canonical `purchase_requisitions` and all existing business entities.
+11. Build Warranty & Repairs as an integrated module connected to Customers, serialized inventory/IMEI, Sales, Orders, Returns, Documents, Finance and Delivery where applicable.
+12. Support warranty policies, eligibility checks, claims, coverage periods, serial/IMEI verification, inspections, repair jobs, statuses, technicians/repair partners, estimates, approvals, parts usage, repair costs, customer communication notes, replacement handling, completion, collection and warranty history.
+13. Prevent duplicate warranty claims for the same active issue and serialized unit where business rules prohibit duplication.
+14. Preserve serialized-unit lifecycle integrity and never create a second IMEI/serial record unnecessarily.
+15. Integrate parts consumption with Inventory and financial costs with Finance using real transactions.
+16. Integrate returns/exchanges without creating a duplicate returns engine.
+17. Use the existing Document Management module for warranty documents and evidence.
+18. Protect approvals, cost changes, warranty overrides and closure operations server-side.
+19. Audit all claim and repair state changes.
+20. Run full regression checks across all previous modules.
+21. Run all JavaScript syntax checks.
+22. Run Render preflight after dependency installation.
+23. Search for YAML files while excluding dependency-owned files correctly.
+24. Audit PostgreSQL bootstrap SQL for UUID/type compatibility and safe additive migrations.
+25. Audit route ordering and dynamic route collisions.
+26. Remove obsolete Markdown documentation, retaining only `README.md` and the new `CONTINUATION.md`.
+27. Produce the next `CONTINUATION.md` with the completed Warranty & Repairs state and the next business module.
+28. Package the complete cumulative project, not only changed files.
+29. Do not deliver a ZIP until the complete audit, bug checks and preflight pass.

@@ -32,3 +32,9 @@ ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS unit_cost numeric(18,2) 
 ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS total_delivery_cost numeric(18,2) NOT NULL DEFAULT 0 CHECK(total_delivery_cost>=0);
 DO $$ BEGIN ALTER TABLE delivery_shipments ADD CONSTRAINT delivery_shipments_partner_fk FOREIGN KEY(partner_id) REFERENCES delivery_partners(id) ON DELETE SET NULL; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 CREATE INDEX IF NOT EXISTS idx_delivery_shipments_partner ON delivery_shipments(partner_id,status,created_at DESC);
+
+ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS proof_type text NOT NULL DEFAULT 'None' CHECK(proof_type IN ('None','Recipient','Photo','Signature'));
+ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS proof_reference text NOT NULL DEFAULT '';
+ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS proof_notes text NOT NULL DEFAULT '';
+CREATE INDEX IF NOT EXISTS idx_delivery_shipments_tracking ON delivery_shipments(tracking_number) WHERE tracking_number<>'';
+CREATE INDEX IF NOT EXISTS idx_delivery_shipments_scheduled ON delivery_shipments(scheduled_at,status) WHERE scheduled_at IS NOT NULL;
