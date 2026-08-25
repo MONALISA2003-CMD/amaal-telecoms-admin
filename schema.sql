@@ -1988,3 +1988,23 @@ CREATE TABLE IF NOT EXISTS warranty_part_usage(
 );
 CREATE INDEX IF NOT EXISTS idx_warranty_part_usage_claim ON warranty_part_usage(claim_id,created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_warranty_part_usage_job ON warranty_part_usage(repair_job_id,created_at DESC);
+
+-- Finance & Accounting hardening: operational controls, reconciliation and expense tracking
+CREATE TABLE IF NOT EXISTS finance_expenses(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), expense_no text UNIQUE NOT NULL, expense_date date NOT NULL DEFAULT current_date,
+ supplier_id uuid REFERENCES suppliers(id) ON DELETE SET NULL, customer_id uuid REFERENCES customers(id) ON DELETE SET NULL,
+ account_id uuid NOT NULL REFERENCES finance_accounts(id), cash_account_id uuid REFERENCES finance_cash_accounts(id),
+ amount numeric(18,2) NOT NULL CHECK(amount>0), tax_amount numeric(18,2) NOT NULL DEFAULT 0 CHECK(tax_amount>=0),
+ method text NOT NULL DEFAULT 'Cash' CHECK(method IN ('Cash','Mobile Money','Card','Bank Transfer','Other')),
+ reference text NOT NULL DEFAULT '', description text NOT NULL, status text NOT NULL DEFAULT 'Posted' CHECK(status IN ('Draft','Posted','Voided')),
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_finance_expenses_date ON finance_expenses(expense_date,status);
+CREATE INDEX IF NOT EXISTS idx_finance_expenses_account ON finance_expenses(account_id,expense_date);
+ALTER TABLE finance_bank_transactions ADD COLUMN IF NOT EXISTS source_type text;
+ALTER TABLE finance_bank_transactions ADD COLUMN IF NOT EXISTS source_id text;
+CREATE UNIQUE INDEX IF NOT EXISTS uq_finance_bank_source ON finance_bank_transactions(source_type,source_id) WHERE source_type IS NOT NULL AND source_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_finance_bank_reconciled ON finance_bank_transactions(cash_account_id,reconciled,transaction_date);
+CREATE INDEX IF NOT EXISTS idx_finance_lines_customer ON finance_journal_lines(customer_id);
+CREATE INDEX IF NOT EXISTS idx_finance_lines_supplier ON finance_journal_lines(supplier_id);
+CREATE INDEX IF NOT EXISTS idx_finance_journals_source ON finance_journals(source_type,source_id);
