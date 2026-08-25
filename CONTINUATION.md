@@ -154,7 +154,7 @@ The previous `aiView is not defined` and `integrationView is not defined` errors
 
 ### 3. Validate Gemini for real
 
-With a real `GEMINI_API_KEY` or supported `GOOGLE_API_KEY`:
+With a real `GEMINI_API_KEY` or supported `GOOGLE_API_KEY`, also verify that AI requests complete within the configured timeout rather than hanging:
 
 1. Open AI Business Intelligence.
 2. Run **Test Gemini connection**.
@@ -217,3 +217,8 @@ Never perform a destructive production restore as a test.
 ## Final rule
 
 The next build must prioritize **real deployment validation and debugging of the cumulative platform** over adding another large feature. Any newly discovered cross-module defect must be fixed and regression-tested before continuing.
+
+
+## AI responsiveness hardening
+
+The AI chat path now uses Gemini Interactions API with `thinking_level: low`, a 30-second server-side request timeout, and a 45-second browser timeout. If Gemini or upstream networking stalls, the UI must show a clear timeout/error instead of remaining indefinitely on the loading state.

@@ -25,13 +25,22 @@ export function registerAIBusinessIntelligence({app,auth,need,q,pool,audit,super
   async function trainingContext(){
     return q("SELECT title,instruction,expected_behavior FROM ai_training_examples WHERE active=true ORDER BY created_at DESC LIMIT 25");
   }
-  async function callGemini({systemPrompt,input,model}){
+  async function callGemini({systemPrompt,input,model,timeoutMs=30000}){
     const key=getApiKey();
     if(!key) throw new Error('Gemini is not configured. Add GEMINI_API_KEY as a server-side Render secret.');
-    const response=await fetch('https://generativelanguage.googleapis.com/v1/interactions',{
-      method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},
-      body:JSON.stringify({model:safeModel(model),store:false,system_instruction:systemPrompt,input})
-    });
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),Math.max(5000,Number(timeoutMs)||30000));
+    let response;
+    try{
+      response=await fetch('https://generativelanguage.googleapis.com/v1/interactions',{
+        method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},
+        signal:controller.signal,
+        body:JSON.stringify({model:safeModel(model),store:false,system_instruction:systemPrompt,input,generation_config:{thinking_level:'low'}})
+      });
+    }catch(e){
+      if(e?.name==='AbortError') throw new Error('Gemini request timed out after 30 seconds. Check Gemini availability/key configuration and try again.');
+      throw new Error(`Gemini network request failed: ${e?.message||'unknown error'}`);
+    }finally{clearTimeout(timer)}
     const body=await response.json().catch(()=>({}));
     if(!response.ok) throw new Error(body?.error?.message||`Gemini request failed (${response.status})`);
     const out=text(body.output_text)||text(body.steps?.slice?.().reverse?.().find?.(x=>x.type==='model_output')?.content?.find?.(x=>x.type==='text')?.text);
