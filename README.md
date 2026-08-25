@@ -3,54 +3,59 @@
 Cumulative enterprise telecom retail administration platform.
 
 ## Current release
-**Phase 39 — Global Search, UX & Operational Polish — audited, debugged and hardened**
+**Phase 40B — System Operations — built, audited and integrated**
 
-This is a cumulative continuation build. The existing business modules, database architecture, security boundary and operational workflows are preserved.
+This is a cumulative continuation build. Existing business modules, authentication/security boundaries, operational workflows, Phase 39 Global Search/UX and Phase 40A Media Management are preserved.
 
-### Phase 39 hardening delivered
-- Global search remains permission-gated by `search.view`.
-- Search results are now filtered by the caller's underlying module permission before any source query runs.
-- Finance, credit, inventory, warranty, returns, delivery, procurement and document results are no longer exposed merely because a user has global-search access.
-- Global-search health counts are also restricted to sources the current user is allowed to view.
-- Search partial-result handling remains available when an authorized source fails.
-- Search wildcard escaping was corrected so literal `%`, `_` and `\\` characters remain searchable without corrupting exact-match ranking.
-- Ranked search continues to prioritize exact identifiers and direct matches.
-- Search source queries continue to execute independently so one failing source does not discard successful authorized results.
-- PostgreSQL trigram indexes and operational identifier indexes remain available through `global-search-ux.sql`.
-- Responsive search UI, `/` shortcut, Enter-to-search, keyboard focus and result-row navigation remain intact.
-- Existing cross-module routes were statically audited for registration/export consistency.
-- Backend JavaScript syntax was checked across all application modules.
-- Frontend JavaScript syntax was checked.
-- Render preflight passed.
-- No destructive database reset or operational-record mutation was introduced.
+### Phase 40B delivered
+- Added a dedicated System Operations control plane rather than a generic Settings page.
+- Added authenticated, permission-controlled application, API, PostgreSQL, media, integration, notification, background-job and scheduled-task health visibility.
+- Added normalized Health states: Healthy, Warning, Critical and Unknown.
+- Added operations job telemetry with queued, running, completed, failed, retrying and cancelled states.
+- Added safe retry/cancel controls only for jobs explicitly marked safe for those actions.
+- Explicitly excluded arbitrary code execution, arbitrary SQL execution and unsafe job execution from the admin UI.
+- Added scheduled-task visibility with cadence, enabled state, next/last execution and failure counts.
+- Added permission-protected scheduled-task enable/disable controls with audit logging.
+- Added a safe operational configuration surface for approved non-secret settings only.
+- Added controlled feature-flag visibility and management through the existing `feature_flags` system.
+- Added operational event storage for system-level telemetry.
+- Reused the existing authentication, permission and audit infrastructure; no parallel security/audit system was introduced.
+- Added `operations.view` and `operations.manage` permissions; Manager receives view access, while existing administrative roles inherit the appropriate controls through the normal role bootstrap.
+- Preserved all existing business records and the canonical `purchase_requisitions` boundary.
+
+### Cumulative audit and debugging performed before packaging
+- Audited the complete cumulative backend module set and registration dependencies before Phase 40B changes.
+- Registered every cumulative module, including System Operations, against a route-registration harness: **382 unique routes registered with no duplicate route signatures detected**.
+- Ran JavaScript syntax validation across every application JavaScript file.
+- Ran Render preflight successfully.
+- Verified the runtime has no legacy `procurement_requisitions` reference; the preflight check itself retains the forbidden-name assertion by design.
+- Reviewed cross-module registration and shared dependency boundaries.
+- Reviewed authentication, authorization, CSRF, file access and administrative action boundaries.
+- Reviewed MFA boundaries. **MFA was not implemented, extended, activated or redesigned.**
+- Checked Markdown hygiene. Only `README.md` and `CONTINUATION.md` are retained.
+- No destructive PostgreSQL reset or destructive business-data migration was introduced.
+- Live PostgreSQL verification was not claimed because no production/database connection is available in this build environment.
 
 ## Existing platform modules
-Catalog · Inventory · Suppliers & Procurement · Customers & CRM · Sales & POS · Orders & E-commerce · Pricing & Promotions · Delivery & Logistics · Warranty & Repairs · Returns & Refunds · Document Management · Credit & Installments · Finance & Accounting · Reporting & Business Intelligence · AI Business Intelligence · Web & Hosting · Integration Hub · Workflow & Automation · Global Search, UX & Operational Polish
+Catalog · Inventory · Suppliers & Procurement · Customers & CRM · Sales & POS · Orders & E-commerce · Pricing & Promotions · Delivery & Logistics · Warranty & Repairs · Returns & Refunds · Document Management · Credit & Installments · Finance & Accounting · Reporting & Business Intelligence · AI Business Intelligence · Web & Hosting · Integration Hub · Workflow & Automation · Global Search, UX & Operational Polish · Media Management · System Operations
 
-## Verification performed for this rezip
-- All application `.js` files passed `node --check`.
-- All registered business modules were imported and their registration functions executed against a route-registration harness.
-- Render preflight passed.
-- Global-search permission filtering was exercised with a mocked restricted permission set.
-- Static schema/table-reference review was performed across the cumulative JavaScript and SQL files.
-- Secret-pattern scan was performed.
-- Only useful Markdown documentation is retained: `README.md` and `CONTINUATION.md`.
-- `node_modules` and `.git` are excluded from the release archive.
-
-## Deployment
+## Database and deployment
 - Node.js 20.x
 - PostgreSQL
 - Start command: `node render-preflight.js && node server.js`
-- Apply `global-search-ux.sql` through the normal database migration/bootstrap process before relying on its Phase 39 indexes.
-- Never package `node_modules`.
-- Never commit secrets.
+- `schema.sql` contains the cumulative bootstrap schema.
+- `media-management.sql` contains the isolated Phase 40A media schema segment.
+- `system-operations.sql` contains the isolated Phase 40B operations schema segment.
+- The server applies the additive operations schema during startup without resetting PostgreSQL.
 - Never reset PostgreSQL.
-- Never mutate financial or operational records merely to make tests pass.
+- Never delete financial or operational records to make a migration pass.
+- Never commit secrets.
+- Never package `node_modules` or `.git`.
 
 ## Security boundary
 MFA is intentionally deferred. This build does not implement, activate, redesign or extend MFA. Existing authentication, authorization, CSRF, session and security controls remain the active security boundary. Existing MFA-related artifacts are left untouched.
 
-## Production verification boundary
-Archive-level checks are not live Render or production PostgreSQL tests. After deployment, verify database migrations, permissions, search indexes, cross-module transactions and external integrations in the real environment.
+## Next phase
+**Phase 40C — Monitoring, Health & Observability**
 
-See `CONTINUATION.md` for the exact next-build instructions.
+The next continuation must begin with another complete cumulative audit and regression pass before extending the System Operations control plane with deeper monitoring, actionable alerts, application/database performance indicators, integration failure telemetry, storage/backup health and business-operation anomaly monitoring.

@@ -1,45 +1,45 @@
-# Amaal Telecoms Admin System — Phase 39 Continuation Prompt
+# Amaal Telecoms Admin System — Continuation Prompt
 
-## Starting point
+## Current cumulative state
 
-This archive is the cumulative Amaal Telecoms Admin System after **Phase 39 — Global Search, UX & Operational Polish**, with a full cumulative audit and debugging pass applied.
+The project is now at:
 
-Do not rebuild the project. Inspect the cumulative codebase first and continue from the existing architecture.
+**Phase 40B — System Operations — built, audited and integrated.**
 
-## Phase 39 status
+Continue from this exact codebase.
 
-Phase 39 is considered implemented and strengthened.
+Do not rebuild the application.
+Do not replace the existing architecture.
+Do not remove completed business modules.
+Do not reset PostgreSQL.
+Do not fabricate live-production verification.
 
-The latest audit specifically corrected a security/data-isolation weakness in Global Search: a user with `search.view` can now search only the operational domains for which that user also has the corresponding view permission. Global-search health counts follow the same boundary.
+## Mandatory rezip discipline
 
-Search wildcard escaping was also corrected so literal `%`, `_` and `\\` characters are preserved correctly in ILIKE patterns and exact-match ranking.
+Before every future rezip:
 
-## Required audit discipline for every future rezip
-
-Before modifying or packaging anything:
-
-1. Inspect the entire cumulative project.
-2. Audit every existing module for missing dependencies, broken routes, inconsistent permissions and cross-module state errors.
-3. Check schema/table/column compatibility.
-4. Check financial, inventory, order, return, warranty and credit transaction integrity.
+1. Inspect the entire cumulative project first.
+2. Audit every existing module, route, permission and schema dependency.
+3. Trace cross-module workflows for inventory, sales, orders, procurement, returns, warranty, credit and finance.
+4. Check for missing tables, columns, foreign keys, indexes and inconsistent state transitions.
 5. Debug confirmed issues before adding new functionality.
-6. Run JavaScript syntax checks across the complete application.
-7. Run module registration/import checks.
-8. Run Render preflight.
-9. Run secret/security scans.
-10. Remove obsolete/useless Markdown files.
-11. Keep only useful `README.md` and `CONTINUATION.md` documentation.
-12. Update `README.md` to describe the actual build.
-13. Replace this `CONTINUATION.md` with the exact next continuation instructions.
-14. Rezip only after the cumulative audit and verification pass.
-
-Never claim live production verification unless a real deployment/database test was performed.
+6. Run `node --check` across every application JavaScript file.
+7. Import every registration module and execute it against a route-registration harness.
+8. Check for duplicate route signatures.
+9. Run `node render-preflight.js`.
+10. Check for forbidden legacy `procurement_requisitions` runtime references.
+11. Review security boundaries, authorization, CSRF, file access and sensitive-data exposure.
+12. Remove useless or obsolete Markdown files.
+13. Keep only useful `README.md` and `CONTINUATION.md` documentation.
+14. Update `README.md` to describe the actual cumulative release.
+15. Replace this file with the exact next continuation instructions.
+16. Only then create the new ZIP.
 
 ## MFA — STRICTLY OUT OF SCOPE
 
 Do not implement MFA.
 
-Do not create or modify:
+Do not modify or extend:
 
 - MFA tables
 - MFA APIs
@@ -49,155 +49,205 @@ Do not create or modify:
 - MFA middleware
 - MFA login enforcement
 - MFA screens
-- MFA recovery functionality
+- MFA recovery
 
 Existing MFA-related artifacts must remain untouched.
 
-MFA remains deferred until after domain acquisition, deployment, public testing and production feedback.
+MFA remains postponed until after domain acquisition, deployment, public testing and production feedback.
 
-## Next build — Phase 40A: Media Management
+## Phase 40A status — Media Management
 
-Build Media Management as the first new Phase 40 subsystem.
+Completed and preserved:
 
-Before coding, audit the existing document/media foundations and the web-media implementation so the new system complements rather than duplicates them.
+- Enterprise media asset model
+- Media folders
+- Media tags
+- Media relationships
+- Media version history
+- SHA-256 duplicate detection
+- Server-side MIME/content validation
+- Image dimensions
+- 15 MB upload limit
+- Private authenticated media delivery
+- Explicit Public + Active media delivery
+- Metadata management
+- Search/filtering
+- Bulk tagging
+- Bulk archive
+- Admin Media Library UI
+- Media permissions
+- Global Search integration
+- Audit/integration-event recording
 
-Build:
+The existing Web & Hosting `web_media` system remains intact. Do not delete or silently replace it.
 
-### Media library
+## Phase 40B status — System Operations
 
-Support approved:
+Completed:
 
-- product images
-- variant images
-- brand assets
-- category images
-- website assets
-- marketing assets
-- documents where appropriate
-- user-uploaded media
+- System Operations control plane
+- Application/API/database/media/integration/notification health checks
+- Healthy/Warning/Critical/Unknown normalization
+- Background job telemetry schema and UI
+- Safe retry/cancel controls guarded by explicit job safety flags
+- Scheduled task management and audit logging
+- Safe operational configuration management
+- Existing feature-flag integration
+- Operations event storage
+- Operations permissions
+- Existing authentication, permission and audit infrastructure integration
 
-### Metadata
+Do not introduce arbitrary SQL execution, arbitrary code execution or unsafe job execution.
 
-Store and expose safely:
+## Next build — Phase 40C: Monitoring, Health & Observability
 
-- filename
-- MIME type
-- extension
-- size
-- dimensions where applicable
-- checksum
-- storage reference
-- uploader
-- timestamps
-- status
-- visibility
-- tags
-- description
-- alt text
-- caption
-- entity relationships
+First perform the mandatory cumulative audit above. Then extend the existing System Operations control plane into a proper Monitoring and Observability layer.
 
-### Processing
+Do not replace `/api/operations/health`. Extend and normalize it where appropriate.
 
-Implement:
+### Application monitoring
 
-- actual-content validation
-- MIME validation
-- extension validation
-- file-size limits
-- image dimension validation
-- thumbnails
-- optimized image variants
-- checksum/duplicate detection
-- safe filename handling
+Add actionable visibility for:
 
-Never trust a filename extension.
+- request health
+- API error rates
+- response-time indicators
+- slow-request indicators
+- application exceptions
+- route-level failures where safely measurable
+- recent operational incidents
 
-Never expose private media through predictable public URLs.
+Do not expose stack traces, secrets, SQL, tokens or internal credentials to ordinary administrators.
 
-### Organization
+### Database monitoring
 
-Build:
+Add safe indicators for:
 
-- folders/collections where appropriate
-- tags
-- categories
-- search
-- filters
-- sorting
-- bulk selection
-- bulk tagging
-- bulk association
-- archive
-- restore
-- controlled deletion
+- database connectivity
+- query failures
+- transaction failures
+- connection-pool pressure where available
+- slow-query indicators where safely measurable
 
-### Relationships
+Do not expose raw SQL debugging consoles.
 
-Allow reusable media references for:
+### Background jobs
 
-- Products
-- Variants
-- Brands
-- Categories
-- Pages
-- Content blocks
-- Marketing content
-- Documents where appropriate
+Strengthen the existing operations job telemetry with:
 
-Avoid unnecessary duplicate files.
+- queue depth
+- failure rate
+- retry rate
+- processing duration
+- stale-running-job detection
+- recent failures
+- operational trend indicators
 
-### API and UI
+Do not invent execution history. Only show records that actually exist.
 
-Provide complete authorized operations for:
+### Integration monitoring
 
-- upload
-- list
-- search
-- metadata update
-- association
-- replacement
-- versioning where required
-- archive
-- restore
-- delete
-- bulk operations
+Integrate with the existing Integration Hub to surface:
 
-The UI must support desktop, tablet and mobile layouts.
+- failed webhooks
+- failed API calls
+- timeouts
+- retry counts
+- dead-letter events
+- pending delivery backlog
+- integration connections in Error state
 
-## Integration requirements
+Respect integration permissions and never expose integration secrets.
 
-Media must integrate cleanly with the existing Catalog, Web & Hosting, Document Management and public e-commerce publishing architecture.
+### Storage monitoring
 
-Do not break existing `web_media` behavior. Decide deliberately whether it should be reused, generalized or bridged into the new media abstraction.
+Add:
+
+- media/storage usage indicators
+- upload failures
+- storage availability
+- backup status when Phase 40D exists
+
+Do not expose private media contents merely for monitoring.
+
+### Business-operation monitoring
+
+Surface actionable anomalies already represented by actual platform data, including:
+
+- failed payments
+- failed orders
+- failed deliveries
+- negative-stock attempts
+- stock synchronization failures
+- reconciliation failures
+- failed financial postings
+- overdue background tasks
+
+Never fabricate business anomalies.
+
+### Alerting
+
+Build configurable alerts for important operational conditions.
+
+Each alert should support:
+
+- severity
+- threshold
+- notification channel
+- recipients
+- cooldown
+- acknowledgement
+- resolution
+- history
+
+Prevent alert storms through cooldown/deduplication.
+
+Alert actions must be permission-protected and audited.
+
+### Monitoring UI
+
+Extend System Operations with:
+
+- Health overview
+- Application monitoring
+- Database monitoring
+- Jobs monitoring
+- Integrations monitoring
+- Storage monitoring
+- Business anomalies
+- Alerts
+- Incident history
+
+The UI must remain responsive on desktop, tablet and mobile.
 
 ## Database rules
 
-Use additive, safe migrations.
+Use additive migrations only.
 
-Never reset PostgreSQL.
-
-Never delete operational records to make a migration pass.
+Preserve all existing records.
 
 Preserve canonical `purchase_requisitions`.
 
 Never reintroduce `procurement_requisitions` into runtime code.
 
-## Completion gate
+## Completion gate for Phase 40C
 
-Do not proceed to System Operations until Media Management has:
+Do not begin Backup & Recovery until Monitoring & Observability has:
 
-- backend APIs
+- additive database schema/migration
+- backend monitoring APIs
 - authorization
-- safe storage handling
-- database migration
-- admin UI
-- existing-module integration
-- regression checks
-- syntax checks
+- safe operational visibility
+- alert configuration and history
+- integration with System Operations
+- integration with Integration Hub
+- cumulative regression audit
+- JavaScript syntax pass
+- module registration pass
+- duplicate-route check
 - Render preflight pass
 - README update
 - fresh continuation prompt
 - clean rezip
 
-The next rezip must again contain only useful Markdown documentation: `README.md` and `CONTINUATION.md`.
+The next archive must again contain only useful Markdown documentation: `README.md` and `CONTINUATION.md`.

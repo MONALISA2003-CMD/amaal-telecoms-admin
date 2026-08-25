@@ -6,7 +6,7 @@ const required = [
   'server.js','schema.sql','package.json','public/index.html','public/app.js',
   'suppliers-procurement.js','customers-crm.js','sales-pos.js','delivery-logistics.js','warranty-repairs.js',
   'document-management.js','business-intelligence.js','ai-business-intelligence.js','integration-hub.js',
-  'public/password-reset.html','public/password-reset.js','public/invite.html','public/invite.js'
+  'public/password-reset.html','public/password-reset.js','public/invite.html','public/invite.js','media-management.js','media-management.sql','system-operations.js','system-operations.sql'
 ];
 const errors=[];
 for(const f of required) if(!fs.existsSync(path.join(root,f))) errors.push(`Missing required file: ${f}`);
