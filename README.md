@@ -143,3 +143,15 @@ MFA sign-in enforcement is intentionally disabled during the current build phase
 
 ## Render deployment note
 This build fixes a database bootstrap typo where the startup migration referenced `procurement_requisitions`; the actual table is `purchase_requisitions`. A failed startup means Render continues serving the previous successful deployment, so the login screen can appear unchanged until this corrected commit successfully deploys.
+
+
+## Phase A-C Hardening Notes
+
+- MFA is intentionally disabled during development; do not enable it until the final security phase.
+- Password recovery and staff invitation delivery are implemented but production email delivery requires a verified sender/domain and `RESEND_API_KEY`, `EMAIL_FROM`, and `APP_BASE_URL`.
+- Until Resend is configured, staff invitations may expose a one-time invitation token to the authenticated inviter for development. Never enable manual tokens in production.
+- Password reset requests are rate-limited by IP and account email and never reveal whether an account exists.
+- Sessions are bound to the issued device context and browser user-agent hash; mismatches revoke the session.
+- Historical business records are preserved when an account is permanently disabled/anonymized.
+- Custom roles and departments cannot be deleted while still assigned.
+- Render must deploy the commit actually containing this build; a previously failed/old commit will not be replaced by downloading a ZIP alone.
