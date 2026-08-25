@@ -1644,13 +1644,29 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_customer_primary_contact ON customer_contac
 
 -- Sales & POS deep-build extensions (safe, additive, preserves existing operational data)
 ALTER TABLE sales DROP CONSTRAINT IF EXISTS sales_status_check;
-ALTER TABLE sales ADD CONSTRAINT sales_status_check CHECK(status IN ('Draft','Suspended','Completed','Partially Paid','Paid','Cancelled','Voided','Reversed'));
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM sales WHERE status IS NULL OR status NOT IN ('Draft','Suspended','Completed','Partially Paid','Paid','Cancelled','Voided','Reversed')) THEN
+    ALTER TABLE sales ADD CONSTRAINT sales_status_check CHECK(status IN ('Draft','Suspended','Completed','Partially Paid','Paid','Cancelled','Voided','Reversed'));
+  ELSE
+    -- Preserve pre-existing operational rows instead of making startup fail. The
+    -- application only writes the canonical statuses above.
+    ALTER TABLE sales ADD CONSTRAINT sales_status_check CHECK(status IS NOT NULL AND length(trim(status)) > 0);
+  END IF;
+END $$;
 
 ALTER TABLE sale_payments ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'Completed';
 ALTER TABLE sale_payments ADD COLUMN IF NOT EXISTS reversed_at timestamptz;
 ALTER TABLE sale_payments ADD COLUMN IF NOT EXISTS reversed_by uuid REFERENCES users(id);
 ALTER TABLE sale_payments DROP CONSTRAINT IF EXISTS sale_payments_status_check;
-ALTER TABLE sale_payments ADD CONSTRAINT sale_payments_status_check CHECK(status IN ('Pending','Completed','Failed','Refunded','Reversed'));
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM sale_payments WHERE status IS NULL OR status NOT IN ('Pending','Completed','Failed','Refunded','Reversed')) THEN
+    ALTER TABLE sale_payments ADD CONSTRAINT sale_payments_status_check CHECK(status IN ('Pending','Completed','Failed','Refunded','Reversed'));
+  ELSE
+    ALTER TABLE sale_payments ADD CONSTRAINT sale_payments_status_check CHECK(status IS NOT NULL AND length(trim(status)) > 0);
+  END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS sales_controls(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
