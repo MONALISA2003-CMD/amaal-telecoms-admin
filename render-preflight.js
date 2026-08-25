@@ -18,6 +18,11 @@ if(!/CREATE TABLE IF NOT EXISTS purchase_requisitions\s*\(/i.test(schema)) error
 if(!/CREATE TABLE IF NOT EXISTS sales_quotes\s*\(/i.test(schema)) errors.push('Sales quotations schema is missing.');
 if(!/CREATE TABLE IF NOT EXISTS till_shifts\s*\(/i.test(schema)) errors.push('Till shift schema is missing.');
 if(!/CREATE TABLE IF NOT EXISTS sale_receipts\s*\(/i.test(schema)) errors.push('Receipt lifecycle schema is missing.');
+if(!/CREATE TABLE IF NOT EXISTS price_lists\s*\(/i.test(schema)) errors.push('Pricing price_lists schema is missing.');
+if(!/CREATE TABLE IF NOT EXISTS promotions\s*\(/i.test(schema)) errors.push('Promotions schema is missing.');
+if(!/CREATE TABLE IF NOT EXISTS promotion_approvals\s*\(/i.test(schema)) errors.push('Promotion approval schema is missing.');
+if(!/CREATE TABLE IF NOT EXISTS promotion_redemptions\s*\(/i.test(schema)) errors.push('Promotion redemption schema is missing.');
+if(!/CREATE OR REPLACE FUNCTION amaal_effective_variant_price_qty/i.test(schema)) errors.push('Authoritative quantity-aware pricing function is missing.');
 if(/min\s*\(\s*id\s*\)/i.test(schema)) errors.push('Schema contains unsupported UUID aggregate usage.');
 if(!/row_number\(\) OVER \(PARTITION BY customer_id ORDER BY id\)/i.test(schema)) errors.push('Customer address duplicate-default repair must use row_number(), not min(uuid).');
 if(!/ALTER TABLE orders ADD COLUMN IF NOT EXISTS idempotency_key/i.test(schema)) errors.push('Orders idempotency hardening is missing.');
