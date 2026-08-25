@@ -232,6 +232,19 @@ CREATE TABLE IF NOT EXISTS product_revisions(
  UNIQUE(product_id,version_no)
 );
 
+CREATE TABLE IF NOT EXISTS product_relationships(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ product_id uuid NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+ related_product_id uuid NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+ relation_type text NOT NULL CHECK(relation_type IN ('Related','Cross-sell','Upsell')),
+ sort_order int NOT NULL DEFAULT 0,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ UNIQUE(product_id,related_product_id,relation_type),
+ CHECK(product_id<>related_product_id)
+);
+CREATE INDEX IF NOT EXISTS idx_product_relationships_product ON product_relationships(product_id,relation_type,sort_order);
+CREATE INDEX IF NOT EXISTS idx_product_relationships_related ON product_relationships(related_product_id);
+
 
 CREATE TABLE IF NOT EXISTS inventory_locations(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

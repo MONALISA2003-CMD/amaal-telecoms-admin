@@ -1,19 +1,32 @@
-# Build information
+# Amaal Telecoms Admin System — Phase 21 Catalog Closure
 
-Build: Reporting & Business Intelligence + Administrator Recovery Rectification
-Application: Amaal Telecoms Administration
-Target: Uganda / UGX / Africa-Kampala
-Node: 20.x
-Primary deployment: Render
-Public website integration: preserved for later controlled publishing
+Phase 21 is an incremental completion pass over the existing Catalog module.
 
-This build contains no YAML workflow files.
+## Included
 
-## Latest extension: AI Business Intelligence & Integration Hub
-- Added `ai-business-intelligence.js` and `ai-business-intelligence.sql`.
-- Added `integration-hub.js` and `integration-hub.sql`.
-- Added idempotent AI/integration schema to `schema.sql`.
-- Added stable Gemini Interactions API v1 server integration using `GEMINI_API_KEY`/`GOOGLE_API_KEY`.
-- Added Super Admin AI governance/training, scheduled reports and public AI gateway.
-- Added integration connections, encrypted secrets, signed webhooks, event stream and delivery monitoring.
-- Added mobile admin screens and continuation instructions.
+- Existing complete Amaal Telecoms application from the previous phase.
+- Catalog health and readiness controls.
+- Product revisions and safe restoration.
+- Variant archive protection.
+- Bulk product status operations.
+- Product relationship management: Related, Cross-sell, Upsell.
+- Controlled catalog bulk import with dry-run validation.
+- SKU and barcode uniqueness protections.
+- SEO publication readiness controls.
+- Safer primary product-image deletion.
+- Existing frontend, API, schema, procurement hardening and deployment guards.
+- Phase 22 continuation prompt.
+
+## Rules
+
+- Incremental build only.
+- Do not reset or recreate PostgreSQL.
+- MFA remains deferred until the final security phase.
+- No YAML or workflow files are included.
+- Preserve all previous functionality.
+
+## Validation
+
+- Node syntax checks passed.
+- Render preflight passed.
+- No YAML files present.
