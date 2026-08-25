@@ -115,3 +115,8 @@ Phase B strengthens staff account lifecycle without introducing branch-specific 
 - Staff deletion is audited before the account is removed.
 
 Permanent account deletion is intentionally unavailable to ordinary administrators and cannot be used to delete the currently signed-in Super Admin account.
+
+
+## Build-stage MFA setting
+
+MFA sign-in enforcement is intentionally disabled during the current build phase. The server defaults to `MFA_LOGIN_ENABLED=false`, allowing email + password sign-in only. Enable MFA only during the final security phase.
