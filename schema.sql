@@ -1637,7 +1637,43 @@ CREATE TABLE IF NOT EXISTS customer_notes(
 );
 CREATE INDEX IF NOT EXISTS idx_customer_notes_customer ON customer_notes(customer_id,created_at DESC);
 
-DO $$ DECLARE r record; BEGIN FOR r IN SELECT customer_id,min(id) keep_id FROM customer_addresses WHERE is_default GROUP BY customer_id HAVING count(*)>1 LOOP UPDATE customer_addresses SET is_default=false WHERE customer_id=r.customer_id AND id<>r.keep_id; END LOOP; FOR r IN SELECT customer_id,min(id) keep_id FROM customer_contacts WHERE is_primary GROUP BY customer_id HAVING count(*)>1 LOOP UPDATE customer_contacts SET is_primary=false WHERE customer_id=r.customer_id AND id<>r.keep_id; END LOOP; END $$;
+DO $$
+DECLARE r record;
+BEGIN
+  -- PostgreSQL has no min(uuid) aggregate. Use row_number() to choose the
+  -- deterministic oldest UUID value when repairing legacy duplicate defaults.
+  FOR r IN
+    SELECT customer_id, id AS keep_id
+    FROM (
+      SELECT customer_id, id,
+             row_number() OVER (PARTITION BY customer_id ORDER BY id) AS rn,
+             count(*) OVER (PARTITION BY customer_id) AS cnt
+      FROM customer_addresses
+      WHERE is_default
+    ) d
+    WHERE cnt > 1 AND rn = 1
+  LOOP
+    UPDATE customer_addresses
+    SET is_default=false
+    WHERE customer_id=r.customer_id AND id<>r.keep_id;
+  END LOOP;
+
+  FOR r IN
+    SELECT customer_id, id AS keep_id
+    FROM (
+      SELECT customer_id, id,
+             row_number() OVER (PARTITION BY customer_id ORDER BY id) AS rn,
+             count(*) OVER (PARTITION BY customer_id) AS cnt
+      FROM customer_contacts
+      WHERE is_primary
+    ) d
+    WHERE cnt > 1 AND rn = 1
+  LOOP
+    UPDATE customer_contacts
+    SET is_primary=false
+    WHERE customer_id=r.customer_id AND id<>r.keep_id;
+  END LOOP;
+END $$;
 CREATE UNIQUE INDEX IF NOT EXISTS uq_customer_primary_address ON customer_addresses(customer_id) WHERE is_default=true;
 CREATE UNIQUE INDEX IF NOT EXISTS uq_customer_primary_contact ON customer_contacts(customer_id) WHERE is_primary=true;
 
