@@ -53,3 +53,24 @@ CREATE INDEX IF NOT EXISTS idx_ai_training_active ON ai_training_examples(active
 CREATE INDEX IF NOT EXISTS idx_ai_schedule_due ON ai_report_schedules(enabled,next_run_at);
 INSERT INTO ai_configuration(id) VALUES(true) ON CONFLICT(id) DO NOTHING;
 INSERT INTO ai_report_schedules(name,report_type,cadence_minutes,enabled,next_run_at) VALUES('Daily executive report','executive',1440,true,now()) ON CONFLICT(name) DO NOTHING;
+
+
+CREATE TABLE IF NOT EXISTS ai_conversations(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+ title text NOT NULL DEFAULT 'AI conversation',
+ status text NOT NULL DEFAULT 'Active' CHECK(status IN ('Active','Archived')),
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now(),
+ last_interaction_id text
+);
+CREATE TABLE IF NOT EXISTS ai_messages(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ conversation_id uuid NOT NULL REFERENCES ai_conversations(id) ON DELETE CASCADE,
+ role text NOT NULL CHECK(role IN ('user','assistant','system')),
+ content text NOT NULL,
+ model text,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_ai_conversations_user_updated ON ai_conversations(user_id,updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_ai_messages_conversation_created ON ai_messages(conversation_id,created_at);

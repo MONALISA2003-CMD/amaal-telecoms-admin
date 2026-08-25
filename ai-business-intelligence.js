@@ -53,7 +53,63 @@ export function registerAIBusinessIntelligence({app,auth,need,q,pool,audit,super
       q("SELECT count(*)::int total,COALESCE(sum(refund_amount),0)::numeric refunded FROM return_requests WHERE created_at::date BETWEEN $1 AND $2",[start,end]),
       q("SELECT method,COALESCE(sum(amount),0)::numeric amount,count(*)::int transactions FROM sale_payments sp JOIN sales s ON s.id=sp.sale_id WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 GROUP BY method ORDER BY amount DESC",[start,end])
     ]);
-    return {range:{start,end},sales:sales[0],margin:margin[0],netSales:Math.max(Number(sales[0]?.revenue||0)-Number(returns[0]?.refunded||0),0),inventory:inventory[0],delivery:delivery[0],warranty:warranty[0],credit:credit[0],procurement:procurement[0],finance:finance[0],orders:orders[0],returns:returns[0],paymentMethods:paymentMethods[0]};
+    return {range:{start,end},sales:sales[0],margin:margin[0],netSales:Math.max(Number(sales[0]?.revenue||0)-Number(returns[0]?.refunded||0),0),inventory:inventory[0],delivery:delivery[0],warranty:warranty[0],credit:credit[0],procurement:procurement[0],finance:finance[0],orders:orders[0],returns:returns[0],paymentMethods};
+  }
+
+  async function chatSnapshot(start,end){
+    const r=await businessSnapshot(start,end);
+    const [topProducts,topCustomers,lowStock,openOrders,overdueCredit]=await Promise.all([
+      q("SELECT p.name product_name,COALESCE(sum(sl.quantity),0)::numeric units,COALESCE(sum((sl.unit_price*sl.quantity)-sl.discount_amount),0)::numeric revenue FROM sale_lines sl JOIN sales s ON s.id=sl.sale_id JOIN product_variants v ON v.id=sl.variant_id JOIN products p ON p.id=v.product_id WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 GROUP BY p.id,p.name ORDER BY revenue DESC LIMIT 10",[start,end]),
+      q("SELECT c.id,c.name,COALESCE(sum(s.grand_total),0)::numeric revenue,count(s.id)::int transactions FROM sales s JOIN customers c ON c.id=s.customer_id WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 GROUP BY c.id,c.name ORDER BY revenue DESC LIMIT 10",[start,end]),
+      q("SELECT p.name product_name,v.sku,COALESCE(sum(ib.on_hand),0)::numeric on_hand FROM inventory_balances ib JOIN product_variants v ON v.id=ib.variant_id JOIN products p ON p.id=v.product_id GROUP BY p.id,p.name,v.id,v.sku HAVING COALESCE(sum(ib.on_hand),0)<=COALESCE(MAX(v.reorder_level),0) ORDER BY on_hand ASC LIMIT 20"),
+      q("SELECT count(*)::int total,count(*) FILTER(WHERE status NOT IN ('Completed','Cancelled'))::int open FROM orders"),
+      q("SELECT COALESCE(sum(outstanding_principal),0)::numeric outstanding,count(*) FILTER(WHERE status='Defaulted')::int defaulted FROM credit_accounts WHERE status IN ('Active','Defaulted','Restructured')")
+    ]);
+    return {...r,topProducts,topCustomers,lowStock,openOrders:openOrders[0],overdueCredit:overdueCredit[0]};
+  }
+
+  async function createConversation(userId,title='AI conversation'){
+    return (await q("INSERT INTO ai_conversations(user_id,title) VALUES($1,$2) RETURNING *",[userId,text(title).slice(0,120)||'AI conversation']))[0];
+  }
+
+  async function getConversation(id,userId){
+    return (await q("SELECT * FROM ai_conversations WHERE id=$1 AND user_id=$2",[id,userId]))[0]||null;
+  }
+
+  async function chat({userId,conversationId,message}){
+    const c=await config();
+    if(!c?.enabled) throw new Error('AI Business Intelligence is disabled by Super Admin.');
+    if(!getApiKey()) throw new Error('Gemini is not configured. Add GEMINI_API_KEY as a server-side deployment secret.');
+    let conversation=conversationId?await getConversation(conversationId,userId):null;
+    if(!conversation) conversation=await createConversation(userId,message.slice(0,80));
+    const history=await q("SELECT role,content FROM ai_messages WHERE conversation_id=$1 ORDER BY created_at DESC LIMIT 20",[conversation.id]);
+    const end=new Date().toISOString().slice(0,10),start=new Date(Date.now()-29*86400000).toISOString().slice(0,10);
+    const snapshot=await chatSnapshot(start,end);
+    const transcript=history.reverse().map(x=>`${x.role.toUpperCase()}: ${x.content}`).join('\n');
+    const input=`CURRENT DATE: ${end}
+DEFAULT ANALYSIS WINDOW: ${start} to ${end}
+\nUSER QUESTION:
+${message}
+\nRECENT CONVERSATION:
+${transcript||'(none)'}\n\nLIVE BUSINESS DATA (SOURCE OF TRUTH):
+${JSON.stringify(snapshot,null,2)}\n\nGOVERNANCE:
+- Use only the supplied business data for factual claims.
+- Never invent numbers, records, people, products, payments, stock, profit or events.
+- If the data is insufficient, say exactly what is missing.
+- You may calculate from supplied numbers, but label calculations clearly.
+- Do not execute mutations or claim that an action was performed.
+- Do not reveal secrets, credentials, security controls, private customer information or employee personal data.
+- Give concise, useful management guidance.`;
+    await q("INSERT INTO ai_messages(conversation_id,role,content) VALUES($1,'user',$2)",[conversation.id,message]);
+    try{
+      const out=await callGemini({systemPrompt:c.system_prompt,input,model:c.model});
+      await q("INSERT INTO ai_messages(conversation_id,role,content,model) VALUES($1,'assistant',$2,$3)",[conversation.id,out.text,safeModel(c.model)]);
+      await q("UPDATE ai_conversations SET updated_at=now(),last_interaction_id=$1 WHERE id=$2",[text(out.raw?.id)||null,conversation.id]);
+      return {conversationId:conversation.id,answer:out.text,model:safeModel(c.model)};
+    }catch(e){
+      await q("INSERT INTO ai_messages(conversation_id,role,content,model) VALUES($1,'system',$2,$3)",[conversation.id,`AI request failed: ${e.message}`,safeModel(c.model)]);
+      throw e;
+    }
   }
 
   async function generateReport({reportType='executive',start,end,generatedBy=null}){
@@ -91,6 +147,18 @@ export function registerAIBusinessIntelligence({app,auth,need,q,pool,audit,super
   app.post('/api/ai/training',auth,need('ai.manage'),superAdminOnly,async(req,res)=>{const b=req.body||{};if(!text(b.title)||!text(b.instruction)||!text(b.expectedBehavior))return res.status(400).json({error:'Title, instruction and expected behavior are required'});const r=(await q('INSERT INTO ai_training_examples(title,instruction,expected_behavior,created_by,updated_by) VALUES($1,$2,$3,$4,$4) RETURNING *',[text(b.title).slice(0,160),text(b.instruction).slice(0,8000),text(b.expectedBehavior).slice(0,8000),req.user.id]))[0];await audit(req.user,'AI_TRAINING_ADDED','AITrainingExample',r.id,'Added a governed AI training example',null,r,req.req);res.status(201).json(r)});
   app.patch('/api/ai/training/:id',auth,need('ai.manage'),superAdminOnly,async(req,res)=>{const old=(await q('SELECT * FROM ai_training_examples WHERE id=$1',[req.params.id]))[0];if(!old)return res.status(404).json({error:'Training example not found'});const b=req.body||{};const r=(await q('UPDATE ai_training_examples SET title=COALESCE($1,title),instruction=COALESCE($2,instruction),expected_behavior=COALESCE($3,expected_behavior),active=COALESCE($4,active),updated_by=$5,updated_at=now() WHERE id=$6 RETURNING *',[b.title?text(b.title).slice(0,160):null,b.instruction?text(b.instruction).slice(0,8000):null,b.expectedBehavior?text(b.expectedBehavior).slice(0,8000):null,b.active===undefined?null:Boolean(b.active),req.user.id,req.params.id]))[0];await audit(req.user,'AI_TRAINING_UPDATED','AITrainingExample',r.id,'Updated a governed AI training example',old,r,req.req);res.json(r)});
   app.delete('/api/ai/training/:id',auth,need('ai.manage'),superAdminOnly,async(req,res)=>{const old=(await q('DELETE FROM ai_training_examples WHERE id=$1 RETURNING *',[req.params.id]))[0];if(!old)return res.status(404).json({error:'Training example not found'});await audit(req.user,'AI_TRAINING_DELETED','AITrainingExample',old.id,'Deleted a governed AI training example',old,null,req.req);res.json({ok:true})});
+  app.post('/api/ai/test',auth,need('ai.manage'),superAdminOnly,async(req,res)=>{
+    const c=await config();
+    if(!c?.enabled)return res.status(409).json({ok:false,error:'AI Business Intelligence is disabled.'});
+    if(!getApiKey())return res.status(503).json({ok:false,error:'Gemini API key is not configured.'});
+    const started=Date.now();
+    try{const out=await callGemini({systemPrompt:'Respond with exactly READY.',input:'Connectivity test. Respond with exactly READY.',model:c.model});res.json({ok:true,model:safeModel(c.model),latencyMs:Date.now()-started,response:out.text.slice(0,40)});}catch(e){res.status(502).json({ok:false,model:safeModel(c.model),latencyMs:Date.now()-started,error:e.message});}
+  });
+  app.get('/api/ai/conversations',auth,need('ai.view'),async(req,res)=>res.json(await q("SELECT id,title,status,created_at,updated_at FROM ai_conversations WHERE user_id=$1 ORDER BY updated_at DESC LIMIT 50",[req.user.id])));
+  app.post('/api/ai/conversations',auth,need('ai.view'),async(req,res)=>res.status(201).json(await createConversation(req.user.id,req.body?.title||'AI conversation')));
+  app.get('/api/ai/conversations/:id/messages',auth,need('ai.view'),async(req,res)=>{const c=await getConversation(req.params.id,req.user.id);if(!c)return res.status(404).json({error:'Conversation not found'});res.json(await q("SELECT id,role,content,model,created_at FROM ai_messages WHERE conversation_id=$1 ORDER BY created_at ASC LIMIT 200",[c.id]));});
+  app.post('/api/ai/chat',auth,need('ai.view'),async(req,res)=>{const message=text(req.body?.message);if(message.length<2||message.length>6000)return res.status(400).json({error:'Message must be between 2 and 6000 characters.'});try{const r=await chat({userId:req.user.id,conversationId:text(req.body?.conversationId)||null,message});await audit(req.user,'AI_CHAT_MESSAGE','AIConversation',r.conversationId,'Used governed AI business intelligence assistant',null,{model:r.model},req.req);res.json(r);}catch(e){res.status(502).json({error:e.message});}});
+  app.delete('/api/ai/conversations/:id',auth,need('ai.view'),async(req,res)=>{const c=await getConversation(req.params.id,req.user.id);if(!c)return res.status(404).json({error:'Conversation not found'});await q("UPDATE ai_conversations SET status='Archived',updated_at=now() WHERE id=$1",[c.id]);res.json({ok:true});});
   app.get('/api/ai/reports',auth,need('ai.reports'),async(req,res)=>res.json(await q('SELECT id,report_type,period_start,period_end,model,title,content,status,error_message,generated_by,created_at FROM ai_generated_reports ORDER BY created_at DESC LIMIT 100')));
   app.post('/api/ai/reports/generate',auth,need('ai.reports'),async(req,res)=>{const {start,end}=range(req);try{const r=await generateReport({reportType:text(req.body?.reportType||'executive'),start,end,generatedBy:req.user.id});await audit(req.user,'AI_REPORT_GENERATED','AIReport',r.id,'Generated AI management report',null,r,req.req);res.status(201).json(r)}catch(e){res.status(502).json({error:e.message})}});
   app.get('/api/ai/schedules',auth,need('ai.view'),async(req,res)=>res.json(await q('SELECT * FROM ai_report_schedules ORDER BY name')));
