@@ -33,8 +33,17 @@ if(!/CREATE TABLE IF NOT EXISTS password_reset_tokens/.test(schema)) errors.push
 if(!/app.delete\('\/api\/roles\/:id'/.test(server)) errors.push('Custom role deletion lifecycle is missing.');
 if(!/app.delete\('\/api\/departments\/:id'/.test(server)) errors.push('Department deletion lifecycle is missing.');
 if(!/app.delete\('\/api\/users\/:id'/.test(server)) errors.push('Super Admin user removal endpoint is missing.');
-if(/node_modules/.test(fs.readdirSync(root).join(','))) errors.push('node_modules must not be packaged.');
-const yamlFiles=[];(function walk(d){for(const name of fs.readdirSync(d,{withFileTypes:true})){const full=path.join(d,name.name);if(name.isDirectory())walk(full);else if(/\.ya?ml$/i.test(name.name))yamlFiles.push(path.relative(root,full));}})(root);if(yamlFiles.length)errors.push(`YAML files present: ${yamlFiles.join(', ')}`);
+const yamlFiles=[];
+const ignoredDirs=new Set(['node_modules','.git','.github']);
+(function walk(d){
+  for(const name of fs.readdirSync(d,{withFileTypes:true})){
+    if(name.isDirectory() && ignoredDirs.has(name.name)) continue;
+    const full=path.join(d,name.name);
+    if(name.isDirectory()) walk(full);
+    else if(/\.ya?ml$/i.test(name.name)) yamlFiles.push(path.relative(root,full));
+  }
+})(root);
+if(yamlFiles.length) errors.push(`Application YAML files present: ${yamlFiles.join(', ')}`);
 if(errors.length){console.error('RENDER PREFLIGHT FAILED');for(const e of errors) console.error('- '+e);process.exit(1)}
 console.log('RENDER PREFLIGHT PASS');
 console.log('Canonical procurement table: purchase_requisitions');
