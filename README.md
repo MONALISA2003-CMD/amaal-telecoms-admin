@@ -88,12 +88,9 @@ These become production-critical when the production domain and verified sending
 - `BACKUP_ENABLED`
 - `BACKUP_DIR`
 - `PG_DUMP_BIN`
-- `PG_RESTORE_BIN`
 - `BACKUP_STALE_HOURS`
-- `ALLOW_DATABASE_RECOVERY`
-- `RECOVERY_TARGET_ENVIRONMENT`
 
-Recovery must remain disabled until an isolated restore test has been successfully completed in the deployment environment.
+Destructive PostgreSQL restore execution is permanently disabled in this application. Backup creation and integrity verification remain supported. Recovery plans require `RECOVERY_TARGET_ENV` (default `staging-recovery`) and a separate `RECOVERY_DATABASE_URL`; production/live/primary targets are rejected and the recovery database must differ from `DATABASE_URL`. Actual restoration must be performed by a separately controlled, isolated infrastructure process outside the application. For Neon, use a dedicated recovery branch/database and never point recovery tooling at the production connection string. The application's local `BACKUP_DIR` is not a durable off-site backup by itself; store verified backup artifacts in separate persistent/private object storage or another independent backup system.
 
 ## Values that can wait until domain acquisition
 

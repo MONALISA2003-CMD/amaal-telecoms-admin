@@ -110,10 +110,7 @@ The README is the authoritative inventory. Current code references:
 - `BACKUP_ENABLED`
 - `BACKUP_DIR`
 - `PG_DUMP_BIN`
-- `PG_RESTORE_BIN`
 - `BACKUP_STALE_HOURS`
-- `ALLOW_DATABASE_RECOVERY`
-- `RECOVERY_TARGET_ENVIRONMENT`
 
 Do not add invented provider keys.
 
@@ -229,3 +226,17 @@ The AI chat path now uses Gemini Interactions API with `thinking_level: low`, a 
 The synchronous admin AI path was changed from the Interactions API to Google's standard `generateContent` REST endpoint. This is intentional: short operational questions should complete as a normal synchronous generation request, while the application retains clear timeout/error handling. Google documents `generateContent` for text generation and system instructions, including `gemini-3.7-flash` and low thinking configuration.
 
 Before declaring AI production-ready, deploy this build and run **Test Gemini connection**. A successful test must return `READY`. If it times out again, inspect the Render service logs and confirm the API key/project restrictions, Gemini quota, model availability, and outbound HTTPS connectivity from Render. A timeout alone does not prove that the key is invalid; invalid authentication normally returns an HTTP error response.
+
+
+## Production Safety Hardening — 2026-08-25
+
+- Destructive PostgreSQL restore execution remains disabled.
+- Role deletion now preserves custom role records and rejects permanent deletion.
+- Department deletion now archives by marking the department Inactive instead of deleting the row.
+- Integration connection deletion now suspends the connection instead of deleting the row.
+- Integration webhook deletion now disables the webhook instead of deleting the row.
+- BI snapshot deletion is blocked to preserve historical reporting records.
+- Product image deletion is blocked to preserve historical media records.
+- Gemini remains explicitly out of scope and was not invoked.
+- No production PostgreSQL connection was used and no existing data was modified.
+- JavaScript syntax checks and Render preflight passed after the changes.
