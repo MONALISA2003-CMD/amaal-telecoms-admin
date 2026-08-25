@@ -3,42 +3,54 @@
 Cumulative enterprise telecom retail administration platform.
 
 ## Current release
-**Phase 39 — Global Search, UX & Operational Polish (audited and strengthened)**
+**Phase 39 — Global Search, UX & Operational Polish — audited, debugged and hardened**
 
-This archive is a cumulative continuation build. Existing business modules and operational data architecture are preserved; this phase strengthens the existing Phase 39 implementation rather than rebuilding the platform.
+This is a cumulative continuation build. The existing business modules, database architecture, security boundary and operational workflows are preserved.
 
-### Phase 39 delivered in this archive
-- Global search across operational domains with permission enforcement.
-- Ranked search results prioritizing exact identifiers and stronger matches.
-- Parallel search execution so one slow source does not block all results.
-- Partial-result reporting when an individual search source fails.
-- Search health endpoint with source counts and timestamp.
-- PostgreSQL `pg_trgm` indexes for efficient partial text lookup where supported.
-- Search indexes for operational identifiers including requisitions, invoices, deliveries, warranty claims, returns, credit accounts and finance journals.
-- Responsive search workspace with keyboard-friendly interaction.
-- `/` keyboard shortcut to focus global search.
-- Enter-to-search behavior.
-- Accessible focus states for search results.
-- Existing loading, empty and error states retained.
-- No destructive migrations or database reset.
+### Phase 39 hardening delivered
+- Global search remains permission-gated by `search.view`.
+- Search results are now filtered by the caller's underlying module permission before any source query runs.
+- Finance, credit, inventory, warranty, returns, delivery, procurement and document results are no longer exposed merely because a user has global-search access.
+- Global-search health counts are also restricted to sources the current user is allowed to view.
+- Search partial-result handling remains available when an authorized source fails.
+- Search wildcard escaping was corrected so literal `%`, `_` and `\\` characters remain searchable without corrupting exact-match ranking.
+- Ranked search continues to prioritize exact identifiers and direct matches.
+- Search source queries continue to execute independently so one failing source does not discard successful authorized results.
+- PostgreSQL trigram indexes and operational identifier indexes remain available through `global-search-ux.sql`.
+- Responsive search UI, `/` shortcut, Enter-to-search, keyboard focus and result-row navigation remain intact.
+- Existing cross-module routes were statically audited for registration/export consistency.
+- Backend JavaScript syntax was checked across all application modules.
+- Frontend JavaScript syntax was checked.
+- Render preflight passed.
+- No destructive database reset or operational-record mutation was introduced.
 
 ## Existing platform modules
 Catalog · Inventory · Suppliers & Procurement · Customers & CRM · Sales & POS · Orders & E-commerce · Pricing & Promotions · Delivery & Logistics · Warranty & Repairs · Returns & Refunds · Document Management · Credit & Installments · Finance & Accounting · Reporting & Business Intelligence · AI Business Intelligence · Web & Hosting · Integration Hub · Workflow & Automation · Global Search, UX & Operational Polish
+
+## Verification performed for this rezip
+- All application `.js` files passed `node --check`.
+- All registered business modules were imported and their registration functions executed against a route-registration harness.
+- Render preflight passed.
+- Global-search permission filtering was exercised with a mocked restricted permission set.
+- Static schema/table-reference review was performed across the cumulative JavaScript and SQL files.
+- Secret-pattern scan was performed.
+- Only useful Markdown documentation is retained: `README.md` and `CONTINUATION.md`.
+- `node_modules` and `.git` are excluded from the release archive.
 
 ## Deployment
 - Node.js 20.x
 - PostgreSQL
 - Start command: `node render-preflight.js && node server.js`
+- Apply `global-search-ux.sql` through the normal database migration/bootstrap process before relying on its Phase 39 indexes.
 - Never package `node_modules`.
 - Never commit secrets.
-- Do not reset PostgreSQL.
-- Do not introduce YAML as an application workaround.
-- Apply `global-search-ux.sql` through the normal database migration/bootstrap process before relying on its search indexes.
+- Never reset PostgreSQL.
+- Never mutate financial or operational records merely to make tests pass.
 
 ## Security boundary
-MFA is intentionally deferred. This phase does not implement, activate, redesign or extend MFA. Existing authentication, authorization, CSRF, session and security controls remain the active security boundary.
+MFA is intentionally deferred. This build does not implement, activate, redesign or extend MFA. Existing authentication, authorization, CSRF, session and security controls remain the active security boundary. Existing MFA-related artifacts are left untouched.
 
-## Verification
-The archive must pass the repository Render preflight before deployment. Live production PostgreSQL/Render behavior must be verified in the deployment environment; archive-level checks must not be represented as live-production testing.
+## Production verification boundary
+Archive-level checks are not live Render or production PostgreSQL tests. After deployment, verify database migrations, permissions, search indexes, cross-module transactions and external integrations in the real environment.
 
 See `CONTINUATION.md` for the exact next-build instructions.

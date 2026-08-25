@@ -2,107 +2,202 @@
 
 ## Starting point
 
-This archive is the cumulative Amaal Telecoms Admin System after **Phase 39 — Global Search, UX & Operational Polish**, with a strengthening pass applied.
+This archive is the cumulative Amaal Telecoms Admin System after **Phase 39 — Global Search, UX & Operational Polish**, with a full cumulative audit and debugging pass applied.
 
 Do not rebuild the project. Inspect the cumulative codebase first and continue from the existing architecture.
 
-## What Phase 39 now contains
+## Phase 39 status
 
-- Authenticated global search protected by `search.view`.
-- Search across products/SKUs, customers, suppliers, sales, orders, IMEI/serial records, documents, requisitions, supplier invoices, deliveries, warranty claims, returns, credit accounts and finance journals.
-- Ranked search results with stronger weighting for exact identifiers and direct matches.
-- Parallelized source queries so one failed source does not discard successful results.
-- Explicit partial-result reporting through `partial` and `failedSources`.
-- Search health endpoint with source counts and check timestamp.
-- PostgreSQL trigram indexes for partial text search plus identifier indexes.
-- Responsive search UI.
-- Keyboard `/` shortcut to focus global search.
-- Enter-to-search behavior.
-- Keyboard-accessible result rows and visible focus states.
-- Existing loading, empty and error patterns preserved.
+Phase 39 is considered implemented and strengthened.
 
-## Phase 39 audit requirements
+The latest audit specifically corrected a security/data-isolation weakness in Global Search: a user with `search.view` can now search only the operational domains for which that user also has the corresponding view permission. Global-search health counts follow the same boundary.
 
-Before adding Phase 40 functionality, inspect the entire cumulative application again.
+Search wildcard escaping was also corrected so literal `%`, `_` and `\\` characters are preserved correctly in ILIKE patterns and exact-match ranking.
 
-Audit:
+## Required audit discipline for every future rezip
 
-- API authorization boundaries
-- Search permission enforcement
-- Search result data leakage
-- Query parameterization
-- Wildcard escaping
-- Search limits
-- Query performance
-- Database index compatibility
-- PostgreSQL extension availability
-- Responsive behavior
-- Keyboard navigation
-- Loading states
-- Empty states
-- Error states
-- Cross-module navigation
-- Existing module regressions
-- Frontend syntax
-- Backend syntax
-- Migration safety
+Before modifying or packaging anything:
 
-If a Phase 39 weakness is found, fix it before starting the new Phase 40 modules.
+1. Inspect the entire cumulative project.
+2. Audit every existing module for missing dependencies, broken routes, inconsistent permissions and cross-module state errors.
+3. Check schema/table/column compatibility.
+4. Check financial, inventory, order, return, warranty and credit transaction integrity.
+5. Debug confirmed issues before adding new functionality.
+6. Run JavaScript syntax checks across the complete application.
+7. Run module registration/import checks.
+8. Run Render preflight.
+9. Run secret/security scans.
+10. Remove obsolete/useless Markdown files.
+11. Keep only useful `README.md` and `CONTINUATION.md` documentation.
+12. Update `README.md` to describe the actual build.
+13. Replace this `CONTINUATION.md` with the exact next continuation instructions.
+14. Rezip only after the cumulative audit and verification pass.
 
-## Important architecture rules
-
-Preserve canonical `purchase_requisitions`.
-
-Never reintroduce `procurement_requisitions` into runtime code.
-
-Use additive and safe database migrations.
-
-Never reset PostgreSQL.
-
-Never delete or mutate operational records merely to make tests pass.
-
-Never introduce YAML as an application workaround.
-
-Never package `node_modules` or `.git`.
-
-Never commit secrets.
+Never claim live production verification unless a real deployment/database test was performed.
 
 ## MFA — STRICTLY OUT OF SCOPE
 
 Do not implement MFA.
 
-Do not create MFA tables, APIs, middleware, TOTP, recovery codes, trusted-device flows, MFA screens or partial MFA functionality.
+Do not create or modify:
 
-Existing MFA-related artifacts must not be expanded or activated.
+- MFA tables
+- MFA APIs
+- TOTP
+- recovery codes
+- trusted-device flows
+- MFA middleware
+- MFA login enforcement
+- MFA screens
+- MFA recovery functionality
+
+Existing MFA-related artifacts must remain untouched.
 
 MFA remains deferred until after domain acquisition, deployment, public testing and production feedback.
 
-## Next build sequence
+## Next build — Phase 40A: Media Management
 
-After Phase 39 verification, continue with the combined Phase 39 + Phase 40 hardening cycle in this order:
+Build Media Management as the first new Phase 40 subsystem.
 
-1. Complete the cumulative cross-module audit.
-2. Build Media Management.
-3. Build System Operations.
-4. Build Monitoring, Health and Observability.
-5. Build Backup and Recovery.
-6. Strengthen security findings discovered during the audit without touching MFA.
-7. Run full cross-module regression checks.
-8. Run static schema/index compatibility checks.
-9. Run authorization and secret scans.
-10. Run Render preflight.
-11. Update `README.md`.
-12. Replace this `CONTINUATION.md` with the next exact continuation prompt.
-13. Remove obsolete/useless Markdown files before packaging.
-14. Produce a clean cumulative ZIP without `node_modules` or `.git`.
+Before coding, audit the existing document/media foundations and the web-media implementation so the new system complements rather than duplicates them.
 
-## Verification standard
+Build:
 
-A successful archive build must distinguish static/archive verification from live deployment verification.
+### Media library
 
-Never claim live Render or production PostgreSQL testing unless it was actually performed.
+Support approved:
 
-The final archive should contain only useful Markdown documentation, specifically:
+- product images
+- variant images
+- brand assets
+- category images
+- website assets
+- marketing assets
+- documents where appropriate
+- user-uploaded media
 
-- `README.md`
-- `CONTINUATION.md`
+### Metadata
+
+Store and expose safely:
+
+- filename
+- MIME type
+- extension
+- size
+- dimensions where applicable
+- checksum
+- storage reference
+- uploader
+- timestamps
+- status
+- visibility
+- tags
+- description
+- alt text
+- caption
+- entity relationships
+
+### Processing
+
+Implement:
+
+- actual-content validation
+- MIME validation
+- extension validation
+- file-size limits
+- image dimension validation
+- thumbnails
+- optimized image variants
+- checksum/duplicate detection
+- safe filename handling
+
+Never trust a filename extension.
+
+Never expose private media through predictable public URLs.
+
+### Organization
+
+Build:
+
+- folders/collections where appropriate
+- tags
+- categories
+- search
+- filters
+- sorting
+- bulk selection
+- bulk tagging
+- bulk association
+- archive
+- restore
+- controlled deletion
+
+### Relationships
+
+Allow reusable media references for:
+
+- Products
+- Variants
+- Brands
+- Categories
+- Pages
+- Content blocks
+- Marketing content
+- Documents where appropriate
+
+Avoid unnecessary duplicate files.
+
+### API and UI
+
+Provide complete authorized operations for:
+
+- upload
+- list
+- search
+- metadata update
+- association
+- replacement
+- versioning where required
+- archive
+- restore
+- delete
+- bulk operations
+
+The UI must support desktop, tablet and mobile layouts.
+
+## Integration requirements
+
+Media must integrate cleanly with the existing Catalog, Web & Hosting, Document Management and public e-commerce publishing architecture.
+
+Do not break existing `web_media` behavior. Decide deliberately whether it should be reused, generalized or bridged into the new media abstraction.
+
+## Database rules
+
+Use additive, safe migrations.
+
+Never reset PostgreSQL.
+
+Never delete operational records to make a migration pass.
+
+Preserve canonical `purchase_requisitions`.
+
+Never reintroduce `procurement_requisitions` into runtime code.
+
+## Completion gate
+
+Do not proceed to System Operations until Media Management has:
+
+- backend APIs
+- authorization
+- safe storage handling
+- database migration
+- admin UI
+- existing-module integration
+- regression checks
+- syntax checks
+- Render preflight pass
+- README update
+- fresh continuation prompt
+- clean rezip
+
+The next rezip must again contain only useful Markdown documentation: `README.md` and `CONTINUATION.md`.
