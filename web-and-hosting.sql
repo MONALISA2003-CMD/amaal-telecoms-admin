@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS web_navigation(
 );
 CREATE TABLE IF NOT EXISTS web_banners(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(), site_id uuid NOT NULL REFERENCES web_sites(id) ON DELETE CASCADE,
- title text NOT NULL, subtitle text NOT NULL DEFAULT '', image_media_id uuid, link_url text NOT NULL DEFAULT '', placement text NOT NULL DEFAULT 'home-hero', status text NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','Scheduled','Published','Archived')),
+ title text NOT NULL, subtitle text NOT NULL DEFAULT '', image_media_id uuid REFERENCES web_media(id) ON DELETE SET NULL, link_url text NOT NULL DEFAULT '', placement text NOT NULL DEFAULT 'home-hero', status text NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','Scheduled','Published','Archived')),
  starts_at timestamptz, ends_at timestamptz, sort_order int NOT NULL DEFAULT 0, created_by uuid REFERENCES users(id) ON DELETE SET NULL, updated_by uuid REFERENCES users(id) ON DELETE SET NULL,
  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
 );
@@ -66,3 +66,8 @@ CREATE INDEX IF NOT EXISTS idx_web_pages_site_status ON web_pages(site_id,status
 CREATE INDEX IF NOT EXISTS idx_web_banners_site_status ON web_banners(site_id,status);
 CREATE INDEX IF NOT EXISTS idx_web_publish_queue_status ON web_publish_queue(site_id,status);
 CREATE INDEX IF NOT EXISTS idx_web_media_site_status ON web_media(site_id,status);
+CREATE INDEX IF NOT EXISTS idx_web_domains_site_status ON web_domains(site_id,status,ssl_status);
+CREATE INDEX IF NOT EXISTS idx_web_redirects_site_enabled ON web_redirects(site_id,enabled,source_path);
+CREATE INDEX IF NOT EXISTS idx_web_releases_site_status ON web_publish_releases(site_id,status,created_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_web_primary_domain_per_site ON web_domains(site_id) WHERE type='Primary';
+CREATE UNIQUE INDEX IF NOT EXISTS uq_web_site_primary_hostname ON web_sites(lower(primary_domain)) WHERE primary_domain<>'';

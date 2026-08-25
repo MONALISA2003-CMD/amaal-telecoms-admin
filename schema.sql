@@ -1034,7 +1034,7 @@ CREATE TABLE IF NOT EXISTS web_navigation(
 );
 CREATE TABLE IF NOT EXISTS web_banners(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(), site_id uuid NOT NULL REFERENCES web_sites(id) ON DELETE CASCADE,
- title text NOT NULL, subtitle text NOT NULL DEFAULT '', image_media_id uuid, link_url text NOT NULL DEFAULT '', placement text NOT NULL DEFAULT 'home-hero', status text NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','Scheduled','Published','Archived')),
+ title text NOT NULL, subtitle text NOT NULL DEFAULT '', image_media_id uuid REFERENCES web_media(id) ON DELETE SET NULL, link_url text NOT NULL DEFAULT '', placement text NOT NULL DEFAULT 'home-hero', status text NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','Scheduled','Published','Archived')),
  starts_at timestamptz, ends_at timestamptz, sort_order int NOT NULL DEFAULT 0, created_by uuid REFERENCES users(id) ON DELETE SET NULL, updated_by uuid REFERENCES users(id) ON DELETE SET NULL,
  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
 );
@@ -1079,6 +1079,11 @@ CREATE INDEX IF NOT EXISTS idx_web_pages_site_status ON web_pages(site_id,status
 CREATE INDEX IF NOT EXISTS idx_web_banners_site_status ON web_banners(site_id,status);
 CREATE INDEX IF NOT EXISTS idx_web_publish_queue_status ON web_publish_queue(site_id,status);
 CREATE INDEX IF NOT EXISTS idx_web_media_site_status ON web_media(site_id,status);
+CREATE INDEX IF NOT EXISTS idx_web_domains_site_status ON web_domains(site_id,status,ssl_status);
+CREATE INDEX IF NOT EXISTS idx_web_redirects_site_enabled ON web_redirects(site_id,enabled,source_path);
+CREATE INDEX IF NOT EXISTS idx_web_releases_site_status ON web_publish_releases(site_id,status,created_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_web_primary_domain_per_site ON web_domains(site_id) WHERE type='Primary';
+CREATE UNIQUE INDEX IF NOT EXISTS uq_web_site_primary_hostname ON web_sites(lower(primary_domain)) WHERE primary_domain<>'';
 CREATE TABLE IF NOT EXISTS price_lists(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
  name text NOT NULL,
@@ -2020,3 +2025,20 @@ CREATE INDEX IF NOT EXISTS idx_warranty_bi_date_status ON warranty_claims(create
 CREATE INDEX IF NOT EXISTS idx_purchase_orders_bi_date_status_supplier ON purchase_orders(created_at,status,supplier_id);
 CREATE INDEX IF NOT EXISTS idx_finance_journals_bi_date_status ON finance_journals(journal_date,status);
 CREATE INDEX IF NOT EXISTS idx_credit_installments_bi_due_status ON credit_installments(due_date,status,credit_account_id);
+
+-- Integration Hub hardening: additive delivery state and event idempotency.
+ALTER TABLE integration_events ADD COLUMN IF NOT EXISTS event_key text;
+CREATE UNIQUE INDEX IF NOT EXISTS uq_integration_events_event_key ON integration_events(event_key) WHERE event_key IS NOT NULL;
+CREATE TABLE IF NOT EXISTS integration_delivery_state(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ webhook_id uuid NOT NULL REFERENCES integration_webhooks(id) ON DELETE CASCADE,
+ event_id uuid NOT NULL REFERENCES integration_events(id) ON DELETE CASCADE,
+ status text NOT NULL DEFAULT 'Pending' CHECK(status IN ('Pending','Delivered','Failed')),
+ attempt_count integer NOT NULL DEFAULT 0 CHECK(attempt_count>=0),
+ next_attempt_at timestamptz,
+ delivered_at timestamptz,
+ updated_at timestamptz NOT NULL DEFAULT now(),
+ UNIQUE(webhook_id,event_id)
+);
+CREATE INDEX IF NOT EXISTS idx_integration_delivery_state_retry ON integration_delivery_state(status,next_attempt_at);
+CREATE INDEX IF NOT EXISTS idx_integration_delivery_state_event ON integration_delivery_state(event_id);
