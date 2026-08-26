@@ -108,6 +108,465 @@ It must:
 
 ---
 
+# 2.1 Business UI/UX Visual Direction
+
+## Design objective
+
+Amaal Telecoms Business Admin must feel like a real business-management system rather than a collection of decorative admin pages.
+
+The product should communicate:
+
+- operational control
+- financial clarity
+- trustworthy data
+- fast decision making
+- premium corporate quality
+- consistency across every workspace
+
+The visual direction is **premium business software with restrained glassmorphism**, not a futuristic/AI-heavy interface.
+
+## Visual language
+
+### Brand foundation
+
+- Warm ivory / light stone application background.
+- Deep charcoal primary typography.
+- Champagne/gold as the Amaal brand accent.
+- Soft white/translucent surfaces for selected glass panels.
+- Subtle borders, blur and shadows.
+- Generous whitespace and clear hierarchy.
+- Rounded corners, but not excessive pill-shaped UI.
+
+### Gold usage rule
+
+Gold is a brand and importance signal, not a universal chart color.
+
+Use gold primarily for:
+
+- primary actions
+- selected navigation
+- important KPI emphasis
+- revenue/profit highlights
+- premium status indicators
+- important approvals
+
+Do not color every graph gold. Data visualizations must use a deliberate semantic palette so categories remain distinguishable and accessible.
+
+### Glassmorphism rule
+
+Glassmorphism should be strongest on:
+
+- Login
+- Setup
+- Modal dialogs
+- Command palette
+- selected premium cards
+
+The core business dashboard should remain mostly clean and readable. Charts, tables and dense operational data should sit on stable surfaces rather than highly transparent backgrounds.
+
+## Dashboard philosophy
+
+Every dashboard must follow this information hierarchy:
+
+```text
+KPI SUMMARY
+    ↓
+TREND / PERFORMANCE
+    ↓
+COMPOSITION / BREAKDOWN
+    ↓
+OPERATIONAL DETAIL
+    ↓
+ATTENTION / ACTIONS
+```
+
+A dashboard must answer both:
+
+1. **What is happening?**
+2. **What should I do next?**
+
+Dashboards must not become collections of unrelated cards.
+
+## Executive Overview
+
+The Overview is the owner/CEO command center.
+
+Recommended structure:
+
+```text
+Page Header
+  ├─ Greeting / business context
+  ├─ Global search
+  ├─ Notifications
+  └─ Date / period selector
+
+KPI Row
+  ├─ Revenue
+  ├─ Gross Profit
+  ├─ Sales / Orders
+  └─ Cash / Receivables where permitted
+
+Performance Row
+  ├─ Revenue & Sales trend
+  └─ Sales composition / category distribution
+
+Management Row
+  ├─ Profit vs Expenses
+  └─ Attention Center
+
+Operational Row
+  └─ Recent sales / orders / activity
+```
+
+### Executive KPI cards
+
+KPI cards should show:
+
+- metric name
+- current value
+- comparison period
+- percentage or directional change when available
+- optional sparkline
+- click-through destination
+
+Example:
+
+```text
+Revenue
+UGX 12.5M
+↑ 14.2% vs previous period
+```
+
+Never invent a metric. If the authoritative engine does not expose it to the current role, display an em dash (`—`) or an explicit unavailable state rather than a fabricated zero.
+
+## Attention Center
+
+The Overview must include an operational Attention Center.
+
+Examples:
+
+- Low-stock products
+- Out-of-stock products
+- Overdue customer payments
+- Orders awaiting fulfilment
+- Purchase requests awaiting approval
+- Delayed deliveries
+- Failed/returned transactions where applicable
+
+Each item should provide a direct action:
+
+```text
+8 products low in stock       View stock →
+UGX 2.4M overdue payments     Review credit →
+5 orders awaiting fulfilment  View orders →
+```
+
+This turns the dashboard from a reporting screen into a management tool.
+
+## Chart selection rules
+
+Do not use pie/donut charts simply because they look attractive. Select the chart according to the business question.
+
+| Business question | Preferred visualization |
+|---|---|
+| Are sales growing? | Line / area chart |
+| Which period performed best? | Bar chart |
+| Revenue vs expenses? | Grouped/combined bars |
+| What makes up sales? | Donut chart |
+| Which products sell most? | Horizontal ranked bar |
+| Where is stock concentrated? | Bar chart |
+| Payment-method mix? | Donut chart |
+| Are targets being reached? | Progress / bullet visualization |
+| Branch comparison? | Bar chart |
+| Customer growth? | Line chart |
+| Outstanding credit? | Bar chart + KPI |
+| Delivery status? | Donut/status breakdown |
+| Stock movement? | Stacked bar / trend |
+| Profit margin? | Line + KPI |
+| Product performance? | Ranked table + sparkline |
+
+### Visualization rules
+
+- Use consistent scales.
+- Label important values directly where practical.
+- Keep legends close to the visualization.
+- Avoid 3D charts.
+- Avoid decorative gradients that imply false data magnitude.
+- Use accessible contrast.
+- Keep categorical colors stable across the application.
+- Provide a data/table alternative for dense or mobile charts.
+- Tooltips may expose exact values without overcrowding the chart.
+- Time-series charts must clearly expose the selected period.
+
+## Sales dashboard
+
+Sales should answer:
+
+> How much are we selling, what is driving sales, and where is performance changing?
+
+Core visual blocks:
+
+- Revenue
+- Transactions
+- Average sale
+- Gross profit
+- Sales performance trend
+- Sales by category
+- Payment methods
+- Top products
+- Sales history
+- Quotes and approvals
+
+## Products dashboard
+
+Products should combine catalogue management with product intelligence.
+
+Core visual blocks:
+
+- Total products
+- Active products
+- Published products
+- Low-stock products
+- Out-of-stock products
+- Product/category distribution
+- Top-selling products
+- Pricing information
+- Website publishing status
+
+## Stock dashboard
+
+Stock should feel like a warehouse control center.
+
+Core visual blocks:
+
+- Total stock value
+- Units in stock
+- Low stock
+- Out of stock
+- Reserved stock
+- Stock by category/branch
+- Fast-moving products
+- Slow-moving products
+- Stock movement trend
+- Products requiring reorder/action
+
+## Finance dashboard
+
+Finance must feel conservative, clear and trustworthy.
+
+Core visual blocks:
+
+- Cash position
+- Revenue
+- Expenses
+- Gross profit
+- Net profit
+- Accounts receivable
+- Accounts payable
+- Credit exposure
+- Revenue vs expenses
+- Cash flow
+- Receivables/payables aging
+- Transactions
+
+## Customers dashboard
+
+Customers should answer:
+
+> Who buys from Amaal, how often, and how valuable are they?
+
+Core visual blocks:
+
+- New customers
+- Returning customers
+- Customer growth
+- Revenue by customer group
+- Top customers
+- Credit exposure
+- Customer location where authoritative data exists
+
+## Purchasing dashboard
+
+Purchasing should answer:
+
+> What should we buy, from whom, and how much are we spending?
+
+Core visual blocks:
+
+- Purchase spend
+- Pending purchase orders
+- Supplier balances
+- Supplier performance
+- Delivery/receiving performance
+- Purchase trend
+- Spend by category
+
+## Orders and Delivery
+
+Orders should expose the operational pipeline:
+
+```text
+Received → Confirmed → Processing → Ready → Delivered
+```
+
+Delivery should expose:
+
+- today's deliveries
+- pending deliveries
+- in transit
+- delivered
+- delayed
+- failed
+
+Future map/location functionality must only use authoritative location data from the existing engine.
+
+## Reports vs Dashboards
+
+The dashboard answers:
+
+> **What is happening?**
+
+Reports answer:
+
+> **Let me investigate.**
+
+Reports therefore need richer filters and drill-down:
+
+- date range
+- branch
+- staff
+- product
+- customer
+- supplier
+- payment method
+- category
+- export
+- drill-down
+
+## Mobile UX
+
+Mobile is a first-class experience, not a shrunken desktop layout.
+
+On small screens:
+
+- KPI cards stack or become horizontally scrollable.
+- Charts simplify and remain readable.
+- Dense tables become cards or controlled horizontal scrolling.
+- Chart legends may collapse into an accessible data view.
+- Attention items remain immediately actionable.
+- Primary actions remain reachable without excessive scrolling.
+- Filters should use compact mobile controls.
+
+## Reusable Business UI component system
+
+Before expanding individual workspaces, establish reusable components:
+
+### Navigation
+
+- Sidebar
+- Mobile navigation
+- Breadcrumbs
+- Page header
+
+### Data visualization
+
+- KPI card
+- Comparison KPI
+- Sparkline
+- Chart card
+- Donut card
+- Ranking card
+- Data table
+- Status badge
+- Activity timeline
+
+### Operations
+
+- Attention card
+- Approval card
+- Quick action
+- Empty state
+- Loading state
+- Error state
+- Confirmation dialog
+- Filter bar
+- Date-range selector
+
+### Global interaction
+
+- Global search
+- Command palette
+- Notifications
+- User menu
+
+All workspaces should reuse these components so Sales, Stock, Finance, Customers and the other modules feel like one coherent product.
+
+## Data integrity and visualization contract
+
+The existing Render business engine and PostgreSQL database remain the authoritative source of truth.
+
+Business Admin must:
+
+1. Read from existing engine contracts.
+2. Never create a second business database.
+3. Never copy authoritative business tables into Vercel.
+4. Never expose PostgreSQL credentials to browser code.
+5. Never fabricate dashboard values.
+6. Respect backend permissions.
+7. Display unavailable data honestly.
+8. Make every KPI/chart traceable to an existing business data source.
+9. Keep finance, inventory, order and operational history authoritative in the existing engine.
+10. Avoid destructive database changes during UI/dashboard work.
+
+## Dashboard acceptance criteria
+
+A workspace is not considered complete merely because it renders.
+
+It must satisfy:
+
+- Real data source identified for every metric.
+- Permission behaviour verified.
+- Loading state implemented.
+- Empty state implemented.
+- Error state implemented.
+- Mobile layout verified.
+- Chart labels and units verified.
+- Period/filter behaviour verified.
+- Click-through actions verified.
+- No hard-coded business figures.
+- No duplicate data store.
+- No database reset or destructive migration.
+
+## Visual reference assets
+
+The project already contains visual references that should inform the design system, including:
+
+- `Golden Glass Amaal Telecoms Login.png` — premium gold/glass login direction.
+- `Vantage HRM People Management Dashboard.png` — dashboard composition and KPI/chart hierarchy reference.
+- `Vantage HRM Payroll Confidence Dashboard.png` — KPI, trend and operational widget reference.
+- `Monalisa Tech Solutions Poster(1).png` — existing premium navy/gold brand language reference.
+
+These are references, not templates to copy literally. Amaal's final UI must retain its own business identity and use the existing engine's real data.
+
+## Build sequence for the business experience
+
+After the design system is locked:
+
+1. Overview / Executive Dashboard
+2. Sales workspace
+3. Products workspace
+4. Stock workspace
+5. Purchasing workspace
+6. Customers workspace
+7. Orders and Delivery
+8. Finance and Credit
+9. Service
+10. Website management
+11. Reports / Business Intelligence
+12. Team and role-specific experiences
+
+Each stage must be validated against the existing engine before moving to the next stage.
+
 # 3. Business Admin Information Architecture
 
 The main Business Admin navigation should be intentionally short and understandable.
@@ -1961,3 +2420,41 @@ Before each development phase:
 **The technical console is the foundation. The Business Admin is the business experience. The Public Website is the customer experience.**
 
 They must evolve together without becoming three separate systems.
+
+---
+
+# 44. Phase 5 Implementation Status — Sales Increment
+
+**Latest implemented module:** Sales
+
+The Business Admin Sales workspace now includes:
+
+- Executive sales KPI summary using existing engine data.
+- 30-day sales trend visualization.
+- Payment-method composition visualization.
+- Top-product sales ranking.
+- Cashier performance comparison.
+- Searchable and status-filtered sales history.
+- Sale detail view with line items, payments, approvals and status history.
+- Permission-aware quote visibility and quote approval/cancellation actions through existing engine routes.
+- A Business Admin POS surface using the existing `/api/sales`, `/api/sales/products` and inventory-location contracts.
+- Mobile-responsive layouts for the Sales workspace and POS.
+
+### Non-negotiable implementation boundary
+
+This increment does **not** introduce or modify a database, schema, migration, seed, reset, backup, recovery routine, or backend route. Business Admin only consumes the already-existing Phase 4/Render engine contracts.
+
+All sale creation, stock validation, accounting posting, approval enforcement and audit logging remain inside the existing engine.
+
+### Validation rule
+
+The Sales module is considered complete only when:
+
+1. Existing engine contracts remain unchanged.
+2. Every displayed KPI/chart is derived from authoritative engine responses.
+3. Permission-restricted data remains unavailable rather than fabricated.
+4. POS submission uses the existing sales transaction endpoint only.
+5. No local or Vercel database is introduced.
+6. Build/type/lint checks pass in an environment with dependencies installed.
+7. Mobile and desktop layouts are reviewed.
+8. The entire Business Admin is regression-audited before packaging.

@@ -1,98 +1,261 @@
-# Amaal Telecoms Business Admin — Pre-deployment Audit
+# Amaal Telecoms — Phase 5 Full Audit Report
 
-Date: 2026-08-26
+**Increment:** Sales workspace / POS / Sales detail
+**Audit type:** Full Business Admin regression audit + API contract inspection
+**Database status:** UNTOUCHED
+**Backend status:** UNTOUCHED
 
-## Scope
+---
 
-This audit covered the Business Admin application under `apps/business-admin`, its Vercel/Next.js configuration, server-side engine bridge, authentication cookie bridge, request proxy, business workspace pages, dependency declarations, and references to database access.
+## 1. Executive Result
 
-## Vercel build issues found and corrected
+The next Business Admin module was built as the **Sales workspace**.
 
-### 1. Dependency resolution
+The increment adds:
 
-- Failure: `@tanstack/react-query@5.90.0` returned npm `ETARGET`.
-- Correction: pinned to `5.102.4`.
-- Subsequent Vercel build confirmed dependency installation succeeded.
+- executive sales KPIs;
+- real sales trend visualization;
+- payment-method composition;
+- top-product ranking;
+- cashier performance;
+- searchable/status-filtered sales history;
+- sale detail pages;
+- approval/status/payment history visibility;
+- permission-aware quote actions;
+- Business Admin POS using existing engine contracts;
+- responsive/mobile styling.
 
-### 2. TypeScript card construction
+The implementation is intentionally confined to `apps/business-admin` plus the required continuity documentation.
 
-- Failure: `Card.label` was inferred as `string | number` in the dynamic workspace page because tuple arrays mixed labels and numeric values.
-- Correction: card labels are now explicitly strings and values are formatted before being passed to `Workspace`.
-- `Card.value` remains a display string, which is the correct UI contract.
+**No backend engine file, SQL file, schema, migration, seed, database configuration or database data was modified.**
 
-### 3. Next.js 16 middleware migration
+---
 
-- Removed all `middleware.*` files from the Business Admin.
-- Kept a single `proxy.ts` request proxy with the same authentication behavior.
-- This follows the Next.js 16 `proxy.ts` convention.
+## 2. Source-of-Truth Audit
 
-### 4. ESLint modernization
+Verified against the project snapshot:
 
-- ESLint `9.0.0` was deprecated.
-- Pinned ESLint to `9.39.5`.
-- Added `eslint.config.mjs` using the Next.js flat configuration and TypeScript rules.
-- This is separate from `next build`; Next.js 16 no longer runs lint automatically during build.
+- Render/Phase 4 remains the business engine.
+- PostgreSQL remains the authoritative database.
+- Business Admin does not contain a PostgreSQL client.
+- Business Admin does not introduce a local business database.
+- Dashboard values are derived from existing API responses.
+- Unavailable API responses are represented as unavailable rather than fabricated business figures.
+- Sales transaction creation remains inside the existing `/api/sales` engine route.
+- Existing engine remains responsible for stock validation, pricing, tax, approvals, accounting posting and audit logging.
 
-### 5. Serverless failure hardening
+**Result: PASS**
 
-- The Vercel API proxy previously allowed an upstream `fetch()` rejection to escape the route handler.
-- Login and proxy routes now catch Render connection/configuration failures and return controlled `502`/`503` JSON responses.
-- Production no longer silently falls back to `http://localhost:10000`.
-- Node.js runtime is explicitly selected for server-side API bridges.
+---
 
-### 6. Source-of-truth behavior
+## 3. Backend/Database Safety Audit
 
-- Missing API data no longer becomes a fabricated numeric zero in business cards; unavailable values display `—`.
-- Overview quick actions are filtered using the permissions returned by `/api/me`.
-- Business data continues to come from the existing Amaal Engine APIs.
+The new project snapshot was compared against the source ZIP.
 
-## Database safety audit
+Changed files are limited to:
 
-No PostgreSQL client, database URL, SQL query, migration, seed, reset, schema change, or direct database connection exists under `apps/business-admin`.
+- `Amaal_plan.md`
+- `CONTINUATION.md`
+- `PLAN_UPDATE_NOTES.md`
+- `apps/business-admin/app/globals.css`
+- `apps/business-admin/components/SalesWorkspace.tsx`
+- `apps/business-admin/components/SaleActions.tsx`
+- `apps/business-admin/components/POSWorkspace.tsx`
+- `apps/business-admin/app/(business)/sales/page.tsx`
+- `apps/business-admin/app/(business)/sales/[id]/page.tsx`
+- `apps/business-admin/app/(business)/sales/pos/page.tsx`
 
-No SQL was executed during this audit or build-fix process.
+No non-Business-Admin/backend files changed.
 
-The Business Admin remains a consumer of the existing Render Amaal Engine. PostgreSQL remains the authoritative source of truth behind that engine.
+All existing backend JavaScript files also pass `node --check`.
 
-## Static validation performed
+**Result: PASS**
 
-- Local alias/relative imports: no missing local imports found.
-- Stale middleware files: none; `proxy.ts` is present.
-- Direct database references in Business Admin source: none found.
-- Navigation routes: all map to the dynamic business workspace route.
-- Business API paths used by the admin were cross-checked against the existing backend route source.
-- No `node_modules`, `.next`, or build artifacts are included in the package.
+---
 
-## Important deployment note
+## 4. API Contract Audit
 
-The final Vercel test must be performed from the GitHub commit containing this package. A ZIP downloaded locally does not update the GitHub repository that Vercel watches.
+Business Admin references were checked against the existing engine route inventory.
 
-Required Vercel project configuration:
+Verified contracts include:
 
-- Framework: Next.js
-- Root Directory: `apps/business-admin`
-- Node.js: `24.x`
-- Build Command: Automatic
-- Output Directory: Automatic
-- `AMAAL_ENGINE_URL`: public HTTPS URL of the existing Render backend
+- `/api/me`
+- `/api/dashboard`
+- `/api/bi/summary`
+- `/api/sales/summary`
+- `/api/sales`
+- `/api/sales/analytics`
+- `/api/sales/quotes`
+- `/api/sales/products`
+- `/api/inventory/locations`
+- existing sales detail/approval/action routes
+- existing catalogue, inventory, customer, order, finance, procurement, delivery, service, website, staff and organization routes used by the foundation
 
-No database changes are required for this package.
+The session routes are Business Admin-local proxy/session routes and are intentionally not expected to appear in the Phase 4 backend route inventory.
 
-## Authentication / first-time setup correction — 2026-08-26
+**Result: PASS for statically verifiable contracts.**
 
-- Removed the Business Admin login-page `Security code (only when requested)` field and stopped sending a `code` value from that form.
-- Added a Business Admin first-time setup screen at `/setup`.
-- `/login` now checks the existing engine `/api/setup/status` before presenting normal sign-in; when the existing database says administrator setup is required, the user is sent to `/setup`.
-- `/setup` uses the existing Render engine `/api/setup` endpoint to create/reactivate the first administrator and establish the normal authenticated session.
-- Added server-side Vercel proxy routes for `/api/setup/status` and `/api/setup`, including the existing authentication-cookie bridge.
-- The implementation does not create a second database, does not introduce SQL into the Business Admin, and does not reset or migrate PostgreSQL.
-- The existing engine remains authoritative for whether setup is required and for creation/reactivation of the administrator account.
-- Existing MFA behavior in the Render engine was not removed or altered. The Business Admin's new first-time setup starts with the engine's existing setup behavior rather than changing database security policy.
+---
 
-## Validation for this correction
+## 5. Sales Module Audit
 
-- Confirmed the new/modified TypeScript files parse successfully with the TypeScript compiler parser.
-- Confirmed existing JavaScript files pass Node syntax checks.
-- Confirmed no security-code UI remains under `apps/business-admin/app/(auth)`.
-- Confirmed `schema.sql` and `server.js` were not modified by this correction.
-- A full Next.js dependency build could not be run in the isolated audit container because external npm dependency installation was unavailable; the previous Vercel build had already confirmed the dependency set and the new files were syntax-validated independently.
+### Dashboard
+
+- KPI hierarchy implemented.
+- Sales trend implemented.
+- Payment mix implemented.
+- Product ranking implemented.
+- Cashier comparison implemented.
+- No decorative-only charts used as substitutes for business questions.
+- Empty/unavailable chart states implemented.
+
+### History
+
+- Search implemented.
+- Status filter implemented.
+- Sale rows link to sale detail.
+- Existing engine data is displayed directly.
+
+### Sale detail
+
+- Summary totals.
+- Sale lines.
+- Payments.
+- Approval history.
+- Status history.
+- Existing permission-aware actions.
+
+### POS
+
+- Location selection.
+- Product search.
+- Stock availability display.
+- Cart.
+- Quantity controls.
+- Payment method.
+- Idempotency key.
+- Existing `/api/sales` transaction endpoint.
+
+Serialized products are deliberately not silently sold without serial/IMEI selection; the UI directs those cases to an advanced workflow instead of inventing a shortcut around the engine's validation.
+
+**Result: PASS at UI/contract level.**
+
+---
+
+## 6. Regression Audit — Existing Business Admin
+
+Checked structurally:
+
+- Authentication/setup pages remain unchanged by this increment.
+- Protected route middleware still covers `/sales` and nested Sales routes.
+- Permission-aware sidebar remains authoritative to `/api/me` permissions.
+- Overview remains engine-backed.
+- Existing generic workspaces remain intact.
+- Search remains intact.
+- Existing API proxy remains intact.
+- Existing environment/config boundary remains intact.
+- No frontend database connection was introduced.
+
+**Result: PASS by static regression inspection.**
+
+---
+
+## 7. Mobile/UI Audit
+
+The new Sales UI includes responsive layouts for:
+
+- dashboard cards;
+- charts;
+- tables with controlled horizontal scrolling;
+- detail views;
+- POS controls;
+- product tiles;
+- cart controls.
+
+The visual direction follows the master plan: restrained champagne/gold accents, stable business surfaces, and stronger glassmorphism reserved for premium/auth surfaces.
+
+**Result: PASS by static responsive inspection.**
+
+---
+
+## 8. Build Verification
+
+### Attempted
+
+```bash
+npm install --no-audit --no-fund
+npm run build
+npm run lint
+npm test
+```
+
+### Environment limitation
+
+The local container could not complete `npm install` because access to `registry.npmjs.org` failed with `EAI_AGAIN`. Therefore the full Next.js build/lint/test suite could not be executed locally in this audit environment.
+
+A standalone TypeScript parser check was attempted, but without installed React/Next type packages it cannot provide a meaningful dependency-complete type result.
+
+This is recorded as an **environment validation blocker**, not hidden as a code pass.
+
+The source project already carries its locked dependency contract and the implementation does not intentionally change dependency versions.
+
+**Result: BLOCKED locally by package-registry availability.**
+
+---
+
+## 9. No Database/Backend Work
+
+Explicitly NOT performed:
+
+- no database reset;
+- no schema changes;
+- no migrations;
+- no seeds;
+- no table recreation;
+- no truncate/drop;
+- no PostgreSQL connection from Business Admin;
+- no backend route changes;
+- no backend module replacement;
+- no dependency on a new backend service.
+
+**Result: PASS**
+
+---
+
+## 10. Remaining Work
+
+The next module is:
+
+### Products
+
+Planned next increment:
+
+1. Catalogue dashboard.
+2. Search/filtering.
+3. Product detail.
+4. Variants.
+5. Pricing visibility.
+6. Website publishing status.
+7. Product intelligence.
+8. Permission-aware existing catalogue actions.
+9. Full regression audit again.
+10. Update all continuity MD files.
+11. Package the next ZIP.
+
+After Products: Stock → Purchasing → Customers → Orders/Delivery → Finance/Credit → Service → Website Management → Reports/BI → Team → Public Website → Commerce → unified regression/polish.
+
+---
+
+## 11. Audit Conclusion
+
+**Business Admin Sales increment:** IMPLEMENTED.
+
+**Database:** SAFE / UNTOUCHED.
+
+**Backend:** SAFE / UNTOUCHED.
+
+**Existing modules:** Regression-inspected.
+
+**Local full build:** BLOCKED by unavailable npm registry/network in this environment.
+
+**Packaging condition:** Documentation updated; project ready for ZIP packaging with the documented build-environment limitation.
