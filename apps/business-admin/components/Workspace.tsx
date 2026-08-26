@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-export type Card = { label: string; value: string; note?: string };
+export type Card = { label: string; value: string | number; note?: string };
 export type Row = { [key: string]: string | number | null | undefined };
 
 export function Workspace({
