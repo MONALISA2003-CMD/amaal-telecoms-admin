@@ -1,0 +1,17 @@
+export const navGroups = [
+  { label: 'Overview', href: '/overview', roles: ['Super Admin','Manager','Sales','Inventory','Procurement','Finance','Customer Service'] },
+  { label: 'Sales', href: '/sales', roles: ['Super Admin','Manager','Sales','Finance'] },
+  { label: 'Products', href: '/products', roles: ['Super Admin','Manager','Sales','Inventory'] },
+  { label: 'Stock', href: '/stock', roles: ['Super Admin','Manager','Inventory','Procurement'] },
+  { label: 'Purchasing', href: '/purchasing', roles: ['Super Admin','Manager','Procurement','Inventory','Finance'] },
+  { label: 'Customers', href: '/customers', roles: ['Super Admin','Manager','Sales','Customer Service','Finance'] },
+  { label: 'Orders', href: '/orders', roles: ['Super Admin','Manager','Sales','Customer Service','Finance'] },
+  { label: 'Finance', href: '/finance', roles: ['Super Admin','Finance'] },
+  { label: 'Credit', href: '/credit', roles: ['Super Admin','Finance','Manager'] },
+  { label: 'Delivery', href: '/delivery', roles: ['Super Admin','Manager','Customer Service'] },
+  { label: 'Service', href: '/service', roles: ['Super Admin','Manager','Customer Service'] },
+  { label: 'Website', href: '/website', roles: ['Super Admin','Manager'] },
+  { label: 'Reports', href: '/reports', roles: ['Super Admin','Manager','Finance'] },
+  { label: 'Team', href: '/team', roles: ['Super Admin','Manager'] },
+  { label: 'Business Settings', href: '/settings', roles: ['Super Admin'] },
+] as const;

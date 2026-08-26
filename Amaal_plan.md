@@ -1,1464 +1,1669 @@
 # Amaal Plan
-## Master Engineering Plan for Business Admin and Public Website
 
-**Platform:** Amaal Telecoms  
-**Technical Console:** Existing Phase 4 application on Render  
-**Business Admin:** New business application on Vercel  
-**Public Website:** New customer application on Vercel  
-**Business source of truth:** Existing Phase 4 engine and PostgreSQL  
-**Executive authority:** CEO = Superadmin. There is no separate Executive role.
+## Amaal Telecoms Business Experience & Public Platform Master Plan
 
----
-
-# 1. Purpose
-
-This document is the master engineering and product plan for the next generation of Amaal Telecoms.
-
-The existing Phase 4 application is not being replaced.
-
-It becomes the **Technical Console and Super Engine**.
-
-Two new experiences will be built around it:
-
-1. **Business Admin** for the CEO and authorized staff.
-2. **Public Website** for customers.
-
-The three systems must behave as one connected platform while remaining separate experiences.
-
-The central rule is:
-
-> **The Technical Console is the super engine. Business Admin is the business control experience. Public Website is the customer experience.**
-
-No new application may create a competing source of truth for products, stock, customers, orders, sales, finance or procurement.
+**Status:** Planning baseline  
+**Purpose:** Define the complete Business Admin and Public Website before implementation  
+**Technical Console:** Existing Phase 4 system on Render  
+**Business Admin:** New business-facing application, planned for Vercel  
+**Public Website:** New customer-facing application, planned for Vercel  
+**Source of truth:** Existing Amaal Telecoms business engine and PostgreSQL database
 
 ---
 
-# 2. Existing Phase 4 Is the Foundation
+# 1. Core Architecture
 
-The current Phase 4 build already contains the core operational capabilities that the new experiences must depend on.
-
-The audited Phase 4 package includes:
-
-- Dashboard
-- Global Search
-- Catalog
-- Inventory
-- Stock Control
-- Suppliers & Procurement
-- Customers & CRM
-- Sales & POS
-- Orders & E-commerce
-- Pricing & Promotions
-- Delivery & Logistics
-- Warranty & Repairs
-- Returns & Refunds
-- Credit & Installments
-- Finance & Accounting
-- Business Intelligence
-- AI Business Intelligence
-- AI Assistant
-- Integration Hub
-- Web & Hosting
-- Media Management
-- Document Management
-- System Operations
-- Monitoring & Observability
-- Backup & Recovery
-- Deployment Readiness
-- Security, Roles, Permissions and Audit
-
-The Phase 4 package is Node.js 20.x, Express 5, PostgreSQL and server-side JavaScript. The existing application remains authoritative.
-
-The new layers must first inspect and reuse the existing routes, APIs, permissions, data models and workflows before adding anything.
-
----
-
-# 3. Final Platform Architecture
+Amaal Telecoms will operate as three connected experiences.
 
 ```text
-                         AMAAL TELECOMS
-                              |
-              +---------------+---------------+
-              |                               |
-              v                               v
-       PUBLIC WEBSITE                    BUSINESS ADMIN
-       Vercel / Next.js                  Vercel / Next.js
-              |                               |
-              |        Controlled API         |
-              +---------------+---------------+
-                              |
-                              v
-                 EXISTING AMAAL ENGINE
-                      Render / Node.js
-                              |
-                 +------------+------------+
-                 |                         |
-                 v                         v
-         TECHNICAL CONSOLE             PostgreSQL
-         Existing Phase 4
+                    AMAAL TELECOMS
+                          |
+             +------------+------------+
+             |                         |
+      PUBLIC WEBSITE              BUSINESS ADMIN
+          Vercel                     Vercel
+             |                         |
+             +------------+------------+
+                          |
+                 Existing Business API
+                          |
+                    Render Engine
+                          |
+              Technical Developer Console
+                          |
+                     PostgreSQL
 ```
 
-The Technical Console remains the deepest authority.
+## 1.1 Technical Console
 
-Business Admin and Public Website do not bypass the engine to write directly to PostgreSQL.
+The existing Phase 4 application remains the technical and operational console.
 
----
+It remains responsible for the existing:
 
-# 4. Hosting Strategy
-
-## 4.1 Render
-
-Render continues to host the existing technical system:
-
-- Node.js application
-- Express API
-- Existing authentication foundation
-- Existing authorization
-- Existing business logic
-- Existing PostgreSQL connection
-- Existing technical console
-- Existing operational modules
-
-The Render application remains available for technical administration and advanced operational control.
-
-## 4.2 Vercel Business Admin
-
-A dedicated Vercel project will host the Business Admin.
-
-Recommended stack:
-
-- TypeScript
-- React
-- Next.js App Router
-- Tailwind CSS
-- Accessible component primitives
-- TanStack Query where client-side server-state caching is useful
-- React Hook Form for complex forms
-- Zod for shared runtime validation
-- Recharts or an equivalent lightweight chart library
-- Playwright for browser acceptance testing
-- Vitest for unit/component-level logic where appropriate
-- ESLint and TypeScript strict checking
-
-### Why Next.js
-
-Next.js is a natural fit for Vercel because Vercel provides first-class Next.js deployment support, and Next.js provides routing, server components, server-side data access, application rendering and production optimizations. Vercel documents zero-configuration deployment for Next.js and support for preview deployments and incremental regeneration. citeturn0search7
-
-### Why TypeScript
-
-Business Admin is a large, permission-sensitive application with many business records and API contracts.
-
-TypeScript provides:
-
-- typed API contracts
-- safer data transformations
-- safer forms
-- fewer accidental field mismatches
-- better refactoring
-- better maintainability
-
-Production builds should fail on TypeScript errors rather than ignoring them. Next.js documents that production builds fail when TypeScript errors are present unless this safety check is deliberately disabled. It will not be disabled for Amaal. citeturn0search14
-
-### Why React
-
-React is the UI foundation of Next.js and is suitable for:
-
-- reusable business components
-- complex forms
-- dashboards
-- tables
-- filters
-- modals
-- responsive navigation
-- interactive operational workflows
-
-### Why Tailwind CSS
-
-The Business Admin needs a consistent design system across many modules.
-
-Tailwind will be used as the styling layer to provide:
-
-- responsive layouts
-- consistent spacing
-- reusable visual patterns
-- fast iteration
-- mobile-first layouts
-
-Amaal should additionally maintain its own design tokens and components so the application does not become an unstructured collection of utility classes.
-
-### Why TanStack Query
-
-Where Business Admin screens need live API data on the client, TanStack Query can provide:
-
-- caching
-- refetching
-- stale-state control
-- mutation states
-- optimistic UI where safe
-
-It must not become a second business data store.
-
-The Render engine remains authoritative.
-
-### Why React Hook Form + Zod
-
-Forms are central to sales, products, procurement, customers, finance and website management.
-
-React Hook Form reduces unnecessary form rendering.
-
-Zod provides runtime validation at the UI boundary.
-
-Server-side validation in the Render engine remains mandatory. Client validation is convenience, not security.
-
-### Why Playwright
-
-Critical workflows must be tested in a real browser:
-
-- Login
-- CEO dashboard
-- POS
-- Product editing
-- Stock receipt
-- Purchase order
-- Customer order
-- Website publishing
-- Public product browsing
-- Customer checkout when introduced
-
-### Why Vitest
-
-Pure business formatting, mapping, validation and UI utility logic can be tested quickly without requiring the full browser.
-
----
-
-# 5. Public Website Technology
-
-The Public Website should use:
-
-- TypeScript
-- React
-- Next.js App Router
-- Tailwind CSS
-- Next.js image optimization
-- Server-side rendering where useful
-- Incremental Static Regeneration where appropriate
-- Zod for API response validation
-- Playwright for end-to-end testing
-- Vitest for unit-level logic
-
-The public website should not connect directly to PostgreSQL.
-
-It should consume approved public data through a controlled public API boundary.
-
-## Why Next.js for the Public Website
-
-The website needs:
-
-- SEO
-- fast product pages
-- clean URLs
-- responsive pages
-- metadata
-- search engine indexing
-- optimized images
-- product/category pages
-- future commerce
-- customer accounts
-- server-side rendering
-
-Next.js supports these application patterns and is directly supported by Vercel. Vercel also supports production, preview and development environments, allowing public-site changes to be reviewed before production. citeturn0search1turn0search7
-
----
-
-# 6. No Direct Database Access From Vercel
-
-This is a critical rule.
-
-Business Admin:
-
-```text
-Next.js
-   ↓
-Controlled server-side API layer
-   ↓
-Render Business API
-   ↓
-PostgreSQL
-```
-
-Public Website:
-
-```text
-Next.js
-   ↓
-Controlled public API
-   ↓
-Render engine
-   ↓
-PostgreSQL
-```
-
-The Vercel applications must not contain:
-
-- DATABASE_URL
-- PostgreSQL credentials
-- unrestricted SQL access
-- administrative database credentials
-
-The existing Render engine owns database access.
-
-This protects the existing system and prevents three applications from independently modifying the same database.
-
----
-
-# 7. API Boundary
-
-The existing Phase 4 API must be audited before the new applications are implemented.
-
-For each existing endpoint we classify it as:
-
-### Internal Technical
-
-Only Technical Console.
-
-Examples:
-
-- system diagnostics
-- deployment/readiness controls
-- backup/recovery controls
+- APIs
+- database access
+- authentication foundation
+- permissions
+- integrations
+- system operations
 - monitoring
-- raw integration configuration
+- backup and recovery
 - technical configuration
+- advanced administration
+- existing business modules and transactions
 
-### Business Private
+It is not redesigned into the CEO interface.
 
-Business Admin only.
+## 1.2 Business Admin
 
-Examples:
+The Business Admin is a new experience built on top of the existing engine.
 
-- sales
-- stock
-- procurement
-- finance
-- customers
-- staff
-- internal reports
+It must:
 
-### Business + Public
+- use existing Phase 4 capabilities as its source of truth
+- expose business concepts rather than technical concepts
+- respect existing authentication and permissions
+- provide role-specific experiences
+- avoid developer terminology
+- avoid exposing database, API, webhook, deployment or infrastructure controls
+- work on phones, tablets and desktops
+- connect to the same business data used by the technical console
+- control approved public website content
+- never create a second product, inventory, customer or finance database
 
-Controlled data shared with the website.
+## 1.3 Public Website
 
-Examples:
+The Public Website is a separate customer-facing experience.
 
-- published products
-- published categories
-- public promotions
-- public business information
-- approved website content
+It must:
 
-### Customer Private
-
-Only the authenticated customer can access their own data.
-
-Examples:
-
-- their orders
-- their addresses
-- their payments
-- their returns
-- their warranty cases
+- use approved business data
+- expose only public information
+- never expose internal administration routes
+- never expose technical APIs or internal IDs
+- support search, browsing and product discovery
+- eventually support enquiries, orders, payments and customer accounts
+- reflect approved product and content changes from Business Admin
+- return customer activity back into the business engine
 
 ---
 
-# 8. API Gateway / BFF Strategy
+# 2. Platform Principles
 
-The preferred Business Admin architecture is:
-
-```text
-Browser
-   ↓
-Next.js Server Layer
-   ↓
-Render API
-```
-
-The browser should not receive unnecessary internal API details.
-
-For public pages:
-
-```text
-Browser/Search Engine
-        ↓
-Next.js
-        ↓
-Public Render API
-```
-
-Next.js Route Handlers or server-side data functions may be used as a Backend-for-Frontend boundary when that improves security and keeps internal API details private.
-
-The BFF is not another source of truth.
-
-It is an adapter.
+1. One business source of truth.
+2. Existing Phase 4 engine remains authoritative.
+3. Business Admin is a presentation and business workflow layer.
+4. Public Website is a customer experience layer.
+5. Technical Console remains a separate technical experience.
+6. No technical modules in Business Admin.
+7. No database reset.
+8. No duplicate business databases.
+9. No unnecessary replacement of existing APIs.
+10. Every new screen must map to an existing engine capability or a clearly planned additive capability.
+11. Public data must be explicitly approved before publication.
+12. Financial, inventory and order information must remain authoritative from the existing engine.
+13. Role permissions must be enforced by the backend, not only hidden in the frontend.
+14. Every business action must remain auditable.
+15. Mobile-first design is mandatory.
 
 ---
 
-# 9. Authentication
+# 3. Business Admin Information Architecture
 
-The existing Phase 4 authentication system must be audited before creating a second authentication system.
+The main Business Admin navigation should be intentionally short and understandable.
 
-Preferred approach:
+## Primary navigation
 
-- preserve the existing identity source
-- establish a secure session bridge for Business Admin
-- use secure HttpOnly cookies where appropriate
-- use HTTPS only in production
-- never place long-lived secrets in localStorage
-- enforce authorization server-side
-- maintain session expiration and revocation
-- preserve auditability
+1. Overview
+2. Sales
+3. Products
+4. Stock
+5. Purchasing
+6. Customers
+7. Orders
+8. Finance
+9. Delivery
+10. Service
+11. Website
+12. Reports
+13. Team
+14. Business Settings
 
-The exact implementation will be selected after the Phase 4 authentication route and token audit.
-
-We do not invent a new identity model until the existing one has been mapped.
-
----
-
-# 10. CEO and Superadmin
-
-There is only one highest business role:
-
-# CEO / Superadmin
-
-They are the same role.
-
-There is no separate Executive role.
-
-The CEO can oversee:
-
-- Sales
-- POS
-- Products
-- Stock
-- Procurement
-- Customers
-- Orders
-- Finance
-- Credit
-- Delivery
-- Service
-- Website
-- Reports
-- Team
-- Business settings
-
-The CEO sees the entire business but still should not need technical controls in the Business Admin.
-
-Technical controls remain in the Technical Console.
+The exact navigation displayed depends on the user's role.
 
 ---
 
-# 11. Business Admin Roles
+# 4. Overview
 
-## CEO / Superadmin
+The Overview is the executive starting point.
 
-Complete business visibility and control.
-
-## Manager
-
-Operational management.
-
-## Sales
-
-Sales, POS, customers and order-related workflows.
-
-## Inventory
-
-Stock, stocktake, transfers, receiving and inventory workflows.
-
-## Procurement
-
-Suppliers, purchase requests, purchase orders and receiving.
-
-## Finance
-
-Finance, expenses, receivables, payables and financial reports.
-
-## Customer Service
-
-Customers, orders, returns, warranty, repairs and cases.
-
-Permissions are inherited from the existing authorization engine wherever possible.
-
----
-
-# 12. Business Admin Design System
-
-The Business Admin should feel like:
-
-> Amaal Telecoms Business
-
-not:
-
-> Amaal Telecoms Developer Console
-
-## Visual principles
-
-- premium
-- clean
-- professional
-- bright
-- readable
-- mobile-first
-- business-oriented
-- minimal technical clutter
-
-## Global shell
-
-- business logo
-- business name
-- workspace/branch indicator
-- global search
-- notifications
-- user menu
-- responsive navigation
-- breadcrumbs
-- page title
-- contextual actions
-
----
-
-# 13. Business Admin Navigation
-
-## CEO / Superadmin
-
-```text
-Overview
-Sales
-Products
-Stock
-Purchasing
-Customers
-Orders
-Finance
-Credit
-Delivery
-Service
-Website
-Reports
-Team
-Business Settings
-```
-
-## Manager
-
-```text
-Overview
-Sales
-Products
-Stock
-Purchasing
-Customers
-Orders
-Delivery
-Service
-Team
-Reports
-```
-
-## Sales
-
-```text
-Sales
-Products
-Customers
-Orders
-```
-
-## Inventory
-
-```text
-Stock
-Products
-Purchasing
-Suppliers
-```
-
-## Procurement
-
-```text
-Purchasing
-Suppliers
-Stock
-```
-
-## Finance
-
-```text
-Finance
-Sales
-Customers
-Purchasing
-Reports
-```
-
-## Customer Service
-
-```text
-Customers
-Orders
-Returns
-Warranty
-Repairs
-```
-
----
-
-# 14. Overview Experience
-
-The CEO should answer four questions immediately:
-
-### What happened?
-
-- sales
-- revenue
-- profit
-- customers
-- orders
-
-### Why?
-
-- product performance
-- branch performance
-- staff performance
-- category performance
-- expense changes
-
-### What needs attention?
-
-- low stock
-- overdue payments
-- pending purchases
-- delayed deliveries
-- returns
-- service cases
-- website enquiries
-
-### What should I do?
-
-- approve
-- review
-- contact
-- purchase
-- publish
-- investigate
-
----
-
-# 15. Business Admin Module Map
-
-## Sales
-
-### POS
-
-- product selection
-- barcode/serial lookup
-- cart
-- customer
-- discount
-- payment
-- receipt
-- sale completion
-
-### Sales History
-
-- filters
-- details
-- receipt
-- returns
-- payment status
-
-### Quotes
-
-- create
-- edit
-- share
-- convert to sale
-
-### Sales Approvals
-
-- discounts
-- exceptional pricing
-- approvals
-
----
-
-# 16. Products
-
-### Catalogue
-
-- products
-- brands
-- categories
-- specifications
-- variants
-- images
-- status
-
-### Pricing
-
-- selling price
-- approved cost visibility
-- price history
-- promotions
-- discounts
-
-### Website Publishing
-
-- public title
-- description
-- images
-- specifications
-- public price
-- availability
-- featured status
-- publish/unpublish
-
----
-
-# 17. Stock
-
-### Overview
-
-- available
-- reserved
-- low stock
-- out of stock
-- damaged
-- stock value
-
-### Movements
-
-- receiving
-- transfers
-- adjustments
-- sales
-- returns
-
-### Stocktake
-
-- create
-- count
-- review
-- approve
-- finalize
-
-### Transfers
-
-- request
-- approve
-- dispatch
-- receive
-
-### Stock Issues
-
-- damaged
-- lost
-- missing
-- discrepancy
-- resolution
-
----
-
-# 18. Purchasing
-
-### Requests
-
-- create
-- approve
-- reject
-
-### Purchase Orders
-
-- create
-- approve
-- send
-- revise
-- close
-
-### Receiving
-
-- expected deliveries
-- receive
-- partial receive
-- serial capture
-- discrepancy
-
-### Supplier Invoices
-
-- record
-- match
-- exception
-- payment status
-
-### Supplier Performance
-
-- pricing
-- delivery
-- quality
-- purchase history
-
----
-
-# 19. Customers
-
-### Directory
-
-- search
-- filters
-- customer groups
-- status
-
-### Profile
-
-- purchases
-- orders
-- payments
-- balance
-- returns
-- warranty
-- service
-- interactions
-
-### Customer Service
-
-- enquiries
-- cases
-- follow-ups
-- notes
-- resolution
-
----
-
-# 20. Orders
-
-Orders are the central bridge between website and operations.
-
-## Order lifecycle
-
-```text
-New
- ↓
-Confirmed
- ↓
-Stock Reserved
- ↓
-Preparing
- ↓
-Ready
- ↓
-Dispatched
- ↓
-Delivered
-```
-
-Alternative outcomes:
-
-```text
-Cancelled
-Returned
-Refunded
-```
-
-Each transition must be permission-controlled and audited.
-
----
-
-# 21. Finance
-
-### Overview
-
-- revenue
-- gross profit
-- expenses
-- cash
-- receivables
-- payables
-
-### Money In
-
-- sales payments
-- customer payments
-- other receipts
-
-### Money Out
-
-- expenses
-- supplier payments
-- refunds
-
-### Receivables
-
-- outstanding
-- ageing
-- due payments
-- collections
-
-### Payables
-
-- supplier balances
-- due invoices
-- payments
-
-### Reconciliation
-
-- unmatched
-- matched
-- history
-
-### Reports
-
-- profit and loss
-- balance sheet
-- cash flow
-- trial balance
-- tax
-- sales
-- expenses
-- receivables
-- payables
-
-The underlying accounting engine remains the Phase 4 source of truth.
-
----
-
-# 22. Credit
-
-If enabled by the business:
-
-- applications
-- approvals
-- active accounts
-- schedules
-- payments
-- overdue accounts
-- collections
-
-Sensitive actions require appropriate permissions.
-
----
-
-# 23. Delivery
-
-- delivery dashboard
-- ready orders
-- assigned deliveries
-- in transit
-- delivered
-- failed
-- delayed
-- delivery zones
-- fees
-- delivery partners
-
----
-
-# 24. Service
-
-### Returns
-
-- request
-- review
-- approval
-- receipt
-- refund
-
-### Warranty
-
-- claim
-- eligibility
-- service history
-- resolution
-
-### Repairs
-
-- case
-- repair status
-- parts
-- cost
-- completion
-
-### Customer Cases
-
-- enquiry
-- follow-up
-- resolution
-- history
-
----
-
-# 25. Website Management
-
-The Website module is the business bridge to the Public Website.
-
-## Website dashboard
+## 4.1 Executive Summary
 
 Show:
 
-- website status
-- published products
-- published categories
-- promotions
-- enquiries
-- orders
-- content awaiting publication
+- Today's sales
+- Today's revenue
+- Gross profit
+- Sales count
+- Average sale value
+- Outstanding customer payments
+- Amount owed to suppliers
+- Current stock value
+- Low-stock products
+- Pending orders
+- Pending deliveries
+- Returns requiring attention
+- Warranty cases requiring attention
+- Website enquiries
+- Website orders
 
-## Homepage
+## 4.2 Performance
 
-- hero
-- banners
-- featured products
-- featured categories
-- promotions
-- content sections
+- Sales trend
+- Revenue trend
+- Profit trend
+- Product performance
+- Category performance
+- Branch performance
+- Staff performance
+- Payment method performance
+- Customer growth
 
-## Products
+## 4.3 Attention Center
 
-- public visibility
-- public price
-- public description
-- images
-- specifications
-- availability
-- featured status
+Business language only:
+
+- Low stock
+- Payment overdue
+- Purchase awaiting approval
+- Order awaiting fulfilment
+- Delivery delayed
+- Return awaiting review
+- Warranty case awaiting action
+- Website content awaiting publication
+- Supplier issue
+- Till difference
+
+## 4.4 Quick Actions
+
+- New Sale
+- Add Product
+- Receive Stock
+- Create Purchase Request
+- View Orders
+- Add Customer
+- Record Expense
+- Manage Website
+- View Reports
+
+---
+
+# 5. Sales
+
+Sales is the main revenue workspace.
+
+## 5.1 Sales Dashboard
+
+- Today's sales
+- Revenue
+- Profit
+- Number of transactions
+- Average transaction
+- Cash sales
+- Credit sales
+- Sales by branch
+- Sales by staff
+- Sales by product
+- Sales trend
+
+## 5.2 Point of Sale
+
+- Product search
+- Barcode/serial search
+- Cart
+- Customer selection
+- Discounts
+- Promotions
+- Taxes
+- Payment
+- Split payment
+- Credit/installment option
+- Receipt
+- Sale completion
+- Suspended sale
+- Sale history
+
+## 5.3 Sales History
+
+- Search
+- Filter
+- Date
+- Branch
+- Staff
+- Customer
+- Payment method
+- Status
+- Sale details
+- Receipt
+- Reprint
+- Return/refund actions according to permission
+
+## 5.4 Quotes
+
+- Create quote
+- Edit quote
+- Send/share quote
+- Convert quote to sale
+- Quote history
+- Quote status
+
+## 5.5 Sales Approvals
+
+- Discount approvals
+- Price approvals
+- Exceptional sales approvals
+- Pending approvals
+- Approval history
+
+---
+
+# 6. Products
+
+Products becomes the business-friendly version of the Phase 4 Catalog.
+
+## 6.1 Product Catalogue
+
+- Product list
+- Product details
+- Product images
+- Product description
+- Brand
+- Category
+- Specifications
+- Variants
+- Serialisation
+- Tags
+- Status
+
+## 6.2 Product Pricing
+
+- Selling price
+- Cost price where authorized
+- Branch pricing
+- Customer pricing
+- Price lists
+- Price history
+- Promotions
+- Discount rules
+- Approval workflow
+
+## 6.3 Product Publishing
+
+- Publish to website
+- Hide from website
+- Featured product
+- Website description
+- Website images
+- Website specifications
+- Public availability
+- Public price
+- Publication status
+
+## 6.4 Categories and Brands
+
+- Categories
+- Subcategories
+- Brands
+- Category ordering
+- Website visibility
+- Featured categories
+
+## 6.5 Product Import and Export
+
+Business-facing bulk tools:
+
+- Import products
+- Export catalogue
+- Bulk status update
+- Bulk pricing update
+- Bulk website visibility
+
+---
+
+# 7. Stock
+
+Stock is the business version of Phase 4 Inventory and Stock Control.
+
+## 7.1 Stock Overview
+
+- Total stock units
+- Stock value
+- Available stock
+- Reserved stock
+- Low stock
+- Out-of-stock
+- Damaged stock
+- Stock by branch
+- Stock by category
+
+## 7.2 Stock Movements
+
+- Receipts
+- Transfers
+- Adjustments
+- Reservations
+- Releases
+- Sales movements
+- Return movements
+
+## 7.3 Stocktake
+
+- Create stocktake
+- Assign counters
+- Count stock
+- Scan serialized items
+- Review differences
+- Approve adjustments
+- Finalize stocktake
+
+## 7.4 Transfers
+
+- Request transfer
+- Approve transfer
+- Ship transfer
+- Receive transfer
+- Transfer history
+
+## 7.5 Stock Issues
+
+- Damaged stock
+- Lost stock
+- Missing stock
+- Stock discrepancy
+- Investigation
+- Resolution
+
+## 7.6 Reordering
+
+- Reorder suggestions
+- Minimum stock levels
+- Reorder rules
+- Products needing purchase
+- Supplier recommendations
+
+---
+
+# 8. Purchasing
+
+Business-facing version of Procurement.
+
+## 8.1 Purchasing Dashboard
+
+- Open purchase requests
+- Pending approvals
+- Open purchase orders
+- Goods awaiting receipt
+- Supplier invoices
+- Supplier payments
+- Outstanding supplier balances
+
+## 8.2 Purchase Requests
+
+- New request
+- Request details
+- Approval
+- Rejection
+- Request history
+
+## 8.3 Purchase Orders
+
+- Create order
+- Submit order
+- Approve order
+- Revise order
+- Cancel order
+- Close order
+- Attach documents
+- Track outstanding items
+
+## 8.4 Receiving
+
+- Expected deliveries
+- Receive goods
+- Partial receiving
+- Serial capture
+- Quantity verification
+- Damaged goods
+- Receipt history
+
+## 8.5 Supplier Invoices
+
+- Invoice list
+- Invoice details
+- Match invoice to purchase
+- Exceptions
+- Disputes
+- Payment status
+
+## 8.6 Supplier Payments
+
+- Payment records
+- Allocation
+- Outstanding balances
+- Payment history
+
+## 8.7 Supplier Performance
+
+- Purchase history
+- Delivery performance
+- Pricing history
+- Quality issues
+- Supplier rating
+- Supplier documents
+
+---
+
+# 9. Customers
+
+Business version of CRM.
+
+## 9.1 Customer Directory
+
+- Search
+- Customer profile
+- Contact information
+- Addresses
+- Customer status
+- Customer group
+- Tags
+
+## 9.2 Customer Profile
+
+- Customer overview
+- Purchase history
+- Orders
+- Payments
+- Outstanding balance
+- Credit information
+- Returns
+- Warranty cases
+- Service cases
+- Interactions
+- Notes
+
+## 9.3 Customer Groups
+
+- Create groups
+- Assign customers
+- Group pricing
+- Promotions
+- Customer segmentation
+
+## 9.4 Customer Service
+
+- Customer enquiries
+- Follow-up tasks
+- Cases
+- Interactions
+- Notes
+- Resolution history
+
+## 9.5 Customer Privacy
+
+Business-friendly controls:
+
+- Consent
+- Contact preferences
+- Privacy requests
+- Data correction
+- Authorized data actions
+
+---
+
+# 10. Orders
+
+Orders connect the Public Website to the Business Admin.
+
+## 10.1 Order Dashboard
+
+- New orders
+- Pending orders
+- Confirmed orders
+- Preparing
+- Ready for delivery
+- Delivered
+- Cancelled
+- Returned
+
+## 10.2 Order Management
+
+- Order details
+- Customer
+- Products
+- Pricing
+- Discounts
+- Payment
+- Fulfilment
+- Delivery
+- Status history
+
+## 10.3 Fulfilment
+
+- Confirm stock
+- Reserve stock
+- Prepare order
+- Assign branch
+- Pack order
+- Mark ready
+- Hand over to delivery
+
+## 10.4 Payments
+
+- Payment status
+- Payment history
+- Outstanding balance
+- Refund status
+
+## 10.5 Customer Communication
+
+Business-facing actions:
+
+- Order confirmation
+- Payment confirmation
+- Ready notification
+- Delivery update
+- Cancellation message
+
+---
+
+# 11. Finance
+
+Finance remains powered by the existing Phase 4 Finance engine.
+
+## 11.1 Finance Overview
+
+- Revenue
+- Gross profit
+- Expenses
+- Net result
+- Cash position
+- Receivables
+- Payables
+- Bank balances
+- Tax position
+
+## 11.2 Money In
+
+- Sales payments
+- Customer payments
+- Other receipts
+- Payment methods
+- Cash collections
+
+## 11.3 Money Out
+
+- Expenses
+- Supplier payments
+- Refunds
+- Other business payments
+
+## 11.4 Expenses
+
+- Record expense
+- Expense categories
+- Attach receipt
+- Approval
+- Expense history
+
+## 11.5 Receivables
+
+- Outstanding customers
+- Ageing
+- Due payments
+- Collection actions
+- Payment history
+
+## 11.6 Payables
+
+- Supplier balances
+- Due invoices
+- Payment schedule
+- Payment history
+
+## 11.7 Accounts
+
+- Business accounts
+- Cash accounts
+- Bank transactions
+- Balances
+
+## 11.8 Reconciliation
+
+- Reconciliation workspace
+- Unmatched transactions
+- Matched transactions
+- Reconciliation history
+
+## 11.9 Financial Reports
+
+- Profit and loss
+- Balance sheet
+- Trial balance
+- Cash flow
+- Tax reports
+- Sales reports
+- Expense reports
+- Receivables
+- Payables
+
+Technical journal controls remain in the Technical Console where appropriate.
+
+---
+
+# 12. Credit and Installments
+
+Where the business model uses customer credit.
+
+## 12.1 Credit Overview
+
+- Active credit accounts
+- Outstanding credit
+- Overdue credit
+- Collection workload
+
+## 12.2 Applications
+
+- Applications
+- Customer eligibility
+- Review
+- Decision
+- Approval history
+
+## 12.3 Accounts
+
+- Credit balance
+- Installments
+- Payment schedule
+- Payment history
+- Restructuring where authorized
+
+## 12.4 Collections
+
+- Collection tasks
+- Overdue accounts
+- Follow-ups
+- Collection history
+
+Sensitive financial controls remain permission-protected.
+
+---
+
+# 13. Delivery
+
+Business-facing version of Delivery & Logistics.
+
+## 13.1 Delivery Dashboard
+
+- Orders ready
+- In transit
+- Delivered
+- Failed deliveries
+- Delayed deliveries
+
+## 13.2 Deliveries
+
+- Delivery list
+- Delivery details
+- Customer
+- Address
+- Driver/partner
+- Status
+- Attempts
+- Proof/status information
+
+## 13.3 Delivery Areas
+
+- Zones
+- Delivery fees
+- Coverage
+- Availability
+
+## 13.4 Delivery Partners
+
+- Partner list
+- Performance
+- Activity
+- Assigned deliveries
+
+---
+
+# 14. Service
+
+A unified customer after-sales workspace.
+
+## 14.1 Returns
+
+- Return requests
+- Review
+- Approval
+- Received returns
+- Refunds
+- Return history
+
+## 14.2 Warranty
+
+- Warranty claims
+- Product
+- Customer
+- Warranty status
+- Service history
+- Parts used
+- Resolution
+
+## 14.3 Repairs
+
+- Repair cases
+- Repair partners
+- Status
+- Parts
+- Cost
+- Customer communication
+- Completion
+
+## 14.4 Customer Cases
+
+- Service cases
+- Enquiries
+- Follow-ups
+- Resolution
+- History
+
+---
+
+# 15. Website
+
+This is the bridge between Business Admin and the Public Website.
+
+## 15.1 Website Overview
+
+Show:
+
+- Website status
+- Products published
+- Categories published
+- Featured products
+- Active promotions
+- Pending content
+- Website enquiries
+- Website orders
+- Recent activity
+
+## 15.2 Homepage
+
+- Hero section
+- Featured products
+- Featured categories
+- Promotions
+- Promotional banners
+- Content blocks
+- Calls to action
+
+## 15.3 Products
+
+- Website visibility
+- Product information
+- Images
+- Public price
+- Availability
+- Featured status
+- Ordering availability
+
+## 15.4 Categories
+
+- Category visibility
+- Ordering
+- Category images
+- Category descriptions
+
+## 15.5 Promotions
+
+- Campaigns
+- Promotional banners
+- Discount campaigns
+- Featured products
+- Start/end dates
+- Publishing status
+
+## 15.6 Pages
+
+- About
+- Contact
+- FAQs
+- Delivery information
+- Returns
+- Warranty
+- Terms
+- Privacy
+
+## 15.7 Navigation
+
+- Main navigation
+- Footer navigation
+- Links
+- Menu ordering
+
+## 15.8 Media
+
+Business-facing media management:
+
+- Product images
+- Website banners
+- Page images
+- Logo
+- Documents
+- Search
+- Organize
+- Select media for content
+
+Technical storage controls remain in the Technical Console.
+
+## 15.9 Publishing
+
+- Draft
+- Review
+- Approve
+- Publish
+- Unpublish
+- Publication history
+
+The public website must never expose unpublished content.
+
+---
+
+# 16. Reports
+
+Reports should answer business questions.
+
+## 16.1 Sales Reports
+
+- Sales by day
+- Sales by branch
+- Sales by staff
+- Sales by product
+- Sales by category
+- Sales by customer
+- Payment method
+
+## 16.2 Inventory Reports
+
+- Stock valuation
+- Stock movement
+- Stock ageing
+- Stock turnover
+- Low stock
+- Dead stock
+- Stock discrepancies
+
+## 16.3 Procurement Reports
+
+- Purchase spend
+- Supplier performance
+- Purchase trends
+- Open purchase orders
+
+## 16.4 Finance Reports
+
+- Profit and loss
+- Cash position
+- Expenses
+- Receivables
+- Payables
+- Tax
+
+## 16.5 Customer Reports
+
+- Customer growth
+- Customer value
+- Repeat purchases
+- Customer groups
+
+## 16.6 Delivery Reports
+
+- Delivery performance
+- Failed deliveries
+- Partner performance
+
+## 16.7 Website Reports
+
+- Product views
+- Enquiries
+- Orders
+- Popular categories
+- Featured product performance
+
+## 16.8 Business Intelligence
+
+Existing BI capabilities should be translated into:
+
+- What happened?
+- Why did it happen?
+- What needs attention?
+- Where is the opportunity?
+- What should management review?
+
+---
+
+# 17. Team
+
+Business-facing staff management.
+
+## 17.1 Team Directory
+
+- Staff list
+- Branch
+- Department
+- Role
+- Status
+
+## 17.2 Staff Performance
+
+- Sales
+- Revenue
+- Transactions
+- Targets
+- Attendance data where supported
+- Performance trends
+
+## 17.3 Branches
+
+- Branch list
+- Branch performance
+- Stock
+- Sales
+- Staff
+- Expenses
+
+## 17.4 Departments
+
+- Departments
+- Managers
+- Staff
+- Department performance
+
+## 17.5 Roles
+
+Business role assignment only.
+
+Examples:
+
+- CEO
+- Superadmin
+- Manager
+- Sales
+- Inventory
+- Finance
+- Procurement
+- Customer Service
+
+The underlying permission engine remains in the technical layer.
+
+---
+
+# 18. Business Settings
+
+This must remain business-focused.
+
+## 18.1 Business Profile
+
+- Business name
+- Trading name
+- Contact information
+- Address
+- Currency
+- Business information
+
+## 18.2 Branches
+
+- Branch details
+- Contact details
+- Status
+
+## 18.3 Sales Settings
+
+- Receipt preferences
+- Tax presentation
+- Discount rules
+- Payment methods
+
+## 18.4 Customer Settings
+
+- Customer groups
+- Customer communication preferences
+- Service policies
+
+## 18.5 Stock Settings
+
+- Stock thresholds
+- Reorder preferences
+- Transfer rules
+
+## 18.6 Website Settings
+
+- Website identity
+- Contact details
+- Social links
+- Public business information
+
+## 18.7 Connected Business Services
+
+Only business-facing status and controls.
+
+Examples:
+
+- Payment service status
+- Email service status
+- Communication service status
+
+Technical credentials, webhooks and infrastructure configuration remain in the Technical Console.
+
+---
+
+# 19. Notifications
+
+Business notifications only.
+
+Examples:
+
+- New order
+- Low stock
+- Payment received
+- Payment overdue
+- Purchase approval
+- Delivery delayed
+- Return received
+- Warranty claim
+- Website enquiry
+- Website content awaiting approval
+
+Users can:
+
+- View
+- Mark read
+- Filter
+- Open related business record
+
+---
+
+# 20. Global Search
+
+Search should feel like a business assistant.
+
+Search:
+
+- Products
+- Customers
+- Orders
+- Sales
+- Suppliers
+- Purchase orders
+- Stock
+- Staff
+- Reports
+- Website content
+
+Results should be grouped by business category.
+
+Never expose raw database identifiers or technical records.
+
+---
+
+# 21. Role Experiences
+
+## CEO
+
+Primary experience:
+
+- Overview
+- Sales
+- Finance
+- Stock
+- Customers
+- Orders
+- Reports
+- Website
+
+Focus:
+
+- Business health
+- Revenue
+- Profit
+- Cash
+- Growth
+- Risks
+- Opportunities
+
+## Superadmin
+
+Primary experience:
+
+- Overview
+- All business modules
+- Team
+- Branches
+- Business Settings
+- Website
+- Reports
+
+Can manage the complete business experience while technical administration remains separate.
+
+## Manager
+
+Primary experience:
+
+- Overview
+- Sales
+- Stock
+- Purchasing
+- Customers
+- Orders
+- Delivery
+- Service
+- Team
+- Reports
+
+## Sales Staff
+
+Primary experience:
+
+- Sales
+- POS
+- Customers
+- Orders
+- Products
+- Sales history
+
+## Inventory Staff
+
+Primary experience:
+
+- Stock
+- Stocktake
+- Transfers
+- Receiving
+- Purchasing
+- Suppliers
+
+## Finance Staff
+
+Primary experience:
+
+- Finance
+- Sales
+- Receivables
+- Payables
+- Expenses
+- Reports
+
+## Procurement Staff
+
+Primary experience:
+
+- Purchasing
+- Suppliers
+- Receiving
+- Purchase orders
+- Procurement reports
+
+## Customer Service Staff
+
+Primary experience:
+
+- Customers
+- Orders
+- Returns
+- Warranty
+- Repairs
+- Customer cases
+
+---
+
+# 22. Public Website Information Architecture
+
+## Public navigation
+
+1. Home
+2. Shop
+3. Phones
+4. Accessories
+5. Electronics
+6. Deals
+7. About
+8. Contact
+
+Customer account features appear after sign-in.
+
+---
+
+# 23. Public Homepage
+
+## Hero
+
+- Main business message
+- Shop action
+- Contact action
+- Promotional campaign
+
+## Featured Products
+
+- Selected products
+- Price
+- Availability
+- Product details
 
 ## Categories
 
-- visibility
-- ordering
-- description
-- image
+- Phones
+- Accessories
+- Electronics
+- Other approved categories
 
 ## Promotions
 
-- campaigns
-- offers
-- featured products
-- validity
-- publishing
+- Current offers
+- Featured campaigns
 
-## Pages
+## Trust Section
 
+- Business information
+- Customer service
+- Warranty information
+- Delivery information
+
+## Latest Products
+
+- New products
+- Recently published products
+
+## Contact
+
+- Phone
+- WhatsApp
+- Email
+- Location
+- Social channels
+
+---
+
+# 24. Public Shop
+
+## Product discovery
+
+- Search
+- Categories
+- Brands
+- Price range
+- Availability
+- Featured
+- New arrivals
+
+## Product cards
+
+- Image
+- Name
+- Price
+- Availability
+- Short description
+- Action
+
+---
+
+# 25. Public Product Page
+
+- Product name
+- Images
+- Price
+- Availability
+- Description
+- Specifications
+- Variants
+- Warranty information
+- Delivery information
+- Related products
+- Enquiry
+- Add to order/cart when commerce is enabled
+
+Internal stock quantities must never be exposed unless intentionally configured as public availability.
+
+---
+
+# 26. Public Categories
+
+Each category receives:
+
+- Name
+- Description
+- Image
+- Products
+- Filters
+- Sorting
+
+---
+
+# 27. Public Deals
+
+- Promotions
+- Discounts
+- Featured products
+- Campaigns
+- Validity
+- Terms where applicable
+
+Only active approved promotions appear publicly.
+
+---
+
+# 28. Public Customer Account
+
+Eventually:
+
+- Register
+- Sign in
+- Profile
+- Addresses
+- Orders
+- Payments
+- Delivery status
+- Returns
+- Warranty
+- Enquiries
+- Saved products
+
+Authentication must remain separate from staff administration.
+
+---
+
+# 29. Public Order Journey
+
+The long-term customer journey is:
+
+```text
+Discover
+   ↓
+Browse
+   ↓
+Product
+   ↓
+Enquire / Add to Order
+   ↓
+Customer Details
+   ↓
+Delivery
+   ↓
+Payment
+   ↓
+Order Confirmation
+   ↓
+Fulfilment
+   ↓
+Delivery
+   ↓
+Tracking
+   ↓
+After-Sales Service
+```
+
+---
+
+# 30. Public Website Content
+
+Business Admin controls:
+
+- Homepage
 - About
 - Contact
 - FAQs
 - Delivery
 - Returns
 - Warranty
-- Terms
-- Privacy
+- Policies
+- Promotions
+- Banners
+- Product content
+- Category content
+- Navigation
 
-## Media
+The public website never directly becomes the source of truth for internal business data.
 
-- product images
-- banners
-- page media
-- documents
+---
 
-## Publishing
+# 31. Website to Business Flow
+
+## Product
 
 ```text
-Draft
- ↓
-Review
- ↓
-Approve
- ↓
-Publish
-```
-
-Only published content reaches the public site.
-
----
-
-# 26. Public Website Information Architecture
-
-Recommended public structure:
-
-```text
-/
- /shop
- /shop/phones
- /shop/accessories
- /shop/electronics
- /categories/[slug]
- /products/[slug]
- /deals
- /about
- /contact
- /faq
- /delivery
- /returns
- /warranty
- /account
- /account/orders
- /account/orders/[id]
- /account/profile
-```
-
-The exact URL structure must be finalized during implementation after the public API and SEO audit.
-
----
-
-# 27. Public Homepage Behaviour
-
-The homepage should be dynamic from approved business content.
-
-Sections:
-
-1. Hero
-2. Featured categories
-3. Featured products
-4. Deals
-5. New arrivals
-6. Trust/service information
-7. About
-8. Contact
-
-Business Admin controls what is published.
-
----
-
-# 28. Public Product Behaviour
-
-Each product page should contain:
-
-- image gallery
-- name
-- price
-- availability
-- description
-- specifications
-- variants
-- warranty information
-- delivery information
-- related products
-- enquiry action
-- order/cart action when commerce is enabled
-
-Never expose:
-
-- supplier cost
-- internal margin
-- exact internal stock counts
-- staff information
-- internal IDs
-- internal audit information
-
----
-
-# 29. Public Search
-
-Search should support:
-
-- product name
-- brand
-- category
-- specifications
-- public tags
-
-Results:
-
-- product image
-- product name
-- price
-- availability
-- quick view
-- product page
-
-Search should never query internal unrestricted data.
-
----
-
-# 30. Public Customer Account
-
-Eventually:
-
-- register
-- login
-- profile
-- addresses
-- orders
-- payments
-- tracking
-- returns
-- warranty
-- enquiries
-
-Customers can only access their own records.
-
----
-
-# 31. Public Commerce Journey
-
-The future commerce flow:
-
-```text
-Discover
- ↓
-Browse
- ↓
-Product
- ↓
-Add to Cart / Enquire
- ↓
-Customer Details
- ↓
-Delivery
- ↓
-Payment
- ↓
-Order Confirmation
- ↓
-Stock Reservation
- ↓
-Fulfilment
- ↓
-Delivery
- ↓
-Tracking
- ↓
-After-Sales
-```
-
-The exact payment provider and payment flow will be selected later.
-
----
-
-# 32. Public Website Behaviour During Phase 1
-
-Before online checkout is activated, the site can support:
-
-- product discovery
-- enquiries
-- contact
-- product requests
-- availability requests
-
-The website must be designed so commerce can be activated later without rebuilding the catalogue.
-
----
-
-# 33. Public Website SEO
-
-Every public product/category/page must support:
-
-- title
-- description
-- canonical URL
-- Open Graph metadata
-- structured data where appropriate
-- sitemap
-- robots controls
-- clean URLs
-- indexability control
-- image metadata
-
-Products that are unpublished must not be indexed.
-
----
-
-# 34. Website Performance
-
-Use Next.js rendering strategically.
-
-## Static/ISR suitable content
-
-- About
-- FAQ
-- policies
-- category landing pages
-- product pages where appropriate
-
-## Dynamic data
-
-- availability
-- customer account
-- orders
-- payment status
-- personalized information
-
-Do not cache private customer information publicly.
-
-Vercel documents ISR as a way to update content without rebuilding the entire site, which is useful for product/category content that changes through Business Admin. citeturn0search7
-
----
-
-# 35. Website Image Strategy
-
-Product and marketing images should:
-
-- use optimized formats
-- use responsive sizes
-- include alt text
-- avoid unnecessarily huge downloads
-- use the Next.js image system where appropriate
-
-The source of approved media remains the Amaal business/media system.
-
----
-
-# 36. Notifications
-
-Business notifications:
-
-- new sale
-- new order
-- low stock
-- overdue payment
-- purchase approval
-- delayed delivery
-- return
-- warranty
-- website enquiry
-- content awaiting publication
-
-Customer notifications:
-
-- order confirmation
-- payment confirmation
-- order ready
-- dispatch
-- delivery
-- return update
-- warranty update
-
-The notification system should eventually be driven by business events from the engine rather than separate duplicate business logic.
-
----
-
-# 37. Global Search
-
-Business Admin search:
-
-- products
-- customers
-- orders
-- sales
-- suppliers
-- purchase orders
-- stock
-- staff
-- reports
-- website content
-
-Public search:
-
-- products
-- brands
-- categories
-
-Never expose technical records through either search.
-
----
-
-# 38. Business Event Model
-
-The engine should remain the event authority.
-
-Examples:
-
-```text
-SALE_COMPLETED
-STOCK_RECEIVED
-STOCK_ADJUSTED
-PURCHASE_APPROVED
-ORDER_CREATED
-ORDER_CONFIRMED
-ORDER_DISPATCHED
-ORDER_DELIVERED
-PAYMENT_RECEIVED
-RETURN_CREATED
-WARRANTY_CREATED
-PRODUCT_PUBLISHED
-PRODUCT_UNPUBLISHED
-WEBSITE_CONTENT_PUBLISHED
-```
-
-Business Admin consumes these events as appropriate.
-
-Public Website consumes only public-safe effects.
-
-Technical Console retains full technical visibility.
-
----
-
-# 39. Website Publishing Model
-
-A product should not automatically become public simply because it exists internally.
-
-Recommended lifecycle:
-
-```text
-Internal Product
+Technical Engine
       ↓
-Business Content Prepared
+Business Admin
       ↓
-Review
-      ↓
-Approve
-      ↓
-Publish
+Approve / Publish
       ↓
 Public Website
 ```
 
-Unpublish:
+## Customer enquiry
 
 ```text
-Public
- ↓
-Unpublish
- ↓
-No longer publicly discoverable
+Public Website
+      ↓
+Business Platform
+      ↓
+Customer
+      ↓
+Sales / Customer Service
 ```
 
-The underlying product record remains intact.
+## Order
+
+```text
+Public Website
+      ↓
+Order
+      ↓
+Business Admin
+      ↓
+Stock Reservation
+      ↓
+Payment
+      ↓
+Fulfilment
+      ↓
+Delivery
+      ↓
+Finance
+```
+
+## Return
+
+```text
+Customer
+      ↓
+Public Website
+      ↓
+Return Request
+      ↓
+Business Admin
+      ↓
+Service / Inventory / Finance
+```
 
 ---
 
-# 40. Data Ownership
+# 32. Security Architecture
 
-## Product
+## Public
+
+May access:
+
+- Published products
+- Published categories
+- Published pages
+- Public promotions
+- Public business information
+
+May not access:
+
+- Internal stock quantities
+- Internal costs
+- Employee data
+- Finance
+- Supplier information
+- Internal customer data
+- Technical APIs
+- Technical Console
+
+## Business Admin
+
+Access controlled by role and backend permissions.
+
+## Technical Console
+
+Maintains advanced technical controls.
+
+---
+
+# 33. Domain Architecture
+
+Recommended final structure:
+
+```text
+amaaltelecoms.com
+        Public Website
+
+business.amaaltelecoms.com
+        Business Admin
+
+console.amaaltelecoms.com
+        Technical Console
+        Render
+```
+
+The exact domain naming can be changed later without changing the architecture.
+
+---
+
+# 34. Deployment Architecture
+
+## Render
+
+Keep:
+
+- Existing Phase 4 Node.js application
+- Existing API
+- Existing authentication foundation
+- Existing PostgreSQL connection
+- Existing technical console
+
+## Vercel Business Admin
+
+Recommended technology:
+
+- Next.js
+- React
+- TypeScript
+- CSS/Tailwind or an equivalent controlled styling system
+- Secure server-side API communication with the Render engine
+
+Next.js is a strong fit for this because it supports application routing, protected dashboard experiences, server-side data access, forms, authentication patterns and deployment on Vercel. Official Next.js documentation also demonstrates dashboard applications with authentication, PostgreSQL data access, search, mutations and protected routes. citeturn0search0turn0search2turn0search3
+
+## Vercel Public Website
+
+Recommended technology:
+
+- Next.js
+- React
+- TypeScript
+- Responsive design
+- SEO-ready page architecture
+- Image optimization
+- Public data fetching from the existing business engine
+
+Next.js has first-class Vercel deployment support, including custom domains, environment variables, CDN delivery and server-side functions. citeturn0search4turn0search6
+
+---
+
+# 35. API Strategy
+
+The Business Admin and Public Website should consume the existing Render engine through controlled business APIs.
+
+Do not expose the entire technical API surface to the public website.
+
+Create an explicit public/business data boundary.
+
+## Business API areas
+
+- Dashboard
+- Sales
+- Products
+- Stock
+- Customers
+- Orders
+- Purchasing
+- Finance
+- Delivery
+- Service
+- Website
+- Reports
+- Team
+
+## Public API areas
+
+- Public business profile
+- Published products
+- Published categories
+- Published promotions
+- Published pages
+- Public enquiries
+- Customer authentication
+- Customer orders
+- Customer tracking
+
+Technical endpoints remain private.
+
+---
+
+# 36. Data Ownership
+
+## Products
 
 Technical engine owns the master record.
 
-Business Admin controls approved business/public presentation.
+Business Admin manages business presentation and approved publishing.
 
 Public Website reads approved public fields.
 
-## Stock
+## Inventory
 
 Technical engine owns stock truth.
 
-Business Admin reads operational stock.
+Business Admin displays operational stock.
 
-Public Website receives only public availability.
+Public Website receives only approved availability.
 
 ## Finance
 
-Technical engine owns financial truth.
+Technical engine remains authoritative.
 
-Business Admin provides authorized business workflows and reporting.
+Business Admin displays and manages permitted business workflows.
 
-Public Website only receives customer-relevant payment/order information.
+Public Website receives only payment/order information relevant to customers.
 
-## Customer
+## Customers
 
-Technical engine owns customer records.
+Business platform uses the existing CRM/customer data.
 
-Customer Website account exposes only the authenticated customer's own data.
+Public customers only see their own account information.
 
-## Website Content
+## Website
 
 Business Admin controls publication.
 
@@ -1466,1127 +1671,293 @@ Public Website consumes published content.
 
 ---
 
-# 41. Caching and Freshness
+# 37. Audit and Traceability
 
-Caching must be deliberate.
-
-## Public cacheable
-
-- published products
-- categories
-- public pages
-- promotions
-
-## Short freshness
-
-- product availability
-- pricing where frequently changed
-
-## Never public-cache
-
-- customer account
-- orders
-- payment details
-- private enquiries
-- staff data
-- finance
-
-A product price change must have a defined propagation policy so customers do not see stale pricing beyond an acceptable business threshold.
-
----
-
-# 42. Error Behaviour
-
-Business Admin errors must use business language.
-
-Bad:
-
-> API 500: database query failed.
-
-Better:
-
-> We couldn't load today's sales. Please try again.
-
-Technical details remain available in the Technical Console/logs.
-
-Public Website errors should be even simpler:
-
-> We couldn't load these products right now. Please try again.
-
-No stack traces.
-
-No SQL errors.
-
-No internal IDs.
-
----
-
-# 43. Loading Behaviour
-
-Every important screen needs:
-
-- skeleton/loading state
-- empty state
-- error state
-- retry
-- success confirmation
-
-Example:
-
-No products:
-
-> No products have been added yet.
-
-Not:
-
-> SELECT returned 0 rows.
-
----
-
-# 44. Security Model
-
-## Technical Console
-
-Full technical authority according to existing permissions.
-
-## Business Admin
-
-Business permissions.
-
-## Public Website
-
-Public data only.
-
-## Customer Account
-
-Own customer data only.
-
-Server-side authorization is mandatory.
-
-Frontend route hiding is not security.
-
----
-
-# 45. CORS and Origin Policy
-
-The Render engine must explicitly allow the production Business Admin and Public Website origins.
-
-Example conceptual origins:
-
-```text
-https://business.amaaltelecoms.com
-https://amaaltelecoms.com
-```
-
-Preview environments must be handled intentionally and must not accidentally gain production-level access.
-
-CORS must never be changed to unrestricted `*` for authenticated business APIs.
-
----
-
-# 46. Environment Management
-
-Vercel provides separate Development, Preview and Production environments, with environment-specific variables. This should be used for Amaal's development lifecycle. citeturn0search1turn0search2
-
-## Business Admin
-
-Development:
-- local Render development API
-
-Preview:
-- controlled staging/preview API
-
-Production:
-- production Render API
-
-## Public Website
-
-Development:
-- development API/data
-
-Preview:
-- safe preview data or controlled staging API
-
-Production:
-- production public API
-
-Sensitive environment variables must remain server-side and should be stored in Vercel's environment-variable system rather than source control. Vercel supports separate environment scopes and sensitive values. citeturn0search2turn0search5
-
----
-
-# 47. Domains
-
-Recommended final architecture:
-
-```text
-amaaltelecoms.com
-Public Website
-
-business.amaaltelecoms.com
-Business Admin
-
-console.amaaltelecoms.com
-Technical Console
-Render
-```
-
-The exact domain names can be changed later.
-
-Vercel supports custom domains and DNS configuration for projects. citeturn0search0
-
----
-
-# 48. Repository Structure
-
-Recommended separation:
-
-```text
-amaal-platform/
-  business-admin/
-  public-website/
-  technical-console/
-  docs/
-```
-
-The Technical Console remains the existing Phase 4 codebase.
-
-Business Admin and Public Website should be independently deployable Vercel applications.
-
-A future monorepo may share safe packages:
-
-```text
-packages/
-  ui/
-  types/
-  validation/
-  config/
-```
-
-But shared packages must never contain secrets or direct database access.
-
----
-
-# 49. Shared Types
-
-Where useful, TypeScript types may be generated or manually maintained from the API contract.
+Important business actions must remain auditable.
 
 Examples:
 
-- Product
-- Category
-- Customer
-- Order
-- Sale
-- StockItem
-- Supplier
-- PurchaseOrder
-- Payment
-- WebsiteContent
+- Product created
+- Product price changed
+- Product published
+- Product unpublished
+- Stock adjusted
+- Purchase approved
+- Sale completed
+- Refund approved
+- Expense recorded
+- Customer information changed
+- Order status changed
+- Website content published
 
-The type layer must reflect the API contract.
-
-It does not replace server validation.
-
----
-
-# 50. API Contract Governance
-
-Before implementing each Business Admin module:
-
-1. Find the Phase 4 capability.
-2. Find its current API route.
-3. Identify request shape.
-4. Identify response shape.
-5. Identify permission.
-6. Identify database source.
-7. Identify audit behaviour.
-8. Identify whether the endpoint is safe for Business Admin.
-9. Identify whether a business adapter is needed.
-10. Identify whether public data is required.
-
-Only then build the UI.
+Audit records remain backed by the existing technical engine.
 
 ---
 
-# 51. Business Admin Development Phases
+# 38. Business Admin UX Rules
 
-## BA-01 — Technical API Audit
+Every screen should answer:
 
-Inventory:
+1. What is happening?
+2. What needs attention?
+3. What can I do?
+4. What happened previously?
 
-- routes
-- authentication
-- permissions
-- modules
-- request/response shapes
-- errors
-- audit
-- public-safe data
+Avoid:
 
-Deliverable:
-
-`AMAAL_API_MAP.md`
-
-## BA-02 — Business Admin Foundation
-
-Build:
-
-- Next.js
-- TypeScript
-- design system
-- authentication bridge
-- route protection
-- navigation
-- API client
-- error handling
-- notifications
-- search foundation
-
-## BA-03 — CEO / Superadmin
-
-Build:
-
-- Overview
-- business health
-- sales
-- finance
-- stock
-- attention center
-- quick actions
-
-## BA-04 — Sales and Customers
-
-Build:
-
-- POS
-- sales
-- customers
-- orders
-
-## BA-05 — Products and Stock
-
-Build:
-
-- catalogue
-- pricing
-- stock
-- stocktake
-- transfers
-
-## BA-06 — Purchasing
-
-Build:
-
-- suppliers
-- requests
-- purchase orders
-- receiving
-- supplier performance
-
-## BA-07 — Finance and Credit
-
-Build:
-
-- finance
-- expenses
-- receivables
-- payables
-- reconciliation
-- credit
-
-## BA-08 — Delivery and Service
-
-Build:
-
-- delivery
-- returns
-- warranty
-- repairs
-- cases
-
-## BA-09 — Website Management
-
-Build:
-
-- homepage
-- products
-- categories
-- promotions
-- pages
-- media
-- publishing
-
-## BA-10 — Reports and Team
-
-Build:
-
-- reports
-- business intelligence presentation
-- staff
-- branches
-- performance
-
----
-
-# 52. Public Website Development Phases
-
-## PW-01 — Public API Audit
-
-Identify:
-
-- public-safe fields
-- public endpoints
-- product publication state
-- category publication
-- promotions
-- content
-- enquiry flow
-
-## PW-02 — Website Foundation
-
-Build:
-
-- Next.js
-- TypeScript
-- design system
-- SEO foundation
-- public routing
-- API layer
-- error handling
-- analytics architecture
-
-## PW-03 — Discovery
-
-Build:
-
-- homepage
-- shop
-- categories
-- search
-- filters
-
-## PW-04 — Product Experience
-
-Build:
-
-- product pages
-- variants
-- availability
-- related products
-- enquiry
-
-## PW-05 — Content
-
-Build:
-
-- about
-- contact
-- FAQ
-- delivery
-- returns
-- warranty
-- policies
-
-## PW-06 — Customer Accounts
-
-Build:
-
-- registration
-- login
-- profile
-- addresses
-- orders
-
-## PW-07 — Commerce
-
-Build:
-
-- cart
-- checkout
-- payment
-- order confirmation
-- tracking
-
-## PW-08 — After-Sales
-
-Build:
-
-- returns
-- warranty
-- service requests
-- customer communication
-
----
-
-# 53. Testing Strategy
-
-## Technical Console regression
-
-Every Business Admin change that depends on an existing Phase 4 endpoint must include a regression check against the Technical Console/API.
-
-## Business Admin
-
-Test:
-
-- role access
-- navigation
-- data loading
-- forms
-- validation
-- permissions
-- state changes
-- error handling
-- mobile
-- desktop
-
-## Public Website
-
-Test:
-
-- SEO
-- product browsing
-- search
-- mobile
-- desktop
-- public/private boundaries
-- content publishing
-- customer accounts
-- checkout when enabled
-
-## Integration
-
-Test:
-
-```text
-Technical Console
-       ↕
-Business Admin
-       ↕
-Public Website
-```
-
-No duplicate source of truth is permitted.
-
----
-
-# 54. Critical End-to-End Tests
-
-## Product publication
-
-```text
-Technical Console
-   ↓
-Product exists
-   ↓
-Business Admin
-   ↓
-Prepare public content
-   ↓
-Approve
-   ↓
-Publish
-   ↓
-Public Website
-   ↓
-Product visible
-```
-
-## Price change
-
-```text
-Business Admin
-   ↓
-Approved price change
-   ↓
-Render engine
-   ↓
-Public product
-   ↓
-Updated public price
-```
-
-## Order
-
-```text
-Customer
-   ↓
-Public Website
-   ↓
-Order
-   ↓
-Render engine
-   ↓
-Business Admin
-   ↓
-Stock
-   ↓
-Finance
-   ↓
-Delivery
-```
-
-## Return
-
-```text
-Customer
-   ↓
-Public Website
-   ↓
-Return request
-   ↓
-Business Admin
-   ↓
-Service
-   ↓
-Inventory
-   ↓
-Finance
-```
-
----
-
-# 55. Observability
-
-The Technical Console remains the technical observability authority.
-
-Business Admin receives business-friendly health indicators only where useful:
-
-- Payments connected
-- Website connected
-- Messaging connected
-- Data synchronized
-
-It must not expose:
-
-- raw logs
-- stack traces
-- database health internals
-- API diagnostics
-- server configuration
-
----
-
-# 56. AI
-
-Existing Phase 4 AI capabilities remain in the Technical Console/engine.
-
-Business Admin may present AI-generated business insights through a controlled business interface.
-
-Examples:
-
-- sales summary
-- unusual sales movement
-- stock attention
-- purchasing suggestions
-- management summary
-
-AI must never become the source of truth.
-
-AI recommendations should be clearly distinguishable from confirmed business records.
-
----
-
-# 57. Analytics
-
-Public analytics and business analytics must be separated.
-
-## Public
-
-- page views
-- product views
-- search activity
-- enquiries
-- conversion
-- checkout behaviour
-
-## Business
-
-- sales
-- revenue
-- profit
-- inventory
-- customers
-- procurement
-- finance
-
-Business metrics remain derived from the authoritative engine.
-
----
-
-# 58. Performance Budgets
-
-Public Website:
-
-- prioritize fast first load
-- minimize JavaScript sent to visitors
-- optimize images
-- cache public content
-- avoid unnecessary client rendering
-
-Business Admin:
-
-- fast dashboard
-- paginated large tables
-- server-side filtering for large datasets
-- lazy-load heavy reports
-- avoid loading every module on startup
-
----
-
-# 59. Accessibility
-
-Both applications must target strong accessibility:
-
-- keyboard navigation
-- semantic HTML
-- visible focus
-- readable contrast
-- form labels
-- meaningful error messages
-- accessible dialogs
-- responsive text
-- screen-reader-friendly controls
-
----
-
-# 60. Mobile Strategy
-
-Business Admin must work on:
-
-- smartphones
-- tablets
-- laptops
-- desktop
-
-POS should be optimized for touch.
-
-Public Website must be mobile-first because customers may primarily access it from phones.
-
----
-
-# 61. Business Language Rules
-
-Never expose:
-
-- API endpoint
-- payload
+- API
+- endpoint
 - database
-- SQL
 - webhook
+- payload
 - server
 - deployment
 - infrastructure
 - UUID
 - JSON
-- token
-- internal ID
+- technical IDs
 
-Use:
-
-- Business Connection
-- Website
-- Product
-- Customer
-- Order
-- Payment
-- Stock
-- Team
-- Report
-- Business Setting
-
-Technical terminology remains available only inside the Technical Console.
+unless the user is inside the separate Technical Console.
 
 ---
 
-# 62. What the CEO Should Experience
+# 39. Public Website UX Rules
 
-When the CEO opens Business Admin:
+The website should be:
+
+- Premium
+- Fast
+- Mobile-first
+- Simple
+- Trustworthy
+- Searchable
+- SEO-ready
+- Accessible
+- Commerce-ready
+- Connected to real business data
+
+Customers should never know or care that the business engine is hosted on Render.
+
+---
+
+# 40. Development Order
+
+## Stage A — Technical Console Audit
+
+Before building further:
+
+- Audit Phase 4 routes
+- Audit Phase 4 permissions
+- Audit API contracts
+- Audit business modules
+- Audit schema
+- Identify reusable endpoints
+- Identify missing business-facing endpoints
+- Identify public-safe data
+- Identify data that must remain private
+
+## Stage B — Business Admin Foundation
+
+Build:
+
+- Next.js application
+- Authentication
+- Business layout
+- Role-aware navigation
+- Responsive navigation
+- Business routing
+- API client
+- Error handling
+- Loading states
+- Notifications
+- Search
+- Business design system
+
+## Stage C — Executive Experience
+
+Build:
+
+- CEO dashboard
+- Business overview
+- Performance
+- Attention center
+- Quick actions
+
+## Stage D — Core Operations
+
+Build:
+
+- Sales
+- Products
+- Stock
+- Purchasing
+- Customers
+- Orders
+
+## Stage E — Money and Service
+
+Build:
+
+- Finance
+- Credit
+- Delivery
+- Returns
+- Warranty
+- Repairs
+
+## Stage F — Website Management
+
+Build:
+
+- Website dashboard
+- Products
+- Categories
+- Homepage
+- Promotions
+- Pages
+- Media
+- Publishing
+
+## Stage G — Public Website
+
+Build:
+
+- Homepage
+- Shop
+- Categories
+- Product pages
+- Deals
+- About
+- Contact
+- Customer account
+
+## Stage H — Commerce
+
+Build:
+
+- Cart/order journey
+- Checkout
+- Payments
+- Order confirmation
+- Tracking
+- Customer notifications
+
+## Stage I — Unified Platform
+
+Connect:
 
 ```text
-Amaal Telecoms
-
-Good morning.
-
-Business Overview
-
-Revenue        UGX ...
-Gross Profit   UGX ...
-Sales          ...
-Stock Value    UGX ...
-Receivables    UGX ...
-
-Needs Attention
-
-3 low-stock products
-2 overdue payments
-1 purchase awaiting approval
-4 website enquiries
-
-Performance
-
+Customer
+   ↓
+Website
+   ↓
+Order
+   ↓
 Sales
-Revenue
-Profit
-Branches
-Products
-
-Quick Actions
-
-New Sale
-Add Product
-Receive Stock
-View Orders
-Manage Website
+   ↓
+Inventory
+   ↓
+Procurement
+   ↓
+Finance
+   ↓
+Delivery
+   ↓
+Customer Service
+   ↓
 Reports
 ```
 
-The CEO should not need to understand the underlying technology.
+---
+
+# 41. What Must NOT Be Built Into Business Admin
+
+The following stay outside the normal Business Experience:
+
+- Database management
+- SQL tools
+- API management
+- Webhook management
+- Deployment controls
+- Infrastructure monitoring
+- Server controls
+- Backup execution
+- Recovery execution
+- Raw integration configuration
+- Technical event replay
+- Technical feature flags
+- Developer diagnostics
+- Internal system jobs
+- Raw audit/event debugging
+- Internal IDs as user-facing concepts
+
+These remain part of the Technical Console.
+
+Business Admin may show a simple business status when necessary, such as:
+
+> Payments connected
+
+rather than:
+
+> Payment API endpoint / webhook / secret / connection ID
 
 ---
 
-# 63. What the Customer Should Experience
+# 42. Final Architecture
 
-When a customer opens the Public Website:
-
-```text
-Amaal Telecoms
-
-Home
-Shop
-Phones
-Accessories
-Electronics
-Deals
-About
-Contact
-
-Search products...
-
-Featured Products
-
-Popular Categories
-
-Latest Deals
-
-Need help?
-Contact Amaal Telecoms
-```
-
-The customer should never see the technical console or business admin.
-
----
-
-# 64. What the Technical Administrator Experiences
-
-The existing Phase 4 Technical Console remains the place for:
-
-- technical diagnostics
-- integrations
-- infrastructure-facing controls
-- system operations
-- monitoring
-- backup/recovery
-- advanced permissions
-- technical audit
-- developer troubleshooting
-
-This is deliberately separate from Business Admin.
-
----
-
-# 65. Deployment Model
-
-Vercel supports Local, Preview and Production environments, which should be used for both new applications. citeturn0search1
-
-Recommended:
-
-```text
-LOCAL
-  ↓
-PREVIEW
-  ↓
-BUSINESS QA
-  ↓
-PRODUCTION
-```
-
-For the public website:
-
-```text
-LOCAL
-  ↓
-PREVIEW
-  ↓
-CONTENT QA
-  ↓
-PRODUCTION
-```
-
-Every production deployment must be traceable to a tested preview.
-
-Vercel supports preview deployments for changes and production deployment promotion, which fits this workflow. citeturn0search1turn0search3
-
----
-
-# 66. Environment Secrets
-
-Never commit:
-
-- Render API secrets
-- authentication secrets
-- database credentials
-- payment secrets
-- email secrets
-- AI keys
-
-Vercel environment variables are environment-scoped and can hold sensitive values outside source code. citeturn0search2turn0search5
-
-The public website must only receive variables intentionally marked public.
-
----
-
-# 67. Production Domain Strategy
-
-Final target:
-
-```text
-https://amaaltelecoms.com
-        ↓
-Public Website
-
-https://business.amaaltelecoms.com
-        ↓
-Business Admin
-
-https://console.amaaltelecoms.com
-        ↓
-Technical Console
-```
-
-The customer should only ever need to know the public domain.
-
-Business users use the Business domain.
-
-Technical users use the Technical Console.
-
----
-
-# 68. Migration and Compatibility Rule
-
-There is no migration of the Phase 4 application to Vercel.
-
-There is no replacement of Render.
-
-There is no PostgreSQL migration as part of this architecture.
-
-There is no duplicate business database.
-
-The new applications are consumers of the existing engine.
-
-If an existing Phase 4 API is insufficient, add the smallest controlled API capability required in the Render engine.
-
----
-
-# 69. Engineering Rule for Every New Feature
-
-Before writing code:
-
-```text
-1. Identify Phase 4 module
-2. Identify existing data
-3. Identify existing API
-4. Identify existing permission
-5. Identify existing audit
-6. Identify business requirement
-7. Identify public requirement
-8. Define API contract
-9. Build Business Admin
-10. Build Public Website behaviour if needed
-11. Test against Render
-12. Test permissions
-13. Test mobile
-14. Test public/private boundaries
-15. Test end-to-end
-```
-
----
-
-# 70. Definition of Done
-
-A Business Admin feature is not complete until:
-
-- it uses the existing engine correctly
-- it respects permissions
-- it has business terminology
-- it works on mobile
-- it handles loading
-- it handles errors
-- it handles empty states
-- it is audited
-- it has appropriate tests
-- it does not duplicate business data
-
-A Public Website feature is not complete until:
-
-- it uses approved public data
-- it does not expose private data
-- it works on mobile
-- it is SEO-ready where applicable
-- it has loading/error states
-- it has appropriate tests
-- it connects correctly to Business Admin/engine
-
----
-
-# 71. Final Product Vision
-
-Amaal Telecoms should eventually operate as:
+Amaal Telecoms should ultimately feel like one platform to the business while remaining three separate experiences technically.
 
 ```text
                          CUSTOMER
                             |
                             v
-                 +----------------------+
-                 |   AMAAL PUBLIC WEB   |
-                 |      VERCEL          |
-                 +----------+-----------+
+                 +---------------------+
+                 |   PUBLIC WEBSITE    |
+                 | amaaltelecoms.com   |
+                 +----------+----------+
                             |
                             v
-                 +----------------------+
-                 |   BUSINESS ADMIN     |
-                 |      VERCEL          |
-                 | CEO / STAFF          |
-                 +----------+-----------+
+                 +---------------------+
+                 |   BUSINESS ADMIN    |
+                 | business.amaal...   |
+                 +----------+----------+
                             |
-                       CONTROLLED API
+                     Controlled API
                             |
                             v
-                 +----------------------+
-                 | AMAAL SUPER ENGINE   |
-                 |       RENDER         |
-                 | Existing Phase 4     |
-                 +----------+-----------+
+                 +---------------------+
+                 | EXISTING PHASE 4    |
+                 | BUSINESS ENGINE      |
+                 |       Render         |
+                 +----------+----------+
                             |
              +--------------+--------------+
              |                             |
              v                             v
-      TECHNICAL CONSOLE              POSTGRESQL
+      Technical Console              PostgreSQL
+      Developer/Admin
 ```
 
-The customer sees the brand.
-
-The CEO sees the business.
-
-Staff see their work.
-
-Technical administrators see the engine.
-
-All four perspectives operate on the same underlying business truth.
+The Business Admin and Public Website are therefore **new experiences, not new sources of truth**.
 
 ---
 
-# 72. Immediate Next Step
+# 43. Implementation Rule
 
-Do not continue adding random Business Admin features.
+Before each development phase:
 
-The next engineering action is:
+1. Inspect the current technical console.
+2. Identify the existing module and APIs.
+3. Reuse existing functionality where possible.
+4. Add only the missing API/data boundary required.
+5. Build the business experience around the existing capability.
+6. Test against the existing engine.
+7. Test permissions.
+8. Test mobile behaviour.
+9. Test public/private data separation.
+10. Test website synchronization.
+11. Only package after validation.
 
-## Phase 5A — Technical Console/API Discovery
+**The technical console is the foundation. The Business Admin is the business experience. The Public Website is the customer experience.**
 
-Use the actual Phase 4 ZIP to produce:
-
-- complete route inventory
-- module inventory
-- permission matrix
-- API inventory
-- data ownership map
-- public-safe data map
-- Business Admin API requirements
-- Public Website API requirements
-- authentication/session map
-- integration dependency map
-- database dependency map
-- exact gaps between Phase 4 and the new experiences
-
-Only after this audit should the Business Admin Next.js application be built.
-
-This guarantees that the new applications are genuinely built **from the Technical Console**, not alongside it.
-
----
-
-# 73. Non-Negotiable Architecture
-
-> **Render remains the super engine.**
-
-> **Phase 4 remains the technical foundation.**
-
-> **Business Admin does not replace Phase 4.**
-
-> **Public Website does not replace Business Admin.**
-
-> **Business Admin does not contain technical modules.**
-
-> **CEO and Superadmin are the same highest business role.**
-
-> **PostgreSQL remains one source of truth.**
-
-> **Vercel hosts the new customer and business experiences.**
-
-> **Render hosts the existing engine and Technical Console.**
-
-> **Every new feature must first be mapped to the existing engine.**
-
-> **No duplicate business truth.**
-
-> **No direct Vercel-to-PostgreSQL administration.**
-
-> **No production feature ZIP is considered complete until the integration has been validated.**
-
----
-
-# 74. Technology Summary
-
-| Layer | Technology | Purpose |
-|---|---|---|
-| Technical Console | Node.js 20 | Existing runtime |
-| Technical Console | Express 5 | Existing API/server |
-| Technical Console | JavaScript | Existing application |
-| Technical Database | PostgreSQL | Existing source of truth |
-| Business Admin | TypeScript | Type safety |
-| Business Admin | React | UI |
-| Business Admin | Next.js App Router | Application framework |
-| Business Admin | Tailwind CSS | Responsive design system |
-| Business Admin | TanStack Query | Client server-state management |
-| Business Admin | React Hook Form | Complex forms |
-| Business Admin | Zod | Runtime validation |
-| Business Admin | Recharts/equivalent | Business charts |
-| Business Admin | Playwright | End-to-end tests |
-| Business Admin | Vitest | Unit/component tests |
-| Business Hosting | Vercel | Deployment |
-| Public Website | TypeScript | Type safety |
-| Public Website | React | UI |
-| Public Website | Next.js App Router | SEO/performance/routing |
-| Public Website | Tailwind CSS | Responsive design |
-| Public Website | Zod | API validation |
-| Public Website | Playwright | E2E testing |
-| Public Website | Vitest | Unit testing |
-| Public Hosting | Vercel | Deployment/CDN/platform |
-| API | Existing Render API | Business engine connection |
-| Authentication | Existing Phase 4 identity foundation | Preserve existing authority |
-| Data | Existing PostgreSQL | Single source of truth |
-| Secrets | Render/Vercel environment variables | Secure configuration |
-| CI/CD | Git + Vercel previews + production deployments | Controlled delivery |
-
----
-
-# 75. Final Rule
-
-**The new code should be smarter about the existing system, not independent of it.**
-
-Every screen, route, form, report, website feature and customer workflow must answer:
-
-> **Which Phase 4 capability powers this?**
-
-If there is no answer, we stop and design the engine/API contract before building the UI.
-
-That is how Amaal becomes one platform instead of three disconnected applications.
+They must evolve together without becoming three separate systems.
