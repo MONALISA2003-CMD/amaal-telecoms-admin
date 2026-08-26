@@ -77,3 +77,22 @@ Required Vercel project configuration:
 - `AMAAL_ENGINE_URL`: public HTTPS URL of the existing Render backend
 
 No database changes are required for this package.
+
+## Authentication / first-time setup correction — 2026-08-26
+
+- Removed the Business Admin login-page `Security code (only when requested)` field and stopped sending a `code` value from that form.
+- Added a Business Admin first-time setup screen at `/setup`.
+- `/login` now checks the existing engine `/api/setup/status` before presenting normal sign-in; when the existing database says administrator setup is required, the user is sent to `/setup`.
+- `/setup` uses the existing Render engine `/api/setup` endpoint to create/reactivate the first administrator and establish the normal authenticated session.
+- Added server-side Vercel proxy routes for `/api/setup/status` and `/api/setup`, including the existing authentication-cookie bridge.
+- The implementation does not create a second database, does not introduce SQL into the Business Admin, and does not reset or migrate PostgreSQL.
+- The existing engine remains authoritative for whether setup is required and for creation/reactivation of the administrator account.
+- Existing MFA behavior in the Render engine was not removed or altered. The Business Admin's new first-time setup starts with the engine's existing setup behavior rather than changing database security policy.
+
+## Validation for this correction
+
+- Confirmed the new/modified TypeScript files parse successfully with the TypeScript compiler parser.
+- Confirmed existing JavaScript files pass Node syntax checks.
+- Confirmed no security-code UI remains under `apps/business-admin/app/(auth)`.
+- Confirmed `schema.sql` and `server.js` were not modified by this correction.
+- A full Next.js dependency build could not be run in the isolated audit container because external npm dependency installation was unavailable; the previous Vercel build had already confirmed the dependency set and the new files were syntax-validated independently.

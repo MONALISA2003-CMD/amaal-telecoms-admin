@@ -49,3 +49,11 @@ The existing Render Amaal Engine remains the only business-data boundary and Pos
 ### Important deployment verification
 
 This ZIP is the audited source package. The final Vercel build still must be executed by Vercel after the ZIP's files are committed to the GitHub `main` branch. If Vercel reports the old `Card.label string | number` error, it is building an older Git commit rather than this source package.
+
+## First-time administrator setup correction
+
+- Removed the login-page security-code field.
+- Added `/setup` for first-time administrator creation.
+- `/login` checks `/api/setup/status` and redirects to `/setup` when the existing Render engine reports that administrator setup is required.
+- `/setup` calls the existing Render `/api/setup` endpoint through a server-side Vercel route and preserves the existing auth-cookie bridge.
+- No database schema, SQL, migration, reset, or direct PostgreSQL access was added to Business Admin.
