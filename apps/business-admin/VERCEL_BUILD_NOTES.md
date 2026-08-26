@@ -1,30 +1,51 @@
 # Vercel Build Notes
 
-## Deployment fixes included
+## Final audit status
 
-1. `@tanstack/react-query` corrected from the unresolvable `5.90.0` pin to `5.102.4`.
-2. `Workspace` card values now accept `string | number`, matching live business metrics.
-3. Next.js 16 middleware convention migrated from `middleware.ts` to `proxy.ts`.
-4. The existing `amaal_session` authentication redirect behavior is preserved.
+The Business Admin source in this ZIP was audited against `Amaal_plan.md` and `CONTINUATION.md` before packaging.
 
-## Database safety
+### TypeScript
 
-This package is a frontend/Business Admin deployment repair only.
+The dynamic Business workspace explicitly normalizes card entries to the `Card` contract:
 
-- PostgreSQL remains the system of record.
-- No database connection was made during this repair.
-- No SQL migration was run.
-- No schema was changed.
-- No seed/reset/cleanup operation was run.
-- No database tables or records were modified.
-- The Business Admin continues to obtain business data through the existing Amaal Engine APIs rather than creating a second source of truth.
+- `label: string`
+- `value: string`
 
-## Vercel settings
+This removes the previous TS2322 failure where tuple inference produced `string | number` for `Card.label`.
+
+### Dependencies
+
+- `@tanstack/react-query`: `5.102.4` (not the invalid `5.90.0` that caused ETARGET).
+- Next.js: `16.3.3`.
+- React/React DOM: `19.2.0`.
+- ESLint: `9.39.5` with flat config.
+
+### Next.js 16 migration
+
+- `proxy.ts` is used for the request proxy.
+- No `middleware.ts`, `middleware.js`, or `middleware.tsx` remains in the Business Admin.
+
+### Serverless/API boundary
+
+- Server-side API calls use `AMAAL_ENGINE_URL`.
+- Production does not silently fall back to localhost.
+- Upstream Render failures are converted to controlled 502/503 responses.
+- Session and CSRF cookies are kept server-side.
+
+### Database safety
+
+No PostgreSQL client, database URL, migration, seed, reset, schema modification, or direct database access exists in `apps/business-admin`.
+The existing Render Amaal Engine remains the only business-data boundary and PostgreSQL remains the source of truth.
+
+### Vercel settings
 
 - Framework: Next.js
 - Root Directory: `apps/business-admin`
-- Node.js: 24.x
-- Build Command: automatic / `npm run build`
-- Output Directory: automatic
-- Install Command: automatic / `npm install`
-- `AMAAL_ENGINE_URL`: public URL of the deployed Render Amaal Engine
+- Node.js: `24.x`
+- Build Command: Automatic (`next build`)
+- Output Directory: Automatic
+- Required environment variable: `AMAAL_ENGINE_URL` = the public HTTPS URL of the existing Render backend.
+
+### Important deployment verification
+
+This ZIP is the audited source package. The final Vercel build still must be executed by Vercel after the ZIP's files are committed to the GitHub `main` branch. If Vercel reports the old `Card.label string | number` error, it is building an older Git commit rather than this source package.

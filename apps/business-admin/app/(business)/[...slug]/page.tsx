@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation';
-import { Workspace } from '@/components/Workspace';
+import { Workspace, type Card } from '@/components/Workspace';
 import { businessGetSafe, money, number } from '@/lib/business';
 
 type Params = { slug: string[] };
+type ApiRecord = Record<string, any>;
 
-const titles: Record<string, [string,string]> = {
+const titles: Record<string, [string, string]> = {
   sales: ['Sales', 'Monitor sales activity and move into the existing POS and sales workflows.'],
   products: ['Products', 'Manage the business catalogue using the existing product and pricing engine.'],
   stock: ['Stock', 'See stock position, locations and replenishment pressure from the inventory engine.'],
@@ -21,7 +22,13 @@ const titles: Record<string, [string,string]> = {
   settings: ['Business Settings', 'Review the business configuration exposed to your role.'],
 };
 
-function text(v: unknown) { return v == null ? '—' : String(v); }
+
+function makeCards(entries: ReadonlyArray<readonly [string, unknown]>): Card[] {
+  return entries.map(([label, value]) => ({
+    label: String(label),
+    value: value == null ? '—' : String(value),
+  }));
+}
 
 export default async function BusinessWorkspace({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
@@ -30,73 +37,176 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
   const [title, description] = titles[key];
 
   if (key === 'sales') {
-    const d = await businessGetSafe<any>('/api/sales/summary');
-    const rows = await businessGetSafe<any>('/api/sales?limit=12') as any;
-    return <Workspace title={title} description={description} actions={[{label:'Refresh sales',href:'/sales'}]}
-      cards={[['Sales value','today.total'],['Transactions','today.count'],['Open drafts','openDrafts'],['Units sold','unitsToday']].map(([label,path])=>({label,value:number(path.split('.').reduce((a:any,k)=>a?.[k],d))}))}
-      rows={Array.isArray(rows)?rows:rows?.rows} columns={[{key:'sale_no',label:'Sale'},{key:'status',label:'Status'},{key:'grand_total',label:'Amount'},{key:'created_at',label:'Date'}]} />;
+    const d = await businessGetSafe<ApiRecord>('/api/sales/summary');
+    const rows = await businessGetSafe<any>('/api/sales?limit=12');
+    return <Workspace title={title} description={description} actions={[{ label: 'Refresh sales', href: '/sales' }]}
+      cards={makeCards([
+        ['Sales value', number(d?.today?.total)],
+        ['Transactions', number(d?.today?.count)],
+        ['Open drafts', number(d?.openDrafts)],
+        ['Units sold', number(d?.unitsToday)],
+      ])}
+      rows={Array.isArray(rows) ? rows : rows?.rows} columns={[{ key: 'sale_no', label: 'Sale' }, { key: 'status', label: 'Status' }, { key: 'grand_total', label: 'Amount' }, { key: 'created_at', label: 'Date' }]} />;
   }
+
   if (key === 'products') {
-    const [s,p] = await Promise.all([businessGetSafe<any>('/api/catalog/summary'),businessGetSafe<any>('/api/catalog/products?limit=15')]);
-    return <Workspace title={title} description={description} actions={[{label:'Catalogue',href:'/products'}]}
-      cards={[['Products',s?.products],['Active brands',s?.brands],['Categories',s?.categories],['Published online',s?.published]].map(([label,value])=>({label,value:number(value)}))}
-      rows={p?.rows ?? []} columns={[{key:'name',label:'Product'},{key:'brand_name',label:'Brand'},{key:'category_name',label:'Category'},{key:'variant_count',label:'Variants'},{key:'min_price',label:'From'}]} />;
+    const [summary, products] = await Promise.all([
+      businessGetSafe<ApiRecord>('/api/catalog/summary'),
+      businessGetSafe<any>('/api/catalog/products?limit=15'),
+    ]);
+    return <Workspace title={title} description={description} actions={[{ label: 'Catalogue', href: '/products' }]}
+      cards={makeCards([
+        ['Products', number(summary?.products)],
+        ['Active brands', number(summary?.brands)],
+        ['Categories', number(summary?.categories)],
+        ['Published online', number(summary?.published)],
+      ])}
+      rows={products?.rows ?? []} columns={[{ key: 'name', label: 'Product' }, { key: 'brand_name', label: 'Brand' }, { key: 'category_name', label: 'Category' }, { key: 'variant_count', label: 'Variants' }, { key: 'min_price', label: 'From' }]} />;
   }
+
   if (key === 'stock') {
-    const [s,o] = await Promise.all([businessGetSafe<any>('/api/inventory/summary'),businessGetSafe<any>('/api/inventory/overview')]);
-    return <Workspace title={title} description={description} actions={[{label:'Refresh stock',href:'/stock'}]}
-      cards={[['Stock units',s?.onHand],['Reserved units',s?.reserved],['Low-stock lines',s?.lowStock],['Locations',s?.locations]].map(([label,value])=>({label,value:number(value)}))}
-      rows={o?.lowStock ?? []} columns={[{key:'product_name',label:'Product'},{key:'sku',label:'SKU'},{key:'location_name',label:'Location'},{key:'available',label:'Available'},{key:'reorder_point',label:'Reorder point'}]} />;
+    const [summary, overview] = await Promise.all([
+      businessGetSafe<ApiRecord>('/api/inventory/summary'),
+      businessGetSafe<any>('/api/inventory/overview'),
+    ]);
+    return <Workspace title={title} description={description} actions={[{ label: 'Refresh stock', href: '/stock' }]}
+      cards={makeCards([
+        ['Stock units', number(summary?.onHand)],
+        ['Reserved units', number(summary?.reserved)],
+        ['Low-stock lines', number(summary?.lowStock)],
+        ['Locations', number(summary?.locations)],
+      ])}
+      rows={overview?.lowStock ?? []} columns={[{ key: 'product_name', label: 'Product' }, { key: 'sku', label: 'SKU' }, { key: 'location_name', label: 'Location' }, { key: 'available', label: 'Available' }, { key: 'reorder_point', label: 'Reorder point' }]} />;
   }
+
   if (key === 'purchasing') {
-    const d=await businessGetSafe<any>('/api/procurement/summary');
-    return <Workspace title={title} description={description} cards={[['Active suppliers',d?.activeSuppliers],['Pending requests',d?.pendingRequisitions],['Open purchase orders',d?.openPurchaseOrders],['Overdue invoices',d?.overdueInvoices]].map(([label,value])=>({label,value:number(value)}))}
-      columns={[]} />;
+    const summary = await businessGetSafe<ApiRecord>('/api/procurement/summary');
+    return <Workspace title={title} description={description} cards={makeCards([
+      ['Active suppliers', number(summary?.activeSuppliers)],
+      ['Pending requests', number(summary?.pendingRequisitions)],
+      ['Open purchase orders', number(summary?.openPurchaseOrders)],
+      ['Overdue invoices', number(summary?.overdueInvoices)],
+    ])} />;
   }
+
   if (key === 'customers') {
-    const [s,r]=await Promise.all([businessGetSafe<any>('/api/customers/summary'),businessGetSafe<any>('/api/customers?limit=15')]);
-    return <Workspace title={title} description={description} actions={[{label:'Customer directory',href:'/customers'}]}
-      cards={[['Customers',s?.customers],['Active',s?.active],['New in 30 days',s?.new30d],['Outstanding balance',money(s?.outstandingBalance)]].map(([label,value])=>({label,value:text(value)}))}
-      rows={Array.isArray(r)?r:[]} columns={[{key:'customer_no',label:'Customer'},{key:'name',label:'Name'},{key:'phone',label:'Phone'},{key:'outstanding_balance',label:'Balance'},{key:'open_cases',label:'Open cases'}]} />;
+    const [summary, result] = await Promise.all([
+      businessGetSafe<ApiRecord>('/api/customers/summary'),
+      businessGetSafe<any>('/api/customers?limit=15'),
+    ]);
+    return <Workspace title={title} description={description} actions={[{ label: 'Customer directory', href: '/customers' }]}
+      cards={makeCards([
+        ['Customers', number(summary?.customers)],
+        ['Active', number(summary?.active)],
+        ['New in 30 days', number(summary?.new30d)],
+        ['Outstanding balance', money(summary?.outstandingBalance)],
+      ])}
+      rows={Array.isArray(result) ? result : result?.rows ?? []} columns={[{ key: 'customer_no', label: 'Customer' }, { key: 'name', label: 'Name' }, { key: 'phone', label: 'Phone' }, { key: 'outstanding_balance', label: 'Balance' }, { key: 'open_cases', label: 'Open cases' }]} />;
   }
+
   if (key === 'orders') {
-    const [s,r]=await Promise.all([businessGetSafe<any>('/api/orders/summary'),businessGetSafe<any>('/api/orders?limit=15')]);
-    return <Workspace title={title} description={description} cards={[['Total orders',s?.total],['Pending payment',s?.pending],['Processing',s?.processing],['Dispatched',s?.dispatched]].map(([label,value])=>({label,value:number(value)}))}
-      rows={Array.isArray(r)?r:r?.rows} columns={[{key:'order_no',label:'Order'},{key:'status',label:'Status'},{key:'payment_status',label:'Payment'},{key:'customer_name',label:'Customer'},{key:'grand_total',label:'Total'}]} />;
+    const [summary, result] = await Promise.all([
+      businessGetSafe<ApiRecord>('/api/orders/summary'),
+      businessGetSafe<any>('/api/orders?limit=15'),
+    ]);
+    return <Workspace title={title} description={description} cards={makeCards([
+      ['Total orders', number(summary?.total)],
+      ['Pending payment', number(summary?.pending)],
+      ['Processing', number(summary?.processing)],
+      ['Dispatched', number(summary?.dispatched)],
+    ])}
+      rows={Array.isArray(result) ? result : result?.rows ?? []} columns={[{ key: 'order_no', label: 'Order' }, { key: 'status', label: 'Status' }, { key: 'payment_status', label: 'Payment' }, { key: 'customer_name', label: 'Customer' }, { key: 'grand_total', label: 'Total' }]} />;
   }
+
   if (key === 'finance') {
-    const d=await businessGetSafe<any>('/api/finance/summary');
-    return <Workspace title={title} description={description} cards={[['Revenue',money(d?.revenue)],['Expenses',money(d?.expenses)],['Net result',money(d?.net)],['Receivables',money(d?.receivables)],['Payables',money(d?.payables)]].map(([label,value])=>({label,value:text(value)}))} />;
+    const summary = await businessGetSafe<ApiRecord>('/api/finance/summary');
+    return <Workspace title={title} description={description} cards={makeCards([
+      ['Revenue', money(summary?.revenue)],
+      ['Expenses', money(summary?.expenses)],
+      ['Net result', money(summary?.net)],
+      ['Receivables', money(summary?.receivables)],
+      ['Payables', money(summary?.payables)],
+    ])} />;
   }
+
   if (key === 'credit') {
-    const d=await businessGetSafe<any>('/api/credit/summary');
-    return <Workspace title={title} description={description} cards={[['Active profiles',d?.profiles],['Pending applications',d?.pendingApplications],['Active accounts',d?.activeAccounts],['Outstanding credit',money(d?.outstanding)],['Due balance',money(d?.dueBalance)]].map(([label,value])=>({label,value:text(value)}))} />;
+    const summary = await businessGetSafe<ApiRecord>('/api/credit/summary');
+    return <Workspace title={title} description={description} cards={makeCards([
+      ['Active profiles', number(summary?.profiles)],
+      ['Pending applications', number(summary?.pendingApplications)],
+      ['Active accounts', number(summary?.activeAccounts)],
+      ['Outstanding credit', money(summary?.outstanding)],
+      ['Due balance', money(summary?.dueBalance)],
+    ])} />;
   }
+
   if (key === 'delivery') {
-    const d=await businessGetSafe<any>('/api/delivery/summary');
-    return <Workspace title={title} description={description} cards={[['Total shipments',d?.total],['Pending',d?.pending],['In transit',d?.transit],['Out for delivery',d?.outForDelivery],['Failed',d?.failed]].map(([label,value])=>({label,value:number(value)}))} />;
+    const summary = await businessGetSafe<ApiRecord>('/api/delivery/summary');
+    return <Workspace title={title} description={description} cards={makeCards([
+      ['Total shipments', number(summary?.total)],
+      ['Pending', number(summary?.pending)],
+      ['In transit', number(summary?.transit)],
+      ['Out for delivery', number(summary?.outForDelivery)],
+      ['Failed', number(summary?.failed)],
+    ])} />;
   }
+
   if (key === 'service') {
-    const [r,w]=await Promise.all([businessGetSafe<any>('/api/returns/summary'),businessGetSafe<any>('/api/warranty/summary')]);
-    return <Workspace title={title} description={description} cards={[['Returns awaiting action',r?.requested],['Refunds pending',r?.refundPending],['Warranty cases open',w?.open],['Repairs in progress',w?.inRepair],['Ready for collection',w?.ready]].map(([label,value])=>({label,value:number(value)}))} />;
+    const [returns, warranty] = await Promise.all([
+      businessGetSafe<ApiRecord>('/api/returns/summary'),
+      businessGetSafe<ApiRecord>('/api/warranty/summary'),
+    ]);
+    return <Workspace title={title} description={description} cards={makeCards([
+      ['Returns awaiting action', number(returns?.requested)],
+      ['Refunds pending', number(returns?.refundPending)],
+      ['Warranty cases open', number(warranty?.open)],
+      ['Repairs in progress', number(warranty?.inRepair)],
+      ['Ready for collection', number(warranty?.ready)],
+    ])} />;
   }
+
   if (key === 'website') {
-    const sites=await businessGetSafe<any>('/api/web/sites');
-    return <Workspace title={title} description={description} cards={[['Connected sites',Array.isArray(sites)?sites.length:0],['Business-owned content','Approved'],['Publishing','Permission controlled'],['Technical hosting','Console only']].map(([label,value])=>({label,value:text(value)}))}
-      rows={Array.isArray(sites)?sites:[]} columns={[{key:'name',label:'Site'},{key:'slug',label:'Slug'},{key:'status',label:'Status'},{key:'primary_domain',label:'Domain'}]} />;
+    const sites = await businessGetSafe<any>('/api/web/sites');
+    return <Workspace title={title} description={description} cards={makeCards([
+      ['Connected sites', number(Array.isArray(sites) ? sites.length : null)],
+      ['Business-owned content', 'Approved'],
+      ['Publishing', 'Permission controlled'],
+      ['Technical hosting', 'Console only'],
+    ])}
+      rows={Array.isArray(sites) ? sites : []} columns={[{ key: 'name', label: 'Site' }, { key: 'slug', label: 'Slug' }, { key: 'status', label: 'Status' }, { key: 'primary_domain', label: 'Domain' }]} />;
   }
+
   if (key === 'reports') {
-    const d=await businessGetSafe<any>('/api/bi/summary');
-    return <Workspace title={title} description={description} cards={[['Revenue',money(d?.sales?.revenue)],['Gross margin',money(d?.margin?.gross_margin)],['Orders',d?.orders?.total],['Net sales',money(d?.netSales)],['Gross margin %',`${Number(d?.grossMarginPct ?? 0).toFixed(1)}%`]].map(([label,value])=>({label,value:text(value)}))} />;
+    const summary = await businessGetSafe<ApiRecord>('/api/bi/summary');
+    const marginPercent = summary?.grossMarginPct == null ? '—' : `${Number(summary.grossMarginPct).toFixed(1)}%`;
+    return <Workspace title={title} description={description} cards={makeCards([
+      ['Revenue', money(summary?.sales?.revenue)],
+      ['Gross margin', money(summary?.margin?.gross_margin)],
+      ['Orders', number(summary?.orders?.total)],
+      ['Net sales', money(summary?.netSales)],
+      ['Gross margin %', marginPercent],
+    ])} />;
   }
+
   if (key === 'team') {
-    const staff=await businessGetSafe<any>('/api/staff');
-    return <Workspace title={title} description={description} cards={[['Team members',Array.isArray(staff)?staff.length:0],['Access control','Backend enforced'],['Technical administration','Console only']].map(([label,value])=>({label,value:text(value)}))}
-      rows={Array.isArray(staff)?staff:[]} columns={[{key:'name',label:'Name'},{key:'email',label:'Email'},{key:'status',label:'Status'},{key:'roles',label:'Roles'}]} />;
+    const staff = await businessGetSafe<any>('/api/staff');
+    return <Workspace title={title} description={description} cards={makeCards([
+      ['Team members', number(Array.isArray(staff) ? staff.length : null)],
+      ['Access control', 'Backend enforced'],
+      ['Technical administration', 'Console only'],
+    ])}
+      rows={Array.isArray(staff) ? staff : []} columns={[{ key: 'name', label: 'Name' }, { key: 'email', label: 'Email' }, { key: 'status', label: 'Status' }, { key: 'roles', label: 'Roles' }]} />;
   }
+
   if (key === 'settings') {
-    const org=await businessGetSafe<any>('/api/organization');
-    return <Workspace title={title} description={description} cards={[['Business',org?.trading_name ?? org?.legal_name ?? 'Amaal Telecoms'],['Currency','UGX'],['Timezone','Africa/Kampala'],['Data source','Existing engine']].map(([label,value])=>({label,value:text(value)}))} />;
+    const organization = await businessGetSafe<ApiRecord>('/api/organization');
+    return <Workspace title={title} description={description} cards={makeCards([
+      ['Business', organization?.trading_name ?? organization?.legal_name ?? '—'],
+      ['Currency', 'UGX'],
+      ['Timezone', 'Africa/Kampala'],
+      ['Data source', 'Existing engine'],
+    ])} />;
   }
+
   return notFound();
 }

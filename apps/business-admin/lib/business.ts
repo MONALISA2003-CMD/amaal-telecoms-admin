@@ -3,7 +3,7 @@ import { engineRequest } from './engine';
 
 export async function businessCookies() {
   const jar = await cookies();
-  return jar.getAll().map(c => `${c.name}=${c.value}`).join('; ');
+  return jar.getAll().map((cookie) => `${cookie.name}=${cookie.value}`).join('; ');
 }
 
 export async function businessGet<T>(path: string): Promise<T> {
@@ -12,20 +12,36 @@ export async function businessGet<T>(path: string): Promise<T> {
 }
 
 export async function businessGetSafe<T>(path: string): Promise<T | null> {
-  try { return await businessGet<T>(path); } catch { return null; }
+  try {
+    return await businessGet<T>(path);
+  } catch {
+    return null;
+  }
 }
 
 export function money(value: unknown, currency = 'UGX') {
-  const amount = Number(value ?? 0);
+  if (value === null || value === undefined || value === '') return '—';
+  const amount = Number(value);
+  if (!Number.isFinite(amount)) return '—';
   return new Intl.NumberFormat('en-UG', {
     style: 'currency',
     currency,
     maximumFractionDigits: 0,
-  }).format(Number.isFinite(amount) ? amount : 0);
+  }).format(amount);
 }
 
 export function number(value: unknown) {
-  const amount = Number(value ?? 0);
-  return new Intl.NumberFormat('en-UG', { maximumFractionDigits: 0 })
-    .format(Number.isFinite(amount) ? amount : 0);
+  if (value === null || value === undefined || value === '') return '—';
+  const amount = Number(value);
+  if (!Number.isFinite(amount)) return '—';
+  return new Intl.NumberFormat('en-UG', { maximumFractionDigits: 0 }).format(amount);
+}
+
+export type CardEntry = { label: string; value: string };
+
+export function cardEntries(entries: ReadonlyArray<readonly [string, unknown]>): CardEntry[] {
+  return entries.map(([label, value]) => ({
+    label: String(label),
+    value: value == null ? '—' : String(value),
+  }));
 }

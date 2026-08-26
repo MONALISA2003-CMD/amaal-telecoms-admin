@@ -1,7 +1,8 @@
-import { config } from './config';
+import { requireEngineUrl } from './config';
 
 export async function engineRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const url = `${config.engineUrl}${path.startsWith('/') ? path : `/${path}`}`;
+  const baseUrl = requireEngineUrl();
+  const url = `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
   const headers = new Headers(init.headers);
   headers.set('Accept', 'application/json');
   if (init.body && !headers.has('Content-Type')) headers.set('Content-Type', 'application/json');
@@ -14,7 +15,11 @@ export async function engineRequest<T>(path: string, init: RequestInit = {}): Pr
 
   const text = await response.text();
   let payload: unknown = null;
-  try { payload = text ? JSON.parse(text) : null; } catch { payload = { error: 'The business service returned an invalid response.' }; }
+  try {
+    payload = text ? JSON.parse(text) : null;
+  } catch {
+    payload = { error: 'The business service returned an invalid response.' };
+  }
 
   if (!response.ok) {
     const message = typeof payload === 'object' && payload && 'error' in payload

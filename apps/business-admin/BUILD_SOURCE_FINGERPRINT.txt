@@ -1,0 +1,4 @@
+Amaal Business Admin
+Build source fingerprint: 2026-08-26-card-typefix-v3
+Purpose: final pre-ZIP audit source package.
+Database: untouched; Business Admin uses the existing Amaal Engine API only.
