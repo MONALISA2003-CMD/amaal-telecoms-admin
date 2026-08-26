@@ -1,180 +1,306 @@
-# Amaal Telecoms Admin System
+# Amaal Telecoms Admin
 
-Cumulative enterprise telecom retail administration platform.
+## Production Readiness Release
 
-## Current release
-**Phase 4 — Deep Audit, Debug & Production Readiness — corrected build**
+**Release:** Phase 4 Final Production Readiness
+**Platform:** Amaal Telecoms Admin
+**Runtime:** Node.js 20.x
+**Database:** PostgreSQL
 
-This cumulative build preserves the existing architecture, PostgreSQL schema and modules. The Phase 4 audit found and corrected real cross-module defects instead of only documenting them.
+This release is a cumulative correction of the existing Amaal Telecoms administration platform. The application architecture, existing modules, routes, permissions and PostgreSQL schema are preserved.
 
-## Phase 4 fixes actually implemented
+**Database status:** No database reset, migration, schema rewrite or destructive database operation was introduced in this release.
 
-### Global Apply Date Range
-- Added a shared date-range control used by date-aware Sales, Procurement, Finance, Business Intelligence and Reports views.
-- Sales summary and sales listing now consume the selected `start` and `end` range.
-- Procurement summary now consumes the selected range.
-- Finance dashboard and journal queries now consume the selected range.
-- BI reports continue to use the selected range through the shared control.
-- Inventory keeps current-state stock metrics and explicitly indicates that stock-on-hand is not date-filtered.
-- Invalid ranges are rejected in the frontend before reload.
+---
 
-### Finance synchronization
-- Preserved idempotent source-to-journal mapping through `finance_sync_log`.
-- Hardened concurrent synchronization so a unique `source_ref` race returns the already-created journal instead of failing the whole synchronization.
-- Empty operational queues remain safe and return a zero-created result.
-- Existing transaction rollback and audit logging remain enabled.
+## Release Scope
 
-### Media Management
-- Fixed the frontend initialization defect where Media Management was never registered because its feature closure checked permissions before the authenticated user permissions had been loaded.
-- Media Library navigation and dashboard registration now initialize correctly.
-- Media loading fetches library, folders and tags together and preserves permission checks at the API layer.
+This release focuses on final application correctness and production readiness after staging validation.
 
-## Validation performed
-- `node --check` passed for every application JavaScript file.
-- `node render-preflight.js` passed.
-- Static route audit found 542 route registrations with zero duplicate method/path signatures.
-- No application YAML files were found.
-- No runtime `procurement_requisitions` legacy reference was found.
-- CSRF protection remains enabled for authenticated state-changing API requests.
-- Gemini credentials remain server-side; no Gemini environment variable references were found in public frontend assets.
+### Confirmed fixes in this release
 
-A live PostgreSQL transaction test was not fabricated. The source code was audited against the checked-in schema and the relevant execution paths were traced.
+#### 1. Global Apply Date Range
 
-## AI status
+The shared date-range control now:
 
-The AI layer is implemented server-side and includes:
+- Stores the selected start and end dates in the active session.
+- Applies the selected range when date-aware views reload.
+- Drives Sales, Procurement, Finance and Business Intelligence requests.
+- Passes the selected range to Finance synchronization.
+- Validates missing and reversed dates before applying the range.
+- Keeps current-state views such as stock-on-hand explicitly unfiltered where a historical range is not meaningful.
 
-- Authenticated AI Assistant
-- Conversation creation/history
-- Live business-data grounding
-- AI Business Intelligence health/configuration
-- Gemini connection test
-- AI report generation
-- AI training/governance
-- AI schedules
-- Public catalog AI endpoint
-- Usage/cost monitoring and governance foundations
+#### 2. Finance Synchronization
 
-The real Gemini API call still requires a valid production/staging credential. A missing domain is **not** required to test Gemini itself.
+Finance synchronization now has two concurrency protections:
 
-### AI credentials
+- An application-process guard prevents duplicate synchronization requests inside the same running instance.
+- A PostgreSQL transaction advisory lock prevents concurrent synchronization across application instances.
+- The lock is transaction-scoped and is released automatically when the transaction ends.
+- Synchronization is fully transactional and rolls back on failure.
+- Existing source-to-journal idempotency through `finance_sync_log` and `source_ref` is preserved.
+- The selected date range is respected by synchronization.
+- Empty source queues complete safely.
+- Audit logging remains enabled.
 
-The application reads:
+#### 3. Web & Hosting
+
+Fixed a production frontend error caused by treating `formModal()` as a Promise even though it returns the modal DOM node.
+
+The affected website creation flow now completes normally instead of producing:
+
+`formModal(...).then is not a function`
+
+The same misuse was audited across the application and corrected in other affected actions, including media-folder creation and backup-retention editing.
+
+#### 4. Media Management
+
+Media Management remains registered and available through the authorized administration interface. Existing permission checks and API protection are preserved.
+
+---
+
+## Modules Included
+
+- Dashboard
+- Global Search
+- Catalog
+- Inventory
+- Stock Control
+- Suppliers & Procurement
+- Customers & CRM
+- Sales & POS
+- Orders & E-commerce
+- Pricing & Promotions
+- Delivery & Logistics
+- Warranty & Repairs
+- Returns & Refunds
+- Credit & Installments
+- Finance & Accounting
+- Business Intelligence
+- AI Business Intelligence
+- AI Assistant
+- Integration Hub
+- Web & Hosting
+- Media Management
+- Document Management
+- System Operations
+- Monitoring & Observability
+- Backup & Recovery
+- Deployment Readiness
+- Security, Roles, Permissions and Audit
+
+---
+
+## Environment Variables
+
+Configure these variables in the deployment environment. **The README intentionally does not contain their values.**
+
+### Core application
+
+- `NODE_ENV` — Node.js runtime environment.
+- `PORT` — HTTP service port.
+- `RENDER` — hosting-platform runtime indicator when supplied by the deployment platform.
+
+### PostgreSQL and authentication
+
+- `DATABASE_URL` — primary PostgreSQL connection string.
+- `JWT_SECRET` — secret used for application/session token signing.
+- `ADMIN_RECOVERY_TOKEN` — controlled administrator recovery secret.
+
+### Protected integration credentials
+
+- `INTEGRATION_ENCRYPTION_KEY` — encryption key for protected integration credentials stored by the application.
+
+### AI / Gemini
 
 - `GEMINI_API_KEY` — preferred Gemini credential.
-- `GOOGLE_API_KEY` — supported fallback for the Gemini integration.
+- `GOOGLE_API_KEY` — supported fallback Gemini credential.
 
-Never place either key in GitHub, frontend JavaScript, HTML, README content, or a ZIP containing real secrets. Store the real value in the deployment provider's secret/environment-variable store.
+Keep AI credentials server-side. Never expose them through frontend JavaScript, HTML, public configuration or client-side network responses.
 
-## Environment and API-key inventory
+### Email and password recovery links
 
-These are the environment variables actually referenced by the application. No fictitious provider keys should be added.
+- `RESEND_API_KEY` — email provider credential.
+- `EMAIL_FROM` — verified sender identity.
+- `APP_BASE_URL` — canonical application URL used when generating application links.
 
-### Required application/security secrets
+### Public AI access
 
-- `DATABASE_URL` — production PostgreSQL connection string.
-- `JWT_SECRET` — application/session signing secret.
-- `ADMIN_RECOVERY_TOKEN` — controlled administrative recovery secret.
-- `INTEGRATION_ENCRYPTION_KEY` — encryption key for protected integration credentials.
-- `GEMINI_API_KEY` — Gemini AI credential, or `GOOGLE_API_KEY` as supported fallback.
+- `PUBLIC_WEB_ORIGINS` — comma-separated public website origins permitted to use the public AI gateway.
 
-### Email
+### Invitation handling
 
-- `RESEND_API_KEY` — Resend email provider credential.
-- `EMAIL_FROM` — verified sender address.
-- `APP_BASE_URL` — canonical application URL used in email links and callbacks.
+- `ALLOW_MANUAL_INVITATION_TOKENS` — development/security control for whether invitation tokens may be returned directly by the invitation API.
 
-These become production-critical when the production domain and verified sending domain are ready. They are not required to render the admin UI itself.
-
-### Public website / public AI
-
-- `PUBLIC_WEB_ORIGINS` — comma-separated allowed origins for the public AI endpoint. Set this to the actual public website origin after the domain is acquired and deployed.
-
-### Runtime
-
-- `NODE_ENV`
-- `PORT`
-- `RENDER`
-- `ALLOW_MANUAL_INVITATION_TOKENS`
+Keep this disabled for production use.
 
 ### Backup and recovery
 
-- `BACKUP_ENABLED`
-- `BACKUP_DIR`
-- `PG_DUMP_BIN`
-- `BACKUP_STALE_HOURS`
+- `BACKUP_ENABLED` — controls scheduled/application backup functionality.
+- `BACKUP_DIR` — application backup working directory.
+- `PG_DUMP_BIN` — PostgreSQL `pg_dump` executable location when required by the deployment environment.
+- `BACKUP_STALE_HOURS` — backup freshness threshold used by readiness checks.
+- `RECOVERY_TARGET_ENV` — isolated recovery target environment identifier.
+- `RECOVERY_DATABASE_URL` — separate PostgreSQL recovery database connection string.
 
-Destructive PostgreSQL restore execution is permanently disabled in this application. Backup creation and integrity verification remain supported. Recovery plans require `RECOVERY_TARGET_ENV` (default `staging-recovery`) and a separate `RECOVERY_DATABASE_URL`; production/live/primary targets are rejected and the recovery database must differ from `DATABASE_URL`. Actual restoration must be performed by a separately controlled, isolated infrastructure process outside the application. For Neon, use a dedicated recovery branch/database and never point recovery tooling at the production connection string. The application's local `BACKUP_DIR` is not a durable off-site backup by itself; store verified backup artifacts in separate persistent/private object storage or another independent backup system.
+`RECOVERY_DATABASE_URL` must never point to the primary production database. Production/live/primary recovery targets are intentionally rejected by the application.
 
-## Values that can wait until domain acquisition
+---
 
-After the production domain is acquired, configure and verify:
+## Secrets and Files That Must Never Be Committed
 
-1. `APP_BASE_URL`
-2. `PUBLIC_WEB_ORIGINS`
-3. `EMAIL_FROM`
-4. `RESEND_API_KEY` for the verified production email domain
-5. Any future OAuth callback URLs, webhook URLs or DNS-dependent integrations that are actually implemented
-6. Production HTTPS/HSTS and domain configuration in the hosting provider
+Never commit or package real values for:
 
-Do **not** invent OAuth/payment/SMS/maps API keys for integrations that are not implemented.
-
-## Existing platform modules
-
-Catalog · Inventory · Suppliers & Procurement · Customers & CRM · Sales & POS · Orders & E-commerce · Pricing & Promotions · Delivery & Logistics · Warranty & Repairs · Returns & Refunds · Document Management · Credit & Installments · Finance & Accounting · Reporting & Business Intelligence · AI Business Intelligence · Web & Hosting · Integration Hub · Workflow & Automation · Global Search, UX & Operational Polish · Media Management · System Operations · Monitoring & Observability · Backup & Recovery · Deployment Readiness
-
-## Security boundaries
-
-MFA is intentionally deferred. This build does not implement, activate, redesign or extend MFA. Existing authentication, authorization, CSRF, session and security controls remain the active security boundary.
-
-Never commit:
-
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `ADMIN_RECOVERY_TOKEN`
+- `INTEGRATION_ENCRYPTION_KEY`
+- `GEMINI_API_KEY`
+- `GOOGLE_API_KEY`
+- `RESEND_API_KEY`
+- `RECOVERY_DATABASE_URL`
+- Production database backups
 - `.env`
-- real API keys
-- database passwords
-- JWT secrets
-- recovery secrets
-- encryption keys
-- production backups
-- `node_modules/`
 - `.git/`
+- `node_modules/`
 
-Only useful project Markdown documentation should be retained: `README.md` and `CONTINUATION.md`.
+Use the deployment provider's encrypted environment-variable/secret store.
 
-## AI staging fix — 25 August 2026
+---
 
-A live staging test exposed a database compatibility defect in the AI Assistant low-stock grounding query. The query referenced `product_variants.reorder_level`, but the canonical inventory design stores replenishment thresholds in `inventory_reorder_rules`.
+## Security Boundaries
 
-The query has been corrected to use the canonical reorder-rule table, include reserved stock in available-stock calculations, and fall back to the platform default reorder point when no enabled rule exists. This is a code/schema-alignment fix; it does not require domain-dependent environment variables.
+- CSRF protection remains enabled.
+- Authentication and authorization middleware remain active.
+- Existing role and permission checks are preserved.
+- Finance synchronization requires `finance.sync` permission.
+- Web management, publishing, domains and media retain separate permissions.
+- Gemini credentials remain server-side.
+- Destructive PostgreSQL restore execution remains disabled.
+- Recovery tooling must use an isolated recovery database.
+- MFA remains deferred and has not been activated or redesigned in this release.
 
-The AI assistant must be retested against the real PostgreSQL database after deployment. Gemini operational chat now uses the standard `generateContent` REST endpoint with low thinking, a bounded output size, conversation history, and a 30-second server timeout. The browser gives up after 45 seconds with a clear error instead of hanging indefinitely. The Interactions API remains documented separately but is not used for the synchronous admin chat path.
+---
 
-## Verification performed for this release
+## Database Policy
 
-- All application JavaScript files passed `node --check`.
-- Render preflight: **PASS**.
-- Route audit: **544 route registrations, 543 unique signatures, 0 duplicate signatures**.
-- Legacy `procurement_requisitions` runtime reference: **absent**.
-- Frontend cumulative view audit: **113 unique admin views rendered without exceptions** using safe mock data.
-- AI and Integration cross-closure rendering defect: **fixed**.
-- AI low-stock grounding query/schema mismatch: **fixed** using `inventory_reorder_rules`.
-- Temporary browser test harness: **removed before packaging**.
-- MFA: **untouched**.
-- No destructive database reset introduced.
+The application must use the existing PostgreSQL schema as the source of truth.
 
-Live PostgreSQL, Gemini, email delivery and production backup/restore tests must be performed in the actual staging/deployment environment with real credentials. Do not claim those tests passed from a local build without the required services.
+Do not:
 
-## Deployment
+- Reset PostgreSQL.
+- Drop production tables.
+- Replace the schema with a rebuilt database.
+- Delete operational history.
+- Delete financial history to resolve application errors.
+- Point recovery tooling at the production database.
 
-Node.js 20.x · PostgreSQL
+If a future schema change becomes necessary, use a controlled additive migration process with a backup and rollback plan.
 
-Start command:
+---
 
-```bash
-node render-preflight.js && node server.js
-```
+## Validation Performed
 
-Verification command:
+Static and source-level validation for this release includes:
+
+- JavaScript syntax validation across the application.
+- Render preflight validation.
+- Route registration audit.
+- Duplicate route signature audit.
+- Permission and authentication reference audit.
+- Frontend action audit for invalid Promise handling around `formModal()`.
+- Global date-range propagation audit.
+- Finance synchronization concurrency/idempotency audit.
+- Database dependency audit without connecting to or modifying PostgreSQL.
+- YAML-file audit.
+- Secret exposure audit for frontend assets.
+- ZIP/package integrity validation.
+
+Live database operations were deliberately not performed while preparing this package because the instruction for this release is to leave the database untouched.
+
+---
+
+## Staging Status
+
+Staging validation is complete.
+
+The application is now at the point where the next step is **controlled production deployment**, not another feature-development phase.
+
+---
+
+## Next Step: Production Deployment
+
+### 1. Prepare production infrastructure
+
+- Provision the production Node.js 20.x runtime.
+- Provision or select the existing production PostgreSQL environment.
+- Confirm HTTPS at the hosting provider.
+- Configure the production domain.
+- Configure the deployment start command.
+
+### 2. Configure production environment variables
+
+Fill every required variable listed above using real production values in the hosting provider's secret/environment configuration.
+
+Do not place those values in the repository or README.
+
+### 3. Configure email and domain dependencies
+
+After the production domain is available:
+
+- Set `APP_BASE_URL`.
+- Set `PUBLIC_WEB_ORIGINS`.
+- Configure the verified sender for `EMAIL_FROM`.
+- Configure `RESEND_API_KEY`.
+- Verify password-reset and invitation links from the production domain.
+
+### 4. Configure AI
+
+- Configure one supported Gemini credential.
+- Verify the credential server-side.
+- Confirm no credential is returned to browser clients.
+- Run the AI staging/production smoke test against the real deployment.
+
+### 5. Configure backup operations
+
+- Enable production backup policy as required.
+- Use durable private storage outside the public application directory.
+- Verify backup freshness and integrity.
+- Establish an independent infrastructure recovery procedure.
+- For Neon, use a dedicated recovery branch/database rather than the production connection.
+
+### 6. Run the production smoke test
+
+Before opening the system to normal operations, verify:
+
+- Administrator login.
+- Role and permission enforcement.
+- CSRF-protected state-changing actions.
+- Global date range.
+- Sales and POS.
+- Inventory.
+- Procurement.
+- Finance dashboard.
+- Finance synchronization.
+- Finance reports.
+- Media Management.
+- Web & Hosting website creation.
+- AI server-side credential boundary.
+- Integration Hub.
+- Password recovery.
+- Invitations.
+- Backup readiness.
+- Audit logging.
+
+### 7. Production release decision
+
+Only proceed to normal production use after the real deployment passes the smoke test with production configuration and without database reset or destructive recovery operations.
+
+---
+
+## Verification Commands
+
+Install dependencies using the deployment process, then run:
 
 ```bash
 npm run verify
@@ -186,4 +312,20 @@ Deployment readiness:
 npm run readiness
 ```
 
-Never reset PostgreSQL to make the application start. Apply additive migrations and preserve operational and financial history.
+Normal start:
+
+```bash
+npm start
+```
+
+The configured start command runs render preflight before starting the server.
+
+---
+
+## Project Continuation Rule
+
+Future work must continue from this cumulative build.
+
+Do not rebuild the application. Preserve the existing architecture, modules, routes, permissions, frontend and backend structure. Do not reset PostgreSQL. Do not add YAML files. Do not activate MFA unless a later phase explicitly requires it.
+
+The next development phase should begin only after the production deployment and smoke-test gate has been completed, unless a confirmed production defect requires a targeted correction.
