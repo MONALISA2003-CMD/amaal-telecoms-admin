@@ -2840,3 +2840,55 @@ TV sizes in the preview:
 - 75 inch
 
 The preview is clearly labelled as planning/test data so it cannot be mistaken for live stock or live product records.
+
+## 47. Customers — Business Relationship Workspace
+
+Customers is now the next functional Business Admin module. It is designed as a real ERP customer workspace rather than a simple contact list.
+
+### 47.1 Technical Console parity
+
+The Business Admin customer workspace was compared against the existing customer/CRM capability in the Phase 4 engine. The existing authoritative capabilities include customer creation and editing, Customer 360, addresses, contacts, interactions, support cases, privacy and consent, customer notes, follow-up tasks, customer groups, tags, duplicate review, export and safe customer merging. Customer 360 also connects sales, orders, credit, warranty, returns, deliveries and documents.
+
+The Business Admin now consumes those existing capabilities through the same authenticated business records rather than creating a second customer system.
+
+### 47.2 Business experience
+
+The Customers workspace includes:
+- customer directory and search;
+- customer type and status filters;
+- active customer and balance KPIs;
+- customer profile and relationship view;
+- sales, orders, credit, deliveries and service connections;
+- customer value and purchase activity;
+- customer follow-ups and notes;
+- service cases;
+- customer groups;
+- privacy and consent controls;
+- customer export where permitted;
+- responsive mobile layout;
+- permission-aware actions.
+
+Business-facing copy uses ordinary business language and avoids developer terminology.
+
+### 47.3 Product catalogue expansion
+
+The starter catalogue is now represented as additive PostgreSQL seed data as explicitly requested for this increment. The seed is idempotent and never clears or replaces existing records.
+
+Seeded catalogue structure includes:
+- Phones;
+- Tablets;
+- Entertainment;
+- Accessories;
+- Computers;
+- Networking;
+- Wearables;
+- Power & Smart Home;
+- Gaming;
+- Cameras & Security;
+- Audio.
+
+The requested phone families and TV starter range are included. Product prices begin at zero and no inventory balances, receipts or stock movements are created.
+
+### 47.4 Database safety
+
+This increment may add only missing starter catalogue records. It does not reset, truncate, drop, recreate or overwrite existing business records. Existing PostgreSQL data remains authoritative. The starter seed uses conflict-safe inserts only.

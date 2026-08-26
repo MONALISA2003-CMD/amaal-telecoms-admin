@@ -44,6 +44,8 @@ export const starterCatalogueCategories = [
   'Phones / Samsung Galaxy / A Series',
   'Entertainment / TV',
   'Entertainment / Speakers',
+  'Accessories', 'Computers', 'Networking', 'Wearables', 'Power & Smart Home', 'Gaming', 'Cameras & Security', 'Audio',
+  'Tablets / iPad', 'Tablets / Samsung Galaxy Tab',
 ];
 
 export const starterCatalogueBrands = [

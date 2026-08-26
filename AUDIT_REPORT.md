@@ -113,3 +113,24 @@ One narrowly targeted application-level correction was made to the existing staf
 ## Final assessment
 
 The requested Overview issues, staff lifecycle presentation, business-language audit and starter catalogue blueprint have been addressed without altering the live database or inserting test stock/data.
+
+## Customers / catalogue increment — 2026-08-27
+
+### Technical-console comparison
+Reviewed `customers-crm.js` as the authoritative Phase 4 customer/CRM module. Existing customer routes and Customer 360 relationships were mapped before building the Business Admin workspace.
+
+### Business Admin changes
+- Added Customers workspace and customer detail route.
+- Added permission-aware customer creation, export, follow-up, service-case, notes, groups and consent actions.
+- Added cross-module relationship cards for Sales, Orders, Credit, Delivery, Warranty/Service and follow-up.
+- Removed the visible customer-group developer wording from the new Business Admin experience.
+
+### Catalogue changes
+- Added additive starter catalogue SQL with 104 requested phone/TV product records, 8 brands and 20 category levels/top-level categories.
+- No inventory balances or stock movement records are created.
+- Seed uses `ON CONFLICT DO NOTHING` and is only additive.
+
+### Regression/debug pass
+- Fixed `ExecutiveDashboard` so its trend, payment-method and top-product inputs are actually received by the component.
+- Root `server.js` and `customers-crm.js` syntax checks passed.
+- Next.js dependency installation timed out before a complete production build could be run in this environment. The package was therefore not represented as a successful production-build verification.

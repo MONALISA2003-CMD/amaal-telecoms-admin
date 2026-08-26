@@ -1,4 +1,5 @@
 Amaal Business Admin
-Build source fingerprint: 2026-08-27-overview-staff-catalogue-hardening-v1
-Purpose: audited source package before ZIP delivery.
-Database: untouched; starter catalogue is preview-only and uses no live records.
+Build source fingerprint: 2026-08-27-customers-catalogue-seed-v1
+Purpose: audited source package for the Customers increment and additive starter catalogue.
+Database: existing records remain authoritative; starter catalogue seed is additive and conflict-safe only. No reset, truncate, drop, recreate or stock data.
+Source hash: 508877dcb581d8046cd1b874a8d57462ce1df67fe43eced82ece6f43695decff

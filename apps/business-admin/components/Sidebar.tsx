@@ -70,6 +70,6 @@ export function Sidebar({ permissions = [] }: { permissions?: string[] }) {
         </div>;
       })}
     </nav>
-    <div className="sidebarFoot"><strong>Amaal Business</strong><span>Operational workspace</span><small>Technical controls remain in the console.</small></div>
+    <div className="sidebarFoot"><strong>Amaal Business</strong><span>Operational workspace</span><small>Advanced administration remains separate.</small></div>
   </aside>;
 }

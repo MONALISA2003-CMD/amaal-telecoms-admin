@@ -161,13 +161,13 @@ function StarterCataloguePreview({ data }: { data: { brands: string[]; categorie
   }, [data.items, query]);
   return <section className="panel starterCataloguePreview">
     <div className="starterCatalogueHead">
-      <div><span className="eyebrow">Catalogue planning</span><h3>Starter catalogue blueprint</h3><p>Preview-only product structure for phones and entertainment. It does not create or change any live business records, and it starts with zero stock.</p></div>
+      <div><span className="eyebrow">Catalogue foundation</span><h3>Starter catalogue blueprint</h3><p>Starter catalogue structure for the business catalogue. Starter product records begin with zero stock and can be enriched as real stock arrives.</p></div>
       <button className="softAction" onClick={() => setOpen((value) => !value)}>{open ? 'Hide preview' : 'Preview catalogue'}</button>
     </div>
     <div className="starterStats"><span><strong>{data.items.length}</strong> products planned</span><span><strong>{data.brands.length}</strong> brands</span><span><strong>{data.categories.length}</strong> category levels</span><span><strong>0</strong> stock units</span></div>
     {open && <div className="starterCatalogueBody">
       <div className="starterToolbar"><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search the starter catalogue" aria-label="Search starter catalogue" /><span>{filtered.length} shown</span></div>
-      <div className="starterCategoryGrid">{data.categories.slice(0, 9).map((category) => <span key={category}>{category}</span>)}</div>
+      <div className="starterCategoryGrid">{data.categories.map((category) => <span key={category}>{category}</span>)}</div>
       <div className="starterTableWrap"><table><thead><tr><th>Product</th><th>Brand</th><th>Category</th><th>Type</th><th>Size</th><th>Stock</th></tr></thead><tbody>{filtered.slice(0, 80).map((item) => <tr key={`${item.category}-${item.name}`}><td><strong>{item.name}</strong></td><td>{item.brand || '—'}</td><td>{item.subcategory}</td><td>{item.productType}</td><td>{item.size || '—'}</td><td>0</td></tr>)}</tbody></table></div>
       {filtered.length > 80 && <small className="starterMore">Showing the first 80 preview rows.</small>}
     </div>}

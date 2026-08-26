@@ -496,3 +496,28 @@ The next builder MUST first inspect the existing Technical Console customer/CRM 
 
 ## Mandatory continuity prompt
 > Continue from this exact build. First read Amaal_plan.md, CONTINUATION.md, AUDIT_REPORT.md and PLAN_UPDATE_NOTES.md. Then inspect every existing Business Admin module and compare Customers against the corresponding Technical Console/Phase 4 customer and CRM capabilities before coding. Treat the existing business records as the source of truth. Build Customers as a complete business workspace with customer directory, customer profile, groups/segmentation, balances, service history and all safe business actions already supported by the existing system. Preserve the restrained premium gold/champagne ERP visual language and mobile UX. Business Admin must use ordinary business language only; never expose developer terms such as API, endpoint, JSON, database, backend, server, schema, webhook or internal identifiers. Do not reset, seed, migrate, recreate, truncate, drop, clear or experiment with PostgreSQL. Do not rewrite the existing Render backend. Reuse existing capabilities and only add a narrowly justified additive boundary if a required business capability truly has no existing boundary. After Customers is built, audit ALL modules already built, including Overview, Sales/POS, Products, Warehouse Control, Purchasing, Team, authentication/setup, navigation, permissions and shared UI. Check data mapping, empty/error/loading states, mobile behaviour, stale assumptions and TypeScript/build compatibility. Debug every safe issue found. Update Amaal_plan.md, CONTINUATION.md, AUDIT_REPORT.md and PLAN_UPDATE_NOTES.md, verify archive integrity, and only then package the next complete audited ZIP.
+
+## Current Continuity State — 2026-08-27 — Customers Increment
+
+### Completed
+- Customers Business Admin workspace built from the existing Phase 4 customer/CRM contracts.
+- Customer directory, search, filters, KPI summary and Customer 360 relationship view added.
+- Sales, Orders, Credit, Delivery, Warranty/Service and follow-up relationships are surfaced from the existing customer record.
+- Customer notes, follow-ups, service cases, groups and privacy/consent actions are permission-aware.
+- Dedicated customer detail navigation added.
+- Product starter catalogue expanded with additional business categories.
+- Requested phone and TV starter records are prepared as an additive PostgreSQL seed with zero stock.
+- Executive Dashboard data wiring bug corrected.
+
+### Database rule for this increment
+The user explicitly authorised the starter catalogue to be added to PostgreSQL. This is the only database-data addition in this increment. The seed is additive and conflict-safe. It must never reset, truncate, drop, recreate or overwrite existing business records, and it must never create stock balances or movements.
+
+### Validation
+- Backend JavaScript syntax checks passed.
+- Full Next.js build was blocked by dependency installation timing out in the build environment. Do not treat this as a successful production build.
+
+### Next module
+Continue with the next remaining business module after a full regression pass of Overview, Sales/POS, Products, Warehouse Control, Customers, Purchasing, Team, authentication/setup, navigation, permissions and shared UI.
+
+### Mandatory continuity prompt
+> Continue from this exact build. First read Amaal_plan.md, CONTINUATION.md, AUDIT_REPORT.md and PLAN_UPDATE_NOTES.md. Treat the existing Phase 4 engine and PostgreSQL business records as authoritative. Compare the next module against the corresponding Technical Console capability before coding. Preserve the restrained premium gold/champagne ERP visual language and mobile UX. Business Admin must use ordinary business language only; never expose developer terms such as API, endpoint, JSON, database, backend, server, schema, webhook or infrastructure to business users. Do not reset, truncate, drop, recreate or overwrite existing PostgreSQL records. Do not rewrite the existing Phase 4 backend. Reuse existing capabilities and only add narrowly justified boundaries. Build the next module completely, then audit ALL previously built modules, debug safe issues, verify data mapping, permissions, loading/error/empty states, responsive behaviour and build compatibility. Update all continuity/audit MD files and package a complete integrity-checked ZIP. The additive starter catalogue seed may remain in place and may only add missing starter records; it must never clear or replace existing data or create stock.

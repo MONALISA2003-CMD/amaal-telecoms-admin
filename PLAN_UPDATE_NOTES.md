@@ -39,3 +39,14 @@ No database changes were made.
 - Starter blueprint contains zero stock and performs no live database writes.
 - No database schema, records, migrations or seeds were changed by this build.
 - Next planned module remains Customers / CRM.
+
+## Customers increment — 2026-08-27
+- Built the Business Admin Customers workspace against the existing customer/CRM contracts in the Phase 4 engine.
+- Added customer directory, filtering, customer relationship view, connected sales/orders/credit/service/delivery activity, follow-up, notes, customer groups, service cases and privacy/consent actions.
+- Added a dedicated customer detail route for direct customer relationship navigation.
+- Expanded the starter catalogue category structure beyond Phones, Tablets and Entertainment.
+- Added an additive PostgreSQL starter seed for the requested phone and TV catalogue records plus category structure.
+- No stock quantities are seeded.
+- The starter seed is conflict-safe and does not reset or replace existing records.
+- Fixed the Executive Dashboard data destructuring bug so revenue, payment mix and product analytics are passed correctly into the dashboard component.
+- Validation: root backend JavaScript syntax checks passed. Full Next.js production build could not be completed in this environment because dependency installation timed out; no successful build claim is made.

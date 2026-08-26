@@ -107,7 +107,7 @@ function Kpi({ icon: Icon, label, value, note, delta, href, featured = false }: 
   </Link>;
 }
 
-export function ExecutiveDashboard({ dashboard, bi, sales, inventory, orders, customers, procurement, permissions }: Props) {
+export function ExecutiveDashboard({ dashboard, bi, sales, inventory, orders, customers, procurement, trend, paymentMethods, topProducts, permissions }: Props) {
   const trendData = trendRows({ trend });
   const payments = paymentRows({ payments: paymentMethods });
   const products = productRows({ products: topProducts });
