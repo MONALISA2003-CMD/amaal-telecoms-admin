@@ -40,6 +40,9 @@ type Props = {
   orders: AnyRecord | null;
   customers: AnyRecord | null;
   procurement: AnyRecord | null;
+  trend: AnyRecord[];
+  paymentMethods: AnyRecord[];
+  topProducts: AnyRecord[];
   permissions: string[];
 };
 
@@ -83,7 +86,7 @@ function productRows(source: AnyRecord | null) {
   const raw = source?.byProduct ?? source?.products ?? source?.sales?.byProduct ?? [];
   if (!Array.isArray(raw)) return [];
   return raw.slice(0, 6).map((item: AnyRecord) => ({
-    name: String(item.product ?? item.name ?? item.sku ?? 'Product').slice(0, 18),
+    name: String(item.product_name ?? item.product ?? item.name ?? item.sku ?? 'Product').slice(0, 18),
     value: num(item.sales ?? item.revenue ?? item.amount) ?? 0,
   }));
 }
@@ -105,9 +108,9 @@ function Kpi({ icon: Icon, label, value, note, delta, href, featured = false }: 
 }
 
 export function ExecutiveDashboard({ dashboard, bi, sales, inventory, orders, customers, procurement, permissions }: Props) {
-  const trend = trendRows(sales ?? bi);
-  const payments = paymentRows(sales ?? bi);
-  const products = productRows(sales ?? bi);
+  const trendData = trendRows({ trend });
+  const payments = paymentRows({ payments: paymentMethods });
+  const products = productRows({ products: topProducts });
   const revenue = bi?.sales?.revenue ?? bi?.sales?.total ?? sales?.today?.total;
   const grossProfit = bi?.margin?.gross_margin ?? bi?.grossProfit;
   const openOrdersValues = [orders?.pending, orders?.processing, orders?.dispatched].map(num);
@@ -123,7 +126,7 @@ export function ExecutiveDashboard({ dashboard, bi, sales, inventory, orders, cu
   return <div className="executiveDashboard">
     <section className="dashboardHero">
       <div>
-        <div className="eyebrowRow"><span className="eyebrow">Executive command centre</span><span className="liveDot"><i /> Engine connected</span></div>
+        <div className="eyebrowRow"><span className="eyebrow">Executive command centre</span><span className="liveDot"><i /> Live business data</span></div>
         <h2>Good business starts with clarity.</h2>
         <p>One operational view across revenue, customers, inventory and fulfilment — using the same trusted business records.</p>
       </div>
@@ -131,17 +134,17 @@ export function ExecutiveDashboard({ dashboard, bi, sales, inventory, orders, cu
     </section>
 
     <section className="kpiGrid" aria-label="Executive KPIs">
-      {canSales && <Kpi icon={CircleDollarSign} label="Revenue" value={money(revenue)} note="Authoritative sales / BI data" delta={bi?.sales?.changePct ?? bi?.revenueChangePct} href="/sales" featured />}
-      <Kpi icon={Banknote} label="Gross profit" value={money(grossProfit)} note={marginPct == null ? 'Finance data when available' : `${Number(marginPct).toFixed(1)}% gross margin`} href="/finance" />
+      {canSales && <Kpi icon={CircleDollarSign} label="Revenue" value={money(revenue)} note="From recorded sales" delta={bi?.sales?.changePct ?? bi?.revenueChangePct} href="/sales" featured />}
+      <Kpi icon={Banknote} label="Gross profit" value={money(grossProfit)} note={marginPct == null ? 'From recorded finance activity' : `${Number(marginPct).toFixed(1)}% gross margin`} href="/finance" />
       {canOrders && <Kpi icon={ShoppingCart} label="Open orders" value={integer(openOrders)} note="Pending through dispatch" href="/orders" />}
       {canStock && <Kpi icon={Boxes} label="Low-stock lines" value={integer(inventory?.lowStock)} note="Replenishment pressure" href="/stock" />}
     </section>
 
     <div className="dashboardGrid dashboardGridTop">
       <section className="panel dashboardPanel trendPanel">
-        <div className="panelHeading"><div><h3>Revenue performance</h3><p>Trend from the existing business-intelligence / sales analytics contract.</p></div><Link className="textAction" href="/reports">Open reports</Link></div>
+        <div className="panelHeading"><div><h3>Revenue performance</h3><p>Revenue movement across the selected period.</p></div><Link className="textAction" href="/reports">Open reports</Link></div>
         <div className="executiveChart">
-          {trend.length ? <ResponsiveContainer width="100%" height="100%"><AreaChart data={trend} margin={{ top: 8, right: 10, left: -18, bottom: 0 }}><defs><linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#c7a24a" stopOpacity={0.25} /><stop offset="100%" stopColor="#c7a24a" stopOpacity={0.02} /></linearGradient></defs><CartesianGrid stroke="#e9e5dc" strokeDasharray="3 3" vertical={false} /><XAxis dataKey="label" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} /><YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={(v) => `${Math.round(Number(v) / 1000)}k`} /><Tooltip formatter={(value) => money(value)} /><Area type="monotone" dataKey="value" stroke="#b88f28" strokeWidth={2.5} fill="url(#revenueFill)" /></AreaChart></ResponsiveContainer> : <ChartEmpty title="Revenue trend unavailable" text="The current role or API contract does not expose a trend for this period." />}
+          {trendData.length ? <ResponsiveContainer width="100%" height="100%"><AreaChart data={trendData} margin={{ top: 8, right: 10, left: -18, bottom: 0 }}><defs><linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#c7a24a" stopOpacity={0.25} /><stop offset="100%" stopColor="#c7a24a" stopOpacity={0.02} /></linearGradient></defs><CartesianGrid stroke="#e9e5dc" strokeDasharray="3 3" vertical={false} /><XAxis dataKey="label" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} /><YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={(v) => `${Math.round(Number(v) / 1000)}k`} /><Tooltip formatter={(value) => money(value)} /><Area type="monotone" dataKey="value" stroke="#b88f28" strokeWidth={2.5} fill="url(#revenueFill)" /></AreaChart></ResponsiveContainer> : <ChartEmpty title="No sales recorded yet" text="Revenue movement will appear here as completed sales are recorded." />}
         </div>
       </section>
 
@@ -159,12 +162,12 @@ export function ExecutiveDashboard({ dashboard, bi, sales, inventory, orders, cu
     <div className="dashboardGrid dashboardGridCharts">
       <section className="panel dashboardPanel">
         <div className="panelHeading"><div><h3>Sales composition</h3><p>Payment mix for the available analytics period.</p></div></div>
-        <div className="donutLayout">{payments.length ? <div className="donutChart"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={payments} dataKey="value" nameKey="name" innerRadius="60%" outerRadius="80%" paddingAngle={3}>{payments.map((_, i) => <Cell key={i} fill={chartPalette[i % chartPalette.length]} />)}</Pie><Tooltip formatter={(value) => money(value)} /></PieChart></ResponsiveContainer></div> : <ChartEmpty title="Composition unavailable" text="No payment breakdown is exposed for the current view." />}<div className="legendList executiveLegend">{payments.slice(0, 5).map((item, i) => <div key={item.name}><span><i style={{ background: chartPalette[i % chartPalette.length] }} />{item.name}</span><strong>{money(item.value)}</strong></div>)}</div></div>
+        <div className="donutLayout">{payments.length ? <div className="donutChart"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={payments} dataKey="value" nameKey="name" innerRadius="60%" outerRadius="80%" paddingAngle={3}>{payments.map((_, i) => <Cell key={i} fill={chartPalette[i % chartPalette.length]} />)}</Pie><Tooltip formatter={(value) => money(value)} /></PieChart></ResponsiveContainer></div> : <ChartEmpty title="No payments recorded yet" text="Payment mix will appear here after sales are completed." />}<div className="legendList executiveLegend">{payments.slice(0, 5).map((item, i) => <div key={item.name}><span><i style={{ background: chartPalette[i % chartPalette.length] }} />{item.name}</span><strong>{money(item.value)}</strong></div>)}</div></div>
       </section>
 
       <section className="panel dashboardPanel">
         <div className="panelHeading"><div><h3>Top products</h3><p>Sales contribution, not inventory quantity.</p></div>{canProducts && <Link className="textAction" href="/products">Catalogue</Link>}</div>
-        <div className="executiveBarChart">{products.length ? <ResponsiveContainer width="100%" height="100%"><BarChart data={products} layout="vertical" margin={{ top: 0, right: 10, left: 5, bottom: 0 }}><CartesianGrid stroke="#e9e5dc" strokeDasharray="3 3" horizontal={false} /><XAxis type="number" hide /><YAxis dataKey="name" type="category" width={92} tick={{ fontSize: 10 }} tickLine={false} axisLine={false} /><Tooltip formatter={(value) => money(value)} /><Bar dataKey="value" fill="#24324a" radius={[0, 5, 5, 0]} /></BarChart></ResponsiveContainer> : <ChartEmpty title="Product ranking unavailable" text="The current analytics response does not contain product contribution data." />}</div>
+        <div className="executiveBarChart">{products.length ? <ResponsiveContainer width="100%" height="100%"><BarChart data={products} layout="vertical" margin={{ top: 0, right: 10, left: 5, bottom: 0 }}><CartesianGrid stroke="#e9e5dc" strokeDasharray="3 3" horizontal={false} /><XAxis type="number" hide /><YAxis dataKey="name" type="category" width={92} tick={{ fontSize: 10 }} tickLine={false} axisLine={false} /><Tooltip formatter={(value) => money(value)} /><Bar dataKey="value" fill="#24324a" radius={[0, 5, 5, 0]} /></BarChart></ResponsiveContainer> : <ChartEmpty title="No product sales yet" text="Top-selling products will appear here as sales are recorded." />}</div>
       </section>
     </div>
 

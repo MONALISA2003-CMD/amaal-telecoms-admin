@@ -2781,3 +2781,62 @@ Before Customers:
 5. Debug all affected areas.
 6. Update all continuity documents.
 7. Verify the ZIP before packaging.
+
+# 17. Overview, Staff Lifecycle and Starter Catalogue Hardening — 2026-08-27
+
+## Executive Overview refinement
+
+The Executive Overview now reads the dedicated business intelligence views for:
+- revenue movement;
+- payment mix;
+- top-selling products.
+
+This prevents the dashboard from treating a valid empty business period as a broken report. When there are no completed sales, the interface now uses calm business empty states such as **No sales recorded yet**, **No payments recorded yet**, and **No product sales yet**.
+
+## Staff lifecycle
+
+The Business Admin team experience now separates:
+- Active staff — only currently active accounts;
+- Deleted Staff — accounts permanently deactivated by the existing staff-deletion process.
+
+The existing backend deletion process already preserves historical business references by anonymising the identity and suspending authentication. The Business Admin now reflects that lifecycle immediately instead of allowing deleted identities to remain in the active staff list.
+
+No new database table, migration or data reset was introduced.
+
+## Starter catalogue blueprint
+
+A preview-only catalogue blueprint has been added for development and UI testing. It does **not** write to the live database and deliberately contains **zero stock**.
+
+Top-level categories:
+- Phones
+- Tablets
+- Entertainment
+
+Phone structure:
+- iPhones: iPhone 11 through iPhone 17, with Pro and Pro Max variants in the requested range.
+- Samsung Galaxy S: S20 through S26, including base, + and Ultra models.
+- Samsung Galaxy Foldable: Fold and Flip 4 through 8.
+- Samsung Galaxy A: A57, A56, A36, A37, A26, A27, A16, A17, A07 and A06.
+
+Entertainment:
+- TV
+- Speakers
+
+TV brands:
+- TCL
+- Hisense
+- Samsung
+- LG Global Star
+- SPJ
+- Chiq
+- Smart Plus
+
+TV sizes in the preview:
+- 32 inch
+- 43 inch
+- 50 inch
+- 55 inch
+- 65 inch
+- 75 inch
+
+The preview is clearly labelled as planning/test data so it cannot be mistaken for live stock or live product records.

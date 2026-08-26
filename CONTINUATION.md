@@ -473,3 +473,26 @@ The next builder MUST first inspect the existing Technical Console customer/CRM 
 ## Mandatory continuity build prompt
 
 > Continue the Amaal Telecoms Business Admin from the current ZIP. First inspect the current project and the existing Technical Console module of the same kind. The next module is Customers. Compare every existing customer/CRM capability before building. Build the next module as a complete real-business workspace, not a simplified demo. Preserve the premium restrained gold/champagne ERP visual language, responsive mobile experience, clear dashboards, useful charts and actionable attention areas. Use ordinary business language in Business Admin; never expose developer terminology such as API, endpoint, database, JSON, webhook, server, infrastructure or internal identifiers to business users. Treat the existing Render business system and PostgreSQL records as the source of truth. DO NOT touch, reset, reseed, migrate, recreate, truncate, drop, rewrite or experiment with the database. DO NOT replace or rewrite the existing backend. Reuse existing business capabilities and only add a clearly necessary business-facing boundary. After building Customers, audit ALL existing modules, check permissions, loading states, empty states, errors, mobile behaviour, navigation, wording, data mapping and regressions. Debug every issue found. Confirm the database/backend remain untouched. Update Amaal_plan.md, CONTINUATION.md, AUDIT_REPORT.md and PLAN_UPDATE_NOTES.md. Only then create and integrity-check the next ZIP.
+
+# Current Continuity State — 2026-08-27 — Hardening Pass
+
+## Completed in this pass
+- Executive Overview charts now use the dedicated revenue-trend, payment-method and product-performance business views.
+- Dashboard empty states no longer describe missing business data as a technical/API problem.
+- Team workspace now separates Active Staff from Deleted Staff.
+- Deleted staff are excluded from the active staff list immediately after the existing deletion process completes.
+- Existing deletion behaviour remains the source of the lifecycle state: the account is suspended, sessions/devices are revoked, identity is anonymised, and historical business records remain intact.
+- Business-facing wording was reviewed again and technical/developer language was removed from visible areas found during the audit.
+- A preview-only starter catalogue blueprint was added for Phones, Tablets and Entertainment. It includes the requested phone families and TV brands/sizes and has zero stock.
+
+## Important protection
+- PostgreSQL was not reset, seeded, migrated, truncated, dropped, recreated or experimentally changed.
+- No catalogue starter records were inserted into the live database.
+- The starter catalogue is preview/test planning data only.
+- Existing Render backend capabilities remain authoritative.
+
+## Next module
+**Customers / CRM.**
+
+## Mandatory continuity prompt
+> Continue from this exact build. First read Amaal_plan.md, CONTINUATION.md, AUDIT_REPORT.md and PLAN_UPDATE_NOTES.md. Then inspect every existing Business Admin module and compare Customers against the corresponding Technical Console/Phase 4 customer and CRM capabilities before coding. Treat the existing business records as the source of truth. Build Customers as a complete business workspace with customer directory, customer profile, groups/segmentation, balances, service history and all safe business actions already supported by the existing system. Preserve the restrained premium gold/champagne ERP visual language and mobile UX. Business Admin must use ordinary business language only; never expose developer terms such as API, endpoint, JSON, database, backend, server, schema, webhook or internal identifiers. Do not reset, seed, migrate, recreate, truncate, drop, clear or experiment with PostgreSQL. Do not rewrite the existing Render backend. Reuse existing capabilities and only add a narrowly justified additive boundary if a required business capability truly has no existing boundary. After Customers is built, audit ALL modules already built, including Overview, Sales/POS, Products, Warehouse Control, Purchasing, Team, authentication/setup, navigation, permissions and shared UI. Check data mapping, empty/error/loading states, mobile behaviour, stale assumptions and TypeScript/build compatibility. Debug every safe issue found. Update Amaal_plan.md, CONTINUATION.md, AUDIT_REPORT.md and PLAN_UPDATE_NOTES.md, verify archive integrity, and only then package the next complete audited ZIP.

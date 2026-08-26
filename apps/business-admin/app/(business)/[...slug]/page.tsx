@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Workspace, type Card } from '@/components/Workspace';
 import { PurchasingWorkspace } from '@/components/PurchasingWorkspace';
+import { TeamWorkspace } from '@/components/TeamWorkspace';
 import { businessGetSafe, money, number } from '@/lib/business';
 
 type Params = { slug: string[] };
@@ -17,7 +18,7 @@ const titles: Record<string, [string, string]> = {
   credit: ['Credit', 'Monitor customer credit exposure, applications and amounts due.'],
   delivery: ['Delivery', 'Monitor shipments, delivery workload and exceptions.'],
   service: ['Service', 'Keep returns, warranty and repair work visible in one business workspace.'],
-  website: ['Website', 'Manage the connected public website without exposing technical hosting controls.'],
+  website: ['Website', 'Manage the connected public website without exposing hosting controls.'],
   reports: ['Reports', 'Use the business performance records for cross-business performance.'],
   team: ['Team', 'Review the people and access information available to your role.'],
   settings: ['Business Settings', 'Review the business configuration exposed to your role.'],
@@ -180,7 +181,7 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
       ['Connected sites', number(Array.isArray(sites) ? sites.length : null)],
       ['Business-owned content', 'Approved'],
       ['Publishing', 'Permission controlled'],
-      ['Technical hosting', 'Console only'],
+      ['Website hosting', 'Managed separately'],
     ])}
       rows={Array.isArray(sites) ? sites : []} columns={[{ key: 'name', label: 'Site' }, { key: 'slug', label: 'Slug' }, { key: 'status', label: 'Status' }, { key: 'primary_domain', label: 'Domain' }]} />;
   }
@@ -198,13 +199,11 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
   }
 
   if (key === 'team') {
-    const staff = await businessGetSafe<any>('/api/staff');
-    return <Workspace title={title} description={description} cards={makeCards([
-      ['Team members', number(Array.isArray(staff) ? staff.length : null)],
-      ['Access control', 'Backend enforced'],
-      ['Technical administration', 'Console only'],
-    ])}
-      rows={Array.isArray(staff) ? staff : []} columns={[{ key: 'name', label: 'Name' }, { key: 'email', label: 'Email' }, { key: 'status', label: 'Status' }, { key: 'roles', label: 'Roles' }]} />;
+    const [staff, deletedStaff] = await Promise.all([
+      businessGetSafe<any[]>('/api/staff'),
+      businessGetSafe<any[]>('/api/staff/deleted'),
+    ]);
+    return <TeamWorkspace active={Array.isArray(staff) ? staff : []} deleted={Array.isArray(deletedStaff) ? deletedStaff : []} />;
   }
 
   if (key === 'settings') {

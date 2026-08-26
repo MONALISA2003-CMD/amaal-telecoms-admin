@@ -98,7 +98,7 @@ export default function LoginPage() {
         </button>
 
         <div className="authDivider"><span>Protected business access</span></div>
-        <p className="note authNote">Business access is controlled by your Amaal role. Technical administration remains in the technical console.</p>
+        <p className="note authNote">Your Amaal role controls what you can do in the business workspace. Business records remain protected at all times.</p>
       </form>
     </main>
   );

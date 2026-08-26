@@ -34,7 +34,7 @@ export function GlobalSearch() {
         <div>
           <span className="eyebrow">Business search</span>
           <h2>Find anything</h2>
-          <p>Search only returns records your current backend permissions allow you to see.</p>
+          <p>Search only shows business records available to your role.</p>
         </div>
       </section>
       <form className="searchForm" onSubmit={search}>

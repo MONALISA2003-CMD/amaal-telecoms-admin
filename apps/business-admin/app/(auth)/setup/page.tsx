@@ -85,7 +85,7 @@ export default function SetupPage() {
           {!busy && <span aria-hidden="true">→</span>}
         </button>
 
-        <p className="note authNote">The Amaal engine decides whether first-time setup is permitted. No second administrator is silently created and no database is replaced.</p>
+        <p className="note authNote">Your first administrator is created only when the business is ready for setup. Existing business records remain untouched.</p>
       </form>
     </main>
   );

@@ -24,6 +24,8 @@ type Product = {
 
 type Option = { id: string; name: string; product_count?: number };
 
+type StarterItem = { name: string; category: string; subcategory: string; brand?: string; productType: string; size?: string };
+
 type Props = {
   summary: { products?: number; brands?: number; categories?: number; variants?: number; published?: number } | null;
   products: Product[];
@@ -32,6 +34,7 @@ type Props = {
   categories: Option[];
   canManage: boolean;
   canPublish: boolean;
+  starterCatalogue: { brands: string[]; categories: string[]; items: StarterItem[] };
 };
 
 const money = (value: unknown) => {
@@ -54,7 +57,7 @@ function formatDate(value?: string) {
   return Number.isNaN(d.getTime()) ? '—' : new Intl.DateTimeFormat('en-UG', { day: '2-digit', month: 'short', year: 'numeric' }).format(d);
 }
 
-export function ProductCatalogue({ summary, products, total, brands, categories, canManage, canPublish }: Props) {
+export function ProductCatalogue({ summary, products, total, brands, categories, canManage, canPublish, starterCatalogue }: Props) {
   const [query, setQuery] = useState('');
   const [brand, setBrand] = useState('All');
   const [category, setCategory] = useState('All');
@@ -126,7 +129,10 @@ export function ProductCatalogue({ summary, products, total, brands, categories,
         <span className="catalogueHint">Select a product to inspect its commercial record.</span>
       </section>
 
-      {filtered.length === 0 ? <div className="panel catalogueEmpty"><PackageSearch size={28} /><strong>No products match this view</strong><span>Try another search or clear the filters. The catalogue remains authoritative to the business records.</span><button onClick={clearFilters}>Clear filters</button></div> : view === 'grid' ? (
+      {filtered.length === 0 ? <>
+        <div className="panel catalogueEmpty"><PackageSearch size={28} /><strong>No live products match this view</strong><span>Nothing has been added to this catalogue view yet. You can add products above, or use the starter blueprint below while designing the catalogue.</span><button onClick={clearFilters}>Clear filters</button></div>
+        <StarterCataloguePreview data={starterCatalogue} />
+      </> : view === 'grid' ? (
         <div className="productGrid">{filtered.map((product) => <ProductCard key={product.id} product={product} />)}</div>
       ) : (
         <div className="panel catalogueList"><table><thead><tr><th>Product</th><th>Brand</th><th>Category</th><th>Variants</th><th>Price</th><th>Status</th><th>Website</th><th>Updated</th><th /></tr></thead><tbody>{filtered.map((product) => <tr key={product.id}>
@@ -143,6 +149,29 @@ export function ProductCatalogue({ summary, products, total, brands, categories,
       {adminModal === 'import' && <ImportModal onClose={() => setAdminModal(null)} onDone={() => window.location.reload()} />}
     </div>
   );
+}
+
+
+function StarterCataloguePreview({ data }: { data: { brands: string[]; categories: string[]; items: StarterItem[] } }) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return q ? data.items.filter((item) => [item.name, item.brand, item.category, item.subcategory].some((value) => String(value || '').toLowerCase().includes(q))) : data.items;
+  }, [data.items, query]);
+  return <section className="panel starterCataloguePreview">
+    <div className="starterCatalogueHead">
+      <div><span className="eyebrow">Catalogue planning</span><h3>Starter catalogue blueprint</h3><p>Preview-only product structure for phones and entertainment. It does not create or change any live business records, and it starts with zero stock.</p></div>
+      <button className="softAction" onClick={() => setOpen((value) => !value)}>{open ? 'Hide preview' : 'Preview catalogue'}</button>
+    </div>
+    <div className="starterStats"><span><strong>{data.items.length}</strong> products planned</span><span><strong>{data.brands.length}</strong> brands</span><span><strong>{data.categories.length}</strong> category levels</span><span><strong>0</strong> stock units</span></div>
+    {open && <div className="starterCatalogueBody">
+      <div className="starterToolbar"><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search the starter catalogue" aria-label="Search starter catalogue" /><span>{filtered.length} shown</span></div>
+      <div className="starterCategoryGrid">{data.categories.slice(0, 9).map((category) => <span key={category}>{category}</span>)}</div>
+      <div className="starterTableWrap"><table><thead><tr><th>Product</th><th>Brand</th><th>Category</th><th>Type</th><th>Size</th><th>Stock</th></tr></thead><tbody>{filtered.slice(0, 80).map((item) => <tr key={`${item.category}-${item.name}`}><td><strong>{item.name}</strong></td><td>{item.brand || '—'}</td><td>{item.subcategory}</td><td>{item.productType}</td><td>{item.size || '—'}</td><td>0</td></tr>)}</tbody></table></div>
+      {filtered.length > 80 && <small className="starterMore">Showing the first 80 preview rows.</small>}
+    </div>}
+  </section>;
 }
 
 function Stat({ icon, label, value, note, featured = false }: { icon: React.ReactNode; label: string; value: string; note: string; featured?: boolean }) {

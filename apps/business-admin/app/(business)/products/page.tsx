@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { ProductCatalogue } from '@/components/ProductCatalogue';
 import { businessGetSafe } from '@/lib/business';
 import { CatalogueAdminBar } from '@/components/ProductAdmin';
+import { starterCatalogueBrands, starterCatalogueCategories, starterCatalogueItems } from '@/data/starter-catalogue';
 
 type Me = { permissions?: string[] };
 type ProductResult = { rows?: Array<Record<string, unknown>>; total?: number };
@@ -19,5 +20,5 @@ export default async function ProductsPage() {
     businessGetSafe<Option[]>('/api/catalog/brands'),
     businessGetSafe<Option[]>('/api/catalog/categories'),
   ]);
-  return <ProductCatalogue summary={summary} products={Array.isArray(result?.rows) ? result.rows as any[] : []} total={Number(result?.total ?? 0)} brands={Array.isArray(brands) ? brands : []} categories={Array.isArray(categories) ? categories : []} canManage={permissions.has('catalog.manage')} canPublish={permissions.has('catalog.publish')} />;
+  return <ProductCatalogue summary={summary} products={Array.isArray(result?.rows) ? result.rows as any[] : []} total={Number(result?.total ?? 0)} brands={Array.isArray(brands) ? brands : []} categories={Array.isArray(categories) ? categories : []} canManage={permissions.has('catalog.manage')} canPublish={permissions.has('catalog.publish')} starterCatalogue={{ brands: starterCatalogueBrands, categories: starterCatalogueCategories, items: starterCatalogueItems }} />;
 }

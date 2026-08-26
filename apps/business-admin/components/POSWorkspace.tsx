@@ -34,7 +34,7 @@ export function POSWorkspace({ locations }: { locations: PosLocation[] }) {
   }
 
   function add(product: PosProduct) {
-    if (product.serialized) { setMessage('Serialized products require serial/IMEI selection. Use the technical/advanced sales workflow for this item.'); return; }
+    if (product.serialized) { setMessage('This product needs a serial or IMEI before it can be sold. Open the product details to continue.'); return; }
     setCart((current) => {
       const existing = current.find((line) => line.variant_id === product.variant_id);
       if (existing) return current.map((line) => line.variant_id === product.variant_id ? { ...line, quantity: Math.min(line.quantity + 1, Number(product.available) || 1) } : line);
