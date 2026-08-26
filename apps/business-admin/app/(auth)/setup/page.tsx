@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Brand } from '@/components/Brand';
 
 export default function SetupPage() {
@@ -43,12 +44,33 @@ export default function SetupPage() {
   }
 
   return (
-    <main className="loginPage">
-      <form className="loginCard" onSubmit={submit}>
-        <Brand/>
-        <h1>Set up Amaal Telecoms</h1>
-        <p>Create the first business administrator account. This page stays available until setup is successfully completed. Your existing business data remains in the existing Amaal engine.</p>
-        {error && <div className="error" role="alert">{error}</div>}
+    <main className="authPage authPageSetup">
+      <div className="authGlow authGlowOne" aria-hidden="true" />
+      <div className="authGlow authGlowTwo" aria-hidden="true" />
+      <form className="authCard authSetupCard" onSubmit={submit}>
+        <div className="authHeader">
+          <div className="authBrandRow">
+            <Brand />
+            <span className="authBadge">First setup</span>
+          </div>
+          <span className="authKicker">Amaal Telecoms</span>
+        </div>
+
+        <div className="authIntro">
+          <p className="authEyebrow">Business administration</p>
+          <h1>Create administrator</h1>
+          <p>Create the first business administrator through the existing Amaal engine. Existing business records remain untouched.</p>
+        </div>
+
+        {error && (
+          <div className="error authSetupError" role="alert">
+            <strong>Setup could not be completed</strong>
+            <span>{error}</span>
+            {error.toLowerCase().includes('already configured') && (
+              <Link href="/login">Return to secure sign in →</Link>
+            )}
+          </div>
+        )}
 
         <div className="field"><label htmlFor="companyName">Business name</label><input id="companyName" value={companyName} onChange={e => setCompanyName(e.target.value)} required /></div>
         <div className="field"><label htmlFor="name">Administrator name</label><input id="name" autoComplete="name" value={name} onChange={e => setName(e.target.value)} required /></div>
@@ -58,8 +80,12 @@ export default function SetupPage() {
         <div className="field"><label htmlFor="password">Create password</label><input id="password" type="password" autoComplete="new-password" value={password} onChange={e => setPassword(e.target.value)} required /></div>
         <div className="field"><label htmlFor="confirmPassword">Confirm password</label><input id="confirmPassword" type="password" autoComplete="new-password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required /></div>
 
-        <button className="primary" disabled={busy}>{busy ? 'Setting up…' : 'Create administrator account'}</button>
-        <p className="note">This creates the first administrator through the existing Amaal setup service. No new business database is created.</p>
+        <button className="primary authButton" disabled={busy}>
+          {busy ? 'Creating account…' : 'Create administrator account'}
+          {!busy && <span aria-hidden="true">→</span>}
+        </button>
+
+        <p className="note authNote">The Amaal engine decides whether first-time setup is permitted. No second administrator is silently created and no database is replaced.</p>
       </form>
     </main>
   );

@@ -51,20 +51,54 @@ export default function LoginPage() {
   }
 
   if (checkingSetup) {
-    return <main className="loginPage"><section className="loginCard"><Brand/><p>Checking Amaal account setup…</p></section></main>;
+    return (
+      <main className="authPage">
+        <section className="authCard authCardCompact">
+          <div className="goldOrb" aria-hidden="true" />
+          <Brand />
+          <p className="authLoading">Checking Amaal account setup…</p>
+        </section>
+      </main>
+    );
   }
 
   return (
-    <main className="loginPage">
-      <form className="loginCard" onSubmit={submit}>
-        <Brand/>
-        <h1>Welcome back</h1>
-        <p>Sign in to manage Amaal Telecoms.</p>
+    <main className="authPage">
+      <div className="authGlow authGlowOne" aria-hidden="true" />
+      <div className="authGlow authGlowTwo" aria-hidden="true" />
+      <form className="authCard" onSubmit={submit}>
+        <div className="authHeader">
+          <div className="authBrandRow">
+            <Brand />
+            <span className="authBadge">Business</span>
+          </div>
+          <span className="authKicker">Amaal Telecoms</span>
+        </div>
+
+        <div className="authIntro">
+          <p className="authEyebrow">Business administration</p>
+          <h1>Welcome back</h1>
+          <p>Sign in to manage Amaal Telecoms with secure, role-based access.</p>
+        </div>
+
         {error && <div className="error" role="alert">{error}</div>}
-        <div className="field"><label htmlFor="email">Email address</label><input id="email" type="email" autoComplete="username" value={email} onChange={e => setEmail(e.target.value)} required /></div>
-        <div className="field"><label htmlFor="password">Password</label><input id="password" type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required /></div>
-        <button className="primary" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
-        <p className="note">Business access is controlled by your Amaal role. Technical administration remains in the technical console.</p>
+
+        <div className="field">
+          <label htmlFor="email">Email address</label>
+          <input id="email" type="email" autoComplete="username" value={email} onChange={e => setEmail(e.target.value)} required />
+        </div>
+        <div className="field">
+          <label htmlFor="password">Password</label>
+          <input id="password" type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required />
+        </div>
+
+        <button className="primary authButton" disabled={busy}>
+          {busy ? 'Signing in…' : 'Sign in'}
+          {!busy && <span aria-hidden="true">→</span>}
+        </button>
+
+        <div className="authDivider"><span>Protected business access</span></div>
+        <p className="note authNote">Business access is controlled by your Amaal role. Technical administration remains in the technical console.</p>
       </form>
     </main>
   );
