@@ -134,3 +134,36 @@ Reviewed `customers-crm.js` as the authoritative Phase 4 customer/CRM module. Ex
 - Fixed `ExecutiveDashboard` so its trend, payment-method and top-product inputs are actually received by the component.
 - Root `server.js` and `customers-crm.js` syntax checks passed.
 - Next.js dependency installation timed out before a complete production build could be run in this environment. The package was therefore not represented as a successful production-build verification.
+
+## Orders & Fulfilment increment — 2026-08-27
+
+### Technical-console comparison
+Reviewed the existing `orders-ecommerce.js` order capability before implementing the Business Admin module. The Business Admin uses the established order lifecycle, payment rules, stock reservation behaviour, fulfilment creation, cancellation, refund handoff, sale conversion and order analytics already provided by the existing engine.
+
+### Business Admin changes
+- Added a dedicated Orders command centre rather than relying on the generic summary page.
+- Added order KPIs for total, open orders, monthly order value and part-paid orders.
+- Added order value trend, payment mix and top ordered product charts.
+- Added order pipeline view.
+- Added searchable/filterable order book.
+- Added payment follow-up and fulfilment queues.
+- Added order insights and direct links to Stock, Delivery, Sales and Customers.
+- Added business-facing order creation using existing pricing and stock rules.
+- Added dedicated order detail pages.
+- Added payment recording, next-stage progression, cancellation, fulfilment creation, refund handoff and sale conversion actions where the existing permissions allow them.
+- Preserved the existing order engine as the source of truth.
+
+### Regression audit
+- Overview, Sales/POS, Products, Stock, Purchasing, Customers, Team, authentication/setup, navigation and shared Business Admin components were inspected again.
+- Visible business-facing wording was searched for developer terminology. No new technical wording was found in Business Admin presentation copy.
+- Existing backend JavaScript syntax: PASS.
+- All Business Admin TypeScript/TSX files passed a TypeScript transpile/syntax check after excluding generated declaration files.
+- Full Next.js production build remains unverified because dependency installation timed out in this environment.
+- No backend source file was modified in this increment.
+- No PostgreSQL operation, seed, migration, reset or schema change was performed in this increment.
+
+### Database protection
+The previously authorised additive starter catalogue remains unchanged. This Orders increment does not add, delete, reset or modify database records directly. Order actions in the Business Admin continue through the existing business engine and its existing rules.
+
+### Next
+Next core module: **Finance & Credit**, beginning with Finance and then connecting Credit to the same money/customer/order records.

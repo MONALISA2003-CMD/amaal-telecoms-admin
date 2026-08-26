@@ -521,3 +521,35 @@ Continue with the next remaining business module after a full regression pass of
 
 ### Mandatory continuity prompt
 > Continue from this exact build. First read Amaal_plan.md, CONTINUATION.md, AUDIT_REPORT.md and PLAN_UPDATE_NOTES.md. Treat the existing Phase 4 engine and PostgreSQL business records as authoritative. Compare the next module against the corresponding Technical Console capability before coding. Preserve the restrained premium gold/champagne ERP visual language and mobile UX. Business Admin must use ordinary business language only; never expose developer terms such as API, endpoint, JSON, database, backend, server, schema, webhook or infrastructure to business users. Do not reset, truncate, drop, recreate or overwrite existing PostgreSQL records. Do not rewrite the existing Phase 4 backend. Reuse existing capabilities and only add narrowly justified boundaries. Build the next module completely, then audit ALL previously built modules, debug safe issues, verify data mapping, permissions, loading/error/empty states, responsive behaviour and build compatibility. Update all continuity/audit MD files and package a complete integrity-checked ZIP. The additive starter catalogue seed may remain in place and may only add missing starter records; it must never clear or replace existing data or create stock.
+
+# Current Continuity State — 2026-08-27 — Orders & Fulfilment
+
+## Completed in this increment
+- Dedicated Orders Business Admin workspace.
+- Order KPIs, order pipeline and operational attention views.
+- Revenue/value trend, payment mix and top-product order charts.
+- Searchable and filterable order book.
+- Payment follow-up and fulfilment queues.
+- Dedicated order detail and journey view.
+- New order creation using existing product pricing, availability and reservation rules.
+- Payment recording.
+- Order lifecycle progression.
+- Cancellation.
+- Fulfilment creation.
+- Refund handoff.
+- Fully paid order conversion into the existing Sales workflow.
+- Direct connections to Customers, Products/Stock, Sales and Delivery.
+- Business-language review and responsive mobile layout.
+
+## Validation
+- Root backend JavaScript syntax: PASS.
+- Business Admin TypeScript/TSX transpile/syntax check: PASS.
+- Full Next.js production build: not verified because dependency installation timed out in the build environment.
+- No backend source changes made in this increment.
+- No PostgreSQL reset, migration, schema change or direct data manipulation made in this increment.
+
+## Next module
+**Finance & Credit**.
+
+## Mandatory continuity prompt
+> Continue from this exact build. First read `Amaal_plan.md`, `CONTINUATION.md`, `AUDIT_REPORT.md` and `PLAN_UPDATE_NOTES.md`. Inspect the existing Finance and Credit technical-console/Phase 4 capabilities before coding. Build Finance first as a complete business-facing money-control workspace, then connect Credit to customers, orders and finance using existing authoritative capabilities. Treat the existing Render business engine and PostgreSQL records as the source of truth. Do not reset, reseed, migrate, recreate, truncate, drop, clear or experiment with PostgreSQL. Do not rewrite or replace the existing backend. Reuse existing capabilities and permissions. Business Admin must use ordinary business language only; never expose developer terms such as API, endpoint, JSON, database, backend, server, schema, webhook or infrastructure to business users. Preserve the restrained premium gold/champagne ERP visual language, meaningful charts, tables, attention areas and mobile UX. After Finance/Credit is built, audit ALL modules already built — authentication/setup, Overview, Sales/POS, Products, Stock, Purchasing, Customers, Orders, Team, navigation, permissions and shared UI — then debug all safe issues, check data mapping, empty/error/loading states, mobile behaviour and build compatibility. Update all continuity/audit MD files and package a complete integrity-checked ZIP. Do not claim a production build passed unless it actually does.

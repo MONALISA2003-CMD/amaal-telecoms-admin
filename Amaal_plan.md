@@ -2892,3 +2892,30 @@ The requested phone families and TV starter range are included. Product prices b
 ### 47.4 Database safety
 
 This increment may add only missing starter catalogue records. It does not reset, truncate, drop, recreate or overwrite existing business records. Existing PostgreSQL data remains authoritative. The starter seed uses conflict-safe inserts only.
+
+# 48. Orders & Fulfilment — 2026-08-27
+
+## Objective
+Turn the Orders area into a real commerce operations workspace connected to the existing Sales, Products, Stock, Customers, Delivery and Finance capabilities.
+
+## Completed
+- Dedicated Orders command centre.
+- Order pipeline and operational KPIs.
+- Order value trend and payment mix charts.
+- Top ordered products.
+- Searchable order book and payment/fulfilment queues.
+- Order creation using existing product pricing and availability rules.
+- Order detail and journey tracking.
+- Payment recording.
+- Order lifecycle progression.
+- Cancellation.
+- Fulfilment creation.
+- Refund handoff.
+- Conversion of fully paid orders into the existing Sales workflow.
+- Mobile-responsive business experience.
+
+## Source-of-truth rule
+Orders continue to use the existing business engine and PostgreSQL records. Business Admin does not create a second order store or bypass existing business rules.
+
+## Next module
+**Finance & Credit**. First compare the Business Admin requirements against the existing Finance/Accounting technical capability, then build Finance as the money-control centre and connect Credit to customers and orders. Preserve the existing source-of-truth and no-reset rules.
