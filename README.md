@@ -1,5 +1,30 @@
 # Amaal Telecoms Admin
 
+## Phase 4 Technical Console / Super Engine
+
+> The master engineering plan for the new Business Admin and Public Website is in `Amaal_plan.md`.
+
+The Phase 4 application remains the technical console and super engine. It is not replaced by the Business Admin or Public Website.
+
+Target architecture:
+
+```text
+Public Website (Vercel)
+        |
+Business Admin (Vercel)
+        |
+Controlled API
+        |
+Phase 4 Technical Console / Super Engine (Render)
+        |
+PostgreSQL
+```
+
+CEO and Superadmin are the same highest business role in the new Business Admin.
+
+Business Admin must contain business terminology only. Technical administration remains in this Phase 4 console.
+
+
 ## Production Readiness Release
 
 **Release:** Phase 4 Final Production Readiness
