@@ -1,12 +1,11 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Brand } from '@/components/Brand';
 
 export default function SetupPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [name, setName] = useState('');
@@ -16,23 +15,6 @@ export default function SetupPage() {
   const [address, setAddress] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
-  useEffect(() => {
-    let active = true;
-    fetch('/api/session/setup/status', { cache: 'no-store' })
-      .then(async (response) => {
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(data.error || 'We could not check setup status.');
-        if (active && data.configured) router.replace('/login');
-      })
-      .catch((err) => {
-        if (active) setError(err instanceof Error ? err.message : 'We could not check setup status.');
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => { active = false; };
-  }, [router]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -60,16 +42,12 @@ export default function SetupPage() {
     }
   }
 
-  if (loading) {
-    return <main className="loginPage"><section className="loginCard"><Brand/><p>Preparing first-time setup…</p></section></main>;
-  }
-
   return (
     <main className="loginPage">
       <form className="loginCard" onSubmit={submit}>
         <Brand/>
         <h1>Set up Amaal Telecoms</h1>
-        <p>Create the first business administrator account. Your existing business data remains in the existing Amaal engine.</p>
+        <p>Create the first business administrator account. This page stays available until setup is successfully completed. Your existing business data remains in the existing Amaal engine.</p>
         {error && <div className="error" role="alert">{error}</div>}
 
         <div className="field"><label htmlFor="companyName">Business name</label><input id="companyName" value={companyName} onChange={e => setCompanyName(e.target.value)} required /></div>
