@@ -1,15 +1,71 @@
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { engineRequest } from '@/lib/engine';
 import { MetricCard } from '@/components/MetricCard';
+import { businessGetSafe, money, number } from '@/lib/business';
 
-async function getDashboard(){
-  const jar=await cookies();
-  const cookie=jar.getAll().map(c=>`${c.name}=${c.value}`).join('; ');
-  try{return await engineRequest<{users:number;activeLocations:number;auditEvents:number;unreadNotifications:number}>('/api/dashboard',{headers:{Cookie:cookie}})}catch{return null}
-}
-export default async function Overview(){
-  const data=await getDashboard();
-  if(!data) redirect('/login');
-  return <div><section className="welcome"><h2>Business overview</h2><p>A clear view of what is happening across Amaal Telecoms.</p></section><section className="metrics"><MetricCard label="Active team members" value={data.users.toLocaleString()} note="From the business system"/><MetricCard label="Active locations" value={data.activeLocations.toLocaleString()} note="Currently operating"/><MetricCard label="Unread notifications" value={data.unreadNotifications.toLocaleString()} note="Needs attention"/><MetricCard label="Business activity" value={data.auditEvents.toLocaleString()} note="Recorded activities"/></section><div className="grid"><section className="panel"><h3>Business activity</h3><div className="chart">{[35,52,44,68,58,78,70,90,74,86,66,95].map((h,i)=><div className="bar" style={{height:`${h}%`}} key={i}/>)}</div><div className="quick"><a href="/sales">View sales</a><a href="/stock">Check stock</a><a href="/orders">View orders</a><a href="/website">Manage website</a></div></section><section className="attention"><h3>Needs attention</h3><div className="attentionList"><div className="attentionItem"><div><strong>Notifications</strong><br/><span>Review unread business activity.</span></div><span className="pill">Review</span></div><div className="attentionItem"><div><strong>Team</strong><br/><span>Keep business access current.</span></div><span className="pill">Manage</span></div><div className="attentionItem"><div><strong>Website</strong><br/><span>Prepare approved content for customers.</span></div><span className="pill">Open</span></div></div></section></div></div>
+export default async function Overview() {
+  const dashboard = await businessGetSafe<any>('/api/dashboard');
+  if (!dashboard) redirect('/login');
+
+  const [bi, sales, inventory, orders, customers, procurement] = await Promise.all([
+    businessGetSafe<any>('/api/bi/summary'),
+    businessGetSafe<any>('/api/sales/summary'),
+    businessGetSafe<any>('/api/inventory/summary'),
+    businessGetSafe<any>('/api/orders/summary'),
+    businessGetSafe<any>('/api/customers/summary'),
+    businessGetSafe<any>('/api/procurement/summary'),
+  ]);
+
+  const fmtNumber = (v: unknown) => v == null ? '—' : number(v);
+  const fmtMoney = (v: unknown) => v == null ? '—' : money(v);
+  const revenue = bi?.sales?.revenue ?? sales?.today?.total;
+  const margin = bi?.margin?.gross_margin;
+  const openOrders = orders ? Number(orders.pending ?? 0) + Number(orders.processing ?? 0) + Number(orders.dispatched ?? 0) : null;
+
+  return (
+    <div className="workspace">
+      <section className="welcome">
+        <div>
+          <span className="eyebrow">Executive experience</span>
+          <h2>Business overview</h2>
+          <p>One business view over the same sales, stock, customer, procurement and order data used by the existing engine.</p>
+        </div>
+      </section>
+
+      <section className="metrics">
+        <MetricCard label="Revenue" value={fmtMoney(revenue)} note="Current BI/reporting range" />
+        <MetricCard label="Gross profit" value={fmtMoney(margin)} note="Authoritative finance/BI data" />
+        <MetricCard label="Low-stock lines" value={fmtNumber(inventory?.lowStock)} note="Needs replenishment review" />
+        <MetricCard label="Open orders" value={fmtNumber(openOrders)} note="Pending through dispatch" />
+      </section>
+
+      <div className="grid">
+        <section className="panel">
+          <div className="panelHeading"><div><h3>Business pulse</h3><p>Live summary values; unavailable modules are not replaced with invented figures.</p></div></div>
+          <div className="pulseGrid">
+            <div><span>Customers</span><strong>{fmtNumber(customers?.customers)}</strong><small>{fmtNumber(customers?.new30d)} new in 30 days</small></div>
+            <div><span>Purchase orders</span><strong>{fmtNumber(procurement?.openPurchaseOrders)}</strong><small>{fmtNumber(procurement?.pendingRequisitions)} requests awaiting action</small></div>
+            <div><span>Stock units</span><strong>{fmtNumber(inventory?.onHand)}</strong><small>{fmtNumber(inventory?.reserved)} reserved</small></div>
+            <div><span>Month order revenue</span><strong>{fmtMoney(orders?.monthRevenue)}</strong><small>{fmtNumber(orders?.delivered)} delivered</small></div>
+          </div>
+        </section>
+
+        <section className="attention">
+          <h3>Needs attention</h3>
+          <div className="attentionList">
+            <div className="attentionItem"><div><strong>Low stock</strong><br/><span>{fmtNumber(inventory?.lowStock)} stock lines are at or below the default threshold.</span></div><span className="pill">Stock</span></div>
+            <div className="attentionItem"><div><strong>Customer balances</strong><br/><span>{fmtMoney(customers?.outstandingBalance)} outstanding across customer balances.</span></div><span className="pill">Finance</span></div>
+            <div className="attentionItem"><div><strong>Procurement</strong><br/><span>{fmtNumber(procurement?.pendingRequisitions)} purchase requests are pending.</span></div><span className="pill">Purchasing</span></div>
+            <div className="attentionItem"><div><strong>Notifications</strong><br/><span>{fmtNumber(dashboard.unreadNotifications)} unread business notifications.</span></div><span className="pill">Review</span></div>
+          </div>
+        </section>
+      </div>
+
+      <section className="panel quickPanel">
+        <div className="panelHeading"><div><h3>Quick actions</h3><p>Move directly into the next business task.</p></div></div>
+        <div className="quick">
+          <a href="/sales">Open Sales</a><a href="/products">Manage Products</a><a href="/stock">Check Stock</a><a href="/orders">View Orders</a><a href="/customers">Customers</a><a href="/reports">Reports</a>
+        </div>
+      </section>
+    </div>
+  );
 }

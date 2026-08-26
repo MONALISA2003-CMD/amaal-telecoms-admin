@@ -1,6 +1,18 @@
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
+import { businessGetSafe } from '@/lib/business';
 
-export function BusinessShell({ children }: { children: React.ReactNode }) {
-  return <div className="shell"><Sidebar/><main className="main"><Topbar/><div className="content">{children}</div></main></div>;
+type Me = { permissions: string[]; isSuperAdmin?: boolean; user?: { name?: string } };
+
+export async function BusinessShell({ children }: { children: React.ReactNode }) {
+  const me = await businessGetSafe<Me>('/api/me');
+  return (
+    <div className="shell">
+      <Sidebar permissions={me?.permissions ?? []} />
+      <main className="main">
+        <Topbar name={me?.user?.name ? `Amaal Telecoms · ${me.user.name}` : 'Amaal Telecoms'} />
+        <div className="content">{children}</div>
+      </main>
+    </div>
+  );
 }

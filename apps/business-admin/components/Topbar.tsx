@@ -8,5 +8,5 @@ export function Topbar({ name = 'Amaal Telecoms' }: { name?: string }) {
     router.replace('/login');
     router.refresh();
   }
-  return <header className="topbar"><div><span className="eyebrow">Business workspace</span><h1>{name}</h1></div><div className="topActions"><button className="searchButton" onClick={() => document.getElementById('global-search')?.focus()}>Search</button><button className="avatar" aria-label="Account menu" onClick={logout}>A</button></div></header>;
+  return <header className="topbar"><div><span className="eyebrow">Business workspace</span><h1>{name}</h1></div><div className="topActions"><button className="searchButton" onClick={() => router.push('/search')}>Search</button><button className="avatar" aria-label="Sign out" onClick={logout}>A</button></div></header>;
 }
