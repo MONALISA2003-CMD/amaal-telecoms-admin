@@ -12,7 +12,6 @@ on:
 permissions:
   contents: write
 
-# Prevent two replacement runs from modifying main simultaneously.
 concurrency:
   group: replace-project-main
   cancel-in-progress: true
@@ -22,23 +21,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ---------------------------------------------------------
-      # 1. Checkout the current main branch
-      # ---------------------------------------------------------
+
+      # =========================================================
+      # 1. Get the current repository
+      # =========================================================
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: main
 
-      # ---------------------------------------------------------
-      # 2. Find the newest ZIP
-      # ---------------------------------------------------------
-      - name: Find uploaded ZIP
+      # =========================================================
+      # 2. Find a ZIP
+      #
+      # IMPORTANT:
+      # If there is no ZIP, we do NOT fail.
+      # All replacement steps below are skipped.
+      # =========================================================
+      - name: Find project ZIP
         id: zip
         shell: bash
         run: |
           set -euo pipefail
+
+          echo "Searching for project ZIP..."
 
           ZIP_FILE="$(
             find . \
@@ -48,24 +54,49 @@ jobs:
               -printf "%T@ %p\n" \
             | sort -nr \
             | head -n 1 \
-            | cut -d' ' -f2-
+            | cut -d' ' -f2- || true
           )"
 
           if [ -z "$ZIP_FILE" ]; then
-            echo "ERROR: No ZIP file found."
-            exit 1
+            echo "No ZIP found."
+            echo "This run was probably caused by a ZIP deletion or a manual workflow run."
+            echo "Nothing needs to be replaced."
+
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
-          echo "Using ZIP:"
+          echo "ZIP found:"
           echo "$ZIP_FILE"
 
-          echo "ZIP_FILE=$ZIP_FILE" >> "$GITHUB_ENV"
+          echo "found=true" >> "$GITHUB_OUTPUT"
+          echo "ZIP_FILE=$ZIP_FILE" >> "$GITHUB_OUTPUT"
 
-      # ---------------------------------------------------------
-      # 3. Extract ZIP into temporary directory
-      # ---------------------------------------------------------
-      - name: Extract ZIP
+      # =========================================================
+      # 3. Validate ZIP
+      # =========================================================
+      - name: Validate ZIP
+        if: steps.zip.outputs.found == 'true'
         shell: bash
+        env:
+          ZIP_FILE: ${{ steps.zip.outputs.ZIP_FILE }}
+        run: |
+          set -euo pipefail
+
+          echo "Testing ZIP integrity..."
+
+          unzip -t "$ZIP_FILE"
+
+          echo "ZIP integrity check passed."
+
+      # =========================================================
+      # 4. Extract ZIP
+      # =========================================================
+      - name: Extract ZIP
+        if: steps.zip.outputs.found == 'true'
+        shell: bash
+        env:
+          ZIP_FILE: ${{ steps.zip.outputs.ZIP_FILE }}
         run: |
           set -euo pipefail
 
@@ -77,117 +108,173 @@ jobs:
 
           unzip -q -o "$ZIP_FILE" -d /tmp/project-extracted
 
-          echo "Extraction successful."
+          echo "Extraction completed."
 
-          echo "Top-level extracted contents:"
+          echo ""
+          echo "Extracted project structure:"
           find /tmp/project-extracted \
-            -maxdepth 2 \
+            -maxdepth 4 \
             -print \
             | sort \
-            | head -200
+            | head -300
 
-      # ---------------------------------------------------------
-      # 4. Detect the complete project root
-      # ---------------------------------------------------------
+      # =========================================================
+      # 5. Detect the actual project root
+      #
+      # Supports:
+      #
+      # ZIP/
+      #   package.json
+      #
+      # OR:
+      #
+      # ZIP/
+      #   project-folder/
+      #     package.json
+      #
+      # OR the current Amaal monorepo structure:
+      #
+      # project/
+      #   apps/
+      #     business-admin/
+      #       package.json
+      # =========================================================
       - name: Detect project root
+        if: steps.zip.outputs.found == 'true'
+        id: project
         shell: bash
         run: |
           set -euo pipefail
 
-          PROJECT_ROOT=""
+          ROOT=""
 
-          # Case 1:
-          # ZIP contains the repository directly.
+          # -----------------------------------------------------
+          # Case 1: package.json is directly at extraction root
+          # -----------------------------------------------------
           if [ -f "/tmp/project-extracted/package.json" ]; then
-            PROJECT_ROOT="/tmp/project-extracted"
+            ROOT="/tmp/project-extracted"
           fi
 
-          # Case 2:
-          # ZIP contains one enclosing project directory.
-          if [ -z "$PROJECT_ROOT" ]; then
-            for DIR in /tmp/project-extracted/*; do
-              if [ -d "$DIR" ] && \
-                 [ -f "$DIR/package.json" ]; then
-
-                PROJECT_ROOT="$DIR"
-                break
-              fi
-            done
-          fi
-
-          # Case 3:
-          # Locate the monorepo by apps/business-admin.
-          if [ -z "$PROJECT_ROOT" ]; then
-            BUSINESS_PACKAGE="$(
+          # -----------------------------------------------------
+          # Case 2: package.json is inside one project directory
+          # -----------------------------------------------------
+          if [ -z "$ROOT" ]; then
+            FOUND="$(
               find /tmp/project-extracted \
+                -mindepth 2 \
+                -maxdepth 2 \
                 -type f \
-                -path "*/apps/business-admin/package.json" \
-                | head -n 1
+                -name "package.json" \
+                | head -n 1 || true
             )"
 
-            if [ -n "$BUSINESS_PACKAGE" ]; then
-              PROJECT_ROOT="$(dirname "$(dirname "$(dirname "$BUSINESS_PACKAGE")")")"
+            if [ -n "$FOUND" ]; then
+              ROOT="$(dirname "$FOUND")"
             fi
           fi
 
-          if [ -z "$PROJECT_ROOT" ]; then
-            echo "ERROR: Complete project root could not be detected."
+          # -----------------------------------------------------
+          # Case 3: package.json can be deeper in the ZIP
+          # -----------------------------------------------------
+          if [ -z "$ROOT" ]; then
+            FOUND="$(
+              find /tmp/project-extracted \
+                -type f \
+                -name "package.json" \
+                | head -n 1 || true
+            )"
 
-            echo ""
-            echo "Extracted files:"
+            if [ -n "$FOUND" ]; then
+              ROOT="$(dirname "$FOUND")"
+            fi
+          fi
+
+          # -----------------------------------------------------
+          # Case 4: specifically identify the current monorepo
+          # -----------------------------------------------------
+          BUSINESS_PACKAGE="$(
             find /tmp/project-extracted \
-              -maxdepth 5 \
+              -type f \
+              -path "*/apps/business-admin/package.json" \
+              | head -n 1 || true
+          )"
+
+          if [ -n "$BUSINESS_PACKAGE" ]; then
+            BUSINESS_ROOT="$(dirname "$BUSINESS_PACKAGE")"
+            MONOREPO_ROOT="$(dirname "$(dirname "$BUSINESS_ROOT")")"
+
+            if [ -f "$MONOREPO_ROOT/package.json" ]; then
+              ROOT="$MONOREPO_ROOT"
+            fi
+          fi
+
+          # -----------------------------------------------------
+          # Final check
+          # -----------------------------------------------------
+          if [ -z "$ROOT" ]; then
+            echo "ERROR: Could not find the project root."
+            echo ""
+            echo "ZIP contents:"
+            find /tmp/project-extracted \
+              -maxdepth 6 \
               -print \
               | sort
 
             exit 1
           fi
 
+          if [ ! -f "$ROOT/package.json" ]; then
+            echo "ERROR: Detected root has no package.json:"
+            echo "$ROOT"
+            exit 1
+          fi
+
           echo ""
-          echo "================================"
-          echo "PROJECT ROOT"
-          echo "================================"
-          echo "$PROJECT_ROOT"
+          echo "=========================================="
+          echo "PROJECT ROOT DETECTED"
+          echo "=========================================="
+          echo "$ROOT"
 
-          echo "PROJECT_ROOT=$PROJECT_ROOT" >> "$GITHUB_ENV"
+          echo "project_root=$ROOT" >> "$GITHUB_OUTPUT"
 
-      # ---------------------------------------------------------
-      # 5. Validate BEFORE deleting the existing project
-      # ---------------------------------------------------------
-      - name: Validate project
+      # =========================================================
+      # 6. Validate the new project BEFORE touching old files
+      # =========================================================
+      - name: Validate new project
+        if: steps.zip.outputs.found == 'true'
         shell: bash
+        env:
+          PROJECT_ROOT: ${{ steps.project.outputs.project_root }}
         run: |
           set -euo pipefail
 
           echo "Validating new project..."
 
-          if [ ! -f "$PROJECT_ROOT/package.json" ]; then
-            echo "ERROR: package.json missing."
-            exit 1
-          fi
+          test -f "$PROJECT_ROOT/package.json"
+
+          echo "package.json: OK"
 
           if [ -d "$PROJECT_ROOT/apps/business-admin" ]; then
-            echo "Business Admin detected."
+            echo "apps/business-admin detected."
 
-            test -f "$PROJECT_ROOT/apps/business-admin/package.json"
-
-            if [ -f "$PROJECT_ROOT/apps/business-admin/next.config.ts" ]; then
-              echo "Next.js configuration detected."
-            fi
-
-            if [ -f "$PROJECT_ROOT/apps/business-admin/proxy.ts" ]; then
-              echo "Next.js proxy.ts detected."
+            if [ -f "$PROJECT_ROOT/apps/business-admin/package.json" ]; then
+              echo "business-admin/package.json: OK"
+            else
+              echo "WARNING: apps/business-admin exists but package.json is missing."
             fi
           fi
 
           echo ""
-          echo "Project validation passed."
+          echo "New project validation passed."
 
-      # ---------------------------------------------------------
-      # 6. Prepare a clean temporary copy
-      # ---------------------------------------------------------
+      # =========================================================
+      # 7. Prepare a clean copy
+      # =========================================================
       - name: Prepare new project
+        if: steps.zip.outputs.found == 'true'
         shell: bash
+        env:
+          PROJECT_ROOT: ${{ steps.project.outputs.project_root }}
         run: |
           set -euo pipefail
 
@@ -196,15 +283,18 @@ jobs:
 
           cp -a "$PROJECT_ROOT"/. /tmp/project-ready/
 
-          echo "New project prepared."
+          echo "New project copied to temporary staging area."
 
-      # ---------------------------------------------------------
-      # 7. Remove old application
+      # =========================================================
+      # 8. Remove OLD application files
       #
-      # .git is preserved.
-      # .github is preserved so this workflow survives.
-      # ---------------------------------------------------------
+      # .git is NEVER removed.
+      # .github is NEVER removed.
+      #
+      # This protects the workflow that performs future replacements.
+      # =========================================================
       - name: Remove old application
+        if: steps.zip.outputs.found == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -220,27 +310,29 @@ jobs:
 
           echo "Old application removed."
 
-      # ---------------------------------------------------------
-      # 8. Install the complete new application
-      # ---------------------------------------------------------
-      - name: Install new application
+      # =========================================================
+      # 9. Install EVERY file from the new project
+      # =========================================================
+      - name: Install new project
+        if: steps.zip.outputs.found == 'true'
         shell: bash
         run: |
           set -euo pipefail
 
           cp -a /tmp/project-ready/. .
 
-          echo "New application installed."
+          echo "New project installed."
 
-      # ---------------------------------------------------------
-      # 9. Delete ALL ZIP files
-      # ---------------------------------------------------------
+      # =========================================================
+      # 10. Delete ALL ZIP files
+      # =========================================================
       - name: Delete all ZIP files
+        if: steps.zip.outputs.found == 'true'
         shell: bash
         run: |
           set -euo pipefail
 
-          echo "Deleting all ZIP files..."
+          echo "Removing all ZIP files from repository..."
 
           find . \
             -type f \
@@ -248,44 +340,52 @@ jobs:
             -not -path "./.git/*" \
             -delete
 
-          echo "ZIP cleanup complete."
+          echo "All ZIP files deleted."
 
-      # ---------------------------------------------------------
-      # 10. Final verification
-      # ---------------------------------------------------------
-      - name: Final verification
+      # =========================================================
+      # 11. Final verification
+      # =========================================================
+      - name: Verify replacement
+        if: steps.zip.outputs.found == 'true'
         shell: bash
         run: |
           set -euo pipefail
 
-          echo "Checking final repository..."
+          echo "Running final verification..."
 
           test -f package.json
 
+          echo "Root package.json: OK"
+
           if [ -d "apps/business-admin" ]; then
             test -f "apps/business-admin/package.json"
-            echo "apps/business-admin verified."
+            echo "Business Admin package.json: OK"
           fi
 
-          if find . \
-            -type f \
-            -iname "*.zip" \
-            -not -path "./.git/*" \
-            | grep -q .; then
+          REMAINING_ZIPS="$(
+            find . \
+              -type f \
+              -iname "*.zip" \
+              -not -path "./.git/*" \
+              | head -n 1 || true
+          )"
 
-            echo "ERROR: ZIP files still remain."
+          if [ -n "$REMAINING_ZIPS" ]; then
+            echo "ERROR: A ZIP file still exists:"
+            echo "$REMAINING_ZIPS"
             exit 1
           fi
 
           echo ""
-          echo "========================================"
+          echo "=========================================="
           echo "PROJECT REPLACEMENT VERIFIED"
-          echo "========================================"
+          echo "=========================================="
 
-      # ---------------------------------------------------------
-      # 11. Commit
-      # ---------------------------------------------------------
+      # =========================================================
+      # 12. Commit
+      # =========================================================
       - name: Commit replacement
+        if: steps.zip.outputs.found == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -302,12 +402,13 @@ jobs:
 
           git commit -m "Replace project from uploaded ZIP"
 
-      # ---------------------------------------------------------
-      # 12. Synchronize with remote main before pushing
+      # =========================================================
+      # 13. Synchronize with latest main
       #
-      # This fixes the exact non-fast-forward failure from run #91.
-      # ---------------------------------------------------------
+      # Prevents the non-fast-forward error we saw in run #91.
+      # =========================================================
       - name: Synchronize with latest main
+        if: steps.zip.outputs.found == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -316,10 +417,11 @@ jobs:
 
           git rebase origin/main
 
-      # ---------------------------------------------------------
-      # 13. Push the completed replacement
-      # ---------------------------------------------------------
+      # =========================================================
+      # 14. Push replacement
+      # =========================================================
       - name: Push replacement
+        if: steps.zip.outputs.found == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -327,6 +429,6 @@ jobs:
           git push origin HEAD:main
 
           echo ""
-          echo "========================================"
+          echo "=========================================="
           echo "PROJECT SUCCESSFULLY PUSHED TO MAIN"
-          echo "========================================"
+          echo "=========================================="
