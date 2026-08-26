@@ -39,7 +39,7 @@ The next operational stage is controlled production deployment and smoke validat
 5. Configure Gemini credentials server-side if AI is enabled for production.
 6. Configure durable private backup storage and an isolated recovery target.
 7. Deploy the release.
-8. Run the production smoke test across authentication, permissions, date range, Sales, Inventory, Procurement, Finance, Media, Web & Hosting, AI, Integrations, recovery readiness and audit logging.
+8. Run `npm run smoke:production` against the deployed application. Supply `SMOKE_SESSION_COOKIE` for the non-mutating authenticated module checks, then complete the manual permission, state-changing action, recovery-readiness and audit-log checks.
 9. Record any confirmed production defects and make only targeted fixes.
 10. Proceed to normal production use after the smoke-test gate passes.
 

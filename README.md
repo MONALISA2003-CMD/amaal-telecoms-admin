@@ -329,3 +329,26 @@ Future work must continue from this cumulative build.
 Do not rebuild the application. Preserve the existing architecture, modules, routes, permissions, frontend and backend structure. Do not reset PostgreSQL. Do not add YAML files. Do not activate MFA unless a later phase explicitly requires it.
 
 The next development phase should begin only after the production deployment and smoke-test gate has been completed, unless a confirmed production defect requires a targeted correction.
+
+## Production Smoke Test Tool
+
+A non-mutating production smoke-test runner is included for the controlled deployment gate.
+
+Configure these **smoke-test-only** variables in the shell or deployment validation environment. They are not application secrets and are intentionally not assigned values in this repository:
+
+- `PRODUCTION_BASE_URL` — absolute HTTPS URL of the deployed administration application.
+- `SMOKE_SESSION_COOKIE` — optional authenticated session cookie for non-mutating authenticated endpoint checks. Do not commit or store this value in source control.
+- `SMOKE_START` — optional start date for date-range smoke checks; defaults to the last 30 days.
+- `SMOKE_END` — optional end date for date-range smoke checks; defaults to today.
+
+Run:
+
+```bash
+npm run smoke:production
+```
+
+The runner checks the public health endpoint, application/database health, HTTPS and security headers. When `SMOKE_SESSION_COOKIE` is supplied, it additionally performs non-mutating checks for authentication, Dashboard, Sales/date range, Inventory, Procurement, Finance/date range, Finance journals/date range, Media Management, Web & Hosting, Integration Hub and AI health.
+
+The runner never creates, updates or deletes business records. It does not run SQL directly and does not reset or migrate PostgreSQL.
+
+If the authenticated cookie is omitted, authenticated checks are reported as skipped rather than being falsely reported as passed.
