@@ -1,261 +1,261 @@
-# Amaal Telecoms — Phase 5 Full Audit Report
+# Amaal Telecoms — Full Business Admin Audit Report
 
-**Increment:** Sales workspace / POS / Sales detail
-**Audit type:** Full Business Admin regression audit + API contract inspection
+**Increment:** ERP UI/UX v2 — Executive Overview + Business Shell refinement after Sales
+**Audit type:** Deep UI/UX regression audit + source comparison + static TypeScript inspection
 **Database status:** UNTOUCHED
 **Backend status:** UNTOUCHED
 
 ---
 
-## 1. Executive Result
+## 1. Executive result
 
-The next Business Admin module was built as the **Sales workspace**.
+The Business Admin was reviewed from the pre-Sales foundation through the current Sales implementation before making this increment.
 
-The increment adds:
+The main finding was that the application had strong backend-aware foundations but the Overview still behaved more like a collection of summary cards than a mature business ERP command centre.
 
-- executive sales KPIs;
-- real sales trend visualization;
-- payment-method composition;
-- top-product ranking;
-- cashier performance;
-- searchable/status-filtered sales history;
-- sale detail pages;
-- approval/status/payment history visibility;
-- permission-aware quote actions;
-- Business Admin POS using existing engine contracts;
-- responsive/mobile styling.
+This increment therefore improves the **shared experience first** before proceeding to Products.
 
-The implementation is intentionally confined to `apps/business-admin` plus the required continuity documentation.
+Implemented:
 
-**No backend engine file, SQL file, schema, migration, seed, database configuration or database data was modified.**
+- Executive Overview command-centre hierarchy.
+- KPI cards with clearer context and navigation.
+- Revenue trend chart using existing analytics data when available.
+- Payment composition chart using existing analytics data when available.
+- Product contribution chart using existing analytics data when available.
+- Operational Attention Centre.
+- Direct action strip.
+- Grouped ERP navigation.
+- Improved topbar/search affordance.
+- Responsive/mobile hierarchy.
+- Stable business surfaces with restrained champagne/gold emphasis.
 
 ---
 
-## 2. Source-of-Truth Audit
+## 2. Source-of-truth audit
 
-Verified against the project snapshot:
+The Business Admin continues to consume the existing Render business engine.
 
-- Render/Phase 4 remains the business engine.
-- PostgreSQL remains the authoritative database.
-- Business Admin does not contain a PostgreSQL client.
-- Business Admin does not introduce a local business database.
-- Dashboard values are derived from existing API responses.
-- Unavailable API responses are represented as unavailable rather than fabricated business figures.
-- Sales transaction creation remains inside the existing `/api/sales` engine route.
-- Existing engine remains responsible for stock validation, pricing, tax, approvals, accounting posting and audit logging.
+PostgreSQL remains authoritative.
+
+The Business Admin does not introduce:
+
+- PostgreSQL client access;
+- local business tables;
+- a replacement data store;
+- a duplicate business source of truth;
+- fabricated dashboard values.
+
+Unavailable analytics are explicitly shown as unavailable.
 
 **Result: PASS**
 
 ---
 
-## 3. Backend/Database Safety Audit
+## 3. Backend/database safety audit
 
-The new project snapshot was compared against the source ZIP.
+The current Sales ZIP was compared with the pre-Sales authentication/foundation ZIP.
 
-Changed files are limited to:
+Changed files are confined to:
 
-- `Amaal_plan.md`
-- `CONTINUATION.md`
-- `PLAN_UPDATE_NOTES.md`
-- `apps/business-admin/app/globals.css`
-- `apps/business-admin/components/SalesWorkspace.tsx`
-- `apps/business-admin/components/SaleActions.tsx`
-- `apps/business-admin/components/POSWorkspace.tsx`
-- `apps/business-admin/app/(business)/sales/page.tsx`
-- `apps/business-admin/app/(business)/sales/[id]/page.tsx`
-- `apps/business-admin/app/(business)/sales/pos/page.tsx`
+- continuity/documentation MD files;
+- `apps/business-admin/app/globals.css`;
+- `apps/business-admin/app/(business)/overview/page.tsx`;
+- `apps/business-admin/components/ExecutiveDashboard.tsx`;
+- `apps/business-admin/components/Sidebar.tsx`;
+- `apps/business-admin/components/Topbar.tsx`;
+- previously implemented Sales UI files.
 
-No non-Business-Admin/backend files changed.
+No backend engine JavaScript file changed.
 
-All existing backend JavaScript files also pass `node --check`.
+No SQL file changed.
+
+No schema/migration/seed file changed.
+
+No database configuration changed.
 
 **Result: PASS**
 
 ---
 
-## 4. API Contract Audit
+## 4. UI/UX audit
 
-Business Admin references were checked against the existing engine route inventory.
+### Before
 
-Verified contracts include:
+The Overview had:
 
-- `/api/me`
-- `/api/dashboard`
-- `/api/bi/summary`
-- `/api/sales/summary`
-- `/api/sales`
-- `/api/sales/analytics`
-- `/api/sales/quotes`
-- `/api/sales/products`
-- `/api/inventory/locations`
-- existing sales detail/approval/action routes
-- existing catalogue, inventory, customer, order, finance, procurement, delivery, service, website, staff and organization routes used by the foundation
+- four summary metrics;
+- a basic business-pulse grid;
+- a needs-attention list;
+- quick actions;
+- limited visual hierarchy.
 
-The session routes are Business Admin-local proxy/session routes and are intentionally not expected to appear in the Phase 4 backend route inventory.
+The foundation was functional but not yet an executive ERP experience.
 
-**Result: PASS for statically verifiable contracts.**
+### After
 
----
+The Overview now follows:
 
-## 5. Sales Module Audit
+```text
+BUSINESS CONTEXT
+  ↓
+KPI SUMMARY
+  ↓
+REVENUE TREND
+  ↓
+COMPOSITION / RANKING
+  ↓
+ATTENTION CENTRE
+  ↓
+DIRECT OPERATIONAL ACTIONS
+```
 
-### Dashboard
+The visual system also now distinguishes:
 
-- KPI hierarchy implemented.
-- Sales trend implemented.
-- Payment mix implemented.
-- Product ranking implemented.
-- Cashier comparison implemented.
-- No decorative-only charts used as substitutes for business questions.
-- Empty/unavailable chart states implemented.
+- navigation surfaces;
+- executive KPI surfaces;
+- operational data surfaces;
+- attention surfaces;
+- premium/authentication surfaces.
 
-### History
-
-- Search implemented.
-- Status filter implemented.
-- Sale rows link to sale detail.
-- Existing engine data is displayed directly.
-
-### Sale detail
-
-- Summary totals.
-- Sale lines.
-- Payments.
-- Approval history.
-- Status history.
-- Existing permission-aware actions.
-
-### POS
-
-- Location selection.
-- Product search.
-- Stock availability display.
-- Cart.
-- Quantity controls.
-- Payment method.
-- Idempotency key.
-- Existing `/api/sales` transaction endpoint.
-
-Serialized products are deliberately not silently sold without serial/IMEI selection; the UI directs those cases to an advanced workflow instead of inventing a shortcut around the engine's validation.
-
-**Result: PASS at UI/contract level.**
+**Result: PASS**
 
 ---
 
-## 6. Regression Audit — Existing Business Admin
+## 5. Navigation audit
 
-Checked structurally:
+The sidebar now groups the same permission-controlled routes into:
 
-- Authentication/setup pages remain unchanged by this increment.
-- Protected route middleware still covers `/sales` and nested Sales routes.
-- Permission-aware sidebar remains authoritative to `/api/me` permissions.
-- Overview remains engine-backed.
-- Existing generic workspaces remain intact.
-- Search remains intact.
-- Existing API proxy remains intact.
-- Existing environment/config boundary remains intact.
-- No frontend database connection was introduced.
+- Command;
+- Commerce;
+- Operations;
+- Money;
+- Business.
+
+The grouping does not alter permission enforcement.
+
+Routes continue to derive visibility from `/api/me` permissions.
+
+**Result: PASS**
+
+---
+
+## 6. Dashboard data audit
+
+The redesigned Overview attempts to consume existing analytics fields only.
+
+Supported data patterns include existing sales/BI trend and payment/product analytics already used by the Sales module.
+
+No new backend endpoint was created.
+
+No metric is silently converted into a business claim when data is missing.
+
+**Result: PASS**
+
+---
+
+## 7. Existing module regression audit
+
+Structurally inspected:
+
+- Login.
+- First setup.
+- Session routes.
+- Protected Business Admin shell.
+- Permission-aware navigation.
+- Overview.
+- Sales.
+- Sales detail.
+- POS.
+- Generic Products foundation.
+- Generic Stock foundation.
+- Generic Purchasing foundation.
+- Generic Customers foundation.
+- Generic Orders foundation.
+- Generic Finance foundation.
+- Generic Credit foundation.
+- Generic Delivery foundation.
+- Generic Service foundation.
+- Generic Website foundation.
+- Generic Reports foundation.
+- Generic Team foundation.
+- Generic Settings foundation.
+- Search.
+- API proxy.
+
+The redesign was kept at the shared shell/Overview level so existing operational contracts remain intact.
 
 **Result: PASS by static regression inspection.**
 
 ---
 
-## 7. Mobile/UI Audit
+## 8. TypeScript/static validation
 
-The new Sales UI includes responsive layouts for:
+A direct TypeScript syntax/type invocation was attempted against the changed UI components.
 
-- dashboard cards;
-- charts;
-- tables with controlled horizontal scrolling;
-- detail views;
-- POS controls;
-- product tiles;
-- cart controls.
+The environment does not currently contain installed Next.js/React/Lucide/Recharts dependencies, so dependency-complete type checking cannot finish locally.
 
-The visual direction follows the master plan: restrained champagne/gold accents, stable business surfaces, and stronger glassmorphism reserved for premium/auth surfaces.
+The invocation reported missing dependency/type modules rather than syntax failures in the new dashboard implementation.
 
-**Result: PASS by static responsive inspection.**
+An `npm install --ignore-scripts --no-audit --no-fund` attempt was also made, but the environment did not complete the installation within the available execution window.
 
----
+Therefore:
 
-## 8. Build Verification
+**Local full Next.js build: BLOCKED by dependency installation/environment availability.**
 
-### Attempted
-
-```bash
-npm install --no-audit --no-fund
-npm run build
-npm run lint
-npm test
-```
-
-### Environment limitation
-
-The local container could not complete `npm install` because access to `registry.npmjs.org` failed with `EAI_AGAIN`. Therefore the full Next.js build/lint/test suite could not be executed locally in this audit environment.
-
-A standalone TypeScript parser check was attempted, but without installed React/Next type packages it cannot provide a meaningful dependency-complete type result.
-
-This is recorded as an **environment validation blocker**, not hidden as a code pass.
-
-The source project already carries its locked dependency contract and the implementation does not intentionally change dependency versions.
-
-**Result: BLOCKED locally by package-registry availability.**
+This is not represented as a successful build.
 
 ---
 
-## 9. No Database/Backend Work
+## 9. What was deliberately NOT done
 
-Explicitly NOT performed:
-
-- no database reset;
-- no schema changes;
-- no migrations;
-- no seeds;
-- no table recreation;
-- no truncate/drop;
-- no PostgreSQL connection from Business Admin;
-- no backend route changes;
-- no backend module replacement;
-- no dependency on a new backend service.
-
-**Result: PASS**
+- No PostgreSQL reset.
+- No PostgreSQL reseed.
+- No schema alteration.
+- No migration.
+- No database recreation.
+- No truncate/drop.
+- No backend route rewrite.
+- No backend engine modification.
+- No new database.
+- No local business-data cache used as a source of truth.
+- No fabricated KPI/chart values.
 
 ---
 
-## 10. Remaining Work
+## 10. Next module
 
-The next module is:
+**Products** remains next.
 
-### Products
+Products should now inherit this upgraded ERP visual system and become a real catalogue workspace.
 
-Planned next increment:
+Required next Products work:
 
-1. Catalogue dashboard.
-2. Search/filtering.
-3. Product detail.
-4. Variants.
-5. Pricing visibility.
-6. Website publishing status.
-7. Product intelligence.
-8. Permission-aware existing catalogue actions.
-9. Full regression audit again.
-10. Update all continuity MD files.
-11. Package the next ZIP.
-
-After Products: Stock → Purchasing → Customers → Orders/Delivery → Finance/Credit → Service → Website Management → Reports/BI → Team → Public Website → Commerce → unified regression/polish.
+1. catalogue dashboard;
+2. search and filters;
+3. product detail;
+4. variants;
+5. pricing visibility;
+6. publication status;
+7. product intelligence;
+8. permission-aware existing catalogue actions;
+9. full regression audit of all modules;
+10. continuity MD updates;
+11. audited ZIP.
 
 ---
 
-## 11. Audit Conclusion
+## 11. Final audit status
 
-**Business Admin Sales increment:** IMPLEMENTED.
+**UI/UX refinement:** IMPLEMENTED.
+
+**Dashboard redesign:** IMPLEMENTED.
+
+**Sales preserved:** YES.
 
 **Database:** SAFE / UNTOUCHED.
 
 **Backend:** SAFE / UNTOUCHED.
 
-**Existing modules:** Regression-inspected.
+**Local complete build:** BLOCKED by dependency installation environment.
 
-**Local full build:** BLOCKED by unavailable npm registry/network in this environment.
-
-**Packaging condition:** Documentation updated; project ready for ZIP packaging with the documented build-environment limitation.
+**Next module:** PRODUCTS.

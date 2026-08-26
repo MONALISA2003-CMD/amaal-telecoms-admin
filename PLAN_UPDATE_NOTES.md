@@ -1,19 +1,31 @@
-# Amaal Plan Update Notes — Sales Increment
+# Amaal Telecoms — Plan Update Notes
 
-Updated for the next Phase 5 build.
+## Increment
+**ERP UI/UX v2 — Executive Overview + Business Shell refinement**
 
-## Plan/continuity changes
+## What changed
 
-- Recorded the premium real-business dashboard direction as an implementation requirement.
-- Recorded the Sales workspace as the current completed increment.
-- Added Sales dashboard requirements for KPI cards, trend charts, payment mix, product ranking, cashier performance and actionable history.
-- Added Sales detail requirements for lines, payments, approvals and status history.
-- Added POS requirements using existing engine contracts only.
-- Added a strict full-regression-audit requirement for every future increment.
-- Added a mandatory continuity-document requirement for every future ZIP.
-- Added an explicit next module: Products.
-- Reinforced the no-database-reset, no-database-touch and no-backend-modification boundaries.
+- Added a modern ERP information hierarchy to the master plan.
+- Defined the Executive Overview as the visual master template for all modules.
+- Added executive KPI, trend, composition, attention and action patterns.
+- Added grouped ERP navigation architecture.
+- Clarified the restrained champagne/gold visual system.
+- Clarified where glassmorphism should and should not be used.
+- Added mobile-first dashboard prioritization rules.
+- Documented chart-selection rules and data-integrity behaviour.
+- Confirmed Products remains the next functional module.
 
-## Source-of-truth rule
+## Implementation in this ZIP
 
-The existing Render business engine and PostgreSQL database remain authoritative. This increment adds Business Admin UI/workflow surfaces only and does not introduce a new database or modify the backend engine.
+- Rebuilt the Executive Overview dashboard presentation.
+- Added real engine-backed trend/composition charts when those API fields are available.
+- Added honest unavailable states when analytics are not exposed.
+- Improved the sidebar into grouped ERP navigation while retaining existing permission checks.
+- Improved the topbar/search affordance.
+- Added direct operational action links.
+
+## Safety boundary
+
+No database, SQL, schema, migration, seed or backend engine files were changed.
+
+The existing Render engine and PostgreSQL database remain the authoritative source of truth.

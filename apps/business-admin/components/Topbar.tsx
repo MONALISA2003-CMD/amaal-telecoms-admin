@@ -1,4 +1,6 @@
 'use client';
+
+import { Bell, Command, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export function Topbar({ name = 'Amaal Telecoms' }: { name?: string }) {
@@ -8,5 +10,12 @@ export function Topbar({ name = 'Amaal Telecoms' }: { name?: string }) {
     router.replace('/login');
     router.refresh();
   }
-  return <header className="topbar"><div><span className="eyebrow">Business workspace</span><h1>{name}</h1></div><div className="topActions"><button className="searchButton" onClick={() => router.push('/search')}>Search</button><button className="avatar" aria-label="Sign out" onClick={logout}>A</button></div></header>;
+  return <header className="topbar">
+    <div><span className="eyebrow">Business workspace</span><h1>{name}</h1></div>
+    <div className="topActions">
+      <button className="searchButton" onClick={() => router.push('/search')}><Search size={15} /> Search <kbd><Command size={10} />K</kbd></button>
+      <button className="topIconButton" aria-label="Notifications"><Bell size={17} /><i /></button>
+      <button className="avatar" aria-label="Sign out" onClick={logout}>A</button>
+    </div>
+  </header>;
 }

@@ -2458,3 +2458,120 @@ The Sales module is considered complete only when:
 6. Build/type/lint checks pass in an environment with dependencies installed.
 7. Mobile and desktop layouts are reviewed.
 8. The entire Business Admin is regression-audited before packaging.
+
+# 45. ERP UI/UX v2 — Executive Experience Refinement
+
+The Business Admin is now treated as a **modern operational ERP**, not a collection of pages.
+
+## 45.1 Master dashboard hierarchy
+
+Every major management screen follows this information order:
+
+```text
+BUSINESS CONTEXT
+      ↓
+KPI / PERFORMANCE SUMMARY
+      ↓
+TREND / PERFORMANCE GRAPH
+      ↓
+COMPOSITION / BREAKDOWN
+      ↓
+OPERATIONAL DETAIL
+      ↓
+ATTENTION / EXCEPTIONS
+      ↓
+DIRECT ACTIONS
+```
+
+The Executive Overview is the visual master template for the rest of Business Admin.
+
+## 45.2 Executive Overview v2
+
+The dashboard now prioritizes:
+
+- executive context and current period;
+- revenue;
+- gross profit / margin when exposed by the authoritative engine;
+- open orders;
+- stock pressure;
+- revenue trend;
+- payment composition;
+- product contribution;
+- operational Attention Centre;
+- direct links into Sales, Stock, Customers and Orders.
+
+Metrics must remain permission-aware and engine-backed.
+
+Unavailable metrics remain `—` or an explicit unavailable state. The UI must never manufacture zeros.
+
+## 45.3 ERP navigation model
+
+The Business Admin navigation is grouped into:
+
+- Command — Overview, Reports;
+- Commerce — Sales, Products, Orders, Customers;
+- Operations — Stock, Purchasing, Delivery, Service;
+- Money — Finance, Credit;
+- Business — Website, Team, Business Settings.
+
+The grouping is visual only. Existing backend permissions remain authoritative.
+
+## 45.4 Visual system
+
+The platform uses a restrained premium business palette:
+
+- deep navy for navigation and high-confidence actions;
+- champagne/gold for brand emphasis and important actions;
+- stable white surfaces for dense business information;
+- muted slate text for supporting information;
+- semantic status colours only where they communicate state.
+
+Glassmorphism is reserved primarily for authentication, setup, modal and premium surfaces. Dense ERP tables and charts remain on stable readable surfaces.
+
+## 45.5 Dashboard chart rules
+
+Charts must answer a business question.
+
+- Area/line charts: trends over time.
+- Bar charts: ranking/comparison.
+- Donut charts: composition where the number of categories remains small.
+- Tables: investigation and exact operational detail.
+- Attention rows: exceptions requiring action.
+
+Gold is not used indiscriminately across data visualizations.
+
+## 45.6 Mobile ERP experience
+
+Mobile layouts must preserve the information hierarchy rather than simply shrinking desktop pages.
+
+Priority on mobile:
+
+1. context;
+2. critical KPIs;
+3. exceptions;
+4. primary chart;
+5. operational tables/workflows;
+6. direct actions.
+
+## 45.7 Current implementation status
+
+Completed in this increment:
+
+- Executive Overview visual redesign;
+- ERP-style grouped navigation;
+- improved topbar/search affordance;
+- operational Attention Centre;
+- executive trend chart;
+- payment composition chart;
+- product contribution chart;
+- action strip for common workflows;
+- responsive mobile dashboard hierarchy;
+- visual consistency between the foundation and Sales module.
+
+No backend or database changes are permitted for these UX improvements.
+
+## 45.8 Next implementation
+
+The next functional module remains **Products**.
+
+Products must inherit the Executive Overview design language while becoming a real catalogue workspace with search, filters, product detail, variants, pricing visibility and publication controls using only existing authoritative engine contracts.

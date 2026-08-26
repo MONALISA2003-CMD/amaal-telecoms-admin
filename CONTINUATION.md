@@ -34,65 +34,64 @@ The Business Admin is a presentation/business-workflow layer. It is **not** a re
 
 ## Foundation already built
 
-- Next.js 16 Business Admin application.
+- Next.js 16 Business Admin.
 - TypeScript.
 - Vercel-compatible configuration.
 - Server-side engine request layer.
 - Secure cookie forwarding through the Business Admin proxy.
 - Business authentication and first-account setup flow.
 - Premium restrained champagne/gold glassmorphism for login/setup.
-- Role/permission-aware Business Admin navigation.
-- Responsive business shell, sidebar and topbar.
-- Global search workspace.
-- Executive Overview.
-- Business workspace routing for core modules.
-- Real engine-backed summary cards.
-- Safe unavailable states instead of fabricated figures.
+- Role/permission-aware navigation.
+- Global search.
+- Business workspace routing.
+- Engine-backed summaries.
+- Honest unavailable states.
 - No PostgreSQL credentials in the frontend.
 - No duplicate business data store.
 
-## Sales module now built
+## ERP experience refinement now built
 
-The current increment is the **Sales workspace**.
+The shared Business Admin experience has been upgraded before continuing into more modules.
 
-### Sales dashboard
+### Executive Overview
 
-- Sales-value KPI.
-- Transaction KPI.
-- Units-sold KPI.
-- Draft-sales KPI.
-- 30-day sales trend.
-- Payment-method donut chart.
-- Top-product sales chart.
-- Cashier-performance chart.
-- Searchable sales history.
-- Status filtering.
-- Quote visibility and approval workflow where the current role has the corresponding existing permissions.
+- Executive command-centre header.
+- KPI hierarchy.
+- Revenue trend chart from existing analytics when available.
+- Payment composition chart from existing analytics when available.
+- Product contribution chart from existing analytics when available.
+- Operational Attention Centre.
+- Direct action strip.
+- Responsive mobile hierarchy.
+- Clear unavailable states when the existing engine does not expose a metric.
 
-### Sales detail
+### Shared shell
 
-- Sale summary.
-- Sale lines.
-- Payments.
-- Approval history.
-- Status history.
-- Existing permission-aware actions such as void and Finance sync.
+- ERP-style grouped navigation.
+- Command / Commerce / Operations / Money / Business navigation groups.
+- Existing permission checks preserved.
+- Improved topbar/search affordance.
+- Restrained premium visual language.
+- Stable surfaces for dense business information.
+- Glassmorphism reserved mainly for authentication/premium surfaces.
 
-### POS
+## Sales module already built
 
-- Existing inventory-location selection.
-- Product/SKU search against the existing sales product endpoint.
-- Cart.
-- Quantity controls.
-- Payment method selection.
-- Completion through the existing `/api/sales` transaction endpoint.
-- Existing engine remains responsible for price calculation, stock validation, tax, approval rules, inventory movement, finance posting and audit logging.
+- Sales dashboard.
+- Sales trend.
+- Payment mix.
+- Top products.
+- Cashier comparison.
+- Sales history/search/filter.
+- Sale detail.
+- Quote visibility/actions using existing permissions.
+- POS using the existing sales engine.
 
 ---
 
 # 3. Existing Modules Already Routed / Foundationed
 
-The current Business Admin has business-facing routes for:
+The current Business Admin has routes for:
 
 - Overview
 - Sales
@@ -111,29 +110,25 @@ The current Business Admin has business-facing routes for:
 - Business Settings
 - Search
 
-Most of these remain **visibility/routing/summary foundations** rather than fully finished operational workspaces.
-
-Do not mark a module complete merely because its route renders.
+Most non-Sales modules remain foundation/summary workspaces rather than complete operational experiences. Do not mark them complete merely because a route renders.
 
 ---
 
 # 4. What Remains To Be Built
 
-## Immediate next modules
-
-1. **Products** — full catalogue workspace, product detail, variants, pricing, publishing controls.
-2. **Stock** — warehouse control center, receiving, transfers, stocktakes, incidents, reorder actions.
-3. **Purchasing** — suppliers, purchase requests, purchase orders, receiving and procurement detail workflows.
-4. **Customers** — customer directory, customer detail, balances, cases and permitted customer actions.
-5. **Orders & Delivery** — operational pipeline, order detail, fulfilment and delivery exceptions.
-6. **Finance & Credit** — conservative financial dashboards, receivables/payables, credit workflows.
-7. **Service** — returns, warranty and repairs.
-8. **Website Management** — approved content and publishing workflows.
-9. **Reports / Business Intelligence** — investigation-grade filters and drill-down.
-10. **Team / role-specific experiences** — only after backend permissions are explicitly aligned.
+1. **Products** — next module.
+2. **Stock**.
+3. **Purchasing**.
+4. **Customers**.
+5. **Orders & Delivery**.
+6. **Finance & Credit**.
+7. **Service**.
+8. **Website Management**.
+9. **Reports / Business Intelligence**.
+10. **Team / role-specific experiences**.
 11. **Public Website**.
 12. **Commerce**.
-13. **Unified cross-platform polish and regression pass**.
+13. **Unified cross-platform polish and final regression.**
 
 ---
 
@@ -145,73 +140,92 @@ Before writing code:
 2. Read this `CONTINUATION.md`.
 3. Inspect the current ZIP/project tree.
 4. Inspect the existing implementation of the module being continued.
-5. Inspect the existing Render/Phase 4 API contracts needed by that module.
+5. Inspect existing Render/Phase 4 API contracts required by that module.
 6. Identify reusable existing endpoints and permission names.
-7. Do **not** invent backend contracts when an existing one already exists.
-8. Do **not** modify backend code, schema, SQL, migrations, seeds or database configuration.
-9. Do **not** create a second database or local business-data cache.
+7. Do not invent backend contracts when an existing contract already exists.
+8. Do not modify backend code, schema, SQL, migrations, seeds or database configuration.
+9. Do not create a second database or local business-data source.
+10. Build the **next module in the remaining-build list**.
 
-Then build the **next module in the remaining-build list**, not an unrelated feature.
+After building it, **audit ALL modules**, not only the new module.
+
+Then:
+
+- debug all Business Admin issues found;
+- fix frontend/UI issues where safe;
+- verify backend/database boundaries;
+- update all continuity MD files;
+- create the audited ZIP only after these steps.
 
 ---
 
-# 6. Required UI/UX Standard
+# 6. Mandatory UI/UX Standard
 
-Every module must feel like one premium business-management system.
+Every module must feel like the same premium business ERP.
+
+Use the master hierarchy:
+
+```text
+BUSINESS CONTEXT
+      ↓
+KPI / PERFORMANCE SUMMARY
+      ↓
+TREND / PERFORMANCE
+      ↓
+COMPOSITION / BREAKDOWN
+      ↓
+OPERATIONAL DETAIL
+      ↓
+ATTENTION / EXCEPTIONS
+      ↓
+DIRECT ACTIONS
+```
 
 Use:
 
 - restrained champagne/gold accents;
-- clean stable surfaces for dense business data;
-- glassmorphism primarily for premium/auth/modal surfaces;
-- strong information hierarchy;
-- KPI summary first;
-- trend/performance second;
-- composition/breakdown third;
-- operational detail fourth;
-- attention/actions fifth;
-- graphs that answer real business questions;
-- tables for investigation;
-- mobile-first responsive behaviour;
-- accessible labels and readable charts;
-- real business terminology rather than technical terminology.
+- deep navy navigation;
+- stable readable surfaces for dense ERP data;
+- glassmorphism mainly for authentication, setup, modals and premium surfaces;
+- meaningful graphs;
+- tables for exact investigation;
+- clear loading/empty/error states;
+- mobile-first behaviour;
+- accessible labels and readable chart legends;
+- real business language.
 
-Do not turn the dashboard into a decorative collection of cards.
+Do not turn dashboards into decorative collections of cards.
 
 ---
 
 # 7. Data Integrity Rules
 
-Every future module must:
+Every module must read authoritative data from the existing engine and use its existing permission model.
 
-- read authoritative data from the existing engine;
-- use the existing permission model;
-- never fabricate numbers;
-- never silently convert unavailable data to zero;
-- never expose PostgreSQL credentials;
-- never create local business tables;
-- never duplicate authoritative business records in Vercel;
-- never reset or migrate PostgreSQL;
-- never rewrite Phase 4 backend behaviour;
-- preserve existing auditability;
-- keep financial, stock, customer, order and operational truth in the existing engine.
+Never:
 
-If an existing API cannot provide a planned metric, display an honest unavailable state and record the gap in the audit report. Do **not** invent a replacement data source.
+- fabricate numbers;
+- silently turn missing data into zero;
+- expose PostgreSQL credentials;
+- create local business tables;
+- duplicate authoritative records in Vercel;
+- reset, reseed, truncate, drop or migrate PostgreSQL;
+- rewrite the Render/Phase 4 backend;
+- replace existing backend routes.
+
+Normal user actions may call existing backend endpoints. The existing engine remains responsible for all database writes.
 
 ---
 
 # 8. Full Audit Requirement
 
-After building the next module, perform a **full regression audit of ALL existing Business Admin modules**, not just the newly changed files.
+After every new module, audit at minimum:
 
-Audit at minimum:
-
-- Authentication.
-- Setup/login routing.
+- Authentication/setup.
 - Protected routes.
 - Permission-aware navigation.
 - Overview.
-- Sales.
+- Sales/POS/detail.
 - Products.
 - Stock.
 - Purchasing.
@@ -229,30 +243,12 @@ Audit at minimum:
 - API proxy.
 - Mobile layouts.
 - Loading/error/empty states.
-- TypeScript types.
-- React/Next.js route behaviour.
+- TypeScript/imports/routes.
 - Dependency compatibility.
 - Security boundaries.
-- Accidental backend/database changes.
+- Backend/database change detection.
 
-Check for:
-
-- compile errors;
-- TypeScript errors;
-- lint errors;
-- broken imports;
-- invalid routes;
-- incorrect permissions;
-- stale/hard-coded business data;
-- fabricated dashboard values;
-- broken mobile layouts;
-- unsafe client-side secrets;
-- accidental database/backend modifications;
-- regressions caused by the new module.
-
-Fix discovered issues before packaging whenever the fix stays inside the Business Admin/UI layer.
-
-If a defect requires backend/database changes, **do not make that change**. Record it clearly as a blocked dependency in `AUDIT_REPORT.md`.
+If a defect requires backend/database changes, do not make it. Record it as a blocked dependency in `AUDIT_REPORT.md`.
 
 ---
 
@@ -267,56 +263,60 @@ npm run lint
 npm test
 ```
 
-Also perform static inspections of routes, imports, permissions and engine contracts.
+Also perform static route/import/permission/API-contract checks.
 
-A failed local dependency installation caused by unavailable package registry/network access is **not** permission to change dependency versions blindly. Preserve the known-good dependency contract unless a verified compatibility issue exists.
+Do not claim a successful build if the environment prevents it.
 
 ---
 
 # 10. Required ZIP Contents
 
-Every future ZIP must contain the complete project plus these continuity documents at the project root:
+Every ZIP must contain the complete project plus these root-level continuity documents:
 
-- `Amaal_plan.md` — current master plan, updated with the latest implementation status where appropriate.
-- `CONTINUATION.md` — this hand-off prompt, updated for the current build.
-- `AUDIT_REPORT.md` — latest full audit, findings, fixes and any blocked dependencies.
-- `PLAN_UPDATE_NOTES.md` — concise record of what changed in the plan for this increment.
-- existing project README/documentation files.
-
-Do not omit the continuity documents from a future ZIP.
+- `Amaal_plan.md`
+- `CONTINUATION.md`
+- `AUDIT_REPORT.md`
+- `PLAN_UPDATE_NOTES.md`
+- existing README/documentation files
 
 ---
 
-# 11. Required Final Packaging Procedure
+# 11. Final Packaging Procedure
 
-Before packaging:
+Before packaging every future ZIP:
 
 1. Build the next module.
 2. Audit the new module.
-3. Audit **all** existing modules.
-4. Debug and fix Business Admin issues found.
+3. Audit **all existing modules**.
+4. Debug and fix Business Admin issues.
 5. Re-run build/lint/tests where possible.
 6. Confirm no backend files were modified.
-7. Confirm no schema/database/migration/seed changes were introduced.
-8. Confirm no PostgreSQL reset/reseed/truncate/drop operation was added.
-9. Update `Amaal_plan.md` if implementation status changed.
-10. Rewrite this `CONTINUATION.md` to describe:
-   - current build;
-   - what is already complete;
-   - what remains;
-   - known limitations;
-   - exact next module;
-   - exact continuity instructions.
-11. Update `AUDIT_REPORT.md`.
-12. Update `PLAN_UPDATE_NOTES.md`.
-13. Create the ZIP only after the audit is complete.
-14. Verify the ZIP actually contains the updated MD files and the complete application.
+7. Confirm no SQL/schema/migration/seed/database changes were introduced.
+8. Update `Amaal_plan.md`.
+9. Rewrite this `CONTINUATION.md` with the exact current status.
+10. Update `AUDIT_REPORT.md`.
+11. Update `PLAN_UPDATE_NOTES.md`.
+12. Create the ZIP only after the audit is complete.
+
+The final response must state what was built, what was audited, any validation blocker, and the next module.
 
 ---
 
-# 12. NEXT BUILDER PROMPT
+# 12. Continuity Prompt For The Next Builder
 
-> **Continue the Amaal Telecoms Phase 5 Business Admin from the project contained in this ZIP. First deeply inspect `Amaal_plan.md`, `CONTINUATION.md`, `AUDIT_REPORT.md`, and the existing code. Do not assume previous work is correct. Audit the existing implementation and the existing Render/Phase 4 API contracts. Then build the NEXT unfinished module in the stated build order. Do not build an unrelated feature. Treat the existing Render business engine and PostgreSQL database as the single source of truth. Do not touch, reset, reseed, migrate, alter, truncate, recreate or experiment with the database. Do not modify, rewrite or replace the backend engine. Consume existing APIs and permissions only. During development, audit all existing Business Admin modules for regressions, TypeScript/build/lint errors, route problems, permission problems, UI/UX defects, mobile issues, hard-coded/fabricated data and security boundary problems. Debug and fix all Business Admin-layer defects found. Do not hide failures with fabricated values or bypass backend authorization. After the next module is built, perform a full regression audit of every existing module. Run build/lint/tests where the environment permits. Update `Amaal_plan.md`, rewrite `CONTINUATION.md` with the new current state and next step, update `AUDIT_REPORT.md` and `PLAN_UPDATE_NOTES.md`, then package the complete project into the next ZIP. The ZIP must contain all four continuity MD files at its root. Before delivering the ZIP, verify that no backend/database files were changed and that the ZIP contains the complete corrected project.**
+> **CONTINUE Amaal Telecoms Business Admin from the current ZIP.**
+>
+> First read `Amaal_plan.md` and `CONTINUATION.md`. Then deeply inspect the entire current project and the existing implementation before editing anything.
+>
+> **Current build:** Next.js Business Admin foundation + premium authentication/setup + permission-aware ERP shell + Executive Overview v2 command centre + Sales dashboard/detail/POS. The shared visual system is now the master ERP template.
+>
+> **Already built:** authentication/setup, shell/navigation, search, Executive Overview, Sales, Sales detail, POS, shared premium visual language and engine-backed dashboard patterns.
+>
+> **Next module:** Products. Build the Products workspace deeply using existing authoritative Render APIs only. Make it a real catalogue management experience with dashboard context, search/filtering, product detail, variants, pricing visibility, publication status and permission-aware actions where the existing contracts support them.
+>
+> **Mandatory workflow:** inspect → build Products → audit Products → audit ALL existing modules → debug/fix frontend issues → verify routes/types/permissions/mobile UX/API contracts → verify backend/database were untouched → update `Amaal_plan.md`, `CONTINUATION.md`, `AUDIT_REPORT.md`, and `PLAN_UPDATE_NOTES.md` → ZIP the complete project.
+>
+> **ABSOLUTE:** do not touch, reset, reseed, migrate, recreate, truncate, drop or experiment with the PostgreSQL database. Do not modify, rewrite, replace or “fix” the Render/Phase 4 backend. Do not create another database or source of truth. Business Admin may only consume existing backend APIs and perform normal user actions through existing routes.
 
 ---
 
@@ -324,18 +324,4 @@ Before packaging:
 
 **Products workspace.**
 
-The next builder should deepen Products into a real business catalogue workspace while preserving the same dashboard/visual system used by Sales.
-
-Priority:
-
-1. Product catalogue dashboard.
-2. Product search/filtering.
-3. Product detail.
-4. Variants.
-5. Pricing visibility.
-6. Website publishing status.
-7. Product intelligence widgets.
-8. Permission-aware actions using only existing catalogue contracts.
-9. Full regression audit.
-10. Update all continuity MD files.
-11. Package the next ZIP.
+The next builder must inherit the upgraded Executive Overview visual system rather than creating a separate design language.
