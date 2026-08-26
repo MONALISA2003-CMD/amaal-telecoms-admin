@@ -100,12 +100,12 @@ export function ProductCatalogue({ summary, products, total, brands, categories,
       <section className="catalogueStats">
         <Stat icon={<PackageSearch size={17} />} label="Products" value={number(summary?.products)} note={`${number(total)} currently visible in this catalogue`} featured />
         <Stat icon={<Tag size={17} />} label="Categories" value={number(summary?.categories)} note="Active catalogue structure" />
-        <Stat icon={<Box size={17} />} label="Variants" value={number(summary?.variants)} note="SKUs and commercial variants" />
+        <Stat icon={<Box size={17} />} label="Variants" value={number(summary?.variants)} note="Product codes and commercial variants" />
         <Stat icon={<ExternalLink size={17} />} label="Published online" value={number(summary?.published)} note="Active products visible to web channels" />
       </section>
 
       <section className="catalogueToolbar panel">
-        <div className="catalogueSearch"><Search size={17} /><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search products, SKU, brand or category" aria-label="Search catalogue" /></div>
+        <div className="catalogueSearch"><Search size={17} /><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search products, Product code, brand or category" aria-label="Search catalogue" /></div>
         <button className={`filterButton ${filtersOpen ? 'active' : ''}`} onClick={() => setFiltersOpen((v) => !v)}><Filter size={15} /> Filters {activeFilters > 0 && <b>{activeFilters}</b>}<ChevronDown size={14} /></button>
         <div className="viewToggle" aria-label="Catalogue view">
           <button className={view === 'grid' ? 'active' : ''} onClick={() => setView('grid')} aria-label="Grid view"><Grid2X2 size={15} /></button>
@@ -126,7 +126,7 @@ export function ProductCatalogue({ summary, products, total, brands, categories,
         <span className="catalogueHint">Select a product to inspect its commercial record.</span>
       </section>
 
-      {filtered.length === 0 ? <div className="panel catalogueEmpty"><PackageSearch size={28} /><strong>No products match this view</strong><span>Try another search or clear the filters. The catalogue remains authoritative to the existing business engine.</span><button onClick={clearFilters}>Clear filters</button></div> : view === 'grid' ? (
+      {filtered.length === 0 ? <div className="panel catalogueEmpty"><PackageSearch size={28} /><strong>No products match this view</strong><span>Try another search or clear the filters. The catalogue remains authoritative to the business records.</span><button onClick={clearFilters}>Clear filters</button></div> : view === 'grid' ? (
         <div className="productGrid">{filtered.map((product) => <ProductCard key={product.id} product={product} />)}</div>
       ) : (
         <div className="panel catalogueList"><table><thead><tr><th>Product</th><th>Brand</th><th>Category</th><th>Variants</th><th>Price</th><th>Status</th><th>Website</th><th>Updated</th><th /></tr></thead><tbody>{filtered.map((product) => <tr key={product.id}>

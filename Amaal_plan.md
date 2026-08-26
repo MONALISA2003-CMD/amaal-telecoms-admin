@@ -2730,3 +2730,54 @@ Bulk import must require validation before committing a batch. The UI must expla
 A user with the appropriate permissions must be able to add a complete product without opening the technical console for normal business catalogue work.
 
 The Business Admin must not expose technical infrastructure controls, raw SQL, database administration, secrets, or internal operational configuration.
+
+---
+
+# Purchasing Module Build Record — 2026-08-27
+
+## Status
+Business Admin Purchasing workspace added on top of the existing procurement and supplier capabilities.
+
+## Technical Console comparison completed
+The existing supplier/procurement capability was inspected before implementation. The Business Admin now provides a business-facing workspace for:
+
+- Purchasing overview and attention centre
+- Purchase requests
+- Purchase order management
+- Goods receiving visibility
+- Supplier invoices
+- Supplier payments
+- Supplier directory
+- Supplier creation
+- Product selection for purchasing
+- Department and priority selection for requests
+- Supplier purchasing activity
+- Partial receiving visibility
+- Invoice exceptions/readiness visibility
+- Mobile-friendly purchasing navigation
+
+The underlying procurement capabilities remain with the existing business system.
+
+## Business language rule
+Visible Business Admin purchasing copy must use ordinary business language. Do not expose developer terminology or implementation details to business users.
+
+Examples:
+- SKU → Product code
+- Engine → Business records/system
+- Database → Business records/system
+- JSON → Details / information
+
+## Source-of-truth protection
+No database reset, schema change, migration, seed, destructive operation or new business data store was introduced during this module.
+
+## Next module
+Customers.
+
+Before Customers:
+1. Inspect the Technical Console customer/CRM capability.
+2. Compare all existing customer functions with Business Admin requirements.
+3. Build the complete business-facing customer workspace.
+4. Audit Sales, Products and Stock together with Purchasing.
+5. Debug all affected areas.
+6. Update all continuity documents.
+7. Verify the ZIP before packaging.

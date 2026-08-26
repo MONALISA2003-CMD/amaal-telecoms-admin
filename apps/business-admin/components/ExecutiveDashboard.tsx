@@ -125,7 +125,7 @@ export function ExecutiveDashboard({ dashboard, bi, sales, inventory, orders, cu
       <div>
         <div className="eyebrowRow"><span className="eyebrow">Executive command centre</span><span className="liveDot"><i /> Engine connected</span></div>
         <h2>Good business starts with clarity.</h2>
-        <p>One operational view across revenue, customers, inventory and fulfilment — using the same authoritative business engine.</p>
+        <p>One operational view across revenue, customers, inventory and fulfilment — using the same trusted business records.</p>
       </div>
       <div className="dashboardHeroActions"><span className="periodControl">This period <strong>{bi?.range?.label ?? bi?.period ?? 'Current'}</strong></span><Link className="goldAction" href="/search">Global search</Link></div>
     </section>

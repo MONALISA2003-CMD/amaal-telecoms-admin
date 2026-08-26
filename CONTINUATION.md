@@ -451,3 +451,25 @@ Completed after Products: **Stock / Warehouse Control v1**.
 
 ### Mandatory continuity prompt
 **Continue from the current build; do not restart or redesign from scratch. First inspect the existing project and compare the next module against the same-kind functionality in the Technical Console/Phase 4 engine. Identify every existing route, permission, business action, state transition, validation rule and audit event. Build the next business module on top of those existing capabilities. Then audit ALL modules already built, not just the new module. Find and fix bugs, broken routes, permission leaks, stale data assumptions, mobile UX problems, type errors, build errors and inconsistent UI. Verify every business metric/action maps to authoritative engine data. Do not touch, reset, reseed, migrate, recreate, truncate, drop or experiment with the PostgreSQL database. Do not rewrite or replace the existing Render/Phase 4 backend. Use existing APIs; only add a narrowly justified additive boundary if the capability truly does not exist. After debugging, update Amaal_plan.md and CONTINUATION.md, write AUDIT_REPORT.md and PLAN_UPDATE_NOTES.md, verify the ZIP contents, and package the complete project.**
+
+---
+
+# Current Continuity State — 2026-08-27
+
+## Completed modules
+- Business Admin foundation and authentication
+- Executive Overview
+- Sales
+- Products catalogue and product administration
+- Warehouse Control / Stock
+- Purchasing
+
+## Current module: Purchasing
+Purchasing is now a business-facing control centre covering requests, purchase orders, receiving, supplier invoices, supplier payments, supplier directory and purchasing attention items.
+
+## Next module: Customers
+The next builder MUST first inspect the existing Technical Console customer/CRM capability before writing the Business Admin Customers workspace.
+
+## Mandatory continuity build prompt
+
+> Continue the Amaal Telecoms Business Admin from the current ZIP. First inspect the current project and the existing Technical Console module of the same kind. The next module is Customers. Compare every existing customer/CRM capability before building. Build the next module as a complete real-business workspace, not a simplified demo. Preserve the premium restrained gold/champagne ERP visual language, responsive mobile experience, clear dashboards, useful charts and actionable attention areas. Use ordinary business language in Business Admin; never expose developer terminology such as API, endpoint, database, JSON, webhook, server, infrastructure or internal identifiers to business users. Treat the existing Render business system and PostgreSQL records as the source of truth. DO NOT touch, reset, reseed, migrate, recreate, truncate, drop, rewrite or experiment with the database. DO NOT replace or rewrite the existing backend. Reuse existing business capabilities and only add a clearly necessary business-facing boundary. After building Customers, audit ALL existing modules, check permissions, loading states, empty states, errors, mobile behaviour, navigation, wording, data mapping and regressions. Debug every issue found. Confirm the database/backend remain untouched. Update Amaal_plan.md, CONTINUATION.md, AUDIT_REPORT.md and PLAN_UPDATE_NOTES.md. Only then create and integrity-check the next ZIP.

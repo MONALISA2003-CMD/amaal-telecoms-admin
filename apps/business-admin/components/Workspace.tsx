@@ -43,7 +43,7 @@ export function Workspace({
           <div className="panelHeading">
             <div>
               <h3>Recent activity</h3>
-              <p>Live records from the existing business engine.</p>
+              <p>Live records from the business records.</p>
             </div>
           </div>
           <div className="tableWrap">

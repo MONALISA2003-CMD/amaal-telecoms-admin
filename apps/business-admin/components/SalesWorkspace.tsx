@@ -194,7 +194,7 @@ export function SalesWorkspace({
       </div>
 
       <section className="panel salesHistoryPanel">
-        <div className="panelHeading historyHeading"><div><h3>Sales history</h3><p>Recent transactions from the authoritative sales engine.</p></div><Link className="textAction" href="/sales">Refresh</Link></div>
+        <div className="panelHeading historyHeading"><div><h3>Sales history</h3><p>Recent transactions from the official sales records.</p></div><Link className="textAction" href="/sales">Refresh</Link></div>
         <div className="filterBar"><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search sale, customer, location or cashier" aria-label="Search sales" /><select value={status} onChange={(event) => setStatus(event.target.value)} aria-label="Filter sales status"><option>All</option>{Array.from(new Set(sales.map((sale) => sale.status))).map((item) => <option key={item}>{item}</option>)}</select></div>
         <div className="tableWrap"><table><thead><tr><th>Sale</th><th>Customer</th><th>Status</th><th>Amount</th><th>Units</th><th>Location</th><th>When</th></tr></thead><tbody>{filteredSales.length ? filteredSales.map((sale) => <tr key={sale.id}><td><Link className="tableLink" href={`/sales/${sale.id}`}>{sale.sale_no}</Link></td><td>{sale.customer_name || 'Walk-in customer'}</td><td><span className={`status status-${sale.status.toLowerCase().replace(/\s+/g, '-')}`}>{sale.status}</span></td><td>{money(sale.grand_total)}</td><td>{sale.units == null ? '—' : sale.units}</td><td>{sale.location_name || '—'}</td><td>{dateTime(sale.created_at)}</td></tr>) : <tr><td colSpan={7}><div className="emptyState">No sales match this filter.</div></td></tr>}</tbody></table></div>
       </section>

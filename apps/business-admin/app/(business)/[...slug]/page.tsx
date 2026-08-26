@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { Workspace, type Card } from '@/components/Workspace';
+import { PurchasingWorkspace } from '@/components/PurchasingWorkspace';
 import { businessGetSafe, money, number } from '@/lib/business';
 
 type Params = { slug: string[] };
@@ -7,17 +8,17 @@ type ApiRecord = Record<string, any>;
 
 const titles: Record<string, [string, string]> = {
   sales: ['Sales', 'Monitor sales activity and move into the existing POS and sales workflows.'],
-  products: ['Products', 'Manage the business catalogue using the existing product and pricing engine.'],
-  stock: ['Stock', 'See stock position, locations and replenishment pressure from the inventory engine.'],
+  products: ['Products', 'Manage the business catalogue using the business product and pricing records.'],
+  stock: ['Stock', 'See stock position, locations and replenishment pressure from the business stock records.'],
   purchasing: ['Purchasing', 'Monitor supplier procurement, purchase orders and receiving.'],
   customers: ['Customers', 'Manage customer relationships and understand outstanding balances and service workload.'],
   orders: ['Orders', 'Track customer orders from payment through fulfilment and delivery.'],
-  finance: ['Finance', 'Review the authoritative accounting position from the existing finance engine.'],
+  finance: ['Finance', 'Review the authoritative accounting position from the business finance records.'],
   credit: ['Credit', 'Monitor customer credit exposure, applications and amounts due.'],
   delivery: ['Delivery', 'Monitor shipments, delivery workload and exceptions.'],
   service: ['Service', 'Keep returns, warranty and repair work visible in one business workspace.'],
   website: ['Website', 'Manage the connected public website without exposing technical hosting controls.'],
-  reports: ['Reports', 'Use the existing business-intelligence engine for cross-business performance.'],
+  reports: ['Reports', 'Use the business performance records for cross-business performance.'],
   team: ['Team', 'Review the people and access information available to your role.'],
   settings: ['Business Settings', 'Review the business configuration exposed to your role.'],
 };
@@ -76,17 +77,25 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
         ['Low-stock lines', number(summary?.lowStock)],
         ['Locations', number(summary?.locations)],
       ])}
-      rows={overview?.lowStock ?? []} columns={[{ key: 'product_name', label: 'Product' }, { key: 'sku', label: 'SKU' }, { key: 'location_name', label: 'Location' }, { key: 'available', label: 'Available' }, { key: 'reorder_point', label: 'Reorder point' }]} />;
+      rows={overview?.lowStock ?? []} columns={[{ key: 'product_name', label: 'Product' }, { key: 'sku', label: 'Product code' }, { key: 'location_name', label: 'Location' }, { key: 'available', label: 'Available' }, { key: 'reorder_point', label: 'Reorder point' }]} />;
   }
 
   if (key === 'purchasing') {
-    const summary = await businessGetSafe<ApiRecord>('/api/procurement/summary');
-    return <Workspace title={title} description={description} cards={makeCards([
-      ['Active suppliers', number(summary?.activeSuppliers)],
-      ['Pending requests', number(summary?.pendingRequisitions)],
-      ['Open purchase orders', number(summary?.openPurchaseOrders)],
-      ['Overdue invoices', number(summary?.overdueInvoices)],
-    ])} />;
+    const [me, summary, suppliers, requisitions, orders, receipts, invoices, payments, analytics, readiness, variants, departments] = await Promise.all([
+      businessGetSafe<ApiRecord>('/api/me'),
+      businessGetSafe<ApiRecord>('/api/procurement/summary'),
+      businessGetSafe<any[]>('/api/suppliers?limit=200'),
+      businessGetSafe<any[]>('/api/procurement/requisitions'),
+      businessGetSafe<any[]>('/api/procurement/orders'),
+      businessGetSafe<any[]>('/api/procurement/receipts'),
+      businessGetSafe<any[]>('/api/procurement/invoices'),
+      businessGetSafe<any[]>('/api/procurement/payments'),
+      businessGetSafe<ApiRecord>('/api/procurement/control-center'),
+      businessGetSafe<ApiRecord>('/api/procurement/readiness'),
+      businessGetSafe<any[]>('/api/catalog/variants'),
+      businessGetSafe<any[]>('/api/departments'),
+    ]);
+    return <PurchasingWorkspace summary={summary} suppliers={suppliers ?? []} requisitions={requisitions ?? []} orders={orders ?? []} receipts={receipts ?? []} invoices={invoices ?? []} payments={payments ?? []} analytics={analytics ?? {}} readiness={readiness ?? {}} variants={variants ?? []} departments={departments ?? []} permissions={me?.permissions ?? []}/>;
   }
 
   if (key === 'customers') {
@@ -204,7 +213,7 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
       ['Business', organization?.trading_name ?? organization?.legal_name ?? '—'],
       ['Currency', 'UGX'],
       ['Timezone', 'Africa/Kampala'],
-      ['Data source', 'Existing engine'],
+      ['Business records', 'Connected'],
     ])} />;
   }
 
