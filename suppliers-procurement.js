@@ -10,16 +10,17 @@ export function registerSuppliersProcurement({app,auth,need,q,pool,audit,invento
   const lineTotal=(qty,price,tax=0,discount=0)=>Math.max(0,money(qty)*money(price)-money(discount)+(money(qty)*money(price)-money(discount))*money(tax)/100);
 
   app.get('/api/procurement/summary',auth,need('procurement.view'),async(req,res)=>{
+    const iso=v=>/^\d{4}-\d{2}-\d{2}$/.test(String(v||''))?String(v):null;let start=iso(req.query.start)||new Date(Date.now()-29*86400000).toISOString().slice(0,10),end=iso(req.query.end)||new Date().toISOString().slice(0,10);if(start>end)[start,end]=[end,start];
     const [[sup],[reqs],[pos],[grns],[inv],[pay],[overdue]]=await Promise.all([
       q("SELECT count(*)::int c FROM suppliers WHERE status='Active'"),
       q("SELECT count(*)::int c FROM purchase_requisitions WHERE status IN ('Submitted','Approved')"),
       q("SELECT count(*)::int c FROM purchase_orders WHERE status IN ('Submitted','Approved','Partially Received')"),
-      q("SELECT count(*)::int c FROM goods_receipts WHERE status='Posted' AND created_at>now()-interval '30 days'"),
-      q("SELECT COALESCE(sum(total_amount),0)::numeric total FROM supplier_invoices WHERE status IN ('Matched','Partially Paid','Paid')"),
-      q("SELECT COALESCE(sum(amount),0)::numeric total FROM supplier_payments WHERE status='Completed' AND payment_date>=current_date-30"),
+      q("SELECT count(*)::int c FROM goods_receipts WHERE status='Posted' AND created_at::date BETWEEN $1 AND $2",[start,end]),
+      q("SELECT COALESCE(sum(total_amount),0)::numeric total FROM supplier_invoices WHERE status IN ('Matched','Partially Paid','Paid') AND created_at::date BETWEEN $1 AND $2",[start,end]),
+      q("SELECT COALESCE(sum(amount),0)::numeric total FROM supplier_payments WHERE status='Completed' AND payment_date BETWEEN $1::date AND $2::date",[start,end]),
       q("SELECT count(*)::int c FROM supplier_invoices WHERE status IN ('Matched','Partially Paid') AND due_date<current_date")
     ]);
-    res.json({activeSuppliers:sup.c,pendingRequisitions:reqs.c,openPurchaseOrders:pos.c,receipts30d:grns.c,invoicedValue:inv.total,paid30d:pay.total,overdueInvoices:overdue.c,currency:'UGX'});
+    res.json({activeSuppliers:sup.c,pendingRequisitions:reqs.c,openPurchaseOrders:pos.c,receipts30d:grns.c,invoicedValue:inv.total,paid30d:pay.total,overdueInvoices:overdue.c,currency:'UGX',range:{start,end}});
   });
 
   app.get('/api/suppliers',auth,need('suppliers.view'),async(req,res)=>{

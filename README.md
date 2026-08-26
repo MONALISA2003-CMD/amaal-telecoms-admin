@@ -3,28 +3,42 @@
 Cumulative enterprise telecom retail administration platform.
 
 ## Current release
-**Phase 40G — AI Activation + Cross-Module Frontend Scoping Fix — audited and debugged**
+**Phase 4 — Deep Audit, Debug & Production Readiness — corrected build**
 
-This is a cumulative continuation build. Existing modules are preserved; this release fixes a real browser-side integration defect discovered during Render testing and strengthens the AI/integration frontend boundary.
+This cumulative build preserves the existing architecture, PostgreSQL schema and modules. The Phase 4 audit found and corrected real cross-module defects instead of only documenting them.
 
-## What was fixed in this release
+## Phase 4 fixes actually implemented
 
-The Render screenshots exposed:
+### Global Apply Date Range
+- Added a shared date-range control used by date-aware Sales, Procurement, Finance, Business Intelligence and Reports views.
+- Sales summary and sales listing now consume the selected `start` and `end` range.
+- Procurement summary now consumes the selected range.
+- Finance dashboard and journal queries now consume the selected range.
+- BI reports continue to use the selected range through the shared control.
+- Inventory keeps current-state stock metrics and explicitly indicates that stock-on-hand is not date-filtered.
+- Invalid ranges are rejected in the frontend before reload.
 
-- `aiView is not defined`
-- `integrationView is not defined`
+### Finance synchronization
+- Preserved idempotent source-to-journal mapping through `finance_sync_log`.
+- Hardened concurrent synchronization so a unique `source_ref` race returns the already-created journal instead of failing the whole synchronization.
+- Empty operational queues remain safe and return a zero-created result.
+- Existing transaction rollback and audit logging remain enabled.
 
-The cause was not the domain configuration or missing API keys. The AI and Integration view renderers had been declared inside a feature closure but consumed from another feature closure. Shared UI helper `cardGrid()` also had a cross-scope dependency.
+### Media Management
+- Fixed the frontend initialization defect where Media Management was never registered because its feature closure checked permissions before the authenticated user permissions had been loaded.
+- Media Library navigation and dashboard registration now initialize correctly.
+- Media loading fetches library, folders and tags together and preserves permission checks at the API layer.
 
-The fix:
+## Validation performed
+- `node --check` passed for every application JavaScript file.
+- `node render-preflight.js` passed.
+- Static route audit found 542 route registrations with zero duplicate method/path signatures.
+- No application YAML files were found.
+- No runtime `procurement_requisitions` legacy reference was found.
+- CSRF protection remains enabled for authenticated state-changing API requests.
+- Gemini credentials remain server-side; no Gemini environment variable references were found in public frontend assets.
 
-- Exposes the closure-owned AI renderer through the controlled `window.aiView` interface.
-- Exposes the Integration renderer through the controlled `window.integrationView` interface.
-- Updates the consuming renderer to use those explicit interfaces.
-- Adds a globally available shared `cardGrid()` helper for legacy/top-level views.
-- Preserves module isolation while making cross-module UI dependencies explicit.
-
-A browser-style render regression harness was used against the cumulative navigation set: **113 unique admin views rendered without JavaScript exceptions** using safe mock data. The temporary harness was removed before packaging.
+A live PostgreSQL transaction test was not fabricated. The source code was audited against the checked-in schema and the relevant execution paths were traced.
 
 ## AI status
 

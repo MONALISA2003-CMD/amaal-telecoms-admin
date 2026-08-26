@@ -5,6 +5,7 @@ export function registerSalesPos({app,auth,need,q,pool,audit,changeStock}){
   const saleNo=()=>`SAL-${new Date().toISOString().replace(/[-:TZ.]/g,'').slice(0,14)}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;
   const round2=n=>Math.round(Number(n)*100)/100;
   const validPaymentMethods=['Cash','Mobile Money','Card','Bank Transfer','Online Payment'];
+  const dateRange=req=>{const iso=v=>/^\d{4}-\d{2}-\d{2}$/.test(String(v||''))?String(v):null;let start=iso(req.query.start)||new Date(Date.now()-29*86400000).toISOString().slice(0,10),end=iso(req.query.end)||new Date().toISOString().slice(0,10);if(start>end)[start,end]=[end,start];return {start,end};};
 
   async function saleById(id){
     const s=(await q(`SELECT s.*,c.customer_no,c.name customer_name,c.phone customer_phone,c.email customer_email,l.name location_name,u.email cashier_email
@@ -21,14 +22,14 @@ export function registerSalesPos({app,auth,need,q,pool,audit,changeStock}){
   }
 
   app.get('/api/sales/summary',auth,need('sales.view'),async(req,res)=>{
-    const [today,month,open,units,payments]=await Promise.all([
-      q("SELECT COALESCE(SUM(grand_total),0)::numeric total,COUNT(*)::int count FROM sales WHERE status IN ('Completed','Paid','Partially Paid') AND created_at>=current_date"),
-      q("SELECT COALESCE(SUM(grand_total),0)::numeric total,COUNT(*)::int count FROM sales WHERE status IN ('Completed','Paid','Partially Paid') AND created_at>=date_trunc('month',current_date)"),
-      q("SELECT COUNT(*)::int count FROM sales WHERE status='Draft'"),
-      q("SELECT COALESCE(SUM(sl.quantity),0)::numeric units FROM sale_lines sl JOIN sales s ON s.id=sl.sale_id WHERE s.status IN ('Completed','Paid','Partially Paid') AND s.created_at>=current_date"),
-      q("SELECT method,COALESCE(SUM(amount),0)::numeric amount FROM sale_payments sp JOIN sales s ON s.id=sp.sale_id WHERE s.status IN ('Completed','Paid','Partially Paid') AND s.created_at>=current_date GROUP BY method ORDER BY method")
+    const {start,end}=dateRange(req);const [today,month,open,units,payments]=await Promise.all([
+      q("SELECT COALESCE(SUM(grand_total),0)::numeric total,COUNT(*)::int count FROM sales WHERE status IN ('Completed','Paid','Partially Paid') AND created_at::date BETWEEN $1 AND $2",[start,end]),
+      q("SELECT COALESCE(SUM(grand_total),0)::numeric total,COUNT(*)::int count FROM sales WHERE status IN ('Completed','Paid','Partially Paid') AND created_at::date BETWEEN $1 AND $2",[start,end]),
+      q("SELECT COUNT(*)::int count FROM sales WHERE status='Draft' AND created_at::date BETWEEN $1 AND $2",[start,end]),
+      q("SELECT COALESCE(SUM(sl.quantity),0)::numeric units FROM sale_lines sl JOIN sales s ON s.id=sl.sale_id WHERE s.status IN ('Completed','Paid','Partially Paid') AND s.created_at::date BETWEEN $1 AND $2",[start,end]),
+      q("SELECT method,COALESCE(SUM(amount),0)::numeric amount FROM sale_payments sp JOIN sales s ON s.id=sp.sale_id WHERE s.status IN ('Completed','Paid','Partially Paid') AND s.created_at::date BETWEEN $1 AND $2 GROUP BY method ORDER BY method",[start,end])
     ]);
-    res.json({today:today[0],month:month[0],openDrafts:open[0].count,unitsToday:units[0].units,payments});
+    res.json({today:today[0],month:month[0],openDrafts:open[0].count,unitsToday:units[0].units,payments,range:{start,end}});
   });
 
   app.get('/api/sales/products',auth,need('sales.view'),async(req,res)=>{
@@ -54,7 +55,7 @@ export function registerSalesPos({app,auth,need,q,pool,audit,changeStock}){
   });
 
   app.get('/api/sales',auth,need('sales.view'),async(req,res)=>{
-    const limit=Math.min(Math.max(Number(req.query.limit)||100,1),300); const params=[]; const where=[]; const t=text(req.query.q);
+    const limit=Math.min(Math.max(Number(req.query.limit)||100,1),300); const {start,end}=dateRange(req); const params=[start,end]; const where=["s.created_at::date BETWEEN $1 AND $2"]; const t=text(req.query.q);
     if(t){params.push(`%${t}%`);where.push(`(s.sale_no ILIKE $${params.length} OR COALESCE(c.name,'') ILIKE $${params.length} OR COALESCE(c.phone,'') ILIKE $${params.length})`)}
     if(req.query.status){params.push(req.query.status);where.push(`s.status=$${params.length}`)}
     if(req.query.locationId){params.push(req.query.locationId);where.push(`s.location_id=$${params.length}`)}
