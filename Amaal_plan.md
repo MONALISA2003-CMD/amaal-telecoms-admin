@@ -2575,3 +2575,158 @@ No backend or database changes are permitted for these UX improvements.
 The next functional module remains **Products**.
 
 Products must inherit the Executive Overview design language while becoming a real catalogue workspace with search, filters, product detail, variants, pricing visibility and publication controls using only existing authoritative engine contracts.
+
+## 46. Products — Catalogue-First Workspace
+
+Products is now the next completed functional increment and intentionally starts as a **catalogue-first workspace**, not a product-creation wizard.
+
+### 46.1 Catalogue experience
+
+The Products workspace is designed around fast discovery and commercial understanding:
+
+- catalogue headline metrics;
+- product search across name, slug, brand and category;
+- brand, category, lifecycle-status and website-visibility filters;
+- grid/list view toggle;
+- product image/identity cards;
+- SKU/variant count and price visibility;
+- featured-product indication;
+- publication/status badges;
+- direct product-record navigation;
+- honest empty states;
+- responsive mobile catalogue behaviour.
+
+### 46.2 Product record
+
+The product detail surface provides:
+
+- primary product visual;
+- commercial identity;
+- brand/category/type;
+- website visibility;
+- variant count;
+- SKU and variant table;
+- selling/wholesale price visibility;
+- inventory-tracking state;
+- catalogue metadata;
+- tags;
+- SEO metadata when available.
+
+### 46.3 Data boundary
+
+Products uses only existing authoritative engine contracts:
+
+- `/api/catalog/summary`
+- `/api/catalog/products`
+- `/api/catalog/products/:id`
+- `/api/catalog/brands`
+- `/api/catalog/categories`
+
+No new backend route, schema, migration, seed, table or database connection was introduced.
+
+### 46.4 Deliberate scope
+
+This increment does not attempt to redesign the entire catalogue-management backend. Product creation, editing, variant editing, image management, publishing, revisions, tags and bulk operations remain governed by the existing engine and will be expanded only in later catalogue-management increments.
+
+The next major functional module remains **Stock** after the catalogue-first Products workspace is fully regression-tested.
+
+## 46.5 Products — Business Admin Management Completeness
+
+Before moving to Stock, the Products workspace must be treated as a complete business catalogue management surface, not read-only catalogue browsing.
+
+The Business Admin must expose every product-management capability already provided by the authoritative technical/Phase 4 engine, while keeping technical administration itself separate.
+
+### Product creation
+
+Admin users with `catalog.manage` must be able to create a product with the existing engine fields:
+
+- name and slug;
+- brand and category;
+- product type;
+- short and full description;
+- specifications JSON;
+- lifecycle status;
+- website visibility;
+- featured flag;
+- SEO title and description;
+- promotion type/label/start/end;
+- initial SKU/variant;
+- barcode;
+- variant name;
+- colour, storage and size;
+- cost, selling, compare-at and wholesale prices;
+- tax rate;
+- inventory tracking;
+- serialized/IMEI mode;
+- weight and dimensions.
+
+### Product enrichment
+
+Admin users must be able to continue enriching an existing product through the existing engine:
+
+- edit commercial identity;
+- add variants;
+- add product images;
+- set primary image;
+- assign variant-specific images;
+- assign and manage product tags;
+- create brands;
+- edit brands;
+- create categories;
+- edit categories;
+- create tags;
+- manage related/cross-sell/upsell relationships;
+- control website publication;
+- inspect revision history;
+- restore a previous product revision;
+- perform controlled bulk import;
+- perform controlled bulk status updates;
+- export catalogue data where the user has `catalog.export`.
+
+### Technical Console parity rule
+
+Before implementing a Products capability, compare the Business Admin against the corresponding authoritative Phase 4/technical-console API contract.
+
+The current audit identified the following existing product-management contracts:
+
+- `/api/catalog/products`
+- `/api/catalog/products/:id`
+- `/api/catalog/products/:id/variants`
+- `/api/catalog/variants/:id`
+- `/api/catalog/products/:id/images`
+- `/api/catalog/images/:id`
+- `/api/catalog/products/:id/publish`
+- `/api/catalog/products/:id/tags`
+- `/api/catalog/products/:id/relationships`
+- `/api/catalog/products/:id/revisions`
+- `/api/catalog/products/:id/revisions/:revisionId`
+- `/api/catalog/products/:id/revisions/:revisionId/restore`
+- `/api/catalog/products/bulk-status`
+- `/api/catalog/import`
+- `/api/catalog/export`
+- `/api/catalog/brands`
+- `/api/catalog/categories`
+- `/api/catalog/tags`
+
+The Business Admin may consume these existing contracts through its secure same-origin proxy, but must not duplicate their business logic or connect directly to PostgreSQL.
+
+### Product-management UX
+
+The catalogue remains catalogue-first. Management actions should appear progressively:
+
+1. discover product;
+2. open product record;
+3. edit identity;
+4. enrich variants/media/tags;
+5. merchandise relationships;
+6. review publication readiness;
+7. publish or keep hidden;
+8. inspect history when required.
+
+Bulk import must require validation before committing a batch. The UI must explain that the authoritative engine performs the final validation and database write.
+
+### Product-management acceptance criteria
+
+A user with the appropriate permissions must be able to add a complete product without opening the technical console for normal business catalogue work.
+
+The Business Admin must not expose technical infrastructure controls, raw SQL, database administration, secrets, or internal operational configuration.

@@ -132,6 +132,40 @@ Most non-Sales modules remain foundation/summary workspaces rather than complete
 
 ---
 
+
+## Product management expansion — current state
+
+Products has now been expanded from catalogue browsing into a business-admin management surface. Before any future Products feature is added, compare it against the authoritative technical/Phase 4 product contracts first.
+
+Business Admin currently exposes progressive controls for:
+
+- Add Product with commercial/product/variant/SEO/promotion fields;
+- Add Brand;
+- Add Category;
+- Add Tag;
+- edit product identity and metadata;
+- add variants;
+- add product images and choose primary/variant media;
+- assign tags;
+- publish/unpublish when permitted;
+- related/cross-sell/upsell relationships;
+- revision history and restore;
+- validated catalogue import.
+
+The existing technical/Phase 4 contracts remain authoritative. The Business Admin does not reimplement their database logic.
+
+### Mandatory comparison rule for future modules
+
+For EVERY future module, first locate the corresponding technical-console/Phase 4 routes, permissions and business capabilities. Build the Business Admin business UX against those contracts. Do not assume that a summary endpoint represents the complete module.
+
+For Products specifically, the audit baseline includes:
+
+`products` → `variants` → `images` → `tags` → `relationships` → `publish` → `revisions` → `bulk status` → `import/export` → `brands/categories`.
+
+### Next build
+
+After a regression audit of Overview, Sales and Products, the next functional module is **Stock**. Stock must receive the same technical-console comparison before UI implementation.
+
 # 5. Required Build Procedure For EVERY Future Increment
 
 Before writing code:
@@ -325,3 +359,95 @@ The final response must state what was built, what was audited, any validation b
 **Products workspace.**
 
 The next builder must inherit the upgraded Executive Overview visual system rather than creating a separate design language.
+
+---
+
+# 10. Products Increment Completed — Catalogue First
+
+The Products module is now a catalogue-first workspace.
+
+### Built
+
+- Product catalogue executive header.
+- Catalogue KPI summary.
+- Search across product identity fields.
+- Brand/category/status/website filters.
+- Grid/list presentation switch.
+- Product image cards with fallback states.
+- Product status and website-visibility badges.
+- Product pricing/variant summaries.
+- Product detail route with commercial variant table.
+- Product identity/SEO/tag metadata view.
+- Responsive mobile catalogue/detail experience.
+- Permission-aware catalogue entry.
+
+### Existing engine contracts used
+
+- `/api/catalog/summary`
+- `/api/catalog/products`
+- `/api/catalog/products/:id`
+- `/api/catalog/brands`
+- `/api/catalog/categories`
+
+### Explicitly not changed
+
+- Render backend.
+- `server.js`.
+- PostgreSQL schema/data.
+- SQL files.
+- migrations.
+- seeds.
+- database credentials.
+
+### Next build
+
+**Stock — warehouse/inventory control centre.**
+
+The next builder must first inspect the current Products implementation and all previous modules, then build Stock without regressing the shared ERP experience.
+
+---
+
+# 11. Mandatory continuity prompt for the next builder
+
+> Read `Amaal_plan.md`, this `CONTINUATION.md`, `AUDIT_REPORT.md` and `PLAN_UPDATE_NOTES.md` before touching code. Inspect the current project and all modules already built. Build the **next module: Stock** using the existing Render/Phase 4 API contracts only. Treat PostgreSQL as the source of truth. **Do not touch, reset, reseed, migrate, recreate, truncate, drop, clear or experiment with the database. Do not modify or rewrite the backend.** After implementing Stock, audit **ALL** existing modules, including authentication/setup, Overview, Sales/POS/detail, Products/catalogue/detail, Stock, navigation, permissions, proxy, responsive layouts, loading/error/empty states and dependency compatibility. Debug every safe frontend issue found. Verify that backend/SQL/database files were not changed. Update `Amaal_plan.md`, `CONTINUATION.md`, `AUDIT_REPORT.md` and `PLAN_UPDATE_NOTES.md` with the current state, remaining modules, validation results and next prompt. Only then create the next audited ZIP.
+
+## Current Build — Warehouse Control v1
+
+Completed after Products: **Stock / Warehouse Control v1**.
+
+### Current build
+- Business Admin Stock workspace redesigned around warehouse operations.
+- Stock KPIs, warehouse network, attention centre and movement ledger.
+- Inventory search/filtering by warehouse.
+- Warehouse create/edit.
+- Goods receipt.
+- Stock adjustment.
+- Transfer request.
+- Stocktake start.
+- Control views for receipts, transfers, adjustments, stocktakes and incidents.
+- Permission-aware UI using the existing `inventory.*` permissions.
+
+### Existing foundation already built
+- Authentication/setup foundation.
+- Premium business shell and navigation.
+- Executive overview/dashboard.
+- Sales workspace/POS.
+- Products catalogue and product administration.
+- Products admin can manage catalogue entities through the existing engine.
+- Shared premium ERP UI/UX direction.
+
+### Remaining core modules
+- Complete Stock workflow parity: transfer approval/shipping/receiving, stocktake counting/finalization, serialized stock operations and incident resolution UI where appropriate.
+- Purchasing.
+- Customers/CRM.
+- Orders and fulfilment.
+- Finance/Credit.
+- Delivery.
+- Service/Returns/Warranty/Repairs.
+- Website management.
+- Reports/BI.
+- Team and role-specific experiences.
+- Public Website and commerce journey.
+
+### Mandatory continuity prompt
+**Continue from the current build; do not restart or redesign from scratch. First inspect the existing project and compare the next module against the same-kind functionality in the Technical Console/Phase 4 engine. Identify every existing route, permission, business action, state transition, validation rule and audit event. Build the next business module on top of those existing capabilities. Then audit ALL modules already built, not just the new module. Find and fix bugs, broken routes, permission leaks, stale data assumptions, mobile UX problems, type errors, build errors and inconsistent UI. Verify every business metric/action maps to authoritative engine data. Do not touch, reset, reseed, migrate, recreate, truncate, drop or experiment with the PostgreSQL database. Do not rewrite or replace the existing Render/Phase 4 backend. Use existing APIs; only add a narrowly justified additive boundary if the capability truly does not exist. After debugging, update Amaal_plan.md and CONTINUATION.md, write AUDIT_REPORT.md and PLAN_UPDATE_NOTES.md, verify the ZIP contents, and package the complete project.**
