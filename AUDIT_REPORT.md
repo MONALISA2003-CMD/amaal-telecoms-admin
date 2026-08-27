@@ -167,3 +167,111 @@ The previously authorised additive starter catalogue remains unchanged. This Ord
 
 ### Next
 Next core module: **Finance & Credit**, beginning with Finance and then connecting Credit to the same money/customer/order records.
+
+# Finance & Credit Increment Audit — 2026-08-27
+
+## Scope
+
+Deep review of the Finance and Credit increment plus regression checks across the current application presentation layer and source-of-truth boundary.
+
+## Technical Console comparison
+
+### Finance
+Reviewed `finance-accounting.js` and mapped the Business Admin workspace to the existing capabilities for:
+- finance summary;
+- financial accounts;
+- financial entries;
+- cash and bank accounts;
+- bank/cash movements;
+- taxes;
+- accounting periods and closing;
+- trial balance;
+- profit and loss;
+- receivables;
+- payables;
+- expenses;
+- controlled finance synchronization;
+- reconciliation.
+
+### Credit
+Reviewed `credit-installments.js` and mapped the Business Admin workspace to the existing capabilities for:
+- credit summary;
+- customer credit profiles;
+- applications and decisions;
+- credit accounts;
+- payment plans;
+- payment recording and reversal capability;
+- collection follow-ups;
+- restructuring;
+- links back to sales and orders.
+
+No replacement finance or credit rules were created in the Business Admin.
+
+## Business Admin fixes
+
+- Added Finance to navigation with a management dashboard rather than a plain record list.
+- Added Credit & instalments as a dedicated management workspace.
+- Added meaningful visual comparisons for finance and credit exposure.
+- Added permission-aware actions for financial entries, expenses, account management, synchronization, reconciliation, credit applications, payments, collection follow-ups and restructuring.
+- Added finance sub-workspaces for accounts, entries, expenses, bank activity, taxes, periods, trial balance and profit and loss.
+- Added credit account detail with payment schedule and payment history.
+- Upgraded login, setup and password reset surfaces to restrained premium champagne/gold glassmorphism.
+- Removed visible developer-style labels from selected existing catalogue/customer areas, including raw structured-data labels.
+
+## Cross-module audit
+
+Checked the current navigation and business-facing surfaces for:
+- authentication/setup;
+- Overview;
+- Sales/POS;
+- Products/catalogue;
+- Warehouse Control/Stock;
+- Purchasing;
+- Customers/CRM;
+- Orders/Fulfilment;
+- Finance;
+- Credit;
+- Staff;
+- shared navigation and permissions.
+
+Finance and Credit actions are connected to existing business records through the established service layer. No parallel business record store was introduced.
+
+## Database protection
+
+- No database connection was opened during this packaging audit.
+- No reset.
+- No truncate.
+- No drop.
+- No recreate.
+- No migration.
+- No seed execution.
+- No direct business-data edits.
+- No SQL/schema/seed file changes.
+- Existing PostgreSQL remains the source of truth.
+
+## Backend protection
+
+The incoming ZIP was compared with the working tree before documentation changes. The Business Admin implementation files changed for this increment were:
+- `apps/business-admin/app/(business)/[...slug]/page.tsx`
+- `apps/business-admin/components/FinanceWorkspace.tsx`
+- `apps/business-admin/components/CreditWorkspace.tsx`
+- `apps/business-admin/app/globals.css`
+
+Backend modules including `server.js`, `finance-accounting.js`, `credit-installments.js`, `customers-crm.js`, `orders-ecommerce.js`, `suppliers-procurement.js`, `sales-pos.js` and inventory modules remain unchanged.
+
+## Validation
+
+- `node --check` across all root JavaScript files: PASS.
+- `node --check` across all public JavaScript files: PASS.
+- `node render-preflight.js`: PASS.
+- Backend source comparison against incoming ZIP: unchanged.
+- SQL/schema/seed comparison against incoming ZIP: unchanged.
+- No live production build claimed.
+
+## Remaining limitation
+
+A live deployment build was not run from this packaging environment. The deployment platform should remain the final authority for production compilation and deployment status.
+
+## Next
+
+Next core module: **Delivery & Logistics**.

@@ -66,3 +66,35 @@ No database changes were made.
 - Full Next.js build remains unverified because package installation timed out in this environment.
 - No database reset, migration, schema change or direct data manipulation was performed.
 - Next module: Finance & Credit.
+
+# Finance & Credit increment — 2026-08-27
+
+Built the next core business-management area after Orders & Fulfilment.
+
+## Finance
+- Added a Finance command centre with cash/bank, revenue, expenses, net result, customer balances and supplier balances.
+- Added visual income-versus-expense and largest-expense comparisons.
+- Added balance-sheet snapshot, receivables, payables and cash/bank views.
+- Added business-facing access to financial entries, expenses, bank activity, taxes, periods, trial balance and profit-and-loss.
+- Added controlled finance synchronization and reconciliation entry points using existing capabilities.
+
+## Credit & instalments
+- Added credit exposure dashboard, applications, customer credit limits, open accounts and overdue attention.
+- Added application review, payment recording, collection follow-up and authorized restructuring actions.
+- Preserved the existing customer, order and sales relationships.
+
+## UX and audit hardening
+- Login, setup and password-reset surfaces now use restrained champagne/gold glassmorphism.
+- Removed newly surfaced developer terminology from business-facing labels and selected older catalogue/customer labels.
+- Confirmed finance/credit permissions are used for actions.
+- Confirmed no new backend module or database structure was introduced.
+
+## Database policy
+No database operation was performed directly by this increment. Existing records remain authoritative.
+
+## Validation
+- All JavaScript source files passed `node --check`.
+- Render preflight passed.
+- Existing backend source files were byte-for-byte unchanged compared with the incoming ZIP.
+- Only the Business Admin presentation files were changed: `public/app.js` and `public/index.html`.
+- Full production deployment was not run locally because the project requires the live environment for its data connections; no live database connection was opened for this audit.

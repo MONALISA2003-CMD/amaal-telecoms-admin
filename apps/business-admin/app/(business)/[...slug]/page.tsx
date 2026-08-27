@@ -1,8 +1,10 @@
 import { notFound } from 'next/navigation';
-import { Workspace, type Card } from '@/components/Workspace';
+import { Workspace } from '@/components/Workspace';
 import { PurchasingWorkspace } from '@/components/PurchasingWorkspace';
+import { FinanceWorkspace } from '@/components/FinanceWorkspace';
+import { CreditWorkspace } from '@/components/CreditWorkspace';
 import { TeamWorkspace } from '@/components/TeamWorkspace';
-import { businessGetSafe, money, number } from '@/lib/business';
+import { businessGetSafe, cardEntries, money, number } from '@/lib/business';
 
 type Params = { slug: string[] };
 type ApiRecord = Record<string, any>;
@@ -25,13 +27,6 @@ const titles: Record<string, [string, string]> = {
 };
 
 
-function makeCards(entries: ReadonlyArray<readonly [string, unknown]>): Card[] {
-  return entries.map(([label, value]) => ({
-    label: String(label),
-    value: value == null ? '—' : String(value),
-  }));
-}
-
 export default async function BusinessWorkspace({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
   if (slug.length !== 1 || !titles[slug[0]]) notFound();
@@ -42,7 +37,7 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
     const d = await businessGetSafe<ApiRecord>('/api/sales/summary');
     const rows = await businessGetSafe<any>('/api/sales?limit=12');
     return <Workspace title={title} description={description} actions={[{ label: 'Refresh sales', href: '/sales' }]}
-      cards={makeCards([
+      cards={cardEntries([
         ['Sales value', number(d?.today?.total)],
         ['Transactions', number(d?.today?.count)],
         ['Open drafts', number(d?.openDrafts)],
@@ -57,7 +52,7 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
       businessGetSafe<any>('/api/catalog/products?limit=15'),
     ]);
     return <Workspace title={title} description={description} actions={[{ label: 'Catalogue', href: '/products' }]}
-      cards={makeCards([
+      cards={cardEntries([
         ['Products', number(summary?.products)],
         ['Active brands', number(summary?.brands)],
         ['Categories', number(summary?.categories)],
@@ -72,7 +67,7 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
       businessGetSafe<any>('/api/inventory/overview'),
     ]);
     return <Workspace title={title} description={description} actions={[{ label: 'Refresh stock', href: '/stock' }]}
-      cards={makeCards([
+      cards={cardEntries([
         ['Stock units', number(summary?.onHand)],
         ['Reserved units', number(summary?.reserved)],
         ['Low-stock lines', number(summary?.lowStock)],
@@ -105,7 +100,7 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
       businessGetSafe<any>('/api/customers?limit=15'),
     ]);
     return <Workspace title={title} description={description} actions={[{ label: 'Customer directory', href: '/customers' }]}
-      cards={makeCards([
+      cards={cardEntries([
         ['Customers', number(summary?.customers)],
         ['Active', number(summary?.active)],
         ['New in 30 days', number(summary?.new30d)],
@@ -119,7 +114,7 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
       businessGetSafe<ApiRecord>('/api/orders/summary'),
       businessGetSafe<any>('/api/orders?limit=15'),
     ]);
-    return <Workspace title={title} description={description} cards={makeCards([
+    return <Workspace title={title} description={description} cards={cardEntries([
       ['Total orders', number(summary?.total)],
       ['Pending payment', number(summary?.pending)],
       ['Processing', number(summary?.processing)],
@@ -129,30 +124,40 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
   }
 
   if (key === 'finance') {
-    const summary = await businessGetSafe<ApiRecord>('/api/finance/summary');
-    return <Workspace title={title} description={description} cards={makeCards([
-      ['Revenue', money(summary?.revenue)],
-      ['Expenses', money(summary?.expenses)],
-      ['Net result', money(summary?.net)],
-      ['Receivables', money(summary?.receivables)],
-      ['Payables', money(summary?.payables)],
-    ])} />;
+    const [me, summary, pnl, balanceSheet, receivables, payables, accounts, cashAccounts, expenses, bankTransactions, taxes, periods, journals] = await Promise.all([
+      businessGetSafe<ApiRecord>('/api/me'),
+      businessGetSafe<ApiRecord>('/api/finance/summary'),
+      businessGetSafe<ApiRecord>('/api/finance/profit-loss'),
+      businessGetSafe<ApiRecord>('/api/finance/balance-sheet'),
+      businessGetSafe<any[]>('/api/finance/receivables'),
+      businessGetSafe<any[]>('/api/finance/payables'),
+      businessGetSafe<any[]>('/api/finance/accounts'),
+      businessGetSafe<any[]>('/api/finance/cash-accounts'),
+      businessGetSafe<any[]>('/api/finance/expenses'),
+      businessGetSafe<any[]>('/api/finance/bank-transactions'),
+      businessGetSafe<any[]>('/api/finance/taxes'),
+      businessGetSafe<any[]>('/api/finance/periods'),
+      businessGetSafe<any[]>('/api/finance/journals'),
+    ]);
+    return <FinanceWorkspace summary={summary ?? {}} pnl={pnl ?? {}} balanceSheet={balanceSheet ?? {}} receivables={receivables ?? []} payables={payables ?? []} accounts={accounts ?? []} cashAccounts={cashAccounts ?? []} expenses={expenses ?? []} bankTransactions={bankTransactions ?? []} taxes={taxes ?? []} periods={periods ?? []} journals={journals ?? []} permissions={me?.permissions ?? []}/>;
   }
 
   if (key === 'credit') {
-    const summary = await businessGetSafe<ApiRecord>('/api/credit/summary');
-    return <Workspace title={title} description={description} cards={makeCards([
-      ['Active profiles', number(summary?.profiles)],
-      ['Pending applications', number(summary?.pendingApplications)],
-      ['Active accounts', number(summary?.activeAccounts)],
-      ['Outstanding credit', money(summary?.outstanding)],
-      ['Due balance', money(summary?.dueBalance)],
-    ])} />;
+    const [me, summary, profiles, applications, accounts, customers] = await Promise.all([
+      businessGetSafe<ApiRecord>('/api/me'),
+      businessGetSafe<ApiRecord>('/api/credit/summary'),
+      businessGetSafe<any[]>('/api/credit/profiles'),
+      businessGetSafe<any[]>('/api/credit/applications'),
+      businessGetSafe<any[]>('/api/credit/accounts'),
+      businessGetSafe<any>('/api/customers?limit=500'),
+    ]);
+    const customerRows = Array.isArray(customers) ? customers : customers?.rows ?? [];
+    return <CreditWorkspace summary={summary ?? {}} profiles={profiles ?? []} applications={applications ?? []} accounts={accounts ?? []} customers={customerRows} permissions={me?.permissions ?? []}/>;
   }
 
   if (key === 'delivery') {
     const summary = await businessGetSafe<ApiRecord>('/api/delivery/summary');
-    return <Workspace title={title} description={description} cards={makeCards([
+    return <Workspace title={title} description={description} cards={cardEntries([
       ['Total shipments', number(summary?.total)],
       ['Pending', number(summary?.pending)],
       ['In transit', number(summary?.transit)],
@@ -166,7 +171,7 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
       businessGetSafe<ApiRecord>('/api/returns/summary'),
       businessGetSafe<ApiRecord>('/api/warranty/summary'),
     ]);
-    return <Workspace title={title} description={description} cards={makeCards([
+    return <Workspace title={title} description={description} cards={cardEntries([
       ['Returns awaiting action', number(returns?.requested)],
       ['Refunds pending', number(returns?.refundPending)],
       ['Warranty cases open', number(warranty?.open)],
@@ -177,7 +182,7 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
 
   if (key === 'website') {
     const sites = await businessGetSafe<any>('/api/web/sites');
-    return <Workspace title={title} description={description} cards={makeCards([
+    return <Workspace title={title} description={description} cards={cardEntries([
       ['Connected sites', number(Array.isArray(sites) ? sites.length : null)],
       ['Business-owned content', 'Approved'],
       ['Publishing', 'Permission controlled'],
@@ -189,7 +194,7 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
   if (key === 'reports') {
     const summary = await businessGetSafe<ApiRecord>('/api/bi/summary');
     const marginPercent = summary?.grossMarginPct == null ? '—' : `${Number(summary.grossMarginPct).toFixed(1)}%`;
-    return <Workspace title={title} description={description} cards={makeCards([
+    return <Workspace title={title} description={description} cards={cardEntries([
       ['Revenue', money(summary?.sales?.revenue)],
       ['Gross margin', money(summary?.margin?.gross_margin)],
       ['Orders', number(summary?.orders?.total)],
@@ -208,7 +213,7 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
 
   if (key === 'settings') {
     const organization = await businessGetSafe<ApiRecord>('/api/organization');
-    return <Workspace title={title} description={description} cards={makeCards([
+    return <Workspace title={title} description={description} cards={cardEntries([
       ['Business', organization?.trading_name ?? organization?.legal_name ?? '—'],
       ['Currency', 'UGX'],
       ['Timezone', 'Africa/Kampala'],

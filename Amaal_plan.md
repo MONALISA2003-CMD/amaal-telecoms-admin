@@ -2919,3 +2919,47 @@ Orders continue to use the existing business engine and PostgreSQL records. Busi
 
 ## Next module
 **Finance & Credit**. First compare the Business Admin requirements against the existing Finance/Accounting technical capability, then build Finance as the money-control centre and connect Credit to customers and orders. Preserve the existing source-of-truth and no-reset rules.
+
+# 2026-08-27 — Finance & Credit Business Increment
+
+## Completed in this increment
+
+Finance and Credit were added to the business-facing workspace using the existing Phase 4 contracts as the authority.
+
+### Finance
+- Finance command centre with revenue, expenses, net result, cash/bank position, customer balances and supplier balances.
+- Income-versus-expense visual comparison.
+- Largest expense areas visual comparison.
+- Asset, liability and equity snapshot.
+- Customer receivables and supplier payables views.
+- Cash and bank account view.
+- Financial entries, expenses, bank activity, taxes and accounting periods.
+- Trial balance and profit-and-loss views.
+- Finance refresh action that uses the existing controlled synchronization capability.
+- Reconciliation entry point.
+- Permission-aware actions for finance management, entries, synchronization and period closing.
+
+### Credit & instalments
+- Credit command centre.
+- Active credit profile and exposure summary.
+- Credit application queue and review flow.
+- Customer credit limit management.
+- Open credit account view.
+- Repayment attention and overdue visibility.
+- Payment recording.
+- Collection follow-up creation.
+- Authorized payment-plan restructuring.
+- Customer, order and sales relationships remain tied to the existing credit engine.
+
+### Experience quality
+- Finance and Credit use the restrained premium business visual direction with meaningful charts and operational tables.
+- The existing Business Admin authentication/setup/password-reset surfaces retain the premium restrained champagne/gold glassmorphism already established.
+- Visible business-facing wording was reviewed again to remove developer terminology from the newly built areas and selected existing catalogue/customer surfaces.
+
+## Protection
+- No PostgreSQL reset, truncate, drop, recreate, migration or direct test-data manipulation was performed in this increment.
+- No existing backend source module was modified.
+- Finance and Credit write actions continue through existing business capabilities.
+
+## Next build sequence
+The next core business module is **Delivery & Logistics**, followed by Service, Website Management, Reports/Business Intelligence, Team/role-specific experiences, Public Website, Commerce and final cross-platform regression.
