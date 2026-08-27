@@ -23,3 +23,7 @@ The change is additive. Startup applies the schema amendments with `CREATE TABLE
 
 ## Operational chain
 Supplier receipt → batch → physical unit → warehouse → sale/order → delivery → return/service/warranty.
+
+## Deployment hardening
+- The serialized inventory schema is also applied through `inventory-serialized-migration.sql` during startup. This is additive and repeat-safe, so an existing PostgreSQL database with older schema state can gain the required inventory tables without a reset.
+- The Business Admin camera flow uses the browser's real camera permission and live `getUserMedia` stream together with the browser's real `BarcodeDetector` API where supported. It does not simulate a scan or invent identifiers. Unsupported browsers receive a clear fallback to manual entry, paste, or CSV upload.

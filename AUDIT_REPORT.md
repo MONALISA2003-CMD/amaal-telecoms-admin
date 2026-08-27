@@ -50,3 +50,9 @@ After deployment, run the normal Vercel build and a logged-in catalogue smoke te
 - Camera access policy was adjusted to allow the Business Admin origin to request camera access.
 - No database reset, truncate, reseed, or destructive data operation was introduced.
 - Static inventory-unit audit and cross-module audit pass.
+
+## 2026-08-27 Render/Vercel inventory remediation
+- Fixed PostgreSQL startup ordering: `inventory_batches` is now created before `stock_receipt_lines.batch_id` references it.
+- Added repeat-safe additive `inventory-serialized-migration.sql` and wired it into server startup so an existing database missing the serialized inventory tables can be amended without resetting business data.
+- Confirmed public catalogue queries still expose product/variant commerce information only and do not expose serialized-unit identifiers, batches, supplier information, warehouse locations, or exact remaining unit counts.
+- Hardened the Business Admin scanner: HTTPS check, real browser camera permission, rear-camera preference, 1280x720 preference, live video stream, native barcode/QR detection, timeout handling, permission errors, missing-camera errors, and manual/paste/CSV fallback.

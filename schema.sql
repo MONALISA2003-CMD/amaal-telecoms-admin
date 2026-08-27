@@ -309,6 +309,23 @@ CREATE TABLE IF NOT EXISTS inventory_movements(
 CREATE INDEX IF NOT EXISTS idx_inventory_movements_created ON inventory_movements(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_inventory_movements_variant_location ON inventory_movements(variant_id,location_id,created_at DESC);
 
+-- Serialized inventory management: batch provenance and machine-readable unit identifiers.
+CREATE TABLE IF NOT EXISTS inventory_batches(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ batch_number text UNIQUE NOT NULL,
+ variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
+ location_id uuid NOT NULL REFERENCES inventory_locations(id) ON DELETE RESTRICT,
+ supplier_name text NOT NULL DEFAULT '',
+ supplier_reference text NOT NULL DEFAULT '',
+ quantity_received numeric(18,3) NOT NULL DEFAULT 0 CHECK(quantity_received>=0),
+ received_at timestamptz NOT NULL DEFAULT now(),
+ notes text NOT NULL DEFAULT '',
+ created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_inventory_batches_variant ON inventory_batches(variant_id,received_at DESC);
+CREATE INDEX IF NOT EXISTS idx_inventory_batches_location ON inventory_batches(location_id,received_at DESC);
+
 CREATE TABLE IF NOT EXISTS stock_receipts(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
  receipt_no text UNIQUE NOT NULL,
@@ -394,22 +411,7 @@ CREATE TABLE IF NOT EXISTS serialized_units(
 CREATE INDEX IF NOT EXISTS idx_serialized_units_variant_location ON serialized_units(variant_id,location_id);
 CREATE INDEX IF NOT EXISTS idx_serialized_units_status ON serialized_units(status);
 
--- Serialized inventory management: batch provenance and machine-readable unit identifiers.
-CREATE TABLE IF NOT EXISTS inventory_batches(
- id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
- batch_number text UNIQUE NOT NULL,
- variant_id uuid NOT NULL REFERENCES product_variants(id) ON DELETE RESTRICT,
- location_id uuid NOT NULL REFERENCES inventory_locations(id) ON DELETE RESTRICT,
- supplier_name text NOT NULL DEFAULT '',
- supplier_reference text NOT NULL DEFAULT '',
- quantity_received numeric(18,3) NOT NULL DEFAULT 0 CHECK(quantity_received>=0),
- received_at timestamptz NOT NULL DEFAULT now(),
- notes text NOT NULL DEFAULT '',
- created_by uuid REFERENCES users(id) ON DELETE SET NULL,
- created_at timestamptz NOT NULL DEFAULT now()
-);
-CREATE INDEX IF NOT EXISTS idx_inventory_batches_variant ON inventory_batches(variant_id,received_at DESC);
-CREATE INDEX IF NOT EXISTS idx_inventory_batches_location ON inventory_batches(location_id,received_at DESC);
+
 
 ALTER TABLE serialized_units ADD COLUMN IF NOT EXISTS batch_id uuid REFERENCES inventory_batches(id) ON DELETE RESTRICT;
 ALTER TABLE serialized_units ADD COLUMN IF NOT EXISTS barcode text;
