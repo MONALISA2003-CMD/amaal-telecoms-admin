@@ -414,3 +414,9 @@ Website Management.
 - Department archive is safe: the backend refuses archival when users remain assigned.
 - Role controls are no longer presented when the viewer lacks role-management permission.
 - No PostgreSQL/SQL/schema/backend changes were made by this increment.
+
+## Vercel follow-up fix — WebsiteWorkspace
+
+Fixed TypeScript error TS2538 in `WebsiteWorkspace.tsx`. The dynamic section lookup previously used an untyped empty-array fallback, causing TypeScript to infer `never[]` as an index type. It now uses an explicit string section key and a `Record<string, any>` lookup with an empty-list fallback.
+
+Database/schema/backend were not modified.
