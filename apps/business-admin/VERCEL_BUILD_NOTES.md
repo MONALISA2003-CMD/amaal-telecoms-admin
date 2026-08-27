@@ -16,3 +16,8 @@
 - Node.js: `24.x`
 - Required environment variable: `AMAAL_ENGINE_URL` pointing to the existing public Amaal Engine service.
 - The final production build must be executed by Vercel after these files are committed to `main`.
+
+
+## Cross-connection hardening — 2026-08-27
+
+The Business Admin live pulse now consumes a wider set of authoritative Render business records (sales, orders, inventory, customers, purchasing, delivery, service, finance, credit and website) through the existing server-side proxy. No Vercel database was introduced.

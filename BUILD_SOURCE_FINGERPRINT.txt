@@ -72,3 +72,14 @@ Reports/Business Intelligence upgrade 2026-08-27: ReportsWorkspace.tsx + report 
 Team & Organisation hardening hashes
 1366a6dfdc90c85e009142c86078a406db4885e80e68c47b3227f6116d8e9771  /mnt/data/nextwork/server.js
 5808a4c0201cf5fab7586362fe356c606feeac69453d8ca6bdfa4ca2c48db42c  /mnt/data/nextwork/schema.sql
+
+
+Full-stack cross-connection hardening — 2026-08-27
+- Strengthened business-intelligence.js live pulse across sales, orders, inventory, customers, purchasing, delivery, service, finance, credit and website records.
+- Strengthened LiveBusinessPulse.tsx to preserve charts/metrics during partial upstream failures and expose additional business signals.
+- Added cross-module-audit.js and wired it into the root verification command.
+- Cross-module audit: 101 frontend API references, 545 backend routes, 0 unmatched references, 18/18 core relationships connected.
+- No PostgreSQL reset, migration, seed, schema change or destructive data operation performed.
+- Render preflight: PASS.
+- Full Next production build remains unclaimed because dependency installation timed out in the isolated environment.
+- Production Render/Vercel deployment was not claimed because deployment/network access was unavailable in this session.

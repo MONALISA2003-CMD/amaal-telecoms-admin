@@ -47,44 +47,40 @@ export function registerBusinessIntelligence({app,auth,need,q,pool,audit}){
 
  app.get('/api/bi/locations',auth,need('bi.view'),async(req,res)=>res.json(await locations()));
  app.get('/api/bi/live-pulse',auth,need('dashboard.view'),async(req,res)=>{
-  try {
+  try{
     const {start,end}=range(req),loc=locationFilter(req), params=loc?[start,end,loc]:[start,end], locSql=loc?' AND s.location_id=$3':'';
     const queries=[
       ['sales',`SELECT COALESCE(sum(s.grand_total),0)::numeric revenue,count(*)::int transactions FROM sales s WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 ${locSql}`,params],
       ['orders',`SELECT count(*)::int total,count(*) FILTER(WHERE status IN ('Pending Payment','Paid','Processing','Packed','Ready for Dispatch','Dispatched'))::int open FROM orders WHERE created_at::date BETWEEN $1 AND $2 ${loc?' AND location_id=$3':''}`,params],
-      ['inventory',`SELECT COALESCE(sum(b.on_hand),0)::numeric units,COUNT(DISTINCT b.variant_id)::int variants FROM inventory_balances b`,[]],
+      ['inventory',`SELECT COALESCE(sum(b.on_hand),0)::numeric units,COUNT(DISTINCT b.variant_id)::int variants,COUNT(*) FILTER(WHERE b.on_hand<=0)::int empty_lines FROM inventory_balances b`,[]],
       ['customers',`SELECT count(*)::int total,count(*) FILTER(WHERE created_at::date BETWEEN $1 AND $2)::int acquired FROM customers`,[start,end]],
-      ['margin',`SELECT COALESCE(sum(((sl.unit_price*sl.quantity)-sl.discount_amount)-(sl.cost_price*sl.quantity)),0)::numeric gross_margin FROM sales s JOIN sale_lines sl ON sl.sale_id=s.id WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 ${loc?' AND s.location_id=$3':''}`,params]
+      ['margin',`SELECT COALESCE(sum(((sl.unit_price*sl.quantity)-sl.discount_amount)-(sl.cost_price*sl.quantity)),0)::numeric gross_margin FROM sales s JOIN sale_lines sl ON sl.sale_id=s.id WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 ${loc?' AND s.location_id=$3':''}`,params],
+      ['purchasing',`SELECT count(*)::int open_orders,COALESCE(sum(l.quantity*l.unit_price-l.discount_amount),0)::numeric committed_value FROM purchase_orders p LEFT JOIN purchase_order_lines l ON l.purchase_order_id=p.id WHERE p.status IN ('Submitted','Approved','Partially Received') AND p.created_at::date BETWEEN $1 AND $2`,[start,end]],
+      ['delivery',`SELECT count(*)::int active_shipments,count(*) FILTER(WHERE status='Delivered')::int delivered FROM delivery_shipments WHERE created_at::date BETWEEN $1 AND $2`,[start,end]],
+      ['service',`SELECT (SELECT count(*) FROM warranty_claims WHERE status NOT IN ('Resolved','Cancelled'))::int warranty_open,(SELECT count(*) FROM return_requests WHERE status IN ('Requested','Approved','Received','Inspected','Refund Pending'))::int returns_open,(SELECT count(*) FROM repair_jobs WHERE status NOT IN ('Completed','Cancelled'))::int repairs_open`,[]],
+      ['finance',`SELECT COALESCE(sum(CASE WHEN a.account_type='Revenue' THEN l.credit-l.debit WHEN a.account_type='Expense' THEN l.debit-l.credit ELSE 0 END),0)::numeric net_activity FROM finance_journal_lines l JOIN finance_accounts a ON a.id=l.account_id JOIN finance_journals j ON j.id=l.journal_id WHERE j.status='Posted' AND j.journal_date BETWEEN $1 AND $2`,[start,end]],
+      ['credit',`SELECT COALESCE(sum(outstanding_principal),0)::numeric outstanding,count(*)::int accounts FROM credit_accounts WHERE status IN ('Active','Defaulted','Restructured')`,[]],
+      ['website',`SELECT (SELECT count(*) FROM web_sites WHERE status='Active')::int active_sites,(SELECT count(*) FROM web_pages WHERE status='Published')::int published_pages,(SELECT count(*) FROM products WHERE status='Active' AND website_visibility='Published')::int published_products`,[]]
     ];
     const results=await Promise.all(queries.map(([label,sql,args])=>safeQuery(sql,args,`live pulse ${label}`)));
     const first=(index)=>results[index][0].rows[0]||{};
     const failed=queries.filter((_,i)=>!results[i][0].ok).map(x=>x[0]);
-    const sales=first(0),orders=first(1),inventory=first(2),customers=first(3),margin=first(4);
+    const sales=first(0),orders=first(1),inventory=first(2),customers=first(3),margin=first(4),purchasing=first(5),delivery=first(6),service=first(7),finance=first(8),credit=first(9),website=first(10);
     const revenue=n(sales.revenue),grossMargin=n(margin.gross_margin);
     let trend=[];
     const trendResult=await safeQuery(`SELECT s.created_at::date day,COALESCE(sum(s.grand_total),0)::numeric revenue FROM sales s WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 ${loc?'AND s.location_id=$3':''} GROUP BY 1 ORDER BY 1`,params,'live pulse trend');
-    if(trendResult.ok) trend=trendResult.rows;
-    else failed.push('trend');
+    if(trendResult.ok) trend=trendResult.rows; else failed.push('trend');
     res.json({
-      range:{start,end},
-      sales,orders,inventory,customers,margin,
+      ok:true,
+      range:{start,end},locationId:loc,
+      sales,orders,inventory,customers,margin,purchasing,delivery,service,finance,credit,website,
       grossMarginPct:revenue?grossMargin/revenue*100:0,
       trend,
       dataHealth:{complete:failed.length===0,partial:failed.length>0,failedSections:[...new Set(failed)]}
     });
-  } catch (error) {
-    console.error('Live business pulse failed unexpectedly', { message: error?.message || String(error) });
-    res.json({
-      range: range(req),
-      sales:{revenue:0,transactions:0},
-      orders:{total:0,open:0},
-      inventory:{units:0,variants:0},
-      customers:{total:0,acquired:0},
-      margin:{gross_margin:0},
-      grossMarginPct:0,
-      trend:[],
-      dataHealth:{complete:false,partial:true,failedSections:['live pulse']}
-    });
+  }catch(error){
+    console.error('Live business pulse failed',{message:error?.message||String(error)});
+    res.status(200).json({ok:false,range:range(req),sales:{revenue:0,transactions:0},orders:{total:0,open:0},inventory:{units:0,variants:0,empty_lines:0},customers:{total:0,acquired:0},margin:{gross_margin:0},purchasing:{open_orders:0,committed_value:0},delivery:{active_shipments:0,delivered:0},service:{warranty_open:0,returns_open:0,repairs_open:0},finance:{net_activity:0},credit:{outstanding:0,accounts:0},website:{active_sites:0,published_pages:0,published_products:0},grossMarginPct:0,trend:[],dataHealth:{complete:false,partial:true,failedSections:['live-pulse']}});
   }
  });
  app.get('/api/bi/sales-trend',auth,need('bi.view'),async(req,res)=>{const {start,end}=range(req),loc=locationFilter(req);const result=await safeQuery(`SELECT s.created_at::date day,count(*)::int transactions,COALESCE(sum(s.grand_total),0)::numeric revenue,COALESCE(sum(s.discount_amount),0)::numeric discounts,COALESCE(sum(s.tax_amount),0)::numeric tax FROM sales s WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 ${loc?'AND s.location_id=$3':''} GROUP BY 1 ORDER BY 1`,loc?[start,end,loc]:[start,end],'sales trend');res.json(result.rows)});

@@ -101,18 +101,3 @@ body{background:radial-gradient(circle at 80% -10%,rgba(199,162,74,.075),transpa
   .sidebarGroupLabel{display:block !important;width:100% !important}
   .sidebarGroups a{display:flex !important;width:100% !important;min-height:42px;white-space:nowrap !important}
 }
-
-/* Amaal navigation: one calm vertical rail, with a clean mobile drawer. */
-.sidebar{overflow:hidden}
-.sidebarGroups{grid-template-columns:1fr;align-content:start;min-height:0;flex:1}
-.sidebarGroup{grid-template-columns:1fr}
-.sidebarGroups a{min-height:38px}
-.livePulseMeta button:disabled{opacity:.55;cursor:wait}
-.livePulseMeta .spin{animation:livePulseSpin .8s linear infinite}
-@keyframes livePulseSpin{to{transform:rotate(360deg)}}
-@media(max-width:720px){
-  .sidebar{display:flex !important;flex-direction:column !important}
-  .sidebarGroups{display:flex !important;flex-direction:column !important;flex:1 !important;min-height:0 !important}
-  .sidebarGroup{display:flex !important;flex-direction:column !important}
-  .sidebarGroups a{min-height:44px !important}
-}
