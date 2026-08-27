@@ -47,30 +47,45 @@ export function registerBusinessIntelligence({app,auth,need,q,pool,audit}){
 
  app.get('/api/bi/locations',auth,need('bi.view'),async(req,res)=>res.json(await locations()));
  app.get('/api/bi/live-pulse',auth,need('dashboard.view'),async(req,res)=>{
-  const {start,end}=range(req),loc=locationFilter(req), params=loc?[start,end,loc]:[start,end], locSql=loc?' AND s.location_id=$3':'';
-  const queries=[
-    ['sales',`SELECT COALESCE(sum(s.grand_total),0)::numeric revenue,count(*)::int transactions FROM sales s WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 ${locSql}`,params],
-    ['orders',`SELECT count(*)::int total,count(*) FILTER(WHERE status IN ('Pending Payment','Paid','Processing','Packed','Ready for Dispatch','Dispatched'))::int open FROM orders WHERE created_at::date BETWEEN $1 AND $2 ${loc?' AND location_id=$3':''}`,params],
-    ['inventory',`SELECT COALESCE(sum(b.on_hand),0)::numeric units,COUNT(DISTINCT b.variant_id)::int variants FROM inventory_balances b`,[]],
-    ['customers',`SELECT count(*)::int total,count(*) FILTER(WHERE created_at::date BETWEEN $1 AND $2)::int acquired FROM customers`,[start,end]],
-    ['margin',`SELECT COALESCE(sum(((sl.unit_price*sl.quantity)-sl.discount_amount)-(sl.cost_price*sl.quantity)),0)::numeric gross_margin FROM sales s JOIN sale_lines sl ON sl.sale_id=s.id WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 ${loc?' AND s.location_id=$3':''}`,params]
-  ];
-  const results=await Promise.all(queries.map(([label,sql,args])=>safeQuery(sql,args,`live pulse ${label}`)));
-  const first=(index)=>results[index][0].rows[0]||{};
-  const failed=queries.filter((_,i)=>!results[i][0].ok).map(x=>x[0]);
-  const sales=first(0),orders=first(1),inventory=first(2),customers=first(3),margin=first(4);
-  const revenue=n(sales.revenue),grossMargin=n(margin.gross_margin);
-  let trend=[];
-  const trendResult=await safeQuery(`SELECT s.created_at::date day,COALESCE(sum(s.grand_total),0)::numeric revenue FROM sales s WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 ${loc?'AND s.location_id=$3':''} GROUP BY 1 ORDER BY 1`,params,'live pulse trend');
-  if(trendResult.ok) trend=trendResult.rows;
-  else failed.push('trend');
-  res.json({
-    range:{start,end},
-    sales,orders,inventory,customers,margin,
-    grossMarginPct:revenue?grossMargin/revenue*100:0,
-    trend,
-    dataHealth:{complete:failed.length===0,partial:failed.length>0,failedSections:[...new Set(failed)]}
-  });
+  try {
+    const {start,end}=range(req),loc=locationFilter(req), params=loc?[start,end,loc]:[start,end], locSql=loc?' AND s.location_id=$3':'';
+    const queries=[
+      ['sales',`SELECT COALESCE(sum(s.grand_total),0)::numeric revenue,count(*)::int transactions FROM sales s WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 ${locSql}`,params],
+      ['orders',`SELECT count(*)::int total,count(*) FILTER(WHERE status IN ('Pending Payment','Paid','Processing','Packed','Ready for Dispatch','Dispatched'))::int open FROM orders WHERE created_at::date BETWEEN $1 AND $2 ${loc?' AND location_id=$3':''}`,params],
+      ['inventory',`SELECT COALESCE(sum(b.on_hand),0)::numeric units,COUNT(DISTINCT b.variant_id)::int variants FROM inventory_balances b`,[]],
+      ['customers',`SELECT count(*)::int total,count(*) FILTER(WHERE created_at::date BETWEEN $1 AND $2)::int acquired FROM customers`,[start,end]],
+      ['margin',`SELECT COALESCE(sum(((sl.unit_price*sl.quantity)-sl.discount_amount)-(sl.cost_price*sl.quantity)),0)::numeric gross_margin FROM sales s JOIN sale_lines sl ON sl.sale_id=s.id WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 ${loc?' AND s.location_id=$3':''}`,params]
+    ];
+    const results=await Promise.all(queries.map(([label,sql,args])=>safeQuery(sql,args,`live pulse ${label}`)));
+    const first=(index)=>results[index][0].rows[0]||{};
+    const failed=queries.filter((_,i)=>!results[i][0].ok).map(x=>x[0]);
+    const sales=first(0),orders=first(1),inventory=first(2),customers=first(3),margin=first(4);
+    const revenue=n(sales.revenue),grossMargin=n(margin.gross_margin);
+    let trend=[];
+    const trendResult=await safeQuery(`SELECT s.created_at::date day,COALESCE(sum(s.grand_total),0)::numeric revenue FROM sales s WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 ${loc?'AND s.location_id=$3':''} GROUP BY 1 ORDER BY 1`,params,'live pulse trend');
+    if(trendResult.ok) trend=trendResult.rows;
+    else failed.push('trend');
+    res.json({
+      range:{start,end},
+      sales,orders,inventory,customers,margin,
+      grossMarginPct:revenue?grossMargin/revenue*100:0,
+      trend,
+      dataHealth:{complete:failed.length===0,partial:failed.length>0,failedSections:[...new Set(failed)]}
+    });
+  } catch (error) {
+    console.error('Live business pulse failed unexpectedly', { message: error?.message || String(error) });
+    res.json({
+      range: range(req),
+      sales:{revenue:0,transactions:0},
+      orders:{total:0,open:0},
+      inventory:{units:0,variants:0},
+      customers:{total:0,acquired:0},
+      margin:{gross_margin:0},
+      grossMarginPct:0,
+      trend:[],
+      dataHealth:{complete:false,partial:true,failedSections:['live pulse']}
+    });
+  }
  });
  app.get('/api/bi/sales-trend',auth,need('bi.view'),async(req,res)=>{const {start,end}=range(req),loc=locationFilter(req);const result=await safeQuery(`SELECT s.created_at::date day,count(*)::int transactions,COALESCE(sum(s.grand_total),0)::numeric revenue,COALESCE(sum(s.discount_amount),0)::numeric discounts,COALESCE(sum(s.tax_amount),0)::numeric tax FROM sales s WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 ${loc?'AND s.location_id=$3':''} GROUP BY 1 ORDER BY 1`,loc?[start,end,loc]:[start,end],'sales trend');res.json(result.rows)});
  app.get('/api/bi/payment-methods',auth,need('bi.view'),async(req,res)=>{const {start,end}=range(req);res.json(await q("SELECT method,COALESCE(sum(amount),0)::numeric amount,count(*)::int transactions FROM sale_payments sp JOIN sales s ON s.id=sp.sale_id WHERE s.status='Completed' AND s.created_at::date BETWEEN $1 AND $2 GROUP BY method ORDER BY amount DESC",[start,end]))});

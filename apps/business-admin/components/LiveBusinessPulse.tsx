@@ -36,7 +36,7 @@ async function getFallback() {
   if (!s && !i && !o && !c) throw new Error('Live business data is reconnecting.');
   return {
     sales: { revenue: s?.today?.total ?? s?.month?.total ?? 0 },
-    orders: { total: o?.total ?? 0, open: o?.pending + o?.paid + o?.processing + o?.dispatched ?? 0 },
+    orders: { total: Number(o?.total ?? 0), open: ['pending','paid','processing','dispatched'].reduce((sum, key) => sum + Number(o?.[key] ?? 0), 0) },
     inventory: { units: i?.onHand ?? 0, variants: i?.stockedSkus ?? 0 },
     customers: { total: c?.customers ?? 0, acquired: c?.new30d ?? 0 },
     margin: { gross_margin: 0 },
@@ -52,8 +52,10 @@ export function LiveBusinessPulse() {
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
   const [error, setError] = useState('');
   const [partial, setPartial] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   async function load() {
+    setRefreshing(true);
     try {
       const live = await get('/api/bi/live-pulse');
       setSummary(live || null);
@@ -61,18 +63,45 @@ export function LiveBusinessPulse() {
       setUpdatedAt(new Date());
       setPartial(Boolean(live?.dataHealth?.partial));
       setError('');
+      return;
     } catch {
+      // The executive summary is intentionally the second source. It uses the same
+      // business records but has broader, section-by-section protection, so one
+      // unavailable chart cannot make the whole dashboard look broken.
       try {
-        const fallback = await getFallback();
-        setSummary(fallback);
+        const summary = await get('/api/bi/summary');
+        setSummary({
+          sales: summary?.sales || {},
+          orders: summary?.orders || {},
+          inventory: summary?.inventory || {},
+          customers: summary?.customers || {},
+          margin: summary?.margin || {},
+          grossMarginPct: Number(summary?.grossMarginPct || 0),
+          trend: [],
+          dataHealth: summary?.dataHealth || { complete: false, partial: true },
+        });
         setTrend([]);
         setUpdatedAt(new Date());
         setPartial(true);
-        setError('Some live figures are temporarily unavailable. Showing the latest available business records.');
-      } catch (e: any) {
-        setPartial(true);
-        setError(e?.message || 'Live business data is reconnecting.');
+        setError('Live updates are reconnecting. Showing the latest available business figures.');
+        return;
+      } catch {
+        try {
+          const fallback = await getFallback();
+          setSummary(fallback);
+          setTrend([]);
+          setUpdatedAt(new Date());
+          setPartial(true);
+          setError('Live updates are temporarily unavailable. Showing the latest available business figures.');
+        } catch (e: any) {
+          setSummary(null);
+          setTrend([]);
+          setPartial(true);
+          setError('Live updates are temporarily unavailable. Please refresh in a moment.');
+        }
       }
+    } finally {
+      setRefreshing(false);
     }
   }
 
@@ -94,15 +123,16 @@ export function LiveBusinessPulse() {
   return <section className="livePulse" aria-label="Live business pulse">
     <div className="livePulseHead">
       <div><span className="eyebrow"><Activity size={12} /> Live business pulse</span><strong>Updates automatically</strong></div>
-      <div className="livePulseMeta"><span><i /> Connected to current business records</span>{partial && <span>Some figures are temporarily unavailable</span>}{updatedAt && <span>Updated {updatedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>}<button onClick={load} title="Refresh now"><RefreshCw size={13} /></button></div>
+      <div className="livePulseMeta"><span><i /> Connected to current business records</span>{partial && <span>Some figures are temporarily unavailable</span>}{updatedAt && <span>Updated {updatedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>}<button onClick={load} title="Refresh now" disabled={refreshing} aria-label="Refresh live business data"><RefreshCw size={13} className={refreshing ? 'spin' : ''} /></button></div>
     </div>
-    {error ? <div className="livePulseError">{error}</div> : <div className="livePulseGrid">
+    {error && <div className="livePulseError">{error}</div>}
+    <div className="livePulseGrid">
       <div className="livePulseChart"><div className="livePulseLabel"><span>Revenue movement</span><b>{money(summary?.sales?.revenue)}</b></div><div className="livePulseChartBox">{chartData.length ? <ResponsiveContainer width="100%" height="100%"><AreaChart data={chartData}><XAxis dataKey="day" hide /><YAxis hide /><Tooltip formatter={(value) => money(value)} /><Area dataKey="revenue" type="monotone" stroke="#b89032" fill="#b89032" fillOpacity={0.10} strokeWidth={2} /></AreaChart></ResponsiveContainer> : <span>No completed sales yet</span>}</div></div>
       <Pulse icon={ShoppingCart} label="Orders" value={number(summary?.orders?.total)} note={`${number(summary?.orders?.open)} open`} />
       <Pulse icon={Boxes} label="Stock" value={number(summary?.inventory?.units)} note={`${number(summary?.inventory?.variants)} product lines`} />
       <Pulse icon={Users} label="Customers" value={number(summary?.customers?.total)} note={`${number(summary?.customers?.acquired)} added in period`} />
       <Pulse icon={CircleDollarSign} label="Gross margin" value={`${Number(summary?.grossMarginPct || 0).toFixed(1)}%`} note={money(summary?.margin?.gross_margin)} />
-    </div>}
+    </div>
   </section>;
 }
 
