@@ -93,3 +93,11 @@ body{background:radial-gradient(circle at 80% -10%,rgba(199,162,74,.075),transpa
 }
 @media(max-width:720px){.mobileSidebarClose{position:absolute;right:12px;top:12px;z-index:2;width:34px;height:34px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.13);border-radius:9px;color:#cbd5e1;background:rgba(255,255,255,.06);font-size:24px;line-height:1;cursor:pointer}.sidebar .brand{padding-right:50px}.sidebar .brandMark{margin-top:2px}}
 @media(min-width:721px){.mobileNavToggle,.mobileSidebarClose{display:none}}
+
+/* Final mobile navigation correction: every business section is a full-width vertical list. */
+@media(max-width:720px){
+  .sidebarGroups{display:flex !important;flex-direction:column !important;align-items:stretch !important;gap:16px !important;width:100% !important;overflow-y:auto !important;overflow-x:hidden !important}
+  .sidebarGroup{display:flex !important;flex-direction:column !important;align-items:stretch !important;gap:3px !important;width:100% !important;min-width:0 !important;flex:0 0 auto !important}
+  .sidebarGroupLabel{display:block !important;width:100% !important}
+  .sidebarGroups a{display:flex !important;width:100% !important;min-height:42px;white-space:nowrap !important}
+}

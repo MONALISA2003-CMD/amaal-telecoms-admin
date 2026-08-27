@@ -24,6 +24,28 @@ async function get(path: string) {
   return data;
 }
 
+async function getFallback() {
+  const [sales, inventory, orders, customers] = await Promise.allSettled([
+    get('/api/sales/summary'),
+    get('/api/inventory/summary'),
+    get('/api/orders/summary'),
+    get('/api/customers/summary'),
+  ]);
+  const value = (r: PromiseSettledResult<any>) => r.status === 'fulfilled' ? r.value : null;
+  const s = value(sales), i = value(inventory), o = value(orders), c = value(customers);
+  if (!s && !i && !o && !c) throw new Error('Live business data is reconnecting.');
+  return {
+    sales: { revenue: s?.today?.total ?? s?.month?.total ?? 0 },
+    orders: { total: o?.total ?? 0, open: o?.pending + o?.paid + o?.processing + o?.dispatched ?? 0 },
+    inventory: { units: i?.onHand ?? 0, variants: i?.stockedSkus ?? 0 },
+    customers: { total: c?.customers ?? 0, acquired: c?.new30d ?? 0 },
+    margin: { gross_margin: 0 },
+    grossMarginPct: 0,
+    trend: [],
+    dataHealth: { complete: false, partial: true, failedSections: ['bi-summary'] },
+  };
+}
+
 export function LiveBusinessPulse() {
   const [summary, setSummary] = useState<Any | null>(null);
   const [trend, setTrend] = useState<Any[]>([]);
@@ -33,15 +55,24 @@ export function LiveBusinessPulse() {
 
   async function load() {
     try {
-      const [s, t] = await Promise.all([get('/api/bi/summary'), get('/api/bi/sales-trend')]);
-      setSummary(s || null);
-      setTrend(Array.isArray(t) ? t : []);
+      const live = await get('/api/bi/live-pulse');
+      setSummary(live || null);
+      setTrend(Array.isArray(live?.trend) ? live.trend : []);
       setUpdatedAt(new Date());
-      setPartial(Boolean(s?.dataHealth?.partial));
+      setPartial(Boolean(live?.dataHealth?.partial));
       setError('');
-    } catch (e: any) {
-      setPartial(false);
-      setError(e?.message || 'Live business data is temporarily unavailable.');
+    } catch {
+      try {
+        const fallback = await getFallback();
+        setSummary(fallback);
+        setTrend([]);
+        setUpdatedAt(new Date());
+        setPartial(true);
+        setError('Some live figures are temporarily unavailable. Showing the latest available business records.');
+      } catch (e: any) {
+        setPartial(true);
+        setError(e?.message || 'Live business data is reconnecting.');
+      }
     }
   }
 

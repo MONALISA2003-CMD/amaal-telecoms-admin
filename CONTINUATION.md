@@ -282,3 +282,12 @@ Before the next regression audit, the Business Admin must provide a live visual 
 
 ### Continuity instruction
 For the next build: inspect the current source before changing it; preserve everything already working; build the next module completely; compare it with its corresponding technical-console/engine capability; connect it to related business modules and the existing backend; verify administrator and Super Admin permissions; audit all business-facing wording for unnecessary technical terminology; check charts, empty states, loading states, errors and mobile layouts; run a full bug/debug/type/build audit; package the complete project with all current MD continuity documents; and never reset, recreate, truncate or replace the existing PostgreSQL database.
+
+## 2026-08-27 — Live Business Pulse + mobile navigation correction
+- Added a dedicated authenticated `/api/bi/live-pulse` service for the global business pulse.
+- The live pulse now isolates business-data queries so one failed optional source cannot break the entire pulse.
+- Added a frontend fallback to independent sales, inventory, orders, and customer summaries when the BI pulse is temporarily unavailable.
+- The pulse continues automatic refresh and shows a clear partial-data/reconnecting message rather than exposing a generic internal server error.
+- Corrected mobile business navigation to a full-width vertical sidebar with grouped sections. The horizontal ribbon layout is no longer used.
+- No database reset, truncate, schema replacement, or data wipe was performed.
+- Next continuity step: run production regression after deployment, verify `/api/bi/live-pulse`, then audit every business workspace and its technical-console counterpart.

@@ -439,3 +439,10 @@ No PostgreSQL reset, schema reset, destructive migration, or second business dat
 
 ### Remaining audit requirement
 After deployment, verify the live visual layer against real public-site activity: create a permitted business transaction through the public experience, confirm it reaches the existing business records, then confirm the corresponding Business Admin KPI/chart changes after the normal refresh interval. Continue with full module regression only after this verification passes.
+
+## Live Pulse / Navigation Regression — 2026-08-27
+- Global live pulse no longer depends on the large BI summary endpoint for its initial display.
+- Dedicated pulse endpoint uses isolated safe queries and returns partial-health information.
+- Frontend has independent endpoint fallback for core sales, inventory, orders, and customer figures.
+- Mobile navigation is explicitly forced into one vertical column per group inside the slide-out sidebar.
+- No PostgreSQL reset or destructive data operation performed during this correction.
