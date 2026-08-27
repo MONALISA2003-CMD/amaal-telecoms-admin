@@ -8,7 +8,7 @@ type Product = any;
 type Option = { id: string; name: string; product_count?: number; parent_id?: string | null };
 
 async function api(path: string, init: RequestInit = {}) {
-  const response = await fetch(`${path}`, { ...init, headers: { 'Content-Type': 'application/json', ...(init.headers || {}) } });
+  const response = await fetch(`/api/engine${path}`, { ...init, headers: { 'Content-Type': 'application/json', ...(init.headers || {}) } });
   const text = await response.text();
   let payload: any = null; try { payload = text ? JSON.parse(text) : null; } catch { payload = text; }
   if (!response.ok) throw new Error(payload?.error || 'The catalogue action could not be completed.');

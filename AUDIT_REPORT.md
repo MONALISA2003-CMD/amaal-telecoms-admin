@@ -222,40 +222,13 @@ After the fulfilment/delivery work, the serialized-inventory regression chain wa
 
 Environment limitations remain: `DATABASE_URL` is not configured and `pg_dump` is unavailable in this working environment, so no live PostgreSQL transaction, production backup drill, or production restore was executed. The production Next.js/TypeScript build also remains unverified because frontend dependencies are unavailable. These are explicitly not reported as passes.
 
-## Mobile phone catalogue synchronization — 27 Aug 2026
 
-A full master mobile-phone catalogue synchronization was performed from `Mobile_Phone_Catalogue_Master_2026.md`. The target catalogue contains 156 unique phone products and 354 unique commercial variants after de-duplicating repeated model rows in the source document and excluding tablet-only rows. The authoritative database now contains the requested master records, while legacy catalogue records not present in the source were preserved rather than deleted.
+## Phase 2 — Neon schema reconciliation (27 Aug 2026)
 
-The Render backend now exposes up to 500 catalogue products per request, and the Vercel Business Admin product page requests up to 500. The frontend starter blueprint contains the same master phone catalogue and all 354 commercial variants for offline/design fallback use.
+The earlier audit statement that the live Neon schema had unrepresented business columns was re-checked directly against the current live database and current project SQL. The specific previously cited differences were **not confirmed**. In particular, the live database does not currently contain the previously cited `sales.created_by`, `refund_transactions.reason`, `customer_groups.updated_by`, `product_categories.updated_by`, `users.website`, or `goods_receipts.goods_receipt_id` columns.
 
-No physical inventory units, IMEIs, serial numbers, warehouse quantities, purchases, sales, or customer data were created by this catalogue synchronization.
+The live database currently reports **201 public tables**, **551 indexes**, **2 user-defined triggers**, and **41 public functions** (including extension functions). The two serialized-unit triggers are present and correspond to the repository implementation.
 
+No production database migration was required for this reconciliation pass. No database reset, truncate, destructive reseed, or business-data modification was performed.
 
-## 27 Aug 2026 — Vercel ↔ Render Business API reconciliation
-
-### Problem confirmed
-The Business Admin had two browser-to-backend proxy paths. The `/api/engine/*` path was restricted to catalogue routes and did not forward the CSRF token, while Delivery and Team were using it for non-catalogue operations.
-
-### Remediation completed
-- Standardized browser Business Admin calls on the existing same-origin `/api/*` proxy.
-- Removed the duplicate `/api/engine/[...path]` proxy route from the Business Admin.
-- Catalogue, Product Admin, Delivery and Team workspaces now call the canonical `/api/*` path directly.
-- The canonical proxy forwards the authenticated session cookie.
-- The canonical proxy forwards the CSRF token on mutating requests.
-- Render remains responsible for authentication, CSRF validation, authorization and business rules.
-- No direct browser call to the Render URL was introduced.
-
-### Verification
-- Static frontend API route audit: PASS — 0 remaining `/api/engine` browser references outside stale generated build metadata (which was removed).
-- Render preflight: PASS.
-- Cross-module audit: PASS — 102 frontend API references, 568 backend routes, 0 unmatched frontend routes, 18/18 connected relationships.
-- Serialized inventory audit: PASS.
-- Receiving/batch audit: PASS.
-- Warehouse transfer audit: PASS.
-- Exact order-unit assignment audit: PASS — 20/20.
-- Serialized status/history audit: PASS — 14/14.
-- Fulfilment/delivery reconciliation audit: PASS — 14/14.
-- Frontend production build: NOT VERIFIED because dependencies could not be installed within the available execution window.
-
-### Result
-The previously identified Vercel → Render proxy mismatch is **remediated in source**. Production deployment verification remains pending until the actual Vercel build/deployment environment is available.
+A source-side `schema-reconciliation-audit.js` check was added for future deployments. It validates the critical business schema baseline when `DATABASE_URL` is available. In the present build environment the dependency installation is unavailable, so the new live connection check is marked unverified locally; the Neon checks above were performed directly against the live database.

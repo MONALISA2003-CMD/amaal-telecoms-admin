@@ -9,7 +9,7 @@ type Option = { id: string; name: string; parent_id?: string | null; product_cou
 type Collection = Option & { description?: string };
 
 async function api(path: string, init: RequestInit = {}) {
-  const r = await fetch(`${path}`, { ...init, headers: { 'Content-Type': 'application/json', ...(init.headers || {}) } });
+  const r = await fetch(`/api/engine${path}`, { ...init, headers: { 'Content-Type': 'application/json', ...(init.headers || {}) } });
   const text = await r.text(); let data: any = null; try { data = text ? JSON.parse(text) : null; } catch { data = null; }
   if (!r.ok) throw new Error(data?.error || 'The catalogue action could not be completed.');
   return data;

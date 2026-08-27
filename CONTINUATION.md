@@ -356,48 +356,28 @@ Lifecycle history created by the new database trigger can identify the actor whe
 ### Next recommended build
 **Returns → Warranty → Service reconciliation by exact physical unit**, ensuring the same IMEI/serial remains traceable after delivery and through every after-sales event.
 
-## 27 Aug 2026 — Mobile Phone Master Catalogue Synchronization
 
-The mobile-phone master catalogue has been synchronized from `Mobile_Phone_Catalogue_Master_2026.md` into the authoritative PostgreSQL catalogue and mirrored into the Business Admin catalogue blueprint.
+## Phase 2 — Neon schema reconciliation
 
-Scope covered:
-- Apple iPhone
-- Samsung Galaxy A/S/Z families
-- Google Pixel
-- TECNO
-- Infinix
-- itel
+### Completed
+- Re-checked the live Neon PostgreSQL schema against the current project SQL.
+- Confirmed the production database has 201 public business tables.
+- Confirmed the two serialized inventory lifecycle triggers are present.
+- Rejected the earlier unverified claim of several specific column-level schema drifts; those columns are not present in the live database.
+- Added `schema-reconciliation-audit.js` and the `audit:schema` package script for future live verification.
+- No production schema migration was needed in this pass.
 
-Commercial variants are represented under Product → Variant. Physical IMEI/serial units are still created only when stock is actually received. No stock quantities, purchase receipts, IMEIs, serials, costs, or warehouse units were fabricated by this catalogue load.
+### Database safety
+- No reset.
+- No truncate.
+- No destructive reseed.
+- No existing business records changed.
 
-Existing catalogue records were checked first. Existing Samsung S-series records that had been incorrectly represented as multiple model variants were normalized into separate model products where the existing records had no transactional links. No business history was deleted.
+### Remaining
+1. Run the new schema audit with production dependencies installed.
+2. Compare all constraint/index/function definitions against a canonical migration snapshot in a controlled Neon branch before making any schema changes.
+3. Continue with physical-unit reservation/state integrity.
+4. Then run cross-module transactional tests.
 
-Backend changes:
-- `/api/catalog/products` maximum page size increased to 500 so the Business Admin can load the complete catalogue without silently truncating it.
-- Added `mobile-phone-master-sync.sql` as a repeat-safe master catalogue synchronization source for Render startup.
-- Added `SEED_MASTER_PHONE_CATALOGUE` configuration flag.
-
-Frontend changes:
-- Business Admin products page now requests up to 500 catalogue products.
-- `starter-catalogue.ts` now contains the master phone product/variant blueprint from the Markdown source, while preserving the existing entertainment starter catalogue.
-
-Database safety:
-- No database reset.
-- No TRUNCATE.
-- No DROP.
-- No destructive reseeding.
-- Existing business records preserved.
-
-
-## Completed — Vercel ↔ Render Business API reconciliation — 27 Aug 2026
-
-The Business Admin browser layer has been standardized on the canonical same-origin `/api/*` proxy. The duplicate catalogue-only `/api/engine/*` browser proxy was removed. Catalogue, Product Admin, Delivery and Team now use the same Vercel proxy path, which forwards the session cookie and CSRF token to Render. Render remains the authoritative authentication, authorization and business-rule layer.
-
-### Verification
-- Render preflight: PASS.
-- Cross-module audit: PASS — 102 frontend API references, 568 backend routes, 0 unmatched routes, 18/18 connected.
-- Inventory/receiving/transfers/order-unit/status/fulfilment audits: PASS.
-- Production Vercel build: pending because dependencies could not be installed in the extracted environment.
-
-### Next priority
-Continue with the **Neon schema/source migration reconciliation**, then perform the controlled end-to-end flow: receiving → batch → exact physical unit → warehouse → order reservation → fulfilment → delivery → sale, followed by returns/warranty/service traceability.
+### Next LLM prompt
+Continue Amaal ERP remediation from Phase 2. Do not reset Neon or delete business history. First verify the new schema-reconciliation audit with installed dependencies, then inspect and harden the serialized physical-unit reservation/state machine across Orders, Inventory, Sales, Fulfilment, Delivery, Returns, Warranty and Service. Use the existing database as authoritative and make only additive, tested changes.

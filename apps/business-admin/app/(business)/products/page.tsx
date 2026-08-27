@@ -13,7 +13,7 @@ export default async function ProductsPage() {
   const permissions = new Set(me.permissions ?? []);
   if (!permissions.has('catalog.view')) redirect('/overview');
   const [result, brands, categories, collections] = await Promise.all([
-    businessGetSafe<ProductResult>('/api/catalog/products?limit=500&offset=0'),
+    businessGetSafe<ProductResult>('/api/catalog/products?limit=100&offset=0'),
     businessGetSafe<Option[]>('/api/catalog/brands'),
     businessGetSafe<Option[]>('/api/catalog/categories'),
     businessGetSafe<Collection[]>('/api/catalog/collections'),
