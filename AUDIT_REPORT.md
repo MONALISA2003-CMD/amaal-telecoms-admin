@@ -239,3 +239,46 @@ A source-side `schema-reconciliation-audit.js` check was added for future deploy
 The serialized-unit workflow was hardened without changing the live Neon schema or business data. A shared `serialized-unit-lifecycle.js` guard now centralizes application-side transitions for order reservation/unassignment, fulfilment/delivery sale transitions, direct POS sale transitions, and manual status changes. Each transition locks the physical unit inside the caller transaction, validates the existing lifecycle, sets the authenticated actor context, updates the unit, and enriches the lifecycle-history row created by the existing PostgreSQL trigger. PostgreSQL remains the final status-transition enforcement layer.
 
 No database reset, truncation, destructive migration, or business-data deletion was performed.
+
+## Phase 3 safer-route verification — 2026-08-27
+
+The serialized physical-unit lifecycle was hardened at the Render application transaction layer without changing Neon.
+
+### Centralized transition coverage
+- Orders: exact-unit reservation, release, fulfillment/sale
+- Sales/POS: direct serialized sale
+- Delivery: delivery completion to Sold
+- Inventory: manual status transitions
+- Returns: restock transition to Returned
+- Warranty: Service entry, restore, resolution/collection
+- Purchasing: goods-receipt reversal to Voided
+- Stock transfers: ship to Transferred and receive to In Stock
+- Stocktakes: Lost / In Stock reconciliation
+- Inventory incidents: Damaged / Lost / Found / Returned
+
+### Safety properties
+- Physical unit is row-locked with `FOR UPDATE` before transition.
+- Invalid status transitions are rejected by the centralized transition map.
+- Existing PostgreSQL lifecycle enforcement remains intact.
+- No database reset, truncate, destructive migration, or production-data modification was performed.
+- Direct application-side serialized-unit status updates outside the centralized helper were removed from operational modules; the remaining match is an audit-regex fixture/documentation script, not an operational write path.
+
+### Verification
+- All JavaScript files pass `node --check`.
+- Static audit confirms the critical operational modules import the centralized lifecycle helper.
+- Neon was not modified during this safer-route implementation.
+
+### Limitation
+Full integration tests against live Neon require the project's runtime dependencies and authenticated test fixtures; they were not fabricated or claimed as passed when unavailable.
+
+## Phase 3 lifecycle verification — 2026-08-27
+
+- Serialized status/history audit: 14/14 PASS.
+- Exact order serial assignment audit: 20/20 PASS.
+- Fulfilment/delivery reconciliation audit: 14/14 PASS.
+- Inventory unit audit: PASS.
+- Cross-module audit: 104 frontend API references, 568 backend routes, 0 unmatched; 18 connected checks, 0 review checks.
+
+The audit scripts were updated where their assertions were checking for legacy direct SQL status updates instead of the centralized `transitionSerializedUnit` implementation. No Neon schema or business data was changed during this verification.
+
+Live end-to-end authenticated transaction testing remains a deployment/runtime verification item and is not claimed as passed here.

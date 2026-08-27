@@ -388,3 +388,29 @@ Continue Amaal ERP remediation from Phase 2. Do not reset Neon or delete busines
 The serialized-unit workflow was hardened without changing the live Neon schema or business data. A shared `serialized-unit-lifecycle.js` guard now centralizes application-side transitions for order reservation/unassignment, fulfilment/delivery sale transitions, direct POS sale transitions, and manual status changes. Each transition locks the physical unit inside the caller transaction, validates the existing lifecycle, sets the authenticated actor context, updates the unit, and enriches the lifecycle-history row created by the existing PostgreSQL trigger. PostgreSQL remains the final status-transition enforcement layer.
 
 No database reset, truncation, destructive migration, or business-data deletion was performed.
+
+## Phase 3 safer-route completion — 2026-08-27
+
+Implemented application-side serialized physical-unit lifecycle enforcement across orders, sales/POS, delivery, inventory, returns, warranty, purchasing, transfers, stocktakes, and inventory incidents.
+
+### Current state
+The existing Neon database remains unchanged. The centralized Render helper `serialized-unit-lifecycle.js` is now the application-side gate for serialized-unit status transitions. PostgreSQL remains the final enforcement layer.
+
+### What remains
+1. Run authenticated integration tests with real non-production/test fixtures.
+2. Verify concurrency behavior under two simultaneous exact-unit reservation attempts.
+3. Continue the wider audit with cross-module transaction integrity and security/privacy review.
+
+### Must not be changed
+- Do not reset/truncate Neon.
+- Do not delete historical business records.
+- Do not introduce a second serialized-unit status engine.
+- Do not expose IMEI/serial/batch/supplier/internal inventory data through the public catalogue.
+- Preserve `Amaal_plan.md`.
+
+### Next LLM prompt
+Continue Amaal Telecoms ERP audit from Phase 3 safer-route completion. First run authenticated end-to-end tests for serialized physical-unit lifecycle: receiving → In Stock → exact order reservation → release/cancel → fulfilment → delivery → Sold, plus return/warranty/service paths and concurrent duplicate assignment protection. Do not reset Neon or fabricate test results. Then proceed to cross-module transaction integrity audit.
+
+## 2026-08-27 — Phase 3 verification continuation
+
+Completed source-level serialized lifecycle verification after centralizing physical-unit transitions. All serialized status/history, exact order assignment, fulfilment/delivery, inventory-unit, and cross-module static audits pass. No Neon changes were required. Next priority is authenticated end-to-end transaction testing, followed by the remaining audit remediation phases.

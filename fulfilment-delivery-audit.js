@@ -11,7 +11,7 @@ const checks=[
  ['shipment detail exposes serialized units',files.delivery.includes('s.serializedUnits=')],
  ['delivery progression validates exact units',files.delivery.includes('Every serialized unit must still be Reserved')],
  ['delivery completion requires exact linked units',files.delivery.includes('Delivery is missing one or more exact serialized physical units')],
- ['delivery completion requires Reserved then Sold',files.delivery.includes("status='Reserved' RETURNING id") && files.delivery.includes("status='Sold'")],
+ ['delivery completion requires Reserved then Sold',files.delivery.includes("status!=='Reserved'") && files.delivery.includes("toStatus:'Sold'") && files.delivery.includes('transitionSerializedUnit')],
  ['dispatch requires serialized assignment',files.orders.includes('before dispatch')],
  ['active delivery blocks unit unassignment',files.orders.includes('already attached to active delivery')],
  ['no destructive delivery unit deletion',!['delete from delivery_shipment_serial_units','truncate delivery_shipment_serial_units','drop table delivery_shipment_serial_units'].some(x=>files.delivery.toLowerCase().includes(x))],
