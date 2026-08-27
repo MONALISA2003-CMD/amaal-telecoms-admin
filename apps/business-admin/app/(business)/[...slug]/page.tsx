@@ -220,16 +220,18 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
   }
 
   if (key === 'team') {
-    const [me, staff, deletedStaff, roles] = await Promise.all([
+    const [me, staff, deletedStaff, roles, departments] = await Promise.all([
       businessGetSafe<ApiRecord>('/api/me'),
       businessGetSafe<any[]>('/api/staff'),
       businessGetSafe<any[]>('/api/staff/deleted'),
       businessGetSafe<any[]>('/api/roles'),
+      businessGetSafe<any[]>('/api/departments'),
     ]);
     return <TeamWorkspace
       active={Array.isArray(staff) ? staff : []}
       deleted={Array.isArray(deletedStaff) ? deletedStaff : []}
       roles={Array.isArray(roles) ? roles : []}
+      departments={Array.isArray(departments) ? departments : []}
       permissions={me?.permissions ?? []}
       isSuperAdmin={Boolean(me?.isSuperAdmin)}
       currentUserId={me?.user?.id}

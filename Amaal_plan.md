@@ -3066,3 +3066,7 @@ Next core workspace: **Website Management**, followed by Reports/Business Intell
 ## Website Management implementation — 2026-08-27
 
 Website Management is now implemented as a connected Business Admin workspace using the existing website engine. Coverage includes site management, public pages, menus, banners, reusable content, media, publishing requests/releases, domains, redirects, website settings and storefront catalogue visibility. Hosting-provider execution remains outside Business Admin. The public storefront reads published website content and the existing authoritative catalogue.
+
+# 48. Team & Organisation hardening — 2026-08-27
+
+The Team workspace is strengthened as the business people-management centre. It now connects active/deleted staff, roles, staff profiles and departments through the existing engine. Admin actions remain permission-aware; Super Admin retains highest supported authority. Department deletion uses the existing archive behaviour and refuses to remove a department that still has assigned people. No database structure or data was changed by this build.

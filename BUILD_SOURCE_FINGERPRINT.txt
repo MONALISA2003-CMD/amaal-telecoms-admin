@@ -68,3 +68,7 @@ Service increment — 2026-08-27
 - Next module: Website Management.
 
 Reports/Business Intelligence upgrade 2026-08-27: ReportsWorkspace.tsx + report route integration + report UX CSS.
+
+Team & Organisation hardening hashes
+1366a6dfdc90c85e009142c86078a406db4885e80e68c47b3227f6116d8e9771  /mnt/data/nextwork/server.js
+5808a4c0201cf5fab7586362fe356c606feeac69453d8ca6bdfa4ca2c48db42c  /mnt/data/nextwork/schema.sql

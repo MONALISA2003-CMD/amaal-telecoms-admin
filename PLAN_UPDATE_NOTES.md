@@ -129,3 +129,6 @@ No database operation was performed directly by this increment. Existing records
 ## 2026-08-27 — Website Management
 
 Implemented the next Business Admin module without changing the existing backend or database. The workspace reuses the existing `/api/web/*` capabilities and connects storefront visibility to the existing catalogue. Publishing remains approval-controlled. The next planned module is Reports & Business Intelligence hardening followed by full cross-module regression.
+
+## 2026-08-27 — Team & Organisation hardening
+Strengthened Team into a connected people-management workspace with staff profiles and department lifecycle controls. Kept the existing Render backend and PostgreSQL authoritative and unchanged.

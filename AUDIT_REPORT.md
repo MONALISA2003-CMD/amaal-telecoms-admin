@@ -407,3 +407,10 @@ Website Management.
 - Route source transpilation check: PASS.
 - ZIP integrity: PASS.
 - Production Next.js build: not locally claimed due environment dependency-install timeout.
+
+## Team & Organisation hardening — 2026-08-27
+- Added permission-aware staff profile editing and department management to Business Admin.
+- Existing backend routes were used for profile updates and department create/update/archive.
+- Department archive is safe: the backend refuses archival when users remain assigned.
+- Role controls are no longer presented when the viewer lacks role-management permission.
+- No PostgreSQL/SQL/schema/backend changes were made by this increment.
