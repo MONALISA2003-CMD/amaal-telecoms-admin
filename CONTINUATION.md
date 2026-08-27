@@ -387,3 +387,17 @@ Database safety:
 - No DROP.
 - No destructive reseeding.
 - Existing business records preserved.
+
+
+## Completed — Vercel ↔ Render Business API reconciliation — 27 Aug 2026
+
+The Business Admin browser layer has been standardized on the canonical same-origin `/api/*` proxy. The duplicate catalogue-only `/api/engine/*` browser proxy was removed. Catalogue, Product Admin, Delivery and Team now use the same Vercel proxy path, which forwards the session cookie and CSRF token to Render. Render remains the authoritative authentication, authorization and business-rule layer.
+
+### Verification
+- Render preflight: PASS.
+- Cross-module audit: PASS — 102 frontend API references, 568 backend routes, 0 unmatched routes, 18/18 connected.
+- Inventory/receiving/transfers/order-unit/status/fulfilment audits: PASS.
+- Production Vercel build: pending because dependencies could not be installed in the extracted environment.
+
+### Next priority
+Continue with the **Neon schema/source migration reconciliation**, then perform the controlled end-to-end flow: receiving → batch → exact physical unit → warehouse → order reservation → fulfilment → delivery → sale, followed by returns/warranty/service traceability.

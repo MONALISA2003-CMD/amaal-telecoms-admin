@@ -11,7 +11,7 @@ type Department = { id: string; name: string; code: string; description?: string
 type Props = { active: Staff[]; deleted: Staff[]; roles: Role[]; departments?: Department[]; permissions: string[]; isSuperAdmin: boolean; currentUserId?: string };
 
 async function api(path: string, init: RequestInit = {}) {
-  const response = await fetch(`/api/engine${path}`, { ...init, headers: { 'Content-Type': 'application/json', ...(init.headers || {}) } });
+  const response = await fetch(`${path}`, { ...init, headers: { 'Content-Type': 'application/json', ...(init.headers || {}) } });
   const text = await response.text();
   let payload: any = null;
   try { payload = text ? JSON.parse(text) : null; } catch { payload = text; }

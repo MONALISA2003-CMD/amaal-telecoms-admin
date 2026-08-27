@@ -229,3 +229,33 @@ A full master mobile-phone catalogue synchronization was performed from `Mobile_
 The Render backend now exposes up to 500 catalogue products per request, and the Vercel Business Admin product page requests up to 500. The frontend starter blueprint contains the same master phone catalogue and all 354 commercial variants for offline/design fallback use.
 
 No physical inventory units, IMEIs, serial numbers, warehouse quantities, purchases, sales, or customer data were created by this catalogue synchronization.
+
+
+## 27 Aug 2026 — Vercel ↔ Render Business API reconciliation
+
+### Problem confirmed
+The Business Admin had two browser-to-backend proxy paths. The `/api/engine/*` path was restricted to catalogue routes and did not forward the CSRF token, while Delivery and Team were using it for non-catalogue operations.
+
+### Remediation completed
+- Standardized browser Business Admin calls on the existing same-origin `/api/*` proxy.
+- Removed the duplicate `/api/engine/[...path]` proxy route from the Business Admin.
+- Catalogue, Product Admin, Delivery and Team workspaces now call the canonical `/api/*` path directly.
+- The canonical proxy forwards the authenticated session cookie.
+- The canonical proxy forwards the CSRF token on mutating requests.
+- Render remains responsible for authentication, CSRF validation, authorization and business rules.
+- No direct browser call to the Render URL was introduced.
+
+### Verification
+- Static frontend API route audit: PASS — 0 remaining `/api/engine` browser references outside stale generated build metadata (which was removed).
+- Render preflight: PASS.
+- Cross-module audit: PASS — 102 frontend API references, 568 backend routes, 0 unmatched frontend routes, 18/18 connected relationships.
+- Serialized inventory audit: PASS.
+- Receiving/batch audit: PASS.
+- Warehouse transfer audit: PASS.
+- Exact order-unit assignment audit: PASS — 20/20.
+- Serialized status/history audit: PASS — 14/14.
+- Fulfilment/delivery reconciliation audit: PASS — 14/14.
+- Frontend production build: NOT VERIFIED because dependencies could not be installed within the available execution window.
+
+### Result
+The previously identified Vercel → Render proxy mismatch is **remediated in source**. Production deployment verification remains pending until the actual Vercel build/deployment environment is available.
