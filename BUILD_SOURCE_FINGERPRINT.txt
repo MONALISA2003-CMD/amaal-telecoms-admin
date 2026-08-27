@@ -83,3 +83,10 @@ Full-stack cross-connection hardening — 2026-08-27
 - Render preflight: PASS.
 - Full Next production build remains unclaimed because dependency installation timed out in the isolated environment.
 - Production Render/Vercel deployment was not claimed because deployment/network access was unavailable in this session.
+
+Catalogue management upgrade (2026-08-27):
+- Central Catalogue Control Centre with Products, Categories, Brands, Collections and Archived views.
+- Additive PostgreSQL collection model and category/brand presentation fields.
+- Safe archive/delete/restore catalogue actions.
+- Public published-catalogue read endpoint.
+- Starter collection data and stock-free starter catalogue preserved.

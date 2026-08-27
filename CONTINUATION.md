@@ -1,338 +1,44 @@
-# Amaal Telecoms — Continuation & Build-Control Prompt
+# Amaal Telecoms — Continuation Prompt
 
-## Read first
+## Current build
+The project contains a cross-connected Amaal Telecoms Business Admin console backed by PostgreSQL and a separate public-facing website layer. Major operational areas already exist across overview, reports, sales, products/catalogue, stock/warehouse, purchasing, customers/CRM, orders, finance, credit, delivery, service, website management, team administration, governance and supporting operational services.
 
-Before changing anything, read:
+The catalogue has now been upgraded into a long-term Catalogue Control Centre. It separates Products, Categories, Brands, Collections and Archived records, supports category hierarchy, brand management, curated collections, safe archiving, Super Admin deletion controls and additive starter catalogue data.
 
-1. `Amaal_plan.md`
-2. `CONTINUATION.md`
-3. `AUDIT_REPORT.md`
-4. `PLAN_UPDATE_NOTES.md`
-5. `BUILD_SOURCE_FINGERPRINT.txt`
+## Already built
+- Business Admin vertical sidebar and responsive mobile drawer.
+- Live business pulse and cross-module business workspaces.
+- Catalogue-first product management.
+- Product creation, editing, variants, product media, tags, relationships, publishing and revision history.
+- Categories and brands with create/edit/archive/delete controls.
+- Catalogue collections with create/edit/archive/delete controls and product membership storage.
+- Starter catalogue structure for Phones, Tablets and Entertainment.
+- Starter iPhone, Samsung Galaxy and TV data remains stock-free.
+- PostgreSQL additive catalogue upgrade and starter collection seed scripts.
+- Audit events around catalogue changes.
 
-## Absolute source-of-truth rule
+## Remaining to be built
+Continue the next business module, but before considering it complete:
+1. Compare the module against its equivalent Technical Console module.
+2. Establish all appropriate connections with existing Business Admin modules and the PostgreSQL-backed business records.
+3. Make Admin able to add, edit, archive, restore and remove every business item that should be manageable.
+4. Make Super Admin able to add, edit, archive, restore and permanently delete where safe and appropriate.
+5. Preserve historical business records; do not destroy history merely to remove something from the active workspace.
+6. Keep the public website driven by approved catalogue/business records rather than duplicated hard-coded content.
+7. Ensure dashboards and visual summaries use live business records and remain empty/neutral when no real data exists rather than inventing stock, sales or financial values.
+8. Audit all visible wording in the Business Admin console. Do not expose development terminology to business administrators. Use normal business language.
+9. Check mobile and desktop layouts, especially the full vertical sidebar navigation.
+10. Run a deep regression audit across all existing modules after the new module is built.
+11. Debug all discovered issues before packaging.
+12. Re-run build/type checks and available smoke/audit checks.
+13. Update the plan and audit notes.
+14. Package the complete updated project into one ZIP only after the work is complete.
 
-> **The existing Render business engine and PostgreSQL records are authoritative. Do not reset, reseed, truncate, drop, recreate, migrate, overwrite or experiment with the database. Do not create a second business database. Do not replace the existing backend.**
->
-> If a desired business capability is not supported by the existing engine, record it as a blocked dependency unless explicit authorization is given to change the backend/database.
+## Critical database rule
+Do NOT reset the database. Do NOT truncate tables. Do NOT drop/recreate the database. Do NOT delete existing business history to make tests pass. Use additive migrations and safe, targeted records only.
 
-## Current architecture
+## Critical testing rule
+Starter catalogue data may be added for testing behaviour, but no stock balances should be invented. Product records are catalogue records only until stock is actually received through the stock/warehouse workflow.
 
-```text
-Public Website
-      |
-Business Admin
-      |
-Existing business engine on Render
-      |
-PostgreSQL business records
-      |
-Technical Console
-```
-
-Business Admin is the business experience. The Technical Console remains the technical/advanced administration experience.
-
-## Current completed modules
-
-- Authentication and administrator setup.
-- Premium restrained champagne/gold glass login/setup/password-reset direction.
-- Executive Overview.
-- Sales & POS.
-- Products / catalogue.
-- Stock / Warehouse Control.
-- Purchasing / suppliers.
-- Customers / CRM / Customer 360.
-- Orders & Fulfilment.
-- Finance.
-- Credit & instalments.
-- Staff lifecycle, including Active Staff and Deleted Staff separation.
-- Delivery & Logistics.
-- Starter catalogue coverage requested for phones, tablets, entertainment, iPhones, Samsung Galaxy families and TV brands/sizes.
-
-## Permission model now enforced
-
-- Administrator has the normal full business-operational permission set already defined by the engine.
-- Super Admin is treated as the top-level authority for all supported permissions.
-- Sensitive destructive identity actions remain explicitly Super Admin controlled.
-- Business records that must remain historically traceable should use cancel, void, reverse, archive, deactivate or another safe lifecycle action rather than physical deletion.
-- Permission checks are enforced by the service, not only by hiding browser buttons.
-
-## Business-language boundary
-
-Do not expose developer/technical terminology in normal Business Admin screens. Avoid terms such as:
-
-- API
-- endpoint
-- database
-- webhook
-- payload
-- server
-- deployment
-- infrastructure
-- UUID
-- JSON
-- schema
-- raw technical IDs
-
-Technical-only workspaces are not part of normal Business Admin navigation. Keep system operations, monitoring, backup/recovery execution, connection administration, webhook administration, feature controls and similar developer controls in the Technical Console.
-
-## Delivery & Logistics completed in this increment
-
-- Delivery command centre.
-- Pending, in-transit, out-for-delivery, delayed, delivered, failed and returned KPIs.
-- Delivery zones, fees and expected timing.
-- Delivery partner management and performance.
-- Shipment creation.
-- Shipment editing while still open.
-- Driver and partner assignment.
-- Delivery journey/status history.
-- Delivery attempts.
-- Proof/recipient confirmation and failure notes.
-- Connections to Orders, Customers, Stock and Finance using existing engine behaviour.
-- Auditable shipment updates.
-- Closed deliveries cannot be edited through the ordinary shipment editor.
-
-## Validation completed for this ZIP
-
-- All JavaScript files pass syntax checking.
-- Render preflight passes.
-- Permission reference audit passes: 127 used permission IDs, 0 undefined.
-- No database/schema/seed files were modified.
-- No database reset, migration, truncate, drop, reseed or direct data manipulation was performed.
-- Production deployment build is not claimed until Vercel reports success.
-
-## Next module: Service
-
-Build the Business Admin **Service** workspace next, covering:
-
-- Returns.
-- Warranty.
-- Repairs.
-- Customer service cases.
-- Enquiries and follow-ups.
-- Service queues and attention areas.
-- Customer, order, product and delivery relationships.
-- Repair partners and service performance.
-- Parts/cost information where supported.
-- Status journey and history.
-- Clear mobile-first operational screens.
-
-Before building Service, inspect the existing Technical Console capabilities in:
-
-- `returns-refunds.js`
-- `warranty-repairs.js`
-- the customer/CRM routes
-- the order routes
-- relevant inventory and finance relationships
-
-Then compare the complete technical capabilities against the Business Admin experience and expose every safe business action already supported.
-
-## Mandatory continuity build prompt
-
-> **Continue Amaal Telecoms from this exact ZIP.**
->
-> First read `Amaal_plan.md`, `CONTINUATION.md`, `AUDIT_REPORT.md`, `PLAN_UPDATE_NOTES.md` and `BUILD_SOURCE_FINGERPRINT.txt`.
->
-> Treat the existing Render business engine and PostgreSQL records as the only source of truth. **DO NOT reset, reseed, migrate, truncate, drop, recreate, overwrite or experiment with PostgreSQL. DO NOT replace or rewrite the existing backend.** Reuse existing capabilities and permissions. If something is missing, record it as a dependency instead of changing the database/backend without explicit authorization.
->
-> Before editing, deeply inspect the Technical Console modules that correspond to the next Business Admin workspace. Compare routes, actions, permissions, statuses, data relationships and historical/audit behaviour.
->
-> Build **Service** next as a complete real-business workspace. It must support every safe business action already available through the existing engine, not merely display cards. Include useful KPIs, service queues, attention areas, search/filtering, detail views, status journeys, customer/order/product links, operational actions and clear mobile layouts.
->
-> Make sure Administrator can perform all normal business actions supported by the existing permission model. Make sure Super Admin can perform all supported actions. Keep destructive business history safe by using archive/cancel/reverse/deactivate where appropriate rather than erasing historical records.
->
-> Business Admin must use ordinary business language. Do not expose API, endpoint, database, webhook, payload, server, deployment, infrastructure, UUID, JSON, schema or raw technical identifiers to business users.
->
-> Preserve the premium restrained champagne/gold business ERP visual direction. Use meaningful charts and operational visuals where real data exists. Never fabricate figures. Empty, loading and error states must be calm and honest.
->
-> After Service is built, audit **ALL** existing modules: authentication/setup, Overview, Sales/POS, Products, Stock/Warehouse, Purchasing, Customers/CRM, Orders/Fulfilment, Delivery, Finance, Credit, Staff, Website/content, Reports, permissions, shared UI and cross-module relationships.
->
-> Check for bugs, stale assumptions, broken links, incorrect permissions, missing actions, technical wording, mobile problems, data-source mistakes, inconsistent statuses and unsafe destructive behaviour. Debug every safe issue found.
->
-> Confirm database/schema/seed files remain unchanged and no database reset or destructive migration occurred.
->
-> Update `Amaal_plan.md`, `CONTINUATION.md`, `AUDIT_REPORT.md`, `PLAN_UPDATE_NOTES.md` and `BUILD_SOURCE_FINGERPRINT.txt` with the new state and next-module prompt.
->
-> Only after the full audit and validation, package a complete ZIP containing the entire project and all required MD continuity files. Verify the ZIP contents before delivery.
-
-## Service completed in this increment — 2026-08-27
-
-- Business Admin Service workspace is complete for the capabilities already supported by the existing engine.
-- Returns, warranty, repairs, warranty policies and repair partners are connected to existing customers, orders, sales, products, stock and staff records.
-- Return creation/status/refund and warranty/repair actions use the existing business routes and permission checks.
-- Business Admin uses ordinary business terminology in the Service workspace.
-- No backend or SQL changes were made and no database operation was performed.
-- JavaScript syntax validation passed.
-
-## Next module: Website Management
-
-Build the Business Admin **Website Management** workspace next. Inspect the existing website/content/media/pricing capabilities first. Keep hosting, domain, deployment, connection and infrastructure administration in the Technical Console. Business Admin should expose only safe business content operations already supported by the engine: product/category presentation, banners/content, promotions where supported, publishing workflow, preview/status and content ownership. Do not invent capabilities or fabricate website metrics.
-
-### Mandatory continuity prompt
-
-> Continue Amaal Telecoms from this exact ZIP. First read `Amaal_plan.md`, `CONTINUATION.md`, `AUDIT_REPORT.md`, `PLAN_UPDATE_NOTES.md` and `BUILD_SOURCE_FINGERPRINT.txt`.
->
-> Treat the existing Render business engine and PostgreSQL records as the only source of truth. **DO NOT reset, reseed, migrate, truncate, drop, recreate, overwrite or experiment with PostgreSQL. DO NOT replace or rewrite the existing backend.** Reuse existing capabilities and permissions. If a desired capability is not supported, record it as a dependency instead of changing the backend/database.
->
-> Before editing, deeply inspect the Technical Console website/content/media/pricing routes and compare every safe business action, permission, status and data relationship.
->
-> Build **Website Management** next as a complete real-business workspace. Keep technical hosting, domains, deployment and infrastructure out of Business Admin. Include useful business content management, publishing/approval states, product/category presentation, promotions where supported, search/filtering, detail views and mobile-first layouts.
->
-> Ensure Administrator can perform all normal business actions supported by the current permission model and Super Admin can perform all supported actions. Preserve historical records with safe lifecycle actions instead of destructive erasure.
->
-> Audit all existing modules after the Website build, including Authentication/Setup, Overview, Sales/POS, Products, Stock/Warehouse, Purchasing, Customers/CRM, Orders/Fulfilment, Delivery, Finance, Credit, Team, Service, permissions, shared UI and cross-module relationships. Check for bugs, stale data assumptions, broken links, incorrect permissions, technical wording, mobile issues and unsafe actions. Debug all safe issues found.
->
-> Confirm backend and SQL/schema files remain unchanged. Update all continuity MD files and the build fingerprint. Only after the audit, validation and ZIP integrity check package the complete project.
-
-## Website Management completed in this increment — 2026-08-27
-
-- Built the Business Admin Website Management workspace on top of the existing website/content engine.
-- Connected website administration to the existing website records through the Business Admin proxy and authenticated engine routes.
-- Added website overview, site selection, site creation/editing, pages, menus, banners, reusable content areas, media, publishing requests, releases, domains, redirects, website settings and storefront catalogue visibility.
-- Added safe publishing workflow: request, approval, execution and release rollback where supported by the existing engine.
-- Connected storefront visibility to the existing Product Catalogue so Business Admin can see which authoritative products are prepared for the public website. Product and stock truth remains in their existing modules.
-- Kept hosting-provider/domain verification execution outside normal Business Admin controls; Business Admin only shows the business-relevant domain state.
-- No backend source, SQL, schema, migration or seed files were changed. Existing website backend routes were reused as-is.
-- Business-facing labels avoid developer terminology.
-- Website UI is mobile-aware and follows the premium restrained champagne/gold ERP direction.
-- WebsiteWorkspace.tsx and the route integration passed TypeScript transpilation checks.
-- All backend JavaScript files passed syntax checks.
-
-## Next module: Reports & Business Intelligence hardening
-
-Build the Business Admin Reports/Business Intelligence workspace next. Compare it deeply against `business-intelligence.js`, `business-intelligence.sql`, `ai-business-intelligence.js` and existing sales/orders/stock/finance data relationships. It must use authoritative records, provide meaningful charts, filters, drill-downs and export/report actions where already supported, and never invent figures. Then perform a full cross-module regression audit.
-
-### Mandatory continuity prompt
-
-> Continue Amaal Telecoms from this exact ZIP. Read all five continuity documents first. Treat Render and PostgreSQL as the source of truth. Do not reset, reseed, migrate, truncate, drop, recreate, overwrite or experiment with PostgreSQL. Do not replace or rewrite the backend. Reuse existing routes and permissions.
->
-> Build Reports & Business Intelligence next. Compare every safe existing reporting capability with Business Admin and expose the useful business actions already supported. Keep technical administration in the Technical Console and use ordinary business language.
->
-> Ensure Administrator can perform all supported normal business reporting actions and Super Admin can perform all supported actions. Do not fabricate metrics. Empty/loading/error states must be honest.
->
-> After the module, audit every existing Business Admin module, permissions, shared UI, cross-module relationships and mobile layouts; fix safe bugs; confirm backend/SQL/schema files remain unchanged; update all MD continuity documents; validate the project and ZIP; then package the complete project.
-
-## 2026-08-27 — Business Intelligence / Reports upgrade
-- Built a full Business Performance Centre in Business Admin.
-- Connected it to existing `/api/bi/*` backend routes and live business records.
-- Added executive KPIs, sales trends, payment mix, product/category performance, customer ranking, cashier performance, purchasing, returns, delivery, inventory ageing/turnover, finance account activity, credit ageing, warranty/repair performance, saved reports and CSV export.
-- Added date-range and location filters.
-- Added management report snapshots through existing BI snapshot endpoints.
-- No database reset, migration, truncate, drop, schema rewrite, seed execution, or backend business-rule modification performed.
-- Existing PostgreSQL/Render backend remains source of truth.
-- Validation: TSX transpilation passed for the new ReportsWorkspace and route; ZIP integrity passed.
-- Full Next.js production build was not claimed locally because dependency installation timed out in the restricted build environment; Vercel remains the production build authority.
-
-### Continuity prompt for next build
-Continue from the current Amaal Telecoms Business Admin build. First deeply audit all modules already built, especially Business Performance Centre/Reports, Executive Overview, Sales, Products, Stock/Warehouse, Purchasing, Customers, Orders, Finance, Credit, Delivery, Service, Website, Team and Settings. Treat the existing Render backend and PostgreSQL database as the source of truth. Do not reset, truncate, drop, migrate, recreate, reseed, or alter the database unless the user explicitly requests a database change. Compare every Business Admin module with its corresponding Technical Console module and existing backend routes before adding functionality. Ensure Admin can perform all business actions appropriate to Admin permissions and Super Admin can add, edit and delete anything permitted by the system's highest authority, with sensitive/destructive actions audited. Keep technical/developer language out of the Business Admin console. Build the next module completely and interconnect it with Customers, Products, Orders, Sales, Stock, Purchasing, Finance, Credit, Delivery, Service, Website and Reports wherever business relationships require it. Use premium, restrained, non-futuristic ERP UX with strong information hierarchy, graphs, drill-downs, tables, filters, clear actions, responsive layouts and accessible empty/error/loading states. Before packaging: audit all modules, inspect for broken routes, stale assumptions, TypeScript errors, permission mismatches, undefined data, missing backend connections and business-language leaks; debug every issue found; verify JavaScript/TypeScript syntax and ZIP integrity; update Amaal_plan.md, CONTINUATION.md, AUDIT_REPORT.md and BUILD_SOURCE_FINGERPRINT.txt; then produce one complete ZIP containing the whole project and all continuity MDs. Never claim a production build passed unless it was actually executed successfully.
-
-## Team & Organisation hardening completed — 2026-08-27
-
-- Team now includes staff profiles and department management in addition to staff status, roles and deleted-staff separation.
-- Department creation, editing and safe archiving use the existing backend routes.
-- Staff profile editing uses the existing profile route.
-- Role actions are only shown when the viewer has role-management access; profile and department actions are similarly permission-aware.
-- Super Admin remains the highest supported authority, while self-protection and historical-record safeguards remain intact.
-- No backend source, SQL, schema or database data was modified.
-
-## Next build prompt
-Continue from this complete Amaal Telecoms Business Admin build. First perform a full regression audit of Authentication/Setup, Overview, Sales/POS, Products/Catalogue, Stock/Warehouse, Purchasing, Customers/CRM, Orders/Fulfilment, Delivery, Finance, Credit, Team/Organisation, Service, Website Management, Reports/Business Intelligence, shared navigation and permissions. Compare each Business Admin workspace against its corresponding Technical Console module and the existing Render backend before changing anything. Treat PostgreSQL as the source of truth: do not reset, truncate, drop, recreate, migrate, reseed or directly alter the database unless explicitly requested. Ensure Admin can perform all supported business operations allowed by Admin permissions and Super Admin can add, edit, archive/delete where the underlying business lifecycle safely permits it. Connect every module through existing authoritative records and backend routes; never invent figures or duplicate data stores. Remove technical/developer language from Business Admin. Use the premium restrained non-futuristic ERP experience with strong hierarchy, charts, drill-downs, filters, tables, detail views, action panels, mobile layouts and honest loading/error/empty states. Before packaging, audit routes, permissions, data shapes, TypeScript, stale assumptions, cross-module relationships, mobile behaviour and destructive actions; debug all safe issues; verify backend/SQL/schema remain unchanged; update all continuity MDs and the source fingerprint; validate and produce one complete ZIP. Never claim a production build passed unless actually executed successfully.
-
-## Latest Vercel fix
-
-Vercel reached TypeScript successfully but failed in `WebsiteWorkspace.tsx` with TS2538 because a dynamic `data[...]` lookup used `[]` as a possible key. This was corrected with an explicit string section key and typed record lookup. Before the next module, run a full regression audit and production build; do not assume the build is clean until Vercel confirms it.
-
-## Live analytics / visual continuity update — 2026-08-27
-
-Before the next regression audit, the Business Admin must provide a live visual layer across every business workspace.
-
-- Shared live business pulse is visible throughout the Business Admin experience.
-- Revenue movement, orders, stock, customers and gross margin are visualised from the existing business records.
-- Live data refreshes automatically every 15 seconds while the page is visible, with an explicit refresh control.
-- Reports no longer fail as an all-or-nothing screen when one analytics feed is temporarily unavailable; available sections continue rendering.
-- Client-side business actions and analytics use the Business Admin server as the secure bridge to the existing business engine.
-- Public website activity must flow into the existing business records; the Business Admin reads those same records rather than maintaining a second copy.
-- No database reset, schema reset, or replacement business database is permitted.
-- Continue next by auditing module-specific charts/visuals, data freshness, public-website-to-business flow, permissions, error handling and regressions.
-
-## Continuation — Live business pulse reliability + mobile navigation — 2026-08-27
-
-### Completed in this update
-- Removed the duplicate Next.js Business Admin catch-all API route that caused ambiguous `/api/[...]` builds. The Business Admin now keeps one API proxy route under `app/api/[...proxy]/route.ts`.
-- Strengthened the Business Intelligence backend summary endpoint so one failing business-data query no longer turns the entire Live Business Pulse into an Internal Server Error. Failed individual figures are isolated and logged, while the rest of the live business view continues to load.
-- Strengthened the live sales-trend endpoint in the same way so the revenue chart can remain available when another analytics query has a problem.
-- Added a clear partial-data state to the Live Business Pulse rather than presenting a blank/error block when only some figures are temporarily unavailable.
-- Preserved automatic live refresh every 15 seconds and manual refresh.
-- Reworked mobile business navigation from a horizontal ribbon into a proper slide-out sidebar drawer with grouped sections, an open button and a close button. Desktop sidebar navigation remains unchanged.
-- No PostgreSQL reset, truncate, drop, database recreation, destructive migration, or data deletion was performed.
-
-### Current architecture
-- Business Admin UI: Next.js 16.3.3 / React 19.
-- Business data source: existing Amaal Engine and its PostgreSQL database.
-- Business Admin does not directly access PostgreSQL; all business data still travels through the existing engine API.
-- BI data is live from current sales, orders, inventory, customers, procurement, finance, delivery, warranty, credit and returns records.
-
-### Important next steps
-1. Deploy this source to the GitHub `main` branch and allow Vercel to build it.
-2. Verify `/api/bi/summary` and `/api/bi/sales-trend` return live data for the signed-in administrator.
-3. Verify the mobile drawer on Android and confirm every business section is reachable from the sidebar.
-4. Perform the deeper regression audit across every business workspace and its matching technical-console/engine module.
-5. Verify every chart uses live business records and updates after new records are created.
-6. Continue module-by-module build work without resetting or replacing the production database.
-
-### Continuity instruction
-For the next build: inspect the current source before changing it; preserve everything already working; build the next module completely; compare it with its corresponding technical-console/engine capability; connect it to related business modules and the existing backend; verify administrator and Super Admin permissions; audit all business-facing wording for unnecessary technical terminology; check charts, empty states, loading states, errors and mobile layouts; run a full bug/debug/type/build audit; package the complete project with all current MD continuity documents; and never reset, recreate, truncate or replace the existing PostgreSQL database.
-
-## 2026-08-27 — Live Business Pulse + mobile navigation correction
-- Added a dedicated authenticated `/api/bi/live-pulse` service for the global business pulse.
-- The live pulse now isolates business-data queries so one failed optional source cannot break the entire pulse.
-- Added a frontend fallback to independent sales, inventory, orders, and customer summaries when the BI pulse is temporarily unavailable.
-- The pulse continues automatic refresh and shows a clear partial-data/reconnecting message rather than exposing a generic internal server error.
-- Corrected mobile business navigation to a full-width vertical sidebar with grouped sections. The horizontal ribbon layout is no longer used.
-- No database reset, truncate, schema replacement, or data wipe was performed.
-- Next continuity step: run production regression after deployment, verify `/api/bi/live-pulse`, then audit every business workspace and its technical-console counterpart.
-
-## Full-stack cross-connection hardening — 2026-08-27
-
-The supplied Render backend and Vercel Business Admin source were audited together. The Vercel application remains a business-facing client of the Render engine, while PostgreSQL remains authoritative.
-
-### Completed
-- Strengthened `/api/bi/live-pulse` so sales, orders, inventory, customers, margin, purchasing, delivery, service, finance, credit and website readings are independently protected from one another.
-- Live pulse now returns controlled partial data instead of exposing a generic internal server error when a single business area fails.
-- Business Admin keeps its live visuals visible during partial data problems and explains when figures are incomplete.
-- Added static cross-module audit tooling covering frontend API references and core backend relationships.
-- Cross-module audit result: 18/18 core relationships connected and 0 unmatched frontend business API references.
-- Confirmed centralized finance synchronization already covers supplier invoices/payments, sales, order payments and refunds; no duplicate finance path was created.
-- Confirmed staff deletion remains an immediate inactive/deleted-staff lifecycle.
-- No PostgreSQL reset, migration, seed, schema change or destructive operation performed.
-
-### Validation
-- JavaScript syntax: PASS.
-- Render preflight: PASS.
-- Cross-module audit: PASS.
-- Full Next.js production build: not claimed because dependency installation timed out in the isolated build environment.
-- Live production Render/Vercel deployment change: not claimed because deployment credentials/network access were not available in this session.
-
-## Mandatory next continuity prompt
-
-> Continue Amaal Telecoms from this exact ZIP. First read `Amaal_plan.md`, `CONTINUATION.md`, `AUDIT_REPORT.md`, `PLAN_UPDATE_NOTES.md` and `BUILD_SOURCE_FINGERPRINT.txt`.
->
-> Treat the existing Render engine and PostgreSQL as the authoritative source of truth. Do not reset, reseed, truncate, drop, recreate, overwrite or experiment with PostgreSQL. Do not create a second business-data backend in Vercel.
->
-> First run the cross-module audit and the Render preflight. Then inspect the live deployed behaviour after the next deployment. Verify Vercel → Render → PostgreSQL request flow, authentication, CSRF, permissions and all Business Admin modules.
->
-> Audit every module end-to-end: Overview, Reports, Sales/POS, Products, Stock/Warehouse, Purchasing, Customers/CRM, Orders/Fulfilment, Finance, Credit, Delivery, Service/Returns/Warranty, Website, Team and Business Settings.
->
-> Verify that every module uses the same authoritative records and that business actions correctly propagate to the modules they affect. Verify sales/finance, orders/sales/inventory/delivery, purchasing/inventory/finance, customers/sales/orders/credit/service, products/stock/website and reports across all business records.
->
-> Keep the Live Business Pulse live, visual and resilient. One failed business area must never turn the entire Business Admin dashboard into an Internal Server Error. Never fabricate numbers.
->
-> Audit every visible Business Admin label for technical language. Use ordinary business language only.
->
-> Fix safe bugs, broken links, permission mismatches, mobile navigation problems and stale data assumptions. Do not hide real errors merely to make the screen look healthy.
->
-> Run all available validation checks. If Vercel dependency installation succeeds, run the full production build and fix every error. If it cannot be run, state that honestly.
->
-> Do not claim a Render or Vercel deployment was changed unless deployment access is actually available and the deployment can be verified.
->
-> Update all continuity documents, produce a complete audit report and package the complete ZIP only after validation.
+## Packaging rule
+The final ZIP must contain the complete project, all existing Markdown documentation, the updated plan, the updated continuation prompt, audit notes, database migration/seed scripts and all frontend/backend source needed for the current build.

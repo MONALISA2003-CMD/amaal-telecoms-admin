@@ -237,4 +237,12 @@ INSERT INTO products(name,slug,brand_id,category_id,product_type,short_descripti
 INSERT INTO product_variants(product_id,sku,variant_name,size,cost_price,selling_price,wholesale_price,track_inventory,serialized,status) SELECT p.id,'SMART-PLUS-65-INCH-TV','Smart Plus 65 inch TV','65 inch',0,0,0,true,false,'Active' FROM products p WHERE p.slug='smart-plus-65-inch-tv' ON CONFLICT(sku) DO NOTHING;
 INSERT INTO products(name,slug,brand_id,category_id,product_type,short_description,description,status,website_visibility,featured) SELECT 'Smart Plus 75 inch TV','smart-plus-75-inch-tv',b.id,c.id,'TV','Starter catalogue record for Smart Plus 75 inch TV. No stock has been received.','Starter catalogue record for Smart Plus 75 inch TV. No stock has been received.','Active','Hidden',false FROM brands b,product_categories c WHERE b.name='Smart Plus' AND c.slug='entertainment-tv' ON CONFLICT(slug) DO NOTHING;
 INSERT INTO product_variants(product_id,sku,variant_name,size,cost_price,selling_price,wholesale_price,track_inventory,serialized,status) SELECT p.id,'SMART-PLUS-75-INCH-TV','Smart Plus 75 inch TV','75 inch',0,0,0,true,false,'Active' FROM products p WHERE p.slug='smart-plus-75-inch-tv' ON CONFLICT(sku) DO NOTHING;
+INSERT INTO catalog_collections(name,slug,description,status,website_visibility,featured,sort_order) VALUES
+('New Arrivals','new-arrivals','Recently added products.','Active','Published',true,10),
+('Best Sellers','best-sellers','Products customers buy most often.','Active','Published',true,20),
+('Featured','featured','Products selected by Amaal for special visibility.','Active','Published',true,30),
+('Deals','deals','Current offers and promotional products.','Active','Published',true,40),
+('Premium Phones','premium-phones','Premium phones and flagship devices.','Active','Published',false,50),
+('Smart TVs','smart-tvs','Smart televisions across supported screen sizes.','Active','Published',false,60)
+ON CONFLICT(slug) DO NOTHING;
 COMMIT;

@@ -3070,3 +3070,13 @@ Website Management is now implemented as a connected Business Admin workspace us
 # 48. Team & Organisation hardening — 2026-08-27
 
 The Team workspace is strengthened as the business people-management centre. It now connects active/deleted staff, roles, staff profiles and departments through the existing engine. Admin actions remain permission-aware; Super Admin retains highest supported authority. Department deletion uses the existing archive behaviour and refuses to remove a department that still has assigned people. No database structure or data was changed by this build.
+
+## Catalogue Control Centre — long-term structure
+- Products, Categories, Brands, Collections and Archived records are managed as separate catalogue concerns.
+- Categories support parent/child hierarchy, public visibility, featured placement, images, banners, icons and website page information.
+- Brands are independent of categories and can be featured, hidden, edited, archived or safely deleted when unused.
+- Products remain the central commercial record and can carry variants, prices, media, relationships, tags, publishing state and revision history.
+- Collections group products for public merchandising without changing their underlying category or brand.
+- Archive is preferred when a record has business history; permanent deletion is protected and limited.
+- Public website catalogue content should come from approved business records rather than duplicated hard-coded lists.
+- Starter catalogue data remains additive and stock-free.

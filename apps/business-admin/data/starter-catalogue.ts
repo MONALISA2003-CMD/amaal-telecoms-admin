@@ -67,9 +67,14 @@ export const starterCatalogueItems: StarterCatalogueItem[] = [
   }))),
 ];
 
+export const starterCatalogueCollections = [
+  'New Arrivals', 'Best Sellers', 'Featured', 'Deals', 'Premium Phones', 'Smart TVs',
+];
+
 export const starterCatalogueSummary = {
   categories: starterCatalogueCategories.length,
   brands: starterCatalogueBrands.length,
   products: starterCatalogueItems.length,
   stockUnits: 0,
+  collections: starterCatalogueCollections.length,
 };
