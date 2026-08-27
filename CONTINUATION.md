@@ -42,3 +42,7 @@ Starter catalogue data may be added for testing behaviour, but no stock balances
 
 ## Packaging rule
 The final ZIP must contain the complete project, all existing Markdown documentation, the updated plan, the updated continuation prompt, audit notes, database migration/seed scripts and all frontend/backend source needed for the current build.
+
+
+## Continuation — Serialized Inventory
+The catalogue now separates products from physical serialized units. Continue by testing receiving, unit entry, QR/barcode scanning, CSV import, warehouse transfers, sales assignment, returns and warranty flows with real staging data. Never expose serial/IMEI/batch identifiers or exact remaining quantities through public catalogue endpoints. Do not reset or replace the database. Before every future ZIP, run the inventory unit audit, cross-module audit, frontend production build, backend syntax checks, regression audit, then package the full project with all Markdown continuity documents.

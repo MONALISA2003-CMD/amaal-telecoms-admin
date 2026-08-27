@@ -38,3 +38,15 @@ Audited the catalogue area after the long-term Products / Categories / Brands / 
 
 ## Follow-up recommendation
 After deployment, run the normal Vercel build and a logged-in catalogue smoke test covering create/edit/archive/restore/delete for each catalogue entity and public publication visibility.
+
+
+## Serialized Inventory Unit Build — 2026-08-27
+- Added additive inventory batch provenance and unit identifier fields.
+- Added Business Admin unit-entry workflow with manual entry, paste list, CSV upload, and camera QR/barcode scanning.
+- Added private unit and batch views.
+- Added duplicate identifier protection and transaction-safe balance updates.
+- Existing receipt workflow now records a batch for each receipt line and links serialized units to that batch.
+- Public catalogue responses were checked to exclude serialized-unit identifiers and exact stock quantities.
+- Camera access policy was adjusted to allow the Business Admin origin to request camera access.
+- No database reset, truncate, reseed, or destructive data operation was introduced.
+- Static inventory-unit audit and cross-module audit pass.
