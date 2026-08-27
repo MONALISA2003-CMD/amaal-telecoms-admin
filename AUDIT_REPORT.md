@@ -396,3 +396,14 @@ Website Management.
 - Business route page TypeScript transpilation: PASS.
 - All backend JavaScript syntax checks: PASS.
 - Database/schema/seed files: unchanged.
+
+## Business Intelligence / Reports — 2026-08-27
+- Added full Business Performance Centre to Business Admin.
+- Uses existing backend BI endpoints; no duplicate reporting data source created.
+- Added cross-module views for sales, products, customers, purchasing, returns, delivery, inventory, finance, credit and service.
+- Added date and location filters, saved management snapshots and CSV export actions.
+- Existing backend `business-intelligence.js` and `business-intelligence.sql` retained; no database changes performed.
+- New TSX source transpilation check: PASS.
+- Route source transpilation check: PASS.
+- ZIP integrity: PASS.
+- Production Next.js build: not locally claimed due environment dependency-install timeout.

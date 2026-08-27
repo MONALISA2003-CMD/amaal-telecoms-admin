@@ -6,6 +6,7 @@ import { CreditWorkspace } from '@/components/CreditWorkspace';
 import { TeamWorkspace } from '@/components/TeamWorkspace';
 import { DeliveryWorkspace } from '@/components/DeliveryWorkspace';
 import { ServiceWorkspace } from '@/components/ServiceWorkspace';
+import { ReportsWorkspace } from '@/components/ReportsWorkspace';
 import { WebsiteWorkspace } from '@/components/WebsiteWorkspace';
 import { businessGetSafe, cardEntries, money, number } from '@/lib/business';
 
@@ -214,15 +215,8 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
   }
 
   if (key === 'reports') {
-    const summary = await businessGetSafe<ApiRecord>('/api/bi/summary');
-    const marginPercent = summary?.grossMarginPct == null ? '—' : `${Number(summary.grossMarginPct).toFixed(1)}%`;
-    return <Workspace title={title} description={description} cards={cardEntries([
-      ['Revenue', money(summary?.sales?.revenue)],
-      ['Gross margin', money(summary?.margin?.gross_margin)],
-      ['Orders', number(summary?.orders?.total)],
-      ['Net sales', money(summary?.netSales)],
-      ['Gross margin %', marginPercent],
-    ])} />;
+    const me = await businessGetSafe<ApiRecord>('/api/me');
+    return <ReportsWorkspace permissions={me?.permissions ?? []} />;
   }
 
   if (key === 'team') {
