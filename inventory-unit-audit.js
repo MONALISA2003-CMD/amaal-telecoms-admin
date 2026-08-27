@@ -5,6 +5,7 @@ const schema=fs.readFileSync(path.join(root,'schema.sql'),'utf8');
 const server=fs.readFileSync(path.join(root,'server.js'),'utf8');
 const moduleCode=fs.readFileSync(path.join(root,'inventory-serialized.js'),'utf8');
 const ui=fs.readFileSync(path.join(root,'apps/business-admin/components/StockWorkspace.tsx'),'utf8');
+const procurement=fs.readFileSync(path.join(root,'suppliers-procurement.js'),'utf8');
 const checks=[
  ['inventory_batches table',/CREATE TABLE IF NOT EXISTS inventory_batches\s*\(/i.test(schema)],
  ['serialized unit batch link',/ALTER TABLE serialized_units ADD COLUMN IF NOT EXISTS batch_id/i.test(schema)],
@@ -20,6 +21,8 @@ const checks=[
  ['public catalogue excludes identifiers',!/serialized_units/.test(fs.readFileSync(path.join(root,'web-and-hosting.js'),'utf8'))],
  ['serialized inventory module registered',/registerSerializedInventory\(\{app,auth,need,q,pool,audit\}\)/.test(server)],
  ['camera permission allowed',/camera=\(self\)/.test(server)],
+ ['PO receiving creates batches',/INSERT INTO inventory_batches\(batch_number,variant_id,location_id,supplier_name,supplier_reference,quantity_received,quantity_rejected,purchase_order_id/i.test(procurement)],
+ ['PO receiving links serialized units to batches',/serialized_units\(variant_id,location_id,batch_id,serial_number,imei1,imei2/i.test(procurement)],
 ];
 const failed=checks.filter(([,ok])=>!ok);
 for(const [name,ok] of checks)console.log(`${ok?'PASS':'FAIL'}: ${name}`);

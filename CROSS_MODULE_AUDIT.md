@@ -1,47 +1,49 @@
 # Amaal Telecoms — Cross-Module Audit
 
-Date: 2026-08-27
+## Audit date
+2026-08-27
 
 ## Result
+PASS
 
-- Frontend Business Admin API references inspected: 101
-- Render/backend route inventory inspected: 545
-- Unmatched Business Admin business API references: 0
-- Core cross-module relationships checked: 18
-- Connected: 18
-- Review required: 0
+- Frontend API references: 104
+- Backend routes: 564
+- Unmatched frontend routes: 0
+- Connected cross-module checks: 18/18
+- Review cross-module checks: 0
 
-## Architecture
+## Connected relationships
+- Sales ↔ Finance
+- Orders ↔ Sales
+- Orders ↔ Inventory
+- Orders ↔ Delivery
+- Products ↔ Inventory
+- Purchasing ↔ Inventory
+- Purchasing ↔ Finance
+- Customers ↔ Credit
+- Customers ↔ Sales
+- Customers ↔ Orders
+- Service ↔ Customers
+- Service ↔ Orders
+- Service ↔ Inventory
+- Website ↔ Products
+- Reports ↔ Sales
+- Reports ↔ Finance
+- Reports ↔ Credit
+- Reports ↔ Delivery
 
-Vercel Business Admin → server-side API proxy → Render business engine → PostgreSQL authoritative records.
+## Receiving / serialized integration
+- Purchase-order receiving creates inventory batches.
+- Serialized units are attached to the receiving batch.
+- Stock receipt ledger rows retain the same batch linkage.
+- Accepted receipt quantity updates inventory; rejected quantity does not.
+- Purchase-order received quantity advances using accepted quantity.
+- Batch provenance links purchasing and receiving records.
 
-The Business Admin does not maintain a second business database.
+## Follow-up
+The static audit confirms route and source-level connections. It does not replace controlled staging tests of the full physical workflow. The next high-value integration is exact serialized-unit selection for warehouse transfers, followed by order fulfilment and physical-unit history.
 
-## Core relationships checked
 
-1. Sales → Finance
-2. Orders → Sales
-3. Orders → Inventory
-4. Orders → Delivery
-5. Products → Inventory
-6. Purchasing → Inventory
-7. Purchasing → Finance synchronization
-8. Customers → Credit
-9. Customers → Sales
-10. Customers → Orders
-11. Service → Customers
-12. Service → Orders
-13. Service → Inventory
-14. Website → Products
-15. Reports → Sales
-16. Reports → Finance
-17. Reports → Credit
-18. Reports → Delivery
+### Warehouse Transfer Integration — 27 Aug 2026
 
-## Live pulse
-
-The live pulse now reads multiple business areas independently and returns partial business data when an individual query is unavailable. The dashboard continues showing its visuals rather than replacing the entire section with a generic server error.
-
-## Database safety
-
-This audit made no PostgreSQL reset, migration, seed, truncate, drop, recreate or destructive data operation.
+**PASS** — Purchasing/Receiving → Inventory Batch → Serialized Unit → Warehouse Transfer → Destination Inventory. Transfer operations preserve the same physical unit identifiers and do not create replacement units at destination receipt.

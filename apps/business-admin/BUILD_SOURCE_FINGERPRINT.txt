@@ -1,35 +1,4 @@
-Amaal Business Admin
-Build source fingerprint: 2026-08-27-permissions-delivery-hardening-v1
-Purpose: audited Business Admin source with role hardening, staff lifecycle management, Delivery management and Vercel build correction.
-Database: existing records remain authoritative. Business Admin has no direct PostgreSQL access and does not reset/reseed the database.
-Source hash: b36835c92ee24d0a22e93e2771f4595d2c3e911ae7e45989de2f493105600dc2
-
-Completed before this increment:
-- Administrator setup/login correction.
-- Executive dashboard with real-data charts and honest empty states.
-- Sales/POS.
-- Products/catalogue.
-- Stock/warehouse.
-- Purchasing.
-- Customers/CRM.
-- Orders/fulfilment.
-- Finance.
-- Credit/instalments.
-- Staff read view and Deleted Staff separation.
-
-This increment:
-- Super Admin is recognised as the top-level authority in the Business Admin navigation and management UI.
-- Team now supports creating staff, changing staff roles, activating/deactivating staff and Super Admin-only permanent staff deletion.
-- Deleted staff remain separated from active staff.
-- Delivery now has a real business workspace with shipment creation/editing/status changes, zones and delivery partners.
-- Technical-only controls remain outside the normal Business Admin navigation.
-- The dynamic workspace card contract is explicitly normalized to string labels/values, removing the previous TS2322 `string | number` Card.label build failure.
-
-Validation:
-- TypeScript/TSX transpile syntax audit: PASS (52 files; next-env.d.ts excluded because it is a declaration stub).
-- JavaScript syntax: PASS.
-- Render preflight: PASS.
-- Permission reference audit: PASS (127 used, 0 missing).
-- SQL/schema files unchanged.
-- No database reset, migration, truncate, drop, reseed or direct data manipulation performed.
-- Full dependency installation and Next production build were not completed locally because package installation timed out in the restricted build environment; Vercel must perform the final production build.
+c199f6f82c865609f781c2ebd9a78e3f92250603edb9295e06f121ac5c43c9b5  server.js
+f33c2f4ef46b6d5259ce1eba15824519f73265af5bfcc2f92f44c854278bf8cb  apps/business-admin/components/StockWorkspace.tsx
+bf68379ff520baaedc38e4b764608f0bddd6d7fcd1c5856535d15ac5ba2254f2  apps/business-admin/app/globals.css
+b432bde1ee74f5a29f8e8ca9c82d28fc4d03b634010cfa2bbded49ed7c1f05b1  warehouse-transfer-audit.js

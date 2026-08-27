@@ -13,8 +13,19 @@ CREATE TABLE IF NOT EXISTS inventory_batches(
  created_by uuid REFERENCES users(id) ON DELETE SET NULL,
  created_at timestamptz NOT NULL DEFAULT now()
 );
+ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'Active';
+ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS cancelled_at timestamptz;
+ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS cancelled_by uuid REFERENCES users(id) ON DELETE SET NULL;
+DO $$ BEGIN ALTER TABLE inventory_batches DROP CONSTRAINT IF EXISTS inventory_batches_status_check; ALTER TABLE inventory_batches ADD CONSTRAINT inventory_batches_status_check CHECK(status IN ('Active','Cancelled')); END $$;
 CREATE INDEX IF NOT EXISTS idx_inventory_batches_variant ON inventory_batches(variant_id,received_at DESC);
 CREATE INDEX IF NOT EXISTS idx_inventory_batches_location ON inventory_batches(location_id,received_at DESC);
+ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS quantity_rejected numeric(18,3) NOT NULL DEFAULT 0 CHECK(quantity_rejected>=0);
+ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS purchase_order_id uuid REFERENCES purchase_orders(id) ON DELETE SET NULL;
+ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS purchase_order_line_id uuid REFERENCES purchase_order_lines(id) ON DELETE SET NULL;
+ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS goods_receipt_id uuid REFERENCES goods_receipts(id) ON DELETE SET NULL;
+ALTER TABLE inventory_batches ADD COLUMN IF NOT EXISTS supplier_id uuid REFERENCES suppliers(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_inventory_batches_po ON inventory_batches(purchase_order_id,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_inventory_batches_grn ON inventory_batches(goods_receipt_id,created_at DESC);
 
 CREATE TABLE IF NOT EXISTS serialized_units(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -30,6 +41,7 @@ CREATE TABLE IF NOT EXISTS serialized_units(
  created_at timestamptz NOT NULL DEFAULT now(),
  CHECK(serial_number IS NOT NULL OR imei1 IS NOT NULL OR imei2 IS NOT NULL)
 );
+DO $$ BEGIN ALTER TABLE serialized_units DROP CONSTRAINT IF EXISTS serialized_units_status_check; ALTER TABLE serialized_units ADD CONSTRAINT serialized_units_status_check CHECK(status IN ('In Stock','Reserved','Sold','Transferred','Damaged','Lost','Returned','Service','Voided')); END $$;
 ALTER TABLE serialized_units ADD COLUMN IF NOT EXISTS batch_id uuid REFERENCES inventory_batches(id) ON DELETE RESTRICT;
 ALTER TABLE serialized_units ADD COLUMN IF NOT EXISTS barcode text;
 ALTER TABLE serialized_units ADD COLUMN IF NOT EXISTS qr_code text;

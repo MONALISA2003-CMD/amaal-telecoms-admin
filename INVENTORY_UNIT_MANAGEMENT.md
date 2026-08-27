@@ -1,29 +1,63 @@
-# Inventory Unit Management
+# Amaal Telecoms — Serialized Inventory Unit Management
 
 ## Purpose
-Amaal now separates the public product catalogue from the private records of physical inventory units. Phones, tablets and other serialized goods can be tracked one unit at a time without exposing identifiers or exact stock counts to customers.
+Manage individual telecom/electronics physical units without turning product records into storage for IMEIs or serial numbers.
 
-## Business Admin capabilities
-- Choose individual-unit tracking on a product variant.
-- Add units one at a time with serial number, IMEI 1, IMEI 2, barcode and QR value.
-- Paste a list of identifiers.
-- Upload a CSV with `serial`, `imei1`, `imei2`, `barcode`, and `qr_code` columns.
-- Scan QR codes and supported barcodes with a device camera where the browser supports camera scanning. A 14–16 digit scan is treated as an IMEI; other scans are retained as a QR value.
-- Assign units to a warehouse.
-- Group received units into a batch with supplier and supplier reference information.
-- Prevent duplicate identifiers.
-- View private unit history and current status in Business Admin.
-- Keep serialized unit counts synchronized with inventory balances when units are added through the unit-entry workflow.
+## Model
+Product → Variant → Physical Inventory Unit
 
-## Public website boundary
-The public catalogue exposes the product, pricing, description, specifications, images and normal product variants. It does not expose serial numbers, IMEIs, barcodes, QR values, batch numbers, supplier information, warehouse locations or exact remaining unit counts.
+Each serialized unit may carry:
+- IMEI 1
+- IMEI 2
+- Serial number
+- Barcode
+- QR value
+- Batch
+- Supplier provenance
+- Purchase reference
+- Unit cost
+- Warehouse/location
+- Status
+- Warranty/service notes
 
-## Data safety
-The change is additive. Startup applies the schema amendments with `CREATE TABLE IF NOT EXISTS` and `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`. No reset, truncate, reseed, or deletion of existing business records is part of this build.
+## Receiving integration
+Purchase-order receiving now creates an `inventory_batches` record per receipt line and attaches newly received serialized units to that batch.
 
-## Operational chain
-Supplier receipt → batch → physical unit → warehouse → sale/order → delivery → return/service/warranty.
+Batch provenance includes:
+- purchase order
+- purchase-order line
+- goods receipt
+- supplier
+- receiving location
+- accepted quantity
+- rejected quantity
 
-## Deployment hardening
-- The serialized inventory schema is also applied through `inventory-serialized-migration.sql` during startup. This is additive and repeat-safe, so an existing PostgreSQL database with older schema state can gain the required inventory tables without a reset.
-- The Business Admin camera flow uses the browser's real camera permission and live `getUserMedia` stream together with the browser's real `BarcodeDetector` API where supported. It does not simulate a scan or invent identifiers. Unsupported browsers receive a clear fallback to manual entry, paste, or CSV upload.
+The same batch is also linked to the compatibility stock-receipt ledger.
+
+## Serialized receiving
+Business Admin supports:
+- manual identifier entry
+- paste/CSV-style identifier entry
+- camera scanning when browser/device support exists
+- rear-camera preference on mobile
+- manual fallback when camera support is unavailable
+
+For accepted serialized units, one identifier record is required per physical unit.
+
+## Duplicate protection
+Identifier values are checked across serial, IMEI 1, IMEI 2, barcode and QR fields. A value already used by another serialized unit cannot be registered again.
+
+## Rejections
+Rejected quantity does not enter inventory. Serialized receiving currently requires rejected quantity to be zero because rejected physical identifiers are not registered as available business inventory units in the current workflow.
+
+## Reversal
+A posted receiving reversal does not delete the physical-unit record. The associated batch becomes `Cancelled`, and affected serialized units become `Voided` after validation that they have not moved, been sold, reserved or serviced.
+
+## Privacy
+Serialized identifiers, supplier data, purchase cost, warehouse location and unit history are private administration data. They must not appear in public catalogue responses.
+
+## Next work
+1. Exact-unit warehouse transfers.
+2. Exact-unit order fulfilment.
+3. Complete physical-unit history.
+4. Return/warranty/service traceability.

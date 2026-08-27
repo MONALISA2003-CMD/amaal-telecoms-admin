@@ -3,6 +3,7 @@ import crypto from 'crypto';
 function clean(value, max=200){return String(value??'').trim().slice(0,max)}
 function normalise(value){return clean(value,120).replace(/^['\"]|['\"]$/g,'').trim()}
 function unitKey(x){return normalise(x.serialNumber)||normalise(x.imei1)||normalise(x.imei2)||normalise(x.barcode)||normalise(x.qrCode)}
+async function serializedConflict(client,values){for(const value of values.filter(Boolean)){const hit=(await client.query('SELECT id FROM serialized_units WHERE serial_number=$1 OR imei1=$1 OR imei2=$1 OR barcode=$1 OR qr_code=$1 LIMIT 1',[value])).rows[0];if(hit)return hit}return null}
 function parseDelimited(text){
   const rows=String(text||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
   if(!rows.length)return [];
@@ -55,7 +56,9 @@ export function registerSerializedInventory({app,auth,need,q,pool,audit}){
         const key=unitKey(x); if(!key)throw new Error('Every unit needs a serial number, IMEI, barcode or QR value.');
         const compound=[x.serialNumber,x.imei1,x.imei2,x.barcode,x.qrCode].filter(Boolean).map(v=>v.toLowerCase());
         if(compound.some(v=>seen.has(v)))throw new Error(`Duplicate unit identifier in this upload: ${key}`); compound.forEach(v=>seen.add(v));
-        const dup=(await client.query(`SELECT id FROM serialized_units WHERE (serial_number=$1 AND $1<>'') OR (imei1=$2 AND $2<>'') OR (imei2=$3 AND $3<>'') OR (barcode=$4 AND $4<>'') OR (qr_code=$5 AND $5<>'') LIMIT 1`,[x.serialNumber,x.imei1,x.imei2,x.barcode,x.qrCode])).rows[0];
+        const ids=[x.serialNumber,x.imei1,x.imei2,x.barcode,x.qrCode].filter(Boolean).map(v=>v.toLowerCase());
+        if(new Set(ids).size!==ids.length)throw new Error(`The same identifier cannot be used twice for ${key}.`);
+        const dup=await serializedConflict(client,[x.serialNumber,x.imei1,x.imei2,x.barcode,x.qrCode]);
         if(dup)throw new Error(`A unit with identifier ${key} is already registered.`);
         prepared.push(x);
       }
@@ -73,7 +76,7 @@ export function registerSerializedInventory({app,auth,need,q,pool,audit}){
   });
 
   app.patch('/api/inventory/serialized/:id/status',auth,need('inventory.serialized'),async(req,res)=>{
-    const allowed=['In Stock','Reserved','Sold','Transferred','Damaged','Lost','Returned','Service']; const next=clean(req.body?.status,40); if(!allowed.includes(next))return res.status(400).json({error:'Invalid unit status'});
+    const allowed=['In Stock','Reserved','Sold','Transferred','Damaged','Lost','Returned','Service','Voided']; const next=clean(req.body?.status,40); if(!allowed.includes(next))return res.status(400).json({error:'Invalid unit status'}); if(next==='Voided')return res.status(409).json({error:'Voided units are reserved for receiving reversals and cannot be set manually.'});
     const old=(await q('SELECT * FROM serialized_units WHERE id=$1',[req.params.id]))[0];if(!old)return res.status(404).json({error:'Inventory unit not found'});
     if(['Sold'].includes(old.status)&&next!=='Sold')return res.status(409).json({error:'A sold unit must be handled through its sale, return or service workflow.'});
     const u=(await q('UPDATE serialized_units SET status=$1,updated_at=now() WHERE id=$2 RETURNING *',[next,req.params.id]))[0];await audit(req.user,'SERIALIZED_UNIT_STATUS_CHANGED','SerializedUnit',u.id,`Changed serialized unit status to ${next}`,old,u,req.req);res.json(u);
