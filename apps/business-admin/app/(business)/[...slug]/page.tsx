@@ -6,6 +6,7 @@ import { CreditWorkspace } from '@/components/CreditWorkspace';
 import { TeamWorkspace } from '@/components/TeamWorkspace';
 import { DeliveryWorkspace } from '@/components/DeliveryWorkspace';
 import { ServiceWorkspace } from '@/components/ServiceWorkspace';
+import { WebsiteWorkspace } from '@/components/WebsiteWorkspace';
 import { businessGetSafe, cardEntries, money, number } from '@/lib/business';
 
 type Params = { slug: string[] };
@@ -205,14 +206,11 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
 
 
   if (key === 'website') {
-    const sites = await businessGetSafe<any>('/api/web/sites');
-    return <Workspace title={title} description={description} cards={cardEntries([
-      ['Connected sites', number(Array.isArray(sites) ? sites.length : null)],
-      ['Business-owned content', 'Approved'],
-      ['Publishing', 'Permission controlled'],
-      ['Website hosting', 'Managed separately'],
-    ])}
-      rows={Array.isArray(sites) ? sites : []} columns={[{ key: 'name', label: 'Site' }, { key: 'slug', label: 'Slug' }, { key: 'status', label: 'Status' }, { key: 'primary_domain', label: 'Domain' }]} />;
+    const [me, sites] = await Promise.all([
+      businessGetSafe<ApiRecord>('/api/me'),
+      businessGetSafe<any[]>('/api/web/sites'),
+    ]);
+    return <WebsiteWorkspace sites={Array.isArray(sites) ? sites : []} permissions={me?.permissions ?? []} />;
   }
 
   if (key === 'reports') {

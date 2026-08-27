@@ -125,3 +125,7 @@ No database operation was performed directly by this increment. Existing records
 - Validation: all root/public JavaScript syntax checks passed; backend/SQL comparison against the incoming baseline is unchanged.
 - Full Next.js production build is not claimed because dependency installation/build execution is environment-limited; Vercel remains the final production build authority.
 - Next module: Website Management.
+
+## 2026-08-27 — Website Management
+
+Implemented the next Business Admin module without changing the existing backend or database. The workspace reuses the existing `/api/web/*` capabilities and connects storefront visibility to the existing catalogue. Publishing remains approval-controlled. The next planned module is Reports & Business Intelligence hardening followed by full cross-module regression.

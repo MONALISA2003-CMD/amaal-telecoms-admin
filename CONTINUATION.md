@@ -183,3 +183,31 @@ Build the Business Admin **Website Management** workspace next. Inspect the exis
 > Audit all existing modules after the Website build, including Authentication/Setup, Overview, Sales/POS, Products, Stock/Warehouse, Purchasing, Customers/CRM, Orders/Fulfilment, Delivery, Finance, Credit, Team, Service, permissions, shared UI and cross-module relationships. Check for bugs, stale data assumptions, broken links, incorrect permissions, technical wording, mobile issues and unsafe actions. Debug all safe issues found.
 >
 > Confirm backend and SQL/schema files remain unchanged. Update all continuity MD files and the build fingerprint. Only after the audit, validation and ZIP integrity check package the complete project.
+
+## Website Management completed in this increment — 2026-08-27
+
+- Built the Business Admin Website Management workspace on top of the existing website/content engine.
+- Connected website administration to the existing website records through the Business Admin proxy and authenticated engine routes.
+- Added website overview, site selection, site creation/editing, pages, menus, banners, reusable content areas, media, publishing requests, releases, domains, redirects, website settings and storefront catalogue visibility.
+- Added safe publishing workflow: request, approval, execution and release rollback where supported by the existing engine.
+- Connected storefront visibility to the existing Product Catalogue so Business Admin can see which authoritative products are prepared for the public website. Product and stock truth remains in their existing modules.
+- Kept hosting-provider/domain verification execution outside normal Business Admin controls; Business Admin only shows the business-relevant domain state.
+- No backend source, SQL, schema, migration or seed files were changed. Existing website backend routes were reused as-is.
+- Business-facing labels avoid developer terminology.
+- Website UI is mobile-aware and follows the premium restrained champagne/gold ERP direction.
+- WebsiteWorkspace.tsx and the route integration passed TypeScript transpilation checks.
+- All backend JavaScript files passed syntax checks.
+
+## Next module: Reports & Business Intelligence hardening
+
+Build the Business Admin Reports/Business Intelligence workspace next. Compare it deeply against `business-intelligence.js`, `business-intelligence.sql`, `ai-business-intelligence.js` and existing sales/orders/stock/finance data relationships. It must use authoritative records, provide meaningful charts, filters, drill-downs and export/report actions where already supported, and never invent figures. Then perform a full cross-module regression audit.
+
+### Mandatory continuity prompt
+
+> Continue Amaal Telecoms from this exact ZIP. Read all five continuity documents first. Treat Render and PostgreSQL as the source of truth. Do not reset, reseed, migrate, truncate, drop, recreate, overwrite or experiment with PostgreSQL. Do not replace or rewrite the backend. Reuse existing routes and permissions.
+>
+> Build Reports & Business Intelligence next. Compare every safe existing reporting capability with Business Admin and expose the useful business actions already supported. Keep technical administration in the Technical Console and use ordinary business language.
+>
+> Ensure Administrator can perform all supported normal business reporting actions and Super Admin can perform all supported actions. Do not fabricate metrics. Empty/loading/error states must be honest.
+>
+> After the module, audit every existing Business Admin module, permissions, shared UI, cross-module relationships and mobile layouts; fix safe bugs; confirm backend/SQL/schema files remain unchanged; update all MD continuity documents; validate the project and ZIP; then package the complete project.

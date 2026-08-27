@@ -3062,3 +3062,7 @@ The Business Admin Service workspace is now the single operational view for cust
 
 ## Next build sequence
 Next core workspace: **Website Management**, followed by Reports/Business Intelligence and final cross-module regression/hardening.
+
+## Website Management implementation — 2026-08-27
+
+Website Management is now implemented as a connected Business Admin workspace using the existing website engine. Coverage includes site management, public pages, menus, banners, reusable content, media, publishing requests/releases, domains, redirects, website settings and storefront catalogue visibility. Hosting-provider execution remains outside Business Admin. The public storefront reads published website content and the existing authoritative catalogue.

@@ -379,3 +379,20 @@ Inspected the existing returns and warranty/repair routes and mapped the Busines
 
 ### Next
 Website Management.
+
+## Website Management audit — 2026-08-27
+
+### Findings and corrections
+- Replaced the former website summary-only screen with a complete connected business workspace.
+- Website creation/editing uses the existing website routes and supported status values.
+- Pages, navigation, banners, content blocks and media use existing authenticated website routes.
+- Publishing uses the existing request/approval/execution workflow; release approval, publishing and rollback are exposed where the current engine supports them.
+- Storefront catalogue visibility reads the existing product catalogue instead of creating a second product source.
+- Domain verification remains provider-controlled and is not falsely represented as an in-app verification action.
+- No SQL/schema/backend source was modified.
+
+### Validation
+- Website workspace TypeScript transpilation: PASS.
+- Business route page TypeScript transpilation: PASS.
+- All backend JavaScript syntax checks: PASS.
+- Database/schema/seed files: unchanged.
