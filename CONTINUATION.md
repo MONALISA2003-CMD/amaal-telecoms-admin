@@ -241,3 +241,16 @@ Continue from this complete Amaal Telecoms Business Admin build. First perform a
 ## Latest Vercel fix
 
 Vercel reached TypeScript successfully but failed in `WebsiteWorkspace.tsx` with TS2538 because a dynamic `data[...]` lookup used `[]` as a possible key. This was corrected with an explicit string section key and typed record lookup. Before the next module, run a full regression audit and production build; do not assume the build is clean until Vercel confirms it.
+
+## Live analytics / visual continuity update — 2026-08-27
+
+Before the next regression audit, the Business Admin must provide a live visual layer across every business workspace.
+
+- Shared live business pulse is visible throughout the Business Admin experience.
+- Revenue movement, orders, stock, customers and gross margin are visualised from the existing business records.
+- Live data refreshes automatically every 15 seconds while the page is visible, with an explicit refresh control.
+- Reports no longer fail as an all-or-nothing screen when one analytics feed is temporarily unavailable; available sections continue rendering.
+- Client-side business actions and analytics use the Business Admin server as the secure bridge to the existing business engine.
+- Public website activity must flow into the existing business records; the Business Admin reads those same records rather than maintaining a second copy.
+- No database reset, schema reset, or replacement business database is permitted.
+- Continue next by auditing module-specific charts/visuals, data freshness, public-website-to-business flow, permissions, error handling and regressions.

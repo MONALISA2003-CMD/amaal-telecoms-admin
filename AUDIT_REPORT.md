@@ -420,3 +420,22 @@ Website Management.
 Fixed TypeScript error TS2538 in `WebsiteWorkspace.tsx`. The dynamic section lookup previously used an untyped empty-array fallback, causing TypeScript to infer `never[]` as an index type. It now uses an explicit string section key and a `Record<string, any>` lookup with an empty-list fallback.
 
 Database/schema/backend were not modified.
+
+## Live visual layer — 2026-08-27
+
+### Finding
+The deployed Reports screen showed an internal server error and empty chart areas. The Business Admin contained client-side requests to `/api/...`, but the Next.js application did not expose a secure bridge for those requests to the existing business engine.
+
+### Remediation
+- Added a dynamic Business Admin API bridge for authenticated business requests.
+- Preserved session cookies, CSRF token headers, request methods and response cookies through the bridge.
+- Added no-store behaviour so business analytics are not served from stale page/cache data.
+- Added a shared live business pulse with revenue trend, orders, stock, customers and gross-margin visuals.
+- Added automatic 15-second refresh while the workspace is visible.
+- Hardened the Reports workspace so one unavailable analytics feed does not erase every other available visual.
+
+### Data integrity
+No PostgreSQL reset, schema reset, destructive migration, or second business data store was introduced by this visual-layer remediation.
+
+### Remaining audit requirement
+After deployment, verify the live visual layer against real public-site activity: create a permitted business transaction through the public experience, confirm it reaches the existing business records, then confirm the corresponding Business Admin KPI/chart changes after the normal refresh interval. Continue with full module regression only after this verification passes.
