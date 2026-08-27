@@ -355,3 +355,35 @@ Lifecycle history created by the new database trigger can identify the actor whe
 
 ### Next recommended build
 **Returns → Warranty → Service reconciliation by exact physical unit**, ensuring the same IMEI/serial remains traceable after delivery and through every after-sales event.
+
+## 27 Aug 2026 — Mobile Phone Master Catalogue Synchronization
+
+The mobile-phone master catalogue has been synchronized from `Mobile_Phone_Catalogue_Master_2026.md` into the authoritative PostgreSQL catalogue and mirrored into the Business Admin catalogue blueprint.
+
+Scope covered:
+- Apple iPhone
+- Samsung Galaxy A/S/Z families
+- Google Pixel
+- TECNO
+- Infinix
+- itel
+
+Commercial variants are represented under Product → Variant. Physical IMEI/serial units are still created only when stock is actually received. No stock quantities, purchase receipts, IMEIs, serials, costs, or warehouse units were fabricated by this catalogue load.
+
+Existing catalogue records were checked first. Existing Samsung S-series records that had been incorrectly represented as multiple model variants were normalized into separate model products where the existing records had no transactional links. No business history was deleted.
+
+Backend changes:
+- `/api/catalog/products` maximum page size increased to 500 so the Business Admin can load the complete catalogue without silently truncating it.
+- Added `mobile-phone-master-sync.sql` as a repeat-safe master catalogue synchronization source for Render startup.
+- Added `SEED_MASTER_PHONE_CATALOGUE` configuration flag.
+
+Frontend changes:
+- Business Admin products page now requests up to 500 catalogue products.
+- `starter-catalogue.ts` now contains the master phone product/variant blueprint from the Markdown source, while preserving the existing entertainment starter catalogue.
+
+Database safety:
+- No database reset.
+- No TRUNCATE.
+- No DROP.
+- No destructive reseeding.
+- Existing business records preserved.

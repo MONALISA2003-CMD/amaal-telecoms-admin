@@ -221,3 +221,11 @@ After the fulfilment/delivery work, the serialized-inventory regression chain wa
 - Destructive-operation scan: no active destructive serialized/delivery operation found.
 
 Environment limitations remain: `DATABASE_URL` is not configured and `pg_dump` is unavailable in this working environment, so no live PostgreSQL transaction, production backup drill, or production restore was executed. The production Next.js/TypeScript build also remains unverified because frontend dependencies are unavailable. These are explicitly not reported as passes.
+
+## Mobile phone catalogue synchronization — 27 Aug 2026
+
+A full master mobile-phone catalogue synchronization was performed from `Mobile_Phone_Catalogue_Master_2026.md`. The target catalogue contains 156 unique phone products and 354 unique commercial variants after de-duplicating repeated model rows in the source document and excluding tablet-only rows. The authoritative database now contains the requested master records, while legacy catalogue records not present in the source were preserved rather than deleted.
+
+The Render backend now exposes up to 500 catalogue products per request, and the Vercel Business Admin product page requests up to 500. The frontend starter blueprint contains the same master phone catalogue and all 354 commercial variants for offline/design fallback use.
+
+No physical inventory units, IMEIs, serial numbers, warehouse quantities, purchases, sales, or customer data were created by this catalogue synchronization.
