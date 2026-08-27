@@ -2261,3 +2261,66 @@ CREATE TABLE IF NOT EXISTS catalog_collection_products(
 );
 CREATE INDEX IF NOT EXISTS idx_collection_products_product ON catalog_collection_products(product_id);
 COMMIT;
+
+-- Phase 25 serialized physical-unit lifecycle/history engine.
+CREATE TABLE IF NOT EXISTS serialized_unit_status_history(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ serialized_unit_id uuid NOT NULL REFERENCES serialized_units(id) ON DELETE RESTRICT,
+ from_status text,
+ to_status text NOT NULL,
+ from_location_id uuid REFERENCES inventory_locations(id) ON DELETE SET NULL,
+ to_location_id uuid REFERENCES inventory_locations(id) ON DELETE SET NULL,
+ actor_id uuid REFERENCES users(id) ON DELETE SET NULL,
+ reason text NOT NULL DEFAULT '',
+ source_type text NOT NULL DEFAULT '',
+ source_id uuid,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_serialized_unit_history_unit_created ON serialized_unit_status_history(serialized_unit_id,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_serialized_unit_history_status_created ON serialized_unit_status_history(to_status,created_at DESC);
+
+CREATE OR REPLACE FUNCTION record_serialized_unit_lifecycle()
+RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE actor uuid;
+BEGIN
+  IF TG_OP='INSERT' THEN
+    BEGIN actor := NULLIF(current_setting('app.actor_id', true),'')::uuid; EXCEPTION WHEN OTHERS THEN actor := NULL; END;
+    INSERT INTO serialized_unit_status_history(serialized_unit_id,from_status,to_status,from_location_id,to_location_id,actor_id,reason,source_type,source_id)
+    VALUES(NEW.id,NULL,NEW.status,NULL,NEW.location_id,actor,'Unit created','InventoryReceipt',NEW.batch_id);
+    RETURN NEW;
+  END IF;
+  IF TG_OP='UPDATE' AND (OLD.status IS DISTINCT FROM NEW.status OR OLD.location_id IS DISTINCT FROM NEW.location_id) THEN
+    BEGIN actor := NULLIF(current_setting('app.actor_id', true),'')::uuid; EXCEPTION WHEN OTHERS THEN actor := NULL; END;
+    INSERT INTO serialized_unit_status_history(serialized_unit_id,from_status,to_status,from_location_id,to_location_id,actor_id,reason,source_type,source_id)
+    VALUES(NEW.id,OLD.status,NEW.status,OLD.location_id,NEW.location_id,actor,'Physical-unit lifecycle change','SerializedUnit',NEW.id);
+  END IF;
+  RETURN NEW;
+END;
+$$;
+DROP TRIGGER IF EXISTS trg_serialized_unit_lifecycle ON serialized_units;
+CREATE TRIGGER trg_serialized_unit_lifecycle AFTER INSERT OR UPDATE OF status,location_id ON serialized_units FOR EACH ROW EXECUTE FUNCTION record_serialized_unit_lifecycle();
+
+INSERT INTO serialized_unit_status_history(serialized_unit_id,from_status,to_status,from_location_id,to_location_id,reason,source_type,source_id,created_at)
+SELECT s.id,NULL,s.status,NULL,s.location_id,'Historical baseline captured when lifecycle history was introduced','MigrationBaseline',s.id,COALESCE(s.created_at,now()) FROM serialized_units s WHERE NOT EXISTS (SELECT 1 FROM serialized_unit_status_history h WHERE h.serialized_unit_id=s.id);
+
+CREATE OR REPLACE FUNCTION enforce_serialized_unit_transition()
+RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  IF NEW.status IS NOT DISTINCT FROM OLD.status THEN RETURN NEW; END IF;
+  IF OLD.status='Voided' THEN RAISE EXCEPTION 'Voided physical units cannot change status'; END IF;
+  IF NOT (
+    (OLD.status='In Stock' AND NEW.status IN ('Reserved','Sold','Transferred','Damaged','Lost','Returned','Service','Voided')) OR
+    (OLD.status='Reserved' AND NEW.status IN ('In Stock','Sold','Returned','Service','Damaged','Lost')) OR
+    (OLD.status='Sold' AND NEW.status IN ('In Stock','Returned','Service')) OR
+    (OLD.status='Transferred' AND NEW.status IN ('In Stock','Lost')) OR
+    (OLD.status='Returned' AND NEW.status IN ('In Stock','Sold','Service','Damaged','Lost')) OR
+    (OLD.status='Service' AND NEW.status IN ('In Stock','Sold','Returned','Damaged','Lost')) OR
+    (OLD.status='Damaged' AND NEW.status IN ('Service','In Stock','Lost')) OR
+    (OLD.status='Lost' AND NEW.status IN ('In Stock','Service','Damaged'))
+  ) THEN RAISE EXCEPTION 'Invalid physical-unit status transition: % -> %', OLD.status, NEW.status;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+DROP TRIGGER IF EXISTS trg_serialized_unit_transition ON serialized_units;
+CREATE TRIGGER trg_serialized_unit_transition BEFORE UPDATE OF status ON serialized_units FOR EACH ROW EXECUTE FUNCTION enforce_serialized_unit_transition();

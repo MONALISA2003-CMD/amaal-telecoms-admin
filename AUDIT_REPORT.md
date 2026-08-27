@@ -95,9 +95,33 @@ Redundant historical Markdown files were removed from the project root after the
 
 `Amaal_plan.md` was deliberately preserved as requested.
 
+## Exact-unit order assignment completed
+- Added authorized available-unit lookup scoped to order, line, variant and location.
+- Added identifier search for IMEI 1, IMEI 2, serial, barcode and QR.
+- Added transactional exact-unit assignment with row locking and duplicate-safe handling.
+- Assigned units move to `Reserved` and are released back to `In Stock` when an eligible order is unassigned or cancelled.
+- Fulfilment accepts the assigned `Reserved` unit and changes the same physical unit to `Sold`.
+- Business Admin now provides searchable assignment, real camera scanning and unassignment.
+- Existing `order_serial_units.serialized_unit_id UNIQUE` protection was reused; no database migration was required.
+
+## Verification after exact-unit order assignment
+- Order serial assignment audit: PASS — 20/20.
+- Render preflight: PASS.
+- Cross-module audit: PASS — 104 frontend API references, 568 backend routes, 0 unmatched routes, 18/18 connected.
+- Receiving/batch audit: PASS — 15/15.
+- Serialized inventory audit: PASS — 16/16.
+- Warehouse transfer audit: PASS — 15/15.
+- JavaScript syntax: PASS for all top-level JavaScript files checked.
+- Destructive database-operation scan: PASS.
+- Live PostgreSQL execution: NOT RUN; no production database was contacted.
+- Full production frontend build: NOT VERIFIED because dependencies are unavailable in the extracted environment.
+
 ## Remaining high-priority work
-1. Complete exact serialized-unit selection for warehouse transfers.
-2. Complete exact serialized-unit assignment in all order fulfilment paths.
+1. Make physical-unit history/status transitions authoritative across all business workflows.
+2. Reconcile exact-unit assignment with picking, dispatch and delivery.
+3. Complete IMEI/serial lookup across returns, warranty and service.
+4. Audit Reports/BI field contracts and real-data presentation.
+5. Run controlled staging/production verification once deployment dependencies and database access are available.
 3. Harden serialized-unit history and status-transition rules across every business workflow.
 4. Complete return/warranty/service physical-unit traceability.
 5. Audit Reports/BI field contracts and unused live datasets.
@@ -131,3 +155,44 @@ Warehouse transfer hardening was completed without database access or destructiv
 - Static transfer audit: PASS.
 
 Production database transaction execution and a full Next.js production build were not run in this environment.
+
+
+## Physical Unit & Status Engine — 27 Aug 2026
+
+### Lifecycle integrity
+- Added `serialized_unit_status_history` as an additive physical-unit lifecycle ledger.
+- Every new serialized unit and every later status/location change is captured by a database trigger.
+- Existing units receive a historical baseline through a repeat-safe, non-destructive migration.
+- Database transition enforcement prevents invalid status jumps independently of frontend controls.
+- Voided units are terminal.
+- Manual Business Admin status changes are limited to operational exception transitions; order/sale/transfer/return/receiving workflows remain authoritative for their controlled states.
+
+### Traceability
+The physical-unit history API now exposes:
+- Unit and current location.
+- Batch.
+- Lifecycle timeline.
+- Inventory movement context.
+- Order assignments.
+- Sales.
+- Returns.
+- Warranty claims.
+
+### Fulfilment compatibility
+Delivery completion now accepts a serialized unit in `Reserved` state when that exact unit is assigned to the order. This closes a prior mismatch where delivery expected `In Stock` and could leave an assigned physical unit incorrectly reserved.
+
+### Verification
+- Serialized status/history audit: PASS — 14/14.
+- Receiving/batch audit: PASS — 15/15.
+- Serialized inventory audit: PASS — 16/16.
+- Warehouse transfer audit: PASS — 15/15.
+- Order serial assignment audit: PASS — 20/20.
+- Cross-module audit: PASS — 18/18; 0 unmatched frontend routes.
+- Render preflight: PASS.
+- JavaScript syntax: PASS — 32 root JavaScript files.
+- Destructive database-operation review: no destructive serialized-unit operation introduced by this change.
+- Production PostgreSQL transaction: not run.
+- Production Next.js build: not verified because dependencies are unavailable in the extracted environment.
+
+### Documentation hygiene
+The project continues to retain `Amaal_plan.md`. Redundant historical Markdown files previously identified were removed; current operational documentation is maintained through the plan, continuation, audit and cross-module documents.

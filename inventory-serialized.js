@@ -76,9 +76,29 @@ export function registerSerializedInventory({app,auth,need,q,pool,audit}){
   });
 
   app.patch('/api/inventory/serialized/:id/status',auth,need('inventory.serialized'),async(req,res)=>{
-    const allowed=['In Stock','Reserved','Sold','Transferred','Damaged','Lost','Returned','Service','Voided']; const next=clean(req.body?.status,40); if(!allowed.includes(next))return res.status(400).json({error:'Invalid unit status'}); if(next==='Voided')return res.status(409).json({error:'Voided units are reserved for receiving reversals and cannot be set manually.'});
-    const old=(await q('SELECT * FROM serialized_units WHERE id=$1',[req.params.id]))[0];if(!old)return res.status(404).json({error:'Inventory unit not found'});
-    if(['Sold'].includes(old.status)&&next!=='Sold')return res.status(409).json({error:'A sold unit must be handled through its sale, return or service workflow.'});
-    const u=(await q('UPDATE serialized_units SET status=$1,updated_at=now() WHERE id=$2 RETURNING *',[next,req.params.id]))[0];await audit(req.user,'SERIALIZED_UNIT_STATUS_CHANGED','SerializedUnit',u.id,`Changed serialized unit status to ${next}`,old,u,req.req);res.json(u);
+    const allowed=['In Stock','Reserved','Sold','Transferred','Damaged','Lost','Returned','Service','Voided']; const next=clean(req.body?.status,40);
+    if(!allowed.includes(next))return res.status(400).json({error:'Invalid unit status'});
+    if(next==='Voided')return res.status(409).json({error:'Voided units are reserved for receiving reversals and cannot be set manually.'});
+    const client=await pool.connect();
+    try{
+      await client.query('BEGIN');
+      await client.query(`SELECT set_config('app.actor_id',$1,true)`,[req.user.id]);
+      const old=(await client.query('SELECT * FROM serialized_units WHERE id=$1 FOR UPDATE',[req.params.id])).rows[0];
+      if(!old)throw Object.assign(new Error('Inventory unit not found'),{statusCode:404});
+      const manualTransitions={
+        'In Stock':['Damaged','Lost','Service'],
+        'Returned':['In Stock','Service','Damaged'],
+        'Service':['In Stock','Damaged','Lost'],
+        'Damaged':['Service','In Stock'],
+        'Lost':['In Stock','Service','Damaged']
+      };
+      if(!manualTransitions[old.status]?.includes(next))throw new Error('This status is controlled by the related order, sale, transfer, return or receiving workflow.');
+      const u=(await client.query('UPDATE serialized_units SET status=$1,updated_at=now() WHERE id=$2 RETURNING *',[next,req.params.id])).rows[0];
+      const reason=clean(req.body?.reason,300)||`Changed physical unit status to ${next}`;
+      await client.query('UPDATE serialized_unit_status_history SET reason=$1,source_type=$2,source_id=$3 WHERE id=(SELECT id FROM serialized_unit_status_history WHERE serialized_unit_id=$4 ORDER BY created_at DESC LIMIT 1)',[reason,'ManualStatusChange',u.id,u.id]);
+      await client.query('COMMIT');
+      await audit(req.user,'SERIALIZED_UNIT_STATUS_CHANGED','SerializedUnit',u.id,reason,old,u,req.req);
+      res.json(u);
+    }catch(e){try{await client.query('ROLLBACK')}catch{}res.status(e.statusCode||400).json({error:e.message});}finally{client.release()}
   });
 }

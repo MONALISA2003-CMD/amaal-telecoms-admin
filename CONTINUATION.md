@@ -110,30 +110,60 @@ The following redundant historical documents were removed after their useful inf
 
 Do not remove `Amaal_plan.md`. It is the retained master plan.
 
+## Completed in the latest increment — Exact Unit Order Assignment
+The order workflow now binds a serialized order line to the exact physical inventory unit that will fulfil it.
+
+### Assignment workflow
+Paid/fulfillable Order
+→ Order line
+→ Available physical units at order location
+→ Search or camera scan
+→ Exact unit assignment
+→ Unit status Reserved
+→ Fulfilment
+→ Unit status Sold
+
+### What was strengthened
+- Added an authorized available-unit endpoint scoped to the order line, variant and order location.
+- Available-unit search supports serial, IMEI 1, IMEI 2, barcode and QR values.
+- Already assigned physical units are excluded from the available list.
+- Assignment locks both the order and selected unit inside one transaction.
+- Database uniqueness remains the final protection against assigning one physical unit to multiple orders.
+- Assigned physical units move to `Reserved` so their operational state matches the order assignment.
+- Unassignment is supported before dispatch and restores the physical unit to `In Stock`.
+- Order cancellation releases both the quantity reservation and assigned physical units.
+- Fulfilment accepts the assigned `Reserved` unit and changes that same unit to `Sold` without creating a replacement record.
+- Business Admin now provides searchable exact-unit assignment plus real camera scanning with manual/search fallback.
+
+### Important limitation preserved
+Production Next.js build and live database execution were not performed in the extracted working environment because dependencies/database credentials are not available. No production database was contacted or changed.
+
+### Current verification
+- Order serial assignment audit: PASS — 20/20.
+- Render preflight: PASS.
+- Cross-module audit: PASS — 104 frontend API references, 568 backend routes, 0 unmatched routes, 18/18 connections.
+- Receiving/batch audit: PASS — 15/15.
+- Serialized inventory audit: PASS — 16/16.
+- Warehouse transfer audit: PASS — 15/15.
+- JavaScript syntax: PASS for all top-level JavaScript files checked.
+- No database migration was required for this increment; existing `order_serial_units` uniqueness was reused.
+
 ## Highest-priority next work
-### 1. Serialized warehouse transfers
-Build the Business Admin workflow for selecting/scanning the exact physical units being transferred.
+### 1. Physical-unit history / status engine
+Make the exact IMEI/serial timeline authoritative across receiving, transfers, reservations, orders, sales, delivery, returns, warranty and service.
 
-For serialized stock, do not transfer only a product quantity. Transfer the exact units.
+### 2. Fulfilment / delivery reconciliation
+Ensure the exact unit assigned to an order is the exact unit picked, dispatched and delivered.
 
-### 2. Order fulfilment
-Complete the operator workflow:
+### 3. Returns / warranty / service
+Use IMEI/serial as a reliable lookup key and preserve the original sale and unit history.
 
-Order
-→ reservation
-→ exact physical-unit assignment
-→ fulfilment
-→ delivery
-→ completed sale
-
-### 3. Physical-unit history
-Ensure one IMEI/serial can be traced across receiving, transfers, reservation, sale, delivery, return, warranty and service without losing historical events.
-
-### 4. Returns / warranty / service
-Use IMEI/serial as a reliable lookup key and preserve the original sale history.
-
-### 5. Reports / BI
+### 4. Reports / BI
 Audit current field contracts and expose existing real datasets without fabricating values.
+
+### 5. Production verification
+Run the full production dependency build and controlled staging database tests when the deployment environment is available.
+
 
 ## Database rules
 NEVER:
@@ -189,7 +219,7 @@ Before every future module:
 ## Next-LLM continuation prompt
 You are continuing Amaal Telecoms. Do not rebuild or reset anything.
 
-Start with **Serialized Warehouse Transfers**. Inspect the existing transfer backend and Technical Console first. Make Business Admin select/scan exact serialized units for a transfer, validate source location and status, prevent duplicates, preserve movement history, and connect the transfer to the receiving location. Then run the full serialized inventory, cross-module, security/privacy, database-safety and regression audits. Continue into order fulfilment only after transfer integrity is verified.
+Start with **fulfilment/delivery reconciliation for exact serialized units**. Inspect the existing order, sales, fulfilment and delivery workflows first. Ensure the exact reserved physical unit assigned to an order is the same unit fulfilled, dispatched and sold, and that delivery completion cannot leave a serialized unit in Reserved or In Stock incorrectly. Then run the full serialized inventory, lifecycle/history, cross-module, security/privacy, database-safety and regression audits. Continue into returns/warranty/service traceability only after fulfilment integrity is verified.
 
 
 ## 27 Aug 2026 — Warehouse Transfers hardening
@@ -232,3 +262,57 @@ Start with **Serialized Warehouse Transfers**. Inspect the existing transfer bac
 
 ### Next recommended build
 **Orders/Sales → exact serialized-unit assignment → fulfilment → delivery**, using the same physical-unit records and backend transaction rules.
+
+
+## 27 Aug 2026 — Physical Unit & Status Engine hardening
+
+### What was just built
+- Added an additive `serialized_unit_status_history` ledger for every serialized physical unit.
+- Added repeat-safe lifecycle triggers that record unit creation and every status/location change.
+- Added a non-destructive migration baseline for existing serialized units so previously existing records receive a starting lifecycle entry without altering the units themselves.
+- Added database-level status transition enforcement so invalid physical-unit state changes are rejected regardless of which backend workflow performs the update.
+- Kept workflow-owned states controlled by their business workflows rather than exposing arbitrary manual status changes.
+- Strengthened the Business Admin status endpoint to allow only operational exception transitions appropriate for authorized inventory staff.
+- Expanded the physical-unit history endpoint to return lifecycle history plus linked orders, sales, warranty claims and returns.
+- Added a Business Admin physical-unit history view with current location, batch, lifecycle timeline and controlled status actions.
+- Fixed delivery completion so an exact unit already reserved for an order can transition to Sold; it no longer silently ignores Reserved units.
+- Added `serialized-status-history-audit.js` and `audit:serialized-status`.
+
+### Status model
+The authoritative engine now recognizes controlled transitions including:
+- In Stock → Reserved / Sold / Transferred / Damaged / Lost / Returned / Service / Voided
+- Reserved → In Stock / Sold / Returned / Service / Damaged / Lost
+- Sold → In Stock / Returned / Service
+- Transferred → In Stock / Lost
+- Returned → In Stock / Sold / Service / Damaged / Lost
+- Service → In Stock / Sold / Returned / Damaged / Lost
+- Damaged → Service / In Stock / Lost
+- Lost → In Stock / Service / Damaged
+- Voided is terminal.
+
+Business Admin does not permit arbitrary manual jumps through workflow-owned states such as Sold, Reserved or Transferred.
+
+### Verification
+- Serialized status/history audit: **14/14 PASS**.
+- Receiving/batch audit: **PASS — 15/15**.
+- Serialized inventory audit: **PASS — 16/16**.
+- Warehouse transfer audit: **PASS — 15/15**.
+- Exact order serial assignment audit: **PASS — 20/20**.
+- Cross-module audit: **PASS — 18/18**, 0 unmatched frontend routes.
+- Render preflight: **PASS**.
+- All 32 root JavaScript files: **syntax PASS**.
+- No production PostgreSQL connection was made.
+- Production Next.js build remains **not verified** because dependencies/node_modules are unavailable in the extracted environment.
+
+### Known limitation
+Lifecycle history created by the new database trigger can identify the actor when a transaction sets `app.actor_id`; existing business workflows that have not yet adopted that session setting may show `System` as the lifecycle actor while the broader application audit log still records the authenticated user. This is intentionally non-destructive and does not block the lifecycle ledger.
+
+### Must NOT be changed
+- Preserve all PostgreSQL records.
+- Never reset, truncate, drop or replace the business database.
+- Never delete serialized-unit history to simplify workflows.
+- Never expose private physical-unit information through the public website.
+- Preserve `Amaal_plan.md`.
+
+### Next recommended build
+**Fulfilment/delivery reconciliation** — verify that the exact serialized unit assigned to an order remains the same unit through picking, dispatch, delivery and final sale state.

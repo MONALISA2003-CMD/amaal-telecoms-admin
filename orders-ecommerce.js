@@ -97,7 +97,7 @@ export function registerOrdersEcommerce({app,auth,need,q,pool,audit,changeStock,
       await client.query("UPDATE inventory_reservations SET status='Consumed',released_at=now() WHERE id=$1",[r.id]);
     }
     const serials=(await client.query('SELECT su.id FROM order_serial_units os JOIN serialized_units su ON su.id=os.serialized_unit_id JOIN order_lines ol ON ol.id=os.order_line_id WHERE ol.order_id=$1 FOR UPDATE',[o.id])).rows;
-    for(const su of serials)await client.query("UPDATE serialized_units SET status='Sold',location_id=NULL,sold_at=now(),updated_at=now() WHERE id=$1 AND status='In Stock'",[su.id]);
+    for(const su of serials){const updated=await client.query("UPDATE serialized_units SET status='Sold',location_id=NULL,sold_at=now(),updated_at=now() WHERE id=$1 AND status IN ('In Stock','Reserved') RETURNING id",[su.id]);if(!updated.rows[0])throw new Error('A serialized unit assigned to this order is no longer available for fulfillment')}
   }
 
   app.get('/api/orders/summary',auth,need('orders.view'),async(req,res)=>{
@@ -182,13 +182,52 @@ export function registerOrdersEcommerce({app,auth,need,q,pool,audit,changeStock,
     }catch(e){try{await client.query('ROLLBACK')}catch{}res.status(400).json({error:e.message})}finally{client.release()}
   });
 
+  app.get('/api/orders/:id/serials/available',auth,need('orders.view'),async(req,res)=>{
+    try{
+      const o=(await q('SELECT id,location_id,status FROM orders WHERE id=$1',[req.params.id]))[0];
+      if(!o)return res.status(404).json({error:'Order not found'});
+      if(!['Paid','Processing','Packed','Ready for Dispatch','Dispatched'].includes(o.status))return res.status(400).json({error:'Order is not ready for physical-unit assignment'});
+      const lineId=String(req.query.orderLineId||'').trim();
+      const line=(await q('SELECT ol.id,ol.variant_id,ol.quantity,v.serialized,v.sku,v.variant_name,p.name product_name FROM order_lines ol JOIN product_variants v ON v.id=ol.variant_id JOIN products p ON p.id=v.product_id WHERE ol.id=$1 AND ol.order_id=$2',[lineId,o.id]))[0];
+      if(!line)return res.status(404).json({error:'Order line not found'});
+      if(!line.serialized)return res.status(400).json({error:'This order line is not serialized'});
+      const assigned=(await q('SELECT os.id,su.id serialized_unit_id,su.serial_number,su.imei1,su.imei2,su.barcode,su.qr_code,su.status,su.location_id FROM order_serial_units os JOIN serialized_units su ON su.id=os.serialized_unit_id WHERE os.order_line_id=$1',[line.id]));
+      const term=String(req.query.q||'').trim().slice(0,120);
+      const params=[line.variant_id,o.location_id];
+      let where="su.variant_id=$1 AND su.location_id=$2 AND su.status='In Stock'";
+      if(term){params.push(`%${term}%`);where+=` AND (su.serial_number ILIKE $${params.length} OR su.imei1 ILIKE $${params.length} OR su.imei2 ILIKE $${params.length} OR su.barcode ILIKE $${params.length} OR su.qr_code ILIKE $${params.length})`;}
+      const available=await q(`SELECT su.id serialized_unit_id,su.serial_number,su.imei1,su.imei2,su.barcode,su.qr_code,su.status,su.location_id,b.batch_number FROM serialized_units su LEFT JOIN inventory_batches b ON b.id=su.batch_id WHERE ${where} AND NOT EXISTS (SELECT 1 FROM order_serial_units os WHERE os.serialized_unit_id=su.id) ORDER BY su.created_at DESC LIMIT 100`,params);
+      res.json({orderId:o.id,orderLineId:line.id,variantId:line.variant_id,quantity:Number(line.quantity),assigned,available});
+    }catch(e){res.status(400).json({error:e.message})}
+  });
+
   app.post('/api/orders/:id/serials',auth,need('orders.manage'),async(req,res)=>{
-    const client=await pool.connect();try{await client.query('BEGIN');const o=(await client.query("SELECT * FROM orders WHERE id=$1 AND status IN ('Paid','Processing','Packed','Ready for Dispatch','Dispatched') FOR UPDATE",[req.params.id])).rows[0];if(!o)throw new Error('Order is not available for serial assignment');const line=(await client.query('SELECT * FROM order_lines WHERE id=$1 AND order_id=$2 FOR SHARE',[req.body?.orderLineId,o.id])).rows[0];if(!line)throw new Error('Order line not found');const v=(await client.query('SELECT serialized FROM product_variants WHERE id=$1',[line.variant_id])).rows[0];if(!v?.serialized)throw new Error('This order line is not serialized');const assigned=(await client.query('SELECT count(*)::int c FROM order_serial_units WHERE order_line_id=$1',[line.id])).rows[0].c;if(assigned>=Number(line.quantity))throw new Error('All required serial units are already assigned');const su=(await client.query("SELECT * FROM serialized_units WHERE id=$1 AND variant_id=$2 AND location_id=$3 AND status='In Stock' FOR UPDATE",[req.body?.serializedUnitId,line.variant_id,o.location_id])).rows[0];if(!su)throw new Error('Serialized unit is not available at the order location');const r=(await client.query('INSERT INTO order_serial_units(order_line_id,serialized_unit_id,assigned_by) VALUES($1,$2,$3) RETURNING *',[line.id,su.id,req.user.id])).rows[0];await client.query('COMMIT');await audit(req.user,'ORDER_SERIAL_ASSIGNED','Order',o.id,`Assigned serial/IMEI to ${o.order_no}`,null,r,req.req);res.status(201).json(r)}catch(e){try{await client.query('ROLLBACK')}catch{}res.status(400).json({error:e.message})}finally{client.release()}
+    const client=await pool.connect();try{await client.query('BEGIN');
+      const o=(await client.query("SELECT * FROM orders WHERE id=$1 AND status IN ('Paid','Processing','Packed','Ready for Dispatch','Dispatched') FOR UPDATE",[req.params.id])).rows[0];if(!o)throw new Error('Order is not available for serial assignment');
+      const line=(await client.query('SELECT * FROM order_lines WHERE id=$1 AND order_id=$2 FOR SHARE',[req.body?.orderLineId,o.id])).rows[0];if(!line)throw new Error('Order line not found');
+      const v=(await client.query('SELECT serialized,product_id FROM product_variants WHERE id=$1',[line.variant_id])).rows[0];if(!v?.serialized)throw new Error('This order line is not serialized');
+      const assigned=(await client.query('SELECT count(*)::int c FROM order_serial_units WHERE order_line_id=$1',[line.id])).rows[0].c;if(assigned>=Number(line.quantity))throw new Error('All required serial units are already assigned');
+      const su=(await client.query("SELECT * FROM serialized_units WHERE id=$1 AND variant_id=$2 AND location_id=$3 AND status='In Stock' AND NOT EXISTS (SELECT 1 FROM order_serial_units os WHERE os.serialized_unit_id=serialized_units.id) FOR UPDATE",[req.body?.serializedUnitId,line.variant_id,o.location_id])).rows[0];if(!su)throw new Error('Serialized unit is not available at the order location or is already assigned to another order');
+      const r=(await client.query('INSERT INTO order_serial_units(order_line_id,serialized_unit_id,assigned_by) VALUES($1,$2,$3) RETURNING *',[line.id,su.id,req.user.id])).rows[0];
+      await client.query("UPDATE serialized_units SET status='Reserved',updated_at=now() WHERE id=$1",[su.id]);
+      await client.query('COMMIT');await audit(req.user,'ORDER_SERIAL_ASSIGNED','Order',o.id,`Assigned physical unit ${su.id} to ${o.order_no}`,null,r,req.req);res.status(201).json(r)
+    }catch(e){try{await client.query('ROLLBACK')}catch{}res.status(e.code==='23505'?409:400).json({error:e.code==='23505'?'That physical unit is already assigned to another order':e.message})}finally{client.release()}
+  });
+
+  app.delete('/api/orders/:id/serials/:assignmentId',auth,need('orders.manage'),async(req,res)=>{
+    const client=await pool.connect();try{await client.query('BEGIN');
+      const o=(await client.query("SELECT * FROM orders WHERE id=$1 AND status IN ('Paid','Processing','Packed','Ready for Dispatch') FOR UPDATE",[req.params.id])).rows[0];if(!o)throw new Error('Order is not eligible for changing physical-unit assignment');
+      const a=(await client.query('SELECT os.*,su.status unit_status,su.location_id FROM order_serial_units os JOIN serialized_units su ON su.id=os.serialized_unit_id JOIN order_lines ol ON ol.id=os.order_line_id WHERE os.id=$1 AND ol.order_id=$2 FOR UPDATE',[req.params.assignmentId,o.id])).rows[0];if(!a)throw new Error('Physical-unit assignment not found');
+      if(a.unit_status!=='Reserved')throw new Error('Only a reserved physical unit can be unassigned here');
+      await client.query('DELETE FROM order_serial_units WHERE id=$1',[a.id]);
+      await client.query("UPDATE serialized_units SET status='In Stock',updated_at=now() WHERE id=$1",[a.serialized_unit_id]);
+      await client.query('COMMIT');await audit(req.user,'ORDER_SERIAL_UNASSIGNED','Order',o.id,`Unassigned physical unit ${a.serialized_unit_id} from ${o.order_no}`,a,null,req.req);res.json({ok:true,serializedUnitId:a.serialized_unit_id})
+    }catch(e){try{await client.query('ROLLBACK')}catch{}res.status(400).json({error:e.message})}finally{client.release()}
   });
 
   app.post('/api/orders/:id/status',auth,need('orders.manage'),async(req,res)=>{
     const next=text(req.body?.status),client=await pool.connect();try{await client.query('BEGIN');const o=(await client.query('SELECT * FROM orders WHERE id=$1 FOR UPDATE',[req.params.id])).rows[0];if(!o)throw new Error('Order not found');if(!statuses.has(next)||!transitions[o.status]?.includes(next))throw new Error(`Cannot move order from ${o.status} to ${next}`);if(['Processing','Packed','Ready for Dispatch','Dispatched','Delivered'].includes(next)&&o.payment_status!=='Paid')throw new Error('Order must be fully paid before fulfillment');
-      if(next==='Cancelled'){if(o.fulfillment_status!=='Unfulfilled'&&o.status!=='Paid')throw new Error('Only unfulfilled orders can be cancelled');await releaseReservations(client,o.id,'Cancelled');}
+      if(next==='Cancelled'){if(o.fulfillment_status!=='Unfulfilled'&&o.status!=='Paid')throw new Error('Only unfulfilled orders can be cancelled');await releaseReservations(client,o.id,'Cancelled');await client.query("UPDATE serialized_units su SET status='In Stock',updated_at=now() FROM order_serial_units os JOIN order_lines ol ON ol.id=os.order_line_id WHERE os.serialized_unit_id=su.id AND ol.order_id=$1 AND su.status='Reserved'",[o.id]);}
       if(next==='Delivered'){
         const activeShipment=(await client.query("SELECT status FROM delivery_shipments WHERE order_id=$1 AND status NOT IN ('Cancelled','Returned') LIMIT 1 FOR SHARE",[o.id])).rows[0];
         if(activeShipment && activeShipment.status!=='Delivered')throw new Error(`This order has an active delivery shipment in ${activeShipment.status} status. Complete delivery through the Delivery workflow.`);
@@ -199,7 +238,7 @@ export function registerOrdersEcommerce({app,auth,need,q,pool,audit,changeStock,
   });
 
   app.post('/api/orders/:id/cancel',auth,need('orders.manage'),async(req,res)=>{
-    const client=await pool.connect();try{await client.query('BEGIN');const o=(await client.query("SELECT * FROM orders WHERE id=$1 FOR UPDATE",[req.params.id])).rows[0];if(!o)throw new Error('Order not found');if(!['Pending Payment','Paid'].includes(o.status))throw new Error('Only pending or paid orders can be cancelled');const reason=text(req.body?.reason);if(reason.length<3)throw new Error('A cancellation reason is required');await releaseReservations(client,o.id,'Cancelled');const u=(await client.query("UPDATE orders SET status='Cancelled',fulfillment_status='Cancelled',cancelled_at=now(),cancellation_reason=$1,updated_at=now() WHERE id=$2 RETURNING *",[reason,o.id])).rows[0];await client.query('INSERT INTO order_status_history(order_id,status,actor_id,notes) VALUES($1,\'Cancelled\',$2,$3)',[o.id,req.user.id,reason]);await client.query('COMMIT');await audit(req.user,'ORDER_CANCELLED','Order',o.id,`Cancelled ${o.order_no}`,o,u,req.req);res.json(await orderById(o.id));}catch(e){try{await client.query('ROLLBACK')}catch{}res.status(400).json({error:e.message})}finally{client.release()}
+    const client=await pool.connect();try{await client.query('BEGIN');const o=(await client.query("SELECT * FROM orders WHERE id=$1 FOR UPDATE",[req.params.id])).rows[0];if(!o)throw new Error('Order not found');if(!['Pending Payment','Paid'].includes(o.status))throw new Error('Only pending or paid orders can be cancelled');const reason=text(req.body?.reason);if(reason.length<3)throw new Error('A cancellation reason is required');await releaseReservations(client,o.id,'Cancelled');await client.query("UPDATE serialized_units su SET status='In Stock',updated_at=now() FROM order_serial_units os JOIN order_lines ol ON ol.id=os.order_line_id WHERE os.serialized_unit_id=su.id AND ol.order_id=$1 AND su.status='Reserved'",[o.id]);const u=(await client.query("UPDATE orders SET status='Cancelled',fulfillment_status='Cancelled',cancelled_at=now(),cancellation_reason=$1,updated_at=now() WHERE id=$2 RETURNING *",[reason,o.id])).rows[0];await client.query('INSERT INTO order_status_history(order_id,status,actor_id,notes) VALUES($1,\'Cancelled\',$2,$3)',[o.id,req.user.id,reason]);await client.query('COMMIT');await audit(req.user,'ORDER_CANCELLED','Order',o.id,`Cancelled ${o.order_no}`,o,u,req.req);res.json(await orderById(o.id));}catch(e){try{await client.query('ROLLBACK')}catch{}res.status(400).json({error:e.message})}finally{client.release()}
   });
 
   app.post('/api/orders/:id/fulfillment',auth,need('orders.manage'),async(req,res)=>{
