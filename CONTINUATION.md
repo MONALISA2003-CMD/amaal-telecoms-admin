@@ -254,3 +254,31 @@ Before the next regression audit, the Business Admin must provide a live visual 
 - Public website activity must flow into the existing business records; the Business Admin reads those same records rather than maintaining a second copy.
 - No database reset, schema reset, or replacement business database is permitted.
 - Continue next by auditing module-specific charts/visuals, data freshness, public-website-to-business flow, permissions, error handling and regressions.
+
+## Continuation — Live business pulse reliability + mobile navigation — 2026-08-27
+
+### Completed in this update
+- Removed the duplicate Next.js Business Admin catch-all API route that caused ambiguous `/api/[...]` builds. The Business Admin now keeps one API proxy route under `app/api/[...proxy]/route.ts`.
+- Strengthened the Business Intelligence backend summary endpoint so one failing business-data query no longer turns the entire Live Business Pulse into an Internal Server Error. Failed individual figures are isolated and logged, while the rest of the live business view continues to load.
+- Strengthened the live sales-trend endpoint in the same way so the revenue chart can remain available when another analytics query has a problem.
+- Added a clear partial-data state to the Live Business Pulse rather than presenting a blank/error block when only some figures are temporarily unavailable.
+- Preserved automatic live refresh every 15 seconds and manual refresh.
+- Reworked mobile business navigation from a horizontal ribbon into a proper slide-out sidebar drawer with grouped sections, an open button and a close button. Desktop sidebar navigation remains unchanged.
+- No PostgreSQL reset, truncate, drop, database recreation, destructive migration, or data deletion was performed.
+
+### Current architecture
+- Business Admin UI: Next.js 16.3.3 / React 19.
+- Business data source: existing Amaal Engine and its PostgreSQL database.
+- Business Admin does not directly access PostgreSQL; all business data still travels through the existing engine API.
+- BI data is live from current sales, orders, inventory, customers, procurement, finance, delivery, warranty, credit and returns records.
+
+### Important next steps
+1. Deploy this source to the GitHub `main` branch and allow Vercel to build it.
+2. Verify `/api/bi/summary` and `/api/bi/sales-trend` return live data for the signed-in administrator.
+3. Verify the mobile drawer on Android and confirm every business section is reachable from the sidebar.
+4. Perform the deeper regression audit across every business workspace and its matching technical-console/engine module.
+5. Verify every chart uses live business records and updates after new records are created.
+6. Continue module-by-module build work without resetting or replacing the production database.
+
+### Continuity instruction
+For the next build: inspect the current source before changing it; preserve everything already working; build the next module completely; compare it with its corresponding technical-console/engine capability; connect it to related business modules and the existing backend; verify administrator and Super Admin permissions; audit all business-facing wording for unnecessary technical terminology; check charts, empty states, loading states, errors and mobile layouts; run a full bug/debug/type/build audit; package the complete project with all current MD continuity documents; and never reset, recreate, truncate or replace the existing PostgreSQL database.

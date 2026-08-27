@@ -54,6 +54,7 @@ export function Sidebar({ permissions = [], isSuperAdmin = false }: { permission
   const visibleByLabel = new Map<string, (typeof navGroups)[number]>(visible.map(item => [item.label, item]));
 
   return <aside className="sidebar">
+    <label className="mobileSidebarClose" htmlFor="mobileNavToggle" aria-label="Close business navigation">×</label>
     <Brand />
     <div className="sidebarSearch"><Search size={15} /><Link href="/search">Search everything</Link><kbd>⌘K</kbd></div>
     <nav aria-label="Business navigation" className="sidebarGroups">
