@@ -29,7 +29,7 @@ export function CatalogueManager({ products, brands, categories, collections, ca
   const [rows, setRows] = useState({ brands, categories, collections, products });
 
   useEffect(()=>setRows({brands,categories,collections,products}),[brands,categories,collections,products]);
-  const refresh = async () => { const [b,c,co,p] = await Promise.all([api('/api/catalog/brands'),api('/api/catalog/categories'),api('/api/catalog/collections'),api('/api/catalog/products?limit=100&offset=0')]); setRows({brands:b||[],categories:c||[],collections:co||[],products:p?.rows||[]}); };
+  const refresh = async () => { const [b,c,co] = await Promise.all([api('/api/catalog/brands'),api('/api/catalog/categories'),api('/api/catalog/collections')]); const pageSize=500; const first=await api(`/api/catalog/products?limit=${pageSize}&offset=0`); const total=Number(first?.total??first?.rows?.length??0); const pages=[]; for(let offset=pageSize;offset<total;offset+=pageSize) pages.push(api(`/api/catalog/products?limit=${pageSize}&offset=${offset}`)); const rest=await Promise.all(pages); const products=[...(first?.rows||[]),...rest.flatMap((x:any)=>x?.rows||[])]; setRows({brands:b||[],categories:c||[],collections:co||[],products}); };
   const act = async (fn:()=>Promise<any>, success:string) => { setError(''); try { await fn(); await refresh(); setNotice(success); } catch(e:any){ setError(e.message); } };
   const q = query.trim().toLowerCase();
   const filteredProducts = rows.products.filter(p => !q || [p.name,p.brand_name,p.category_name,p.slug].some(v=>String(v||'').toLowerCase().includes(q)));

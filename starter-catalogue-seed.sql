@@ -5,10 +5,6 @@ INSERT INTO brands(name,slug,status) VALUES ('Apple','apple','Active') ON CONFLI
 INSERT INTO brands(name,slug,status) VALUES ('Samsung','samsung','Active') ON CONFLICT(name) DO NOTHING;
 INSERT INTO brands(name,slug,status) VALUES ('TCL','tcl','Active') ON CONFLICT(name) DO NOTHING;
 INSERT INTO brands(name,slug,status) VALUES ('Hisense','hisense','Active') ON CONFLICT(name) DO NOTHING;
-INSERT INTO brands(name,slug,status) VALUES ('LG Global Star','lg-global-star','Active') ON CONFLICT(name) DO NOTHING;
-INSERT INTO brands(name,slug,status) VALUES ('SPJ','spj','Active') ON CONFLICT(name) DO NOTHING;
-INSERT INTO brands(name,slug,status) VALUES ('Chiq','chiq','Active') ON CONFLICT(name) DO NOTHING;
-INSERT INTO brands(name,slug,status) VALUES ('Smart Plus','smart-plus','Active') ON CONFLICT(name) DO NOTHING;
 INSERT INTO product_categories(name,slug,status) VALUES ('Phones','phones','Active') ON CONFLICT(slug) DO NOTHING;
 INSERT INTO product_categories(name,slug,status) VALUES ('Tablets','tablets','Active') ON CONFLICT(slug) DO NOTHING;
 INSERT INTO product_categories(name,slug,status) VALUES ('Entertainment','entertainment','Active') ON CONFLICT(slug) DO NOTHING;

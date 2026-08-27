@@ -107,7 +107,7 @@ Path('/mnt/data/tvwork/apps/business-admin/data/tv-master-catalogue.ts').write_t
 # SQL additive idempotent sync
 sql=[]
 sql.append('-- Amaal Telecoms Master Television Product Catalog v1.0 — additive/idempotent sync.\n')
-sql.append("INSERT INTO brands(name,slug,status) VALUES " + ','.join("('%s','%s','Active')"%(b,slug(b)) for b in brands) + " ON CONFLICT(name) DO UPDATE SET status='Active',updated_at=now();")
+sql.append("INSERT INTO brands(name,slug,status) VALUES " + ','.join("('%s','%s','Active')"%(b,slug(b)) for b in brands) + " ON CONFLICT(slug) DO UPDATE SET name=EXCLUDED.name,status='Active',updated_at=now();")
 sql.append("INSERT INTO product_categories(name,slug,status) VALUES ('Televisions','televisions','Active') ON CONFLICT(slug) DO NOTHING;")
 sql.append("INSERT INTO product_categories(parent_id,name,slug,status) SELECT p.id,'Television Models','television-models','Active' FROM product_categories p WHERE p.slug='televisions' ON CONFLICT(slug) DO NOTHING;")
 for x in E:
