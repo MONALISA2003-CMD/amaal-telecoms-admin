@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { BarChart, BarChart3, BookOpen, CheckCircle2, CircleDollarSign, Landmark, Plus, RefreshCw, Scale, Wallet, X } from 'lucide-react';
-import { Bar, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { BarChart3, BookOpen, CheckCircle2, CircleDollarSign, Landmark, Plus, RefreshCw, Scale, Wallet, X } from 'lucide-react';
+import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 type Any = Record<string, any>;
 const money=(v:any)=>Number.isFinite(Number(v))?new Intl.NumberFormat('en-UG',{style:'currency',currency:'UGX',maximumFractionDigits:0}).format(Number(v)):'—';
