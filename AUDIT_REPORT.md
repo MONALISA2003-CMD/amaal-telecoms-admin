@@ -300,3 +300,24 @@ A separate `tv-master-catalogue-cleanup.sql` is included for the live database. 
 **Live Neon cleanup status:** not executed because the connected Neon SQL action is currently rejecting the existing project identifier at the connector boundary. No workaround or destructive write was attempted. Therefore no claim is made that the 42 legacy rows have already been removed from production.
 
 The Vercel Business Admin canonical TV data source contains only the supplied master catalogue and no longer has the old generic TV starter records in its source data.
+
+## Global Star brand correction — 2026-08-28
+
+The Business Admin screenshot exposed a real catalogue identity error: legacy television products were being displayed as **LG Global Star**. The authoritative Master Television Product Catalog defines **Global Star** as the canonical brand and separately defines **LG** as its own brand.
+
+### Corrected in this build
+
+- Canonical TV master contains `Global Star`, never `LG Global Star`.
+- Render TV sync uses `global-star` as the canonical slug.
+- Render startup now performs an idempotent normalization of legacy TV products branded `LG Global Star` to `Global Star`.
+- Legacy product names beginning `LG Global Star` are corrected to `Global Star`.
+- Existing product IDs and historical business records are preserved.
+- The legacy `LG Global Star` brand is not hard-deleted; it is made inactive/hidden after its active TV product references are removed.
+- Business Admin starter brand definitions no longer contain `LG Global Star`, `SPJ`, or `Smart Plus`.
+- The TV master source remains 210 entries across 7 canonical brands.
+
+### Live database verification limitation
+
+The connected Neon tool currently rejects its own project arguments before SQL execution (the exposed connector schema and runtime validator disagree on `projectId`/`project_id`). Therefore the live Neon row count and live brand records could not be queried from this session. No production database write was performed through a workaround.
+
+The Render startup normalization is repeat-safe and is intended to correct the live records when this corrected backend is deployed.

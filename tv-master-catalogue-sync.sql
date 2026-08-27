@@ -1,6 +1,16 @@
 -- Amaal Telecoms Master Television Product Catalog v1.0 — additive/idempotent sync.
 
-INSERT INTO brands(name,slug,status) VALUES ('TCL','tcl','Active'),('Hisense','hisense','Active'),('CHiQ','chiq','Active'),('Samsung','samsung','Active'),('LG','lg','Active'),('Global Star','global-star','Active'),('Black Ark','black-ark','Active') ON CONFLICT(slug) DO UPDATE SET name=EXCLUDED.name,status='Active',updated_at=now();
+INSERT INTO brands(name,slug,status) VALUES
+  ('TCL','tcl','Active'),('Hisense','hisense','Active'),('CHiQ','chiq','Active'),
+  ('Samsung','samsung','Active'),('LG','lg','Active'),('Global Star','global-star','Active'),('Black Ark','black-ark','Active')
+ON CONFLICT DO NOTHING;
+UPDATE brands SET name='TCL',status='Active',updated_at=now() WHERE slug='tcl';
+UPDATE brands SET name='Hisense',status='Active',updated_at=now() WHERE slug='hisense';
+UPDATE brands SET name='CHiQ',status='Active',updated_at=now() WHERE slug='chiq';
+UPDATE brands SET name='Samsung',status='Active',updated_at=now() WHERE slug='samsung';
+UPDATE brands SET name='LG',status='Active',updated_at=now() WHERE slug='lg';
+UPDATE brands SET name='Global Star',status='Active',updated_at=now() WHERE slug='global-star';
+UPDATE brands SET name='Black Ark',status='Active',updated_at=now() WHERE slug='black-ark';
 INSERT INTO product_categories(name,slug,status) VALUES ('Televisions','televisions','Active') ON CONFLICT(slug) DO NOTHING;
 INSERT INTO product_categories(parent_id,name,slug,status) SELECT p.id,'Television Models','television-models','Active' FROM product_categories p WHERE p.slug='televisions' ON CONFLICT(slug) DO NOTHING;
 INSERT INTO products(name,slug,brand_id,category_id,product_type,short_description,description,specifications,status,website_visibility,featured) SELECT 'TCL C655 TV','tcl-c655-tv',b.id,c.id,'TV','Canonical television catalog record from Amaal Telecoms Master Television Product Catalog v1.0. Exact regional SKU verification status: PARTIALLY_VERIFIED.','Canonical television catalog record from Amaal Telecoms Master Television Product Catalog v1.0. Exact regional SKU verification status: PARTIALLY_VERIFIED.','{"catalog_source":"MASTER_TELEVISION_PRODUCT_CATALOG","catalog_version":"1.0","manufacturer_model":"C655","screen_sizes":["43","50","55","65","75","85"],"display_technology":"QLED / QLED PRO / 4K","generation":"CURRENT","market_status":"UNVERIFIED","verification_status":"PARTIALLY_VERIFIED","catalog_status":"ACTIVE"}'::jsonb,'Active','Hidden',false FROM brands b,product_categories c WHERE b.name='TCL' AND c.slug='television-models' ON CONFLICT(slug) DO UPDATE SET name=EXCLUDED.name,brand_id=EXCLUDED.brand_id,category_id=EXCLUDED.category_id,product_type='TV',short_description=EXCLUDED.short_description,description=EXCLUDED.description,specifications=products.specifications || EXCLUDED.specifications,updated_at=now();

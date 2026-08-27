@@ -22,3 +22,16 @@ Source: `MASTER_TELEVISION_PRODUCT_CATALOG.md` v1.0 (2026-08-28)
 ## Live deployment limitation
 
 This ZIP was corrected from the latest local project snapshot. A live GitHub/Vercel/Render deployment was not claimed because the connected GitHub write operation currently returns HTTP 403. Neon was not modified.
+
+
+## Global Star correction — 2026-08-28
+
+The canonical television source identifies **Global Star** as the brand. **LG Global Star is not a canonical brand.**
+
+The current source now: 
+- uses `Global Star` / `global-star`;
+- removes `LG Global Star`, `SPJ`, and `Smart Plus` from the Business Admin starter brand source;
+- adds an idempotent Render-start normalization that reassigns legacy TV products from `LG Global Star` to `Global Star`, corrects their displayed name, and preserves historical records;
+- makes the legacy brand inactive/hidden after its active TV references are removed.
+
+Live Neon execution is still dependent on the database connector accepting the production project; no destructive database operation is performed by this correction.

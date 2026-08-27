@@ -459,3 +459,8 @@ The live Neon cleanup has **not** been executed because the connected Neon SQL o
 
 ### Next step
 Resolve the Neon connector execution issue, then run the cleanup against the production branch only after reviewing the candidate rows. Verify that the canonical master remains the only active TV catalogue source and that no historical inventory/order/service relationship was lost.
+
+
+## Latest correction — Global Star
+
+The TV master catalog is authoritative. `LG Global Star` must never be treated as a canonical brand. The latest build includes a safe Render startup normalization that maps legacy TV products to `Global Star`, corrects display names, and preserves historical records. The Business Admin starter brand source now contains only the canonical TV brands.

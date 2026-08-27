@@ -20,4 +20,4 @@ function auditRows(rows = []) {
   return { legacyCount: legacy.length, legacy, wrongBrandCount: wrongBrand.length, wrongBrand };
 }
 
-module.exports = { LEGACY_GENERIC_TV_SLUGS, CANONICAL_BRANDS, auditRows };
+export { LEGACY_GENERIC_TV_SLUGS, CANONICAL_BRANDS, auditRows };

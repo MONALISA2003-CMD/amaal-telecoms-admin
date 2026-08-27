@@ -48,7 +48,7 @@ export const starterCatalogueCategories = [
 ];
 
 export const starterCatalogueBrands = [
-  'Apple', 'Samsung', 'TCL', 'Hisense', 'LG Global Star', 'LG', 'Global Star', 'Black Ark', 'CHiQ', 'SPJ', 'Smart Plus',
+  'Apple', 'Samsung', 'TCL', 'Hisense', 'LG', 'Global Star', 'Black Ark', 'CHiQ',
 ];
 
 export const starterCatalogueItems: StarterCatalogueItem[] = [
