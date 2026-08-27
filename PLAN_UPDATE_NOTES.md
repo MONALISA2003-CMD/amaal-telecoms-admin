@@ -111,3 +111,17 @@ No database operation was performed directly by this increment. Existing records
 - Added a safe shipment-edit capability without changing the database structure.
 - No database reset, migration, reseed, truncate, drop or direct data manipulation was performed by this increment.
 - Validation: all JavaScript files pass syntax checking; Render preflight passes; permission usage audit found 127 used permissions with no undefined permission IDs.
+
+# Service increment — 2026-08-27
+- Built a dedicated Service Business Admin workspace.
+- Compared Service against the existing `returns-refunds.js` and `warranty-repairs.js` engine capabilities before implementation.
+- Added returns, warranty cases, repair work, warranty policies and repair partners as connected business views.
+- Added creation and status actions for returns and warranty cases, refund recording, repair opening/updating, stock-part consumption and collection flow using existing service capabilities.
+- Connected service records to customers, orders, sales, products, stock locations, technicians and repair partners.
+- Kept the Business Admin language business-friendly and excluded technical implementation terminology from the visible workspace.
+- Fixed the Service repairs view so it uses real warranty-case stages instead of expecting repair fields that are not returned by the list endpoint.
+- No backend or SQL files were changed.
+- No database operation was performed.
+- Validation: all root/public JavaScript syntax checks passed; backend/SQL comparison against the incoming baseline is unchanged.
+- Full Next.js production build is not claimed because dependency installation/build execution is environment-limited; Vercel remains the final production build authority.
+- Next module: Website Management.

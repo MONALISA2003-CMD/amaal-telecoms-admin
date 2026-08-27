@@ -58,3 +58,11 @@ Validation:
 - Permission reference audit: PASS (127 used, 0 missing)
 - SQL/schema/seed files: unchanged
 - Production `next build`: not claimed because dependency installation timed out in the restricted local environment
+
+Service increment — 2026-08-27
+- Added Business Admin Service workspace for Returns, Warranty, Repairs, Warranty Policies and Repair Partners.
+- Added Service route integration in the Next.js Business Admin app.
+- Existing backend JavaScript and SQL files remain unchanged versus the incoming baseline.
+- Database was not accessed or modified by the build/audit process.
+- Root/public JavaScript syntax validation passed.
+- Next module: Website Management.

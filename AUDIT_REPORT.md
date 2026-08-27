@@ -349,3 +349,33 @@ Resolved the two production TypeScript failures reported by Vercel:
 - Finance workspace now imports the Recharts `BarChart` component used by its charts.
 
 These changes are frontend-only. No database, schema, migration, seed, or backend files were modified.
+
+## Service workspace audit — 2026-08-27
+
+### Technical Console comparison
+Inspected the existing returns and warranty/repair routes and mapped the Business Admin actions to the capabilities already exposed by the engine:
+- Returns: list, detail, create, lifecycle update and refund.
+- Warranty: summary, policies, claims, lifecycle update, repair creation, repair updates, parts use, collection and repair partners.
+- Cross-module references: customers, orders, sales, products/variants, inventory locations, staff/technicians and repair partners.
+
+### Business Admin changes
+- Added `apps/business-admin/components/ServiceWorkspace.tsx`.
+- Added Service route handling in `apps/business-admin/app/(business)/[...slug]/page.tsx`.
+- Added searchable returns/warranty records, detail views and operational actions.
+- Kept destructive business history under the existing controlled lifecycle rather than adding physical deletion.
+- Visible service wording was reviewed for business-user readability.
+
+### Protection
+- `server.js`, `returns-refunds.js`, `warranty-repairs.js`, other backend JavaScript and all SQL files are byte-for-byte unchanged versus the incoming baseline ZIP.
+- No database connection was opened by the build/audit process.
+- No reset, migration, truncate, drop, recreate or seed operation was performed.
+
+### Validation
+- Root and public JavaScript syntax: PASS.
+- Backend/SQL unchanged comparison: PASS.
+- Service route/import inspection: PASS.
+- ZIP packaging and integrity: to be completed after documentation/final package generation.
+- Full Next.js production build: not claimed due environment dependency/build limitation.
+
+### Next
+Website Management.

@@ -5,6 +5,7 @@ import { FinanceWorkspace } from '@/components/FinanceWorkspace';
 import { CreditWorkspace } from '@/components/CreditWorkspace';
 import { TeamWorkspace } from '@/components/TeamWorkspace';
 import { DeliveryWorkspace } from '@/components/DeliveryWorkspace';
+import { ServiceWorkspace } from '@/components/ServiceWorkspace';
 import { businessGetSafe, cardEntries, money, number } from '@/lib/business';
 
 type Params = { slug: string[] };
@@ -156,6 +157,39 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
     return <CreditWorkspace summary={summary ?? {}} profiles={profiles ?? []} applications={applications ?? []} accounts={accounts ?? []} customers={customerRows} permissions={me?.permissions ?? []}/>;
   }
 
+  if (key === 'service') {
+    const [me, returnsSummary, warrantySummary, returns, claims, policies, partners, customers, orders, sales, variants, locations, staff] = await Promise.all([
+      businessGetSafe<ApiRecord>('/api/me'),
+      businessGetSafe<ApiRecord>('/api/returns/summary'),
+      businessGetSafe<ApiRecord>('/api/warranty/summary'),
+      businessGetSafe<any[]>('/api/returns'),
+      businessGetSafe<any[]>('/api/warranty/claims'),
+      businessGetSafe<any[]>('/api/warranty/policies'),
+      businessGetSafe<any[]>('/api/warranty/partners'),
+      businessGetSafe<any[]>('/api/customers?limit=200'),
+      businessGetSafe<any>('/api/orders?limit=200'),
+      businessGetSafe<any>('/api/sales?limit=200'),
+      businessGetSafe<any[]>('/api/catalog/variants'),
+      businessGetSafe<any[]>('/api/inventory/locations'),
+      businessGetSafe<any[]>('/api/staff'),
+    ]);
+    return <ServiceWorkspace
+      returnsSummary={returnsSummary ?? {}}
+      warrantySummary={warrantySummary ?? {}}
+      returns={returns ?? []}
+      claims={claims ?? []}
+      policies={policies ?? []}
+      partners={partners ?? []}
+      customers={customers ?? []}
+      orders={Array.isArray(orders) ? orders : orders?.rows ?? []}
+      sales={Array.isArray(sales) ? sales : sales?.rows ?? []}
+      variants={variants ?? []}
+      locations={locations ?? []}
+      staff={staff ?? []}
+      permissions={me?.permissions ?? []}
+    />;
+  }
+
   if (key === 'delivery') {
     const [me, summary, shipments, zones, partners, orders, drivers] = await Promise.all([
       businessGetSafe<ApiRecord>('/api/me'),
@@ -169,19 +203,6 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
     return <DeliveryWorkspace summary={summary ?? {}} shipments={shipments ?? []} zones={zones ?? []} partners={partners ?? []} orders={orders ?? []} drivers={drivers ?? []} permissions={me?.permissions ?? []} isSuperAdmin={Boolean(me?.isSuperAdmin)} />;
   }
 
-  if (key === 'service') {
-    const [returns, warranty] = await Promise.all([
-      businessGetSafe<ApiRecord>('/api/returns/summary'),
-      businessGetSafe<ApiRecord>('/api/warranty/summary'),
-    ]);
-    return <Workspace title={title} description={description} cards={cardEntries([
-      ['Returns awaiting action', number(returns?.requested)],
-      ['Refunds pending', number(returns?.refundPending)],
-      ['Warranty cases open', number(warranty?.open)],
-      ['Repairs in progress', number(warranty?.inRepair)],
-      ['Ready for collection', number(warranty?.ready)],
-    ])} />;
-  }
 
   if (key === 'website') {
     const sites = await businessGetSafe<any>('/api/web/sites');

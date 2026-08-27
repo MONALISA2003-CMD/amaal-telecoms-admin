@@ -3025,3 +3025,40 @@ The workspace therefore uses:
 - Mobile-first tables and actionable detail screens.
 
 The Technical Console remains the foundation and Business Admin remains the business experience over the same authoritative engine and records. fileciteturn21file0L118-L173
+
+# 47. Service workspace — 2026-08-27
+
+The Business Admin Service workspace is now the single operational view for customer returns, warranty cases and repair work while continuing to use the existing business engine and records.
+
+## Service coverage
+- Returns command centre with return volume, refund attention and status journey.
+- Return creation from an existing order or completed sale.
+- Return line selection, quantities, condition and disposition.
+- Return status progression through the existing safe lifecycle.
+- Refund recording through the existing refund capability.
+- Warranty case creation linked to customer, order/sale, product and warranty policy.
+- Warranty coverage review and case status progression.
+- Repair work creation from an approved warranty case.
+- Repair assignment to an internal technician or approved repair partner.
+- Repair status, diagnosis, work completed, labour/partner cost and expected return tracking.
+- Repair-part consumption through the existing stock-control capability.
+- Completed repair collection and customer resolution through the existing warranty lifecycle.
+- Warranty policy creation.
+- Repair partner creation and business performance visibility.
+- Service history remains tied to customer, order, sale, product and stock relationships already held by the engine.
+
+## UX
+- Service is presented as an operational control centre rather than a technical support screen.
+- Attention areas, clear tabs, searchable records, detail views and action forms are used throughout.
+- Business-facing wording avoids developer terminology.
+- Existing premium restrained champagne/gold Business Admin direction is preserved.
+- Empty states are honest and do not invent service activity.
+
+## Protection
+- Existing Render business engine remains authoritative.
+- PostgreSQL remains the source of truth.
+- No schema, migration, reset, truncate, drop, recreate, reseed or direct data manipulation was performed by the Service build.
+- Existing backend modules `returns-refunds.js` and `warranty-repairs.js` were inspected but not modified.
+
+## Next build sequence
+Next core workspace: **Website Management**, followed by Reports/Business Intelligence and final cross-module regression/hardening.

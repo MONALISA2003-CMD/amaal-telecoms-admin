@@ -154,3 +154,32 @@ Then compare the complete technical capabilities against the Business Admin expe
 > Update `Amaal_plan.md`, `CONTINUATION.md`, `AUDIT_REPORT.md`, `PLAN_UPDATE_NOTES.md` and `BUILD_SOURCE_FINGERPRINT.txt` with the new state and next-module prompt.
 >
 > Only after the full audit and validation, package a complete ZIP containing the entire project and all required MD continuity files. Verify the ZIP contents before delivery.
+
+## Service completed in this increment — 2026-08-27
+
+- Business Admin Service workspace is complete for the capabilities already supported by the existing engine.
+- Returns, warranty, repairs, warranty policies and repair partners are connected to existing customers, orders, sales, products, stock and staff records.
+- Return creation/status/refund and warranty/repair actions use the existing business routes and permission checks.
+- Business Admin uses ordinary business terminology in the Service workspace.
+- No backend or SQL changes were made and no database operation was performed.
+- JavaScript syntax validation passed.
+
+## Next module: Website Management
+
+Build the Business Admin **Website Management** workspace next. Inspect the existing website/content/media/pricing capabilities first. Keep hosting, domain, deployment, connection and infrastructure administration in the Technical Console. Business Admin should expose only safe business content operations already supported by the engine: product/category presentation, banners/content, promotions where supported, publishing workflow, preview/status and content ownership. Do not invent capabilities or fabricate website metrics.
+
+### Mandatory continuity prompt
+
+> Continue Amaal Telecoms from this exact ZIP. First read `Amaal_plan.md`, `CONTINUATION.md`, `AUDIT_REPORT.md`, `PLAN_UPDATE_NOTES.md` and `BUILD_SOURCE_FINGERPRINT.txt`.
+>
+> Treat the existing Render business engine and PostgreSQL records as the only source of truth. **DO NOT reset, reseed, migrate, truncate, drop, recreate, overwrite or experiment with PostgreSQL. DO NOT replace or rewrite the existing backend.** Reuse existing capabilities and permissions. If a desired capability is not supported, record it as a dependency instead of changing the backend/database.
+>
+> Before editing, deeply inspect the Technical Console website/content/media/pricing routes and compare every safe business action, permission, status and data relationship.
+>
+> Build **Website Management** next as a complete real-business workspace. Keep technical hosting, domains, deployment and infrastructure out of Business Admin. Include useful business content management, publishing/approval states, product/category presentation, promotions where supported, search/filtering, detail views and mobile-first layouts.
+>
+> Ensure Administrator can perform all normal business actions supported by the current permission model and Super Admin can perform all supported actions. Preserve historical records with safe lifecycle actions instead of destructive erasure.
+>
+> Audit all existing modules after the Website build, including Authentication/Setup, Overview, Sales/POS, Products, Stock/Warehouse, Purchasing, Customers/CRM, Orders/Fulfilment, Delivery, Finance, Credit, Team, Service, permissions, shared UI and cross-module relationships. Check for bugs, stale data assumptions, broken links, incorrect permissions, technical wording, mobile issues and unsafe actions. Debug all safe issues found.
+>
+> Confirm backend and SQL/schema files remain unchanged. Update all continuity MD files and the build fingerprint. Only after the audit, validation and ZIP integrity check package the complete project.
