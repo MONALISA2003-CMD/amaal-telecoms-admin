@@ -1320,6 +1320,20 @@ CREATE TABLE IF NOT EXISTS delivery_shipments(
 );
 CREATE INDEX IF NOT EXISTS idx_delivery_shipments_status ON delivery_shipments(status,created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_delivery_shipments_driver ON delivery_shipments(driver_id,status);
+CREATE TABLE IF NOT EXISTS delivery_shipment_serial_units(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ shipment_id uuid NOT NULL REFERENCES delivery_shipments(id) ON DELETE RESTRICT,
+ serialized_unit_id uuid NOT NULL REFERENCES serialized_units(id) ON DELETE RESTRICT,
+ order_serial_unit_id uuid REFERENCES order_serial_units(id) ON DELETE RESTRICT,
+ status text NOT NULL DEFAULT 'Assigned' CHECK(status IN ('Assigned','Picked Up','In Transit','Out for Delivery','Delivered','Failed','Returned','Cancelled')),
+ created_at timestamptz NOT NULL DEFAULT now(),
+ picked_up_at timestamptz,
+ delivered_at timestamptz,
+ UNIQUE(shipment_id,serialized_unit_id),
+ UNIQUE(shipment_id,order_serial_unit_id)
+);
+CREATE INDEX IF NOT EXISTS idx_delivery_shipment_serial_units_shipment ON delivery_shipment_serial_units(shipment_id,status);
+CREATE INDEX IF NOT EXISTS idx_delivery_shipment_serial_units_unit ON delivery_shipment_serial_units(serialized_unit_id,created_at DESC);
 CREATE TABLE IF NOT EXISTS delivery_events(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(), shipment_id uuid NOT NULL REFERENCES delivery_shipments(id) ON DELETE CASCADE, status text NOT NULL, note text NOT NULL DEFAULT '', location_text text NOT NULL DEFAULT '', actor_id uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now()
 );

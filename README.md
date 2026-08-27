@@ -352,3 +352,5 @@ The runner checks the public health endpoint, application/database health, HTTPS
 The runner never creates, updates or deletes business records. It does not run SQL directly and does not reset or migrate PostgreSQL.
 
 If the authenticated cookie is omitted, authenticated checks are reported as skipped rather than being falsely reported as passed.
+
+Serialized fulfilment and delivery reconciliation is enforced through exact physical-unit shipment links; see `CONTINUATION.md` and `AUDIT_REPORT.md` for current status.

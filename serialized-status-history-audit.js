@@ -18,7 +18,7 @@ const checks=[
  ['order reservation transition exists',/status='Reserved'/.test(orders)&&/order_serial_units/.test(orders)],
  ['order cancellation releases reserved units',/status='In Stock'/.test(orders)&&/ORDER BY/.test(orders) || /status='In Stock'/.test(orders)],
  ['sales transition to sold exists',/status='Sold'/.test(sales)&&/sale_serial_units/.test(sales)],
- ['delivery accepts reserved serialized units',/status IN \('Reserved','In Stock'\)/.test(delivery)],
+ ['delivery accepts reserved serialized units',/status='Reserved'/.test(delivery)&&/delivery_shipment_serial_units/.test(delivery)],
  ['returns preserve serialized unit',/serialized_unit_id/.test(returns)&&/UPDATE serialized_units/.test(returns)],
  ['warranty preserves prior status/location',/prior_serial_status/.test(warranty)&&/prior_serial_location_id/.test(warranty)],
  ['history endpoint returns lifecycle ledger',/serialized_unit_status_history h/.test(server)&&/history,movements/.test(server)],

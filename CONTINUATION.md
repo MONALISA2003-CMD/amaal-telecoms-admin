@@ -316,3 +316,85 @@ Lifecycle history created by the new database trigger can identify the actor whe
 
 ### Next recommended build
 **Fulfilment/delivery reconciliation** — verify that the exact serialized unit assigned to an order remains the same unit through picking, dispatch, delivery and final sale state.
+
+
+## 27 Aug 2026 — Fulfilment & Delivery Reconciliation
+
+### What was just built
+- Added an additive `delivery_shipment_serial_units` ledger linking each delivery shipment to the exact physical units already assigned to its order.
+- Backfilled existing shipments from authoritative `order_serial_units` without deleting or replacing historical records.
+- Delivery creation now requires every serialized order line to have all required physical units assigned and still Reserved.
+- Shipment detail now exposes the exact physical units, batch and current unit state to authorized Business Admin users.
+- Delivery progression validates that serialized units remain Reserved before pickup/in-transit/out-for-delivery progression.
+- Delivery completion requires the shipment to contain every serialized physical unit and requires those units to still be Reserved before atomically marking the same units Sold.
+- Order dispatch now requires complete serialized-unit assignment.
+- A physical unit cannot be unassigned from an order while attached to an active delivery shipment.
+- Failed deliveries can return to the dispatch workflow without destroying physical-unit identity; cancelled/returned shipments can be replaced by a new shipment for the same order.
+- Added `fulfilment-delivery-audit.js` and `audit:fulfilment-delivery`.
+
+### End-to-end physical-unit chain
+**Purchase → Receiving → Batch → Physical Unit → Warehouse → Transfer → Order → Exact Unit Assignment → Reserved → Delivery Shipment → Pickup/Transit → Delivery → Sold**
+
+### Verification
+- Fulfilment/delivery reconciliation audit: **14/14 PASS**.
+- JavaScript syntax checks for changed backend files: **PASS**.
+- Existing serialized, receiving, transfer, order-assignment and cross-module audits remain required regression gates.
+- No production PostgreSQL connection or write was performed.
+- Production Next.js build remains **not verified** where dependencies are unavailable.
+
+### Known limitations
+- Live delivery transactions were not executed against production PostgreSQL in this environment.
+- Proof-of-delivery files/media remain represented by the existing proof reference fields; this change does not invent a fake photo/signature capture system.
+
+### Must NOT be changed
+- Preserve all existing business data and physical-unit history.
+- Never reset, truncate, drop or replace PostgreSQL.
+- Never create a competing inventory source of truth.
+- Never expose private IMEI/serial, supplier, cost or warehouse data through the public catalogue.
+- Preserve `Amaal_plan.md`.
+
+### Next recommended build
+**Returns → Warranty → Service reconciliation by exact physical unit**, ensuring the same IMEI/serial remains traceable after delivery and through every after-sales event.
+
+## 27 Aug 2026 — Returns / Warranty / Service Reconciliation
+
+### What was just completed
+- Returns now preserve exact serialized-unit identity through the original order/sale line.
+- Return creation locks the physical unit transactionally and rejects a unit already participating in an active return workflow.
+- Return disposition processing now correctly handles serialized Restock, Repair, Scrap and Quarantine-style outcomes without creating replacement units.
+- Warranty claims validate the exact physical unit against the originating order/sale and preserve prior status/location.
+- Warranty resolution/rejection/cancellation restores the same physical unit through the controlled lifecycle engine.
+- Repair jobs remain linked to the warranty claim and therefore the exact physical unit.
+- Neon database integrity indexes and lifecycle validation were applied additively and verified.
+- `returns-warranty-service-integrity-migration.sql` records the applied database migration for repeat-safe deployment history.
+
+### Current serialized lifecycle
+**Purchase → Receiving → Batch → Physical Unit → Warehouse → Transfer → Order → Exact Unit Assignment → Reserved → Delivery → Sold → Return → Inspection → Warranty/Service → Final disposition**
+
+### Verification
+- Render preflight: **PASS**.
+- Cross-module audit: **18/18 connected; 0 unmatched frontend API references**.
+- Serialized status/history audit: **14/14 PASS**.
+- Receiving/batch audit: **PASS**.
+- Warehouse transfer audit: **PASS**.
+- Exact order unit assignment audit: **20/20 PASS**.
+- Fulfilment/delivery reconciliation: **14/14 PASS**.
+- Serialized inventory audit: **PASS**.
+- Changed backend JavaScript syntax: **PASS**.
+- Neon schema verification: applied integrity additions verified; current serialized/return/warranty/repair row counts are zero.
+
+### Known limitations
+- Production Next.js build is not verified in the extracted environment because frontend dependencies are unavailable.
+- A PostgreSQL partial-index approach for active return units could not be used because PostgreSQL does not allow a subquery in an index predicate; application transaction locking provides the equivalent concurrency safeguard.
+- No live business transaction was fabricated for testing because the database currently contains no physical-unit/return/warranty/repair rows.
+
+### Must NOT be changed
+- Preserve all existing PostgreSQL business records.
+- Never reset, truncate, drop or replace the database.
+- Never delete physical-unit history to simplify a workflow.
+- Never expose IMEI, serial, supplier, cost, warehouse or internal unit history through the public catalogue.
+- Do not create a second inventory source of truth.
+- Preserve `Amaal_plan.md`.
+
+### Next recommended build
+**Reports / Business Intelligence serialized traceability** — expose useful management reporting for physical-unit lifecycle, stock ageing, transfers, returns, warranty and service while preserving all private identifiers and business permissions.

@@ -196,3 +196,40 @@ Delivery completion now accepts a serialized unit in `Reserved` state when that 
 
 ### Documentation hygiene
 The project continues to retain `Amaal_plan.md`. Redundant historical Markdown files previously identified were removed; current operational documentation is maintained through the plan, continuation, audit and cross-module documents.
+
+
+## 27 Aug 2026 — Fulfilment / Delivery Reconciliation Audit
+
+The delivery workflow was audited against the serialized physical-unit model. Delivery shipments now retain explicit links to the exact `serialized_units` assigned to the order. Shipment creation rejects incomplete serialized assignments; progression revalidates Reserved state; delivery completion requires the complete exact-unit set and atomically transitions those units to Sold. Order dispatch also requires complete serialized assignment, and active delivery blocks accidental unassignment. Existing shipments are backfilled additively.
+
+**Result: 14/14 PASS** (`fulfilment-delivery-audit.js`).
+
+No destructive database operation was performed and no production PostgreSQL write was executed.
+
+
+## Current project-wide verification — 27 Aug 2026
+
+After the fulfilment/delivery work, the serialized-inventory regression chain was re-run:
+- Fulfilment/delivery reconciliation: **14/14 PASS**.
+- Serialized status/history: **14/14 PASS**.
+- Exact order unit assignment: **20/20 PASS**.
+- Warehouse transfers: **PASS**.
+- Receiving/batch: **PASS**.
+- Serialized inventory: **PASS**.
+- Cross-module: **18/18 connected**, **0 unmatched frontend API references**.
+- Render preflight: **PASS**.
+- Destructive-operation scan: no active destructive serialized/delivery operation found.
+
+Environment limitations remain: `DATABASE_URL` is not configured and `pg_dump` is unavailable in this working environment, so no live PostgreSQL transaction, production backup drill, or production restore was executed. The production Next.js/TypeScript build also remains unverified because frontend dependencies are unavailable. These are explicitly not reported as passes.
+
+## 27 Aug 2026 — Returns / Warranty / Service Physical-Unit Integrity
+
+Returns, warranty and repair workflows were reviewed against the exact serialized physical-unit model. Serialized returns remain linked to the originating order/sale line and physical unit. Warranty claims retain the unit's prior status/location and move the unit into Service through the existing lifecycle engine; resolution restores the recorded prior state. Repair jobs remain linked to the warranty claim and therefore the same physical unit. Active duplicate warranty issues are protected in PostgreSQL, and additional return-unit concurrency protection is enforced transactionally in the application.
+
+A return disposition now correctly drives the serialized unit lifecycle when a return is restocked: Restock returns the unit to the selected location, Repair moves it to Service without assigning a stock location, Scrap moves it to Damaged, and quarantine-style dispositions do not create a replacement unit. Non-serialized stock is incremented only for actual Restock dispositions.
+
+**Result: application syntax and serialized lifecycle regression PASS.**
+
+Database integrity additions applied to the Neon main branch are additive and repeat-safe. Current Neon verification confirms the relevant serialized, status-history, return, warranty and repair tables contain zero rows at this time; no existing business records were changed.
+
+One additional proposed PostgreSQL partial index for active return units was rejected by PostgreSQL because index predicates cannot contain a subquery. It was therefore **not applied**. The equivalent concurrency protection is implemented transactionally in the return-creation workflow, and historical returns remain preserved.

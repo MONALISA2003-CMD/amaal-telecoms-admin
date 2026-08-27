@@ -38,3 +38,26 @@ ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS proof_reference text NOT
 ALTER TABLE delivery_shipments ADD COLUMN IF NOT EXISTS proof_notes text NOT NULL DEFAULT '';
 CREATE INDEX IF NOT EXISTS idx_delivery_shipments_tracking ON delivery_shipments(tracking_number) WHERE tracking_number<>'';
 CREATE INDEX IF NOT EXISTS idx_delivery_shipments_scheduled ON delivery_shipments(scheduled_at,status) WHERE scheduled_at IS NOT NULL;
+
+-- Exact serialized physical units attached to each delivery shipment.
+-- Additive and repeat-safe; existing shipments are backfilled from their authoritative order assignments.
+CREATE TABLE IF NOT EXISTS delivery_shipment_serial_units(
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ shipment_id uuid NOT NULL REFERENCES delivery_shipments(id) ON DELETE RESTRICT,
+ serialized_unit_id uuid NOT NULL REFERENCES serialized_units(id) ON DELETE RESTRICT,
+ order_serial_unit_id uuid REFERENCES order_serial_units(id) ON DELETE RESTRICT,
+ status text NOT NULL DEFAULT 'Assigned' CHECK(status IN ('Assigned','Picked Up','In Transit','Out for Delivery','Delivered','Failed','Returned','Cancelled')),
+ created_at timestamptz NOT NULL DEFAULT now(),
+ picked_up_at timestamptz,
+ delivered_at timestamptz,
+ UNIQUE(shipment_id,serialized_unit_id),
+ UNIQUE(shipment_id,order_serial_unit_id)
+);
+CREATE INDEX IF NOT EXISTS idx_delivery_shipment_serial_units_shipment ON delivery_shipment_serial_units(shipment_id,status);
+CREATE INDEX IF NOT EXISTS idx_delivery_shipment_serial_units_unit ON delivery_shipment_serial_units(serialized_unit_id,created_at DESC);
+
+INSERT INTO delivery_shipment_serial_units(shipment_id,serialized_unit_id,order_serial_unit_id,status)
+SELECT ds.id,os.serialized_unit_id,os.id,CASE WHEN ds.status='Delivered' THEN 'Delivered' WHEN ds.status='Returned' THEN 'Returned' WHEN ds.status='Cancelled' THEN 'Cancelled' ELSE 'Assigned' END
+FROM delivery_shipments ds
+JOIN order_serial_units os ON os.order_line_id IN (SELECT id FROM order_lines WHERE order_id=ds.order_id)
+WHERE NOT EXISTS (SELECT 1 FROM delivery_shipment_serial_units x WHERE x.shipment_id=ds.id AND x.serialized_unit_id=os.serialized_unit_id);
