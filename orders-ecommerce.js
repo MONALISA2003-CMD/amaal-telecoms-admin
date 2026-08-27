@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { transitionSerializedUnit } from './serialized-unit-lifecycle.js';
 
 export function registerOrdersEcommerce({app,auth,need,q,pool,audit,changeStock,reserveStock,releaseReservation}){
   const text=v=>String(v??'').trim();
@@ -97,7 +98,7 @@ export function registerOrdersEcommerce({app,auth,need,q,pool,audit,changeStock,
       await client.query("UPDATE inventory_reservations SET status='Consumed',released_at=now() WHERE id=$1",[r.id]);
     }
     const serials=(await client.query('SELECT su.id FROM order_serial_units os JOIN serialized_units su ON su.id=os.serialized_unit_id JOIN order_lines ol ON ol.id=os.order_line_id WHERE ol.order_id=$1 FOR UPDATE',[o.id])).rows;
-    for(const su of serials){const updated=await client.query("UPDATE serialized_units SET status='Sold',location_id=NULL,sold_at=now(),updated_at=now() WHERE id=$1 AND status IN ('In Stock','Reserved') RETURNING id",[su.id]);if(!updated.rows[0])throw new Error('A serialized unit assigned to this order is no longer available for fulfillment')}
+    for(const su of serials){let updated; try { updated=await transitionSerializedUnit(client,{unitId:su.id,toStatus:'Sold',actorId:req.user.id,reason:`Sold with ${o.order_no}`,sourceType:'OrderFulfillment',sourceId:o.id,soldAt:true,clearLocation:true}); } catch (e) { throw new Error('A serialized unit assigned to this order is no longer available for fulfillment'); }}
   }
 
   app.get('/api/orders/summary',auth,need('orders.view'),async(req,res)=>{
@@ -209,7 +210,7 @@ export function registerOrdersEcommerce({app,auth,need,q,pool,audit,changeStock,
       const assigned=(await client.query('SELECT count(*)::int c FROM order_serial_units WHERE order_line_id=$1',[line.id])).rows[0].c;if(assigned>=Number(line.quantity))throw new Error('All required serial units are already assigned');
       const su=(await client.query("SELECT * FROM serialized_units WHERE id=$1 AND variant_id=$2 AND location_id=$3 AND status='In Stock' AND NOT EXISTS (SELECT 1 FROM order_serial_units os WHERE os.serialized_unit_id=serialized_units.id) FOR UPDATE",[req.body?.serializedUnitId,line.variant_id,o.location_id])).rows[0];if(!su)throw new Error('Serialized unit is not available at the order location or is already assigned to another order');
       const r=(await client.query('INSERT INTO order_serial_units(order_line_id,serialized_unit_id,assigned_by) VALUES($1,$2,$3) RETURNING *',[line.id,su.id,req.user.id])).rows[0];
-      await client.query("UPDATE serialized_units SET status='Reserved',updated_at=now() WHERE id=$1",[su.id]);
+      await transitionSerializedUnit(client,{unitId:su.id,toStatus:'Reserved',actorId:req.user.id,reason:`Reserved physical unit for ${o.order_no}`,sourceType:'OrderSerialAssignment',sourceId:o.id});
       await client.query('COMMIT');await audit(req.user,'ORDER_SERIAL_ASSIGNED','Order',o.id,`Assigned physical unit ${su.id} to ${o.order_no}`,null,r,req.req);res.status(201).json(r)
     }catch(e){try{await client.query('ROLLBACK')}catch{}res.status(e.code==='23505'?409:400).json({error:e.code==='23505'?'That physical unit is already assigned to another order':e.message})}finally{client.release()}
   });
@@ -220,7 +221,7 @@ export function registerOrdersEcommerce({app,auth,need,q,pool,audit,changeStock,
       const a=(await client.query('SELECT os.*,su.status unit_status,su.location_id FROM order_serial_units os JOIN serialized_units su ON su.id=os.serialized_unit_id JOIN order_lines ol ON ol.id=os.order_line_id WHERE os.id=$1 AND ol.order_id=$2 FOR UPDATE',[req.params.assignmentId,o.id])).rows[0];if(!a)throw new Error('Physical-unit assignment not found');
       if(a.unit_status!=='Reserved')throw new Error('Only a reserved physical unit can be unassigned here');const shipment=(await client.query("SELECT ds.shipment_no,ds.status FROM delivery_shipments ds JOIN delivery_shipment_serial_units dsu ON dsu.shipment_id=ds.id WHERE ds.order_id=$1 AND dsu.serialized_unit_id=$2 AND ds.status NOT IN ('Cancelled','Returned') LIMIT 1 FOR SHARE",[o.id,a.serialized_unit_id])).rows[0];if(shipment)throw new Error(`This physical unit is already attached to active delivery ${shipment.shipment_no} (${shipment.status})`);
       await client.query('DELETE FROM order_serial_units WHERE id=$1',[a.id]);
-      await client.query("UPDATE serialized_units SET status='In Stock',updated_at=now() WHERE id=$1",[a.serialized_unit_id]);
+      await transitionSerializedUnit(client,{unitId:a.serialized_unit_id,toStatus:'In Stock',actorId:req.user.id,reason:`Released physical unit from ${o.order_no}`,sourceType:'OrderSerialUnassignment',sourceId:o.id});
       await client.query('COMMIT');await audit(req.user,'ORDER_SERIAL_UNASSIGNED','Order',o.id,`Unassigned physical unit ${a.serialized_unit_id} from ${o.order_no}`,a,null,req.req);res.json({ok:true,serializedUnitId:a.serialized_unit_id})
     }catch(e){try{await client.query('ROLLBACK')}catch{}res.status(400).json({error:e.message})}finally{client.release()}
   });

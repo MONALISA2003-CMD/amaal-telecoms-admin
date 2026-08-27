@@ -232,3 +232,10 @@ The live database currently reports **201 public tables**, **551 indexes**, **2 
 No production database migration was required for this reconciliation pass. No database reset, truncate, destructive reseed, or business-data modification was performed.
 
 A source-side `schema-reconciliation-audit.js` check was added for future deployments. It validates the critical business schema baseline when `DATABASE_URL` is available. In the present build environment the dependency installation is unavailable, so the new live connection check is marked unverified locally; the Neon checks above were performed directly against the live database.
+
+
+## Phase 3 — Application-Side Serialized Unit Lifecycle Hardening (2026-08-27)
+
+The serialized-unit workflow was hardened without changing the live Neon schema or business data. A shared `serialized-unit-lifecycle.js` guard now centralizes application-side transitions for order reservation/unassignment, fulfilment/delivery sale transitions, direct POS sale transitions, and manual status changes. Each transition locks the physical unit inside the caller transaction, validates the existing lifecycle, sets the authenticated actor context, updates the unit, and enriches the lifecycle-history row created by the existing PostgreSQL trigger. PostgreSQL remains the final status-transition enforcement layer.
+
+No database reset, truncation, destructive migration, or business-data deletion was performed.

@@ -381,3 +381,10 @@ Lifecycle history created by the new database trigger can identify the actor whe
 
 ### Next LLM prompt
 Continue Amaal ERP remediation from Phase 2. Do not reset Neon or delete business history. First verify the new schema-reconciliation audit with installed dependencies, then inspect and harden the serialized physical-unit reservation/state machine across Orders, Inventory, Sales, Fulfilment, Delivery, Returns, Warranty and Service. Use the existing database as authoritative and make only additive, tested changes.
+
+
+## Phase 3 — Application-Side Serialized Unit Lifecycle Hardening (2026-08-27)
+
+The serialized-unit workflow was hardened without changing the live Neon schema or business data. A shared `serialized-unit-lifecycle.js` guard now centralizes application-side transitions for order reservation/unassignment, fulfilment/delivery sale transitions, direct POS sale transitions, and manual status changes. Each transition locks the physical unit inside the caller transaction, validates the existing lifecycle, sets the authenticated actor context, updates the unit, and enriches the lifecycle-history row created by the existing PostgreSQL trigger. PostgreSQL remains the final status-transition enforcement layer.
+
+No database reset, truncation, destructive migration, or business-data deletion was performed.

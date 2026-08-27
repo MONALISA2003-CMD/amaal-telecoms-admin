@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { transitionSerializedUnit } from './serialized-unit-lifecycle.js';
 
 function clean(value, max=200){return String(value??'').trim().slice(0,max)}
 function normalise(value){return clean(value,120).replace(/^['\"]|['\"]$/g,'').trim()}
@@ -93,9 +94,8 @@ export function registerSerializedInventory({app,auth,need,q,pool,audit}){
         'Lost':['In Stock','Service','Damaged']
       };
       if(!manualTransitions[old.status]?.includes(next))throw new Error('This status is controlled by the related order, sale, transfer, return or receiving workflow.');
-      const u=(await client.query('UPDATE serialized_units SET status=$1,updated_at=now() WHERE id=$2 RETURNING *',[next,req.params.id])).rows[0];
       const reason=clean(req.body?.reason,300)||`Changed physical unit status to ${next}`;
-      await client.query('UPDATE serialized_unit_status_history SET reason=$1,source_type=$2,source_id=$3 WHERE id=(SELECT id FROM serialized_unit_status_history WHERE serialized_unit_id=$4 ORDER BY created_at DESC LIMIT 1)',[reason,'ManualStatusChange',u.id,u.id]);
+      const u=await transitionSerializedUnit(client,{unitId:req.params.id,toStatus:next,actorId:req.user.id,reason,sourceType:'ManualStatusChange',sourceId:req.params.id});
       await client.query('COMMIT');
       await audit(req.user,'SERIALIZED_UNIT_STATUS_CHANGED','SerializedUnit',u.id,reason,old,u,req.req);
       res.json(u);
