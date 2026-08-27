@@ -1,12 +1,20 @@
-# Amaal Telecoms — Phase 6 Continuation & Build-Control Prompt
+# Amaal Telecoms — Continuation & Build-Control Prompt
 
-## Continuity rule
+## Read first
 
-This file travels with every project ZIP. The next builder must read this file and `Amaal_plan.md` before changing anything.
+Before changing anything, read:
 
-> **ABSOLUTE RULE: Treat the existing PostgreSQL records and existing business engine as the source of truth. Do not reset, reseed, migrate, recreate, truncate, drop, clear, or experiment with the database. Do not rewrite or replace the existing backend.**
+1. `Amaal_plan.md`
+2. `CONTINUATION.md`
+3. `AUDIT_REPORT.md`
+4. `PLAN_UPDATE_NOTES.md`
+5. `BUILD_SOURCE_FINGERPRINT.txt`
+
+## Absolute source-of-truth rule
+
+> **The existing Render business engine and PostgreSQL records are authoritative. Do not reset, reseed, truncate, drop, recreate, migrate, overwrite or experiment with the database. Do not create a second business database. Do not replace the existing backend.**
 >
-> Business actions may use existing business capabilities. The Business Admin must remain a presentation and workflow layer and must never create a second source of truth.
+> If a desired business capability is not supported by the existing engine, record it as a blocked dependency unless explicit authorization is given to change the backend/database.
 
 ## Current architecture
 
@@ -15,112 +23,134 @@ Public Website
       |
 Business Admin
       |
-Existing controlled business engine
+Existing business engine on Render
       |
 PostgreSQL business records
+      |
+Technical Console
 ```
 
-The Technical Console remains the authoritative technical/advanced administration experience. Business Admin should expose normal business language and business workflows.
+Business Admin is the business experience. The Technical Console remains the technical/advanced administration experience.
 
-## Completed through this ZIP
+## Current completed modules
 
-- Business Admin foundation and authentication/setup.
-- Premium restrained champagne/gold glassmorphism for login/setup/password reset.
-- Executive Overview with meaningful business charts and operational attention.
-- Sales and POS.
-- Product catalogue and product administration.
-- Warehouse Control / Stock.
-- Purchasing and supplier operations.
-- Customers and Customer 360.
-- Orders and Fulfilment.
+- Authentication and administrator setup.
+- Premium restrained champagne/gold glass login/setup/password-reset direction.
+- Executive Overview.
+- Sales & POS.
+- Products / catalogue.
+- Stock / Warehouse Control.
+- Purchasing / suppliers.
+- Customers / CRM / Customer 360.
+- Orders & Fulfilment.
 - Finance.
 - Credit & instalments.
-- Active/deleted staff separation and staff lifecycle presentation.
-- Starter catalogue coverage for requested phone, tablet, entertainment, TV and brand structures.
-- Cross-module navigation and business relationships using existing capabilities.
+- Staff lifecycle, including Active Staff and Deleted Staff separation.
+- Delivery & Logistics.
+- Starter catalogue coverage requested for phones, tablets, entertainment, iPhones, Samsung Galaxy families and TV brands/sizes.
 
-## Finance & Credit now completed
+## Permission model now enforced
 
-### Finance workspace
-- Finance overview.
-- Revenue, expenses and net result.
-- Cash and bank position.
-- Customer balances to collect.
-- Supplier balances to pay.
-- Income versus expense visual comparison.
-- Largest expense areas.
-- Assets, liabilities and equity snapshot.
-- Financial entries.
-- Expenses.
-- Bank/cash activity.
-- Taxes.
-- Accounting periods and closing.
-- Trial balance.
-- Profit and loss.
-- Reconciliation entry point.
-- Controlled finance refresh/synchronization.
+- Administrator has the normal full business-operational permission set already defined by the engine.
+- Super Admin is treated as the top-level authority for all supported permissions.
+- Sensitive destructive identity actions remain explicitly Super Admin controlled.
+- Business records that must remain historically traceable should use cancel, void, reverse, archive, deactivate or another safe lifecycle action rather than physical deletion.
+- Permission checks are enforced by the service, not only by hiding browser buttons.
 
-### Credit workspace
-- Credit exposure summary.
-- Credit applications and review.
-- Customer credit limits.
-- Open credit accounts.
-- Overdue repayment attention.
-- Payment recording.
-- Collection follow-ups.
-- Authorized restructuring.
-- Customer/order/sales relationships through the existing engine.
+## Business-language boundary
 
-## Audit completed in this increment
+Do not expose developer/technical terminology in normal Business Admin screens. Avoid terms such as:
 
-- Compared Finance against `finance-accounting.js` before building.
-- Compared Credit against `credit-installments.js` before building.
-- Confirmed required finance and credit permissions already exist.
-- Confirmed no existing backend source module changed.
-- Confirmed no SQL/schema/migration/seed/database file changed.
-- Confirmed all JavaScript files pass syntax checking.
-- Confirmed Render preflight passes.
-- Reviewed visible business wording in newly changed areas and removed developer wording where found.
-- Rechecked authentication/setup presentation and upgraded it to restrained premium glassmorphism with champagne/gold accents.
+- API
+- endpoint
+- database
+- webhook
+- payload
+- server
+- deployment
+- infrastructure
+- UUID
+- JSON
+- schema
+- raw technical IDs
 
-## Known validation limitation
+Technical-only workspaces are not part of normal Business Admin navigation. Keep system operations, monitoring, backup/recovery execution, connection administration, webhook administration, feature controls and similar developer controls in the Technical Console.
 
-A live production build was not executed during this packaging pass because doing so would require the deployment environment and live business-data connection. Do not claim a production build passed unless the deployment system actually reports success.
-
-## Next module: Delivery & Logistics
-
-The next builder must first inspect `delivery-logistics.js` and compare every business capability against the Technical Console before implementing the Business Admin Delivery workspace.
-
-Build the module as a complete operational workspace, not a decorative summary. Include, where existing capabilities support them:
+## Delivery & Logistics completed in this increment
 
 - Delivery command centre.
-- Orders ready for dispatch.
-- Deliveries in transit.
-- Delivered and failed deliveries.
-- Delayed deliveries.
-- Delivery detail and journey.
-- Delivery areas.
-- Delivery partners.
-- Assignment and status actions.
-- Proof/notes/history where already supported.
-- Connections to Orders, Customers, Stock and Finance where existing business relationships support them.
+- Pending, in-transit, out-for-delivery, delayed, delivered, failed and returned KPIs.
+- Delivery zones, fees and expected timing.
+- Delivery partner management and performance.
+- Shipment creation.
+- Shipment editing while still open.
+- Driver and partner assignment.
+- Delivery journey/status history.
+- Delivery attempts.
+- Proof/recipient confirmation and failure notes.
+- Connections to Orders, Customers, Stock and Finance using existing engine behaviour.
+- Auditable shipment updates.
+- Closed deliveries cannot be edited through the ordinary shipment editor.
 
-Preserve the restrained premium business ERP visual language, useful charts, operational tables, clear attention areas, mobile-first behaviour and ordinary business language.
+## Validation completed for this ZIP
+
+- All JavaScript files pass syntax checking.
+- Render preflight passes.
+- Permission reference audit passes: 127 used permission IDs, 0 undefined.
+- No database/schema/seed files were modified.
+- No database reset, migration, truncate, drop, reseed or direct data manipulation was performed.
+- Production deployment build is not claimed until Vercel reports success.
+
+## Next module: Service
+
+Build the Business Admin **Service** workspace next, covering:
+
+- Returns.
+- Warranty.
+- Repairs.
+- Customer service cases.
+- Enquiries and follow-ups.
+- Service queues and attention areas.
+- Customer, order, product and delivery relationships.
+- Repair partners and service performance.
+- Parts/cost information where supported.
+- Status journey and history.
+- Clear mobile-first operational screens.
+
+Before building Service, inspect the existing Technical Console capabilities in:
+
+- `returns-refunds.js`
+- `warranty-repairs.js`
+- the customer/CRM routes
+- the order routes
+- relevant inventory and finance relationships
+
+Then compare the complete technical capabilities against the Business Admin experience and expose every safe business action already supported.
 
 ## Mandatory continuity build prompt
 
 > **Continue Amaal Telecoms from this exact ZIP.**
 >
-> First read `Amaal_plan.md`, `CONTINUATION.md`, `AUDIT_REPORT.md` and `PLAN_UPDATE_NOTES.md`. Then deeply inspect the complete current project and the existing Technical Console Delivery & Logistics capability before editing anything.
+> First read `Amaal_plan.md`, `CONTINUATION.md`, `AUDIT_REPORT.md`, `PLAN_UPDATE_NOTES.md` and `BUILD_SOURCE_FINGERPRINT.txt`.
 >
-> Treat the existing business engine and PostgreSQL records as the only source of truth. **DO NOT reset, reseed, migrate, recreate, truncate, drop, clear, overwrite or experiment with PostgreSQL. DO NOT rewrite, replace or refactor the existing backend.** Reuse existing capabilities and permissions. If a required capability is missing, record it as a blocked dependency rather than changing the database or backend without explicit authorization.
+> Treat the existing Render business engine and PostgreSQL records as the only source of truth. **DO NOT reset, reseed, migrate, truncate, drop, recreate, overwrite or experiment with PostgreSQL. DO NOT replace or rewrite the existing backend.** Reuse existing capabilities and permissions. If something is missing, record it as a dependency instead of changing the database/backend without explicit authorization.
 >
-> Build **Delivery & Logistics** next. Compare all existing delivery routes, permissions, status transitions, partner/area capabilities and order relationships first. Make the Business Admin a real business-management workspace with useful KPIs, delivery pipeline, trend/breakdown visuals, actionable exceptions, searchable tables, detail/journey views and safe operational actions already supported by the existing system.
+> Before editing, deeply inspect the Technical Console modules that correspond to the next Business Admin workspace. Compare routes, actions, permissions, statuses, data relationships and historical/audit behaviour.
 >
-> Business Admin must use ordinary business language only. Never expose developer terms such as API, endpoint, JSON, database, backend, server, schema, webhook, infrastructure or internal identifiers to business users. Technical words may remain inside source code where required, but not in business-facing labels, help text, errors or instructions.
+> Build **Service** next as a complete real-business workspace. It must support every safe business action already available through the existing engine, not merely display cards. Include useful KPIs, service queues, attention areas, search/filtering, detail views, status journeys, customer/order/product links, operational actions and clear mobile layouts.
 >
-> Preserve the premium restrained champagne/gold visual language, mobile-first layout, readable dense tables, meaningful charts and calm empty/error/loading states. Never fabricate business figures or turn missing data into zero without evidence.
+> Make sure Administrator can perform all normal business actions supported by the existing permission model. Make sure Super Admin can perform all supported actions. Keep destructive business history safe by using archive/cancel/reverse/deactivate where appropriate rather than erasing historical records.
 >
-> After Delivery & Logistics is built, audit ALL modules already built: authentication/setup, Overview, Sales/POS, Products, Warehouse Control, Purchasing, Customers, Orders/Fulfilment, Finance, Credit, Team, navigation, permissions, shared UI and the cross-module relationships. Check data mapping, loading/empty/error states, mobile behaviour, stale assumptions, wording, permission enforcement, source-of-truth boundaries and syntax/build compatibility. Debug every safe issue found.
+> Business Admin must use ordinary business language. Do not expose API, endpoint, database, webhook, payload, server, deployment, infrastructure, UUID, JSON, schema or raw technical identifiers to business users.
 >
-> Confirm the existing backend source and database files remain unchanged. Update `Amaal_plan.md`, `CONTINUATION.md`, `AUDIT_REPORT.md`, `PLAN_UPDATE_NOTES.md` and `BUILD_SOURCE_FINGERPRINT.txt`. Only after the audit and validation are complete, package a complete integrity-checked ZIP containing all required continuity MD files.
+> Preserve the premium restrained champagne/gold business ERP visual direction. Use meaningful charts and operational visuals where real data exists. Never fabricate figures. Empty, loading and error states must be calm and honest.
+>
+> After Service is built, audit **ALL** existing modules: authentication/setup, Overview, Sales/POS, Products, Stock/Warehouse, Purchasing, Customers/CRM, Orders/Fulfilment, Delivery, Finance, Credit, Staff, Website/content, Reports, permissions, shared UI and cross-module relationships.
+>
+> Check for bugs, stale assumptions, broken links, incorrect permissions, missing actions, technical wording, mobile problems, data-source mistakes, inconsistent statuses and unsafe destructive behaviour. Debug every safe issue found.
+>
+> Confirm database/schema/seed files remain unchanged and no database reset or destructive migration occurred.
+>
+> Update `Amaal_plan.md`, `CONTINUATION.md`, `AUDIT_REPORT.md`, `PLAN_UPDATE_NOTES.md` and `BUILD_SOURCE_FINGERPRINT.txt` with the new state and next-module prompt.
+>
+> Only after the full audit and validation, package a complete ZIP containing the entire project and all required MD continuity files. Verify the ZIP contents before delivery.

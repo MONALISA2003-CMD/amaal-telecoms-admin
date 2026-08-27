@@ -4,6 +4,7 @@ import { PurchasingWorkspace } from '@/components/PurchasingWorkspace';
 import { FinanceWorkspace } from '@/components/FinanceWorkspace';
 import { CreditWorkspace } from '@/components/CreditWorkspace';
 import { TeamWorkspace } from '@/components/TeamWorkspace';
+import { DeliveryWorkspace } from '@/components/DeliveryWorkspace';
 import { businessGetSafe, cardEntries, money, number } from '@/lib/business';
 
 type Params = { slug: string[] };
@@ -156,14 +157,16 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
   }
 
   if (key === 'delivery') {
-    const summary = await businessGetSafe<ApiRecord>('/api/delivery/summary');
-    return <Workspace title={title} description={description} cards={cardEntries([
-      ['Total shipments', number(summary?.total)],
-      ['Pending', number(summary?.pending)],
-      ['In transit', number(summary?.transit)],
-      ['Out for delivery', number(summary?.outForDelivery)],
-      ['Failed', number(summary?.failed)],
-    ])} />;
+    const [me, summary, shipments, zones, partners, orders, drivers] = await Promise.all([
+      businessGetSafe<ApiRecord>('/api/me'),
+      businessGetSafe<ApiRecord>('/api/delivery/summary'),
+      businessGetSafe<any[]>('/api/delivery/shipments'),
+      businessGetSafe<any[]>('/api/delivery/zones'),
+      businessGetSafe<any[]>('/api/delivery/partners'),
+      businessGetSafe<any[]>('/api/orders?limit=300'),
+      businessGetSafe<any[]>('/api/delivery/drivers'),
+    ]);
+    return <DeliveryWorkspace summary={summary ?? {}} shipments={shipments ?? []} zones={zones ?? []} partners={partners ?? []} orders={orders ?? []} drivers={drivers ?? []} permissions={me?.permissions ?? []} isSuperAdmin={Boolean(me?.isSuperAdmin)} />;
   }
 
   if (key === 'service') {
@@ -204,11 +207,20 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
   }
 
   if (key === 'team') {
-    const [staff, deletedStaff] = await Promise.all([
+    const [me, staff, deletedStaff, roles] = await Promise.all([
+      businessGetSafe<ApiRecord>('/api/me'),
       businessGetSafe<any[]>('/api/staff'),
       businessGetSafe<any[]>('/api/staff/deleted'),
+      businessGetSafe<any[]>('/api/roles'),
     ]);
-    return <TeamWorkspace active={Array.isArray(staff) ? staff : []} deleted={Array.isArray(deletedStaff) ? deletedStaff : []} />;
+    return <TeamWorkspace
+      active={Array.isArray(staff) ? staff : []}
+      deleted={Array.isArray(deletedStaff) ? deletedStaff : []}
+      roles={Array.isArray(roles) ? roles : []}
+      permissions={me?.permissions ?? []}
+      isSuperAdmin={Boolean(me?.isSuperAdmin)}
+      currentUserId={me?.user?.id}
+    />;
   }
 
   if (key === 'settings') {

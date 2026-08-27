@@ -2963,3 +2963,65 @@ Finance and Credit were added to the business-facing workspace using the existin
 
 ## Next build sequence
 The next core business module is **Delivery & Logistics**, followed by Service, Website Management, Reports/Business Intelligence, Team/role-specific experiences, Public Website, Commerce and final cross-platform regression.
+
+# 44. Permission model hardening — 2026-08-27
+
+Business Admin permissions follow a real ERP-style role model:
+
+- Administrator: full business-operational access across the business modules and actions already supported by the existing engine.
+- Super Admin: unrestricted administrative authority across all supported actions, with an explicit safety rule that destructive actions must preserve historical business records where those records are legally/operationally required.
+- Managers and specialist staff: access remains limited to the permissions assigned to their role.
+- Permission checks are enforced on the business service, not only by hiding buttons in the browser.
+- Super Admin is treated as an explicit top-level authority so newly added supported permissions do not accidentally lock the Super Admin out.
+
+For ERP safety, “delete” does not automatically mean physically erasing a business record. Financial entries, completed sales, deliveries, orders, stock movements and audit history should use the appropriate business action such as cancel, void, archive, deactivate or reverse. This preserves traceability while still giving Super Admin complete control over the lifecycle.
+
+This follows established ERP authorization practice: permissions are role-based, action-specific, auditable and may be further restricted by the business object or organizational scope. citeturn0search0turn0search1turn0search10
+
+# 45. Business Admin technical-language boundary — 2026-08-27
+
+The Business Admin navigation must not expose technical operations that belong to the Technical Console. Technical screens such as infrastructure/operations monitoring, backup and recovery execution, connection/webhook management, feature controls and similar developer controls remain outside the normal business workspace.
+
+Business users should see ordinary language such as:
+
+- Business profile
+- Staff
+- Products
+- Stock
+- Purchasing
+- Customers
+- Sales
+- Orders
+- Delivery
+- Finance
+- Reports
+- Website content
+- Security
+
+They should not be presented with developer terminology or raw technical identifiers.
+
+# 46. Delivery & Logistics design direction
+
+Delivery is a complete operational workspace, not a status list. It must answer:
+
+1. What is waiting to leave?
+2. What is currently moving?
+3. What is late?
+4. What has been delivered or failed?
+5. Who is responsible for each delivery?
+6. What does delivery cost?
+7. Which customers, orders and stock movements are affected?
+
+The workspace therefore uses:
+
+- Delivery command centre KPIs.
+- Delayed-delivery attention.
+- Delivery zones and fees.
+- Delivery partner management and performance.
+- Shipment creation and editing where the existing engine permits it.
+- Delivery journey/status history.
+- Attempts, proof and failure notes.
+- Connections to Orders, Customers, Stock and Finance through the existing engine.
+- Mobile-first tables and actionable detail screens.
+
+The Technical Console remains the foundation and Business Admin remains the business experience over the same authoritative engine and records. fileciteturn21file0L118-L173

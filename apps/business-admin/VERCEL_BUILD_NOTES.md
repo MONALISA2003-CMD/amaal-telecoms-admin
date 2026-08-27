@@ -57,3 +57,14 @@ This ZIP is the audited source package. The final Vercel build still must be exe
 - `/login` checks `/api/setup/status` and redirects to `/setup` when the existing Render engine reports that administrator setup is required.
 - `/setup` calls the existing Render `/api/setup` endpoint through a server-side Vercel route and preserves the existing auth-cookie bridge.
 - No database schema, SQL, migration, reset, or direct PostgreSQL access was added to Business Admin.
+
+## Permission and Delivery hardening — 2026-08-27
+
+- `Workspace` card data is normalized through `cardEntries`, so card labels and values are always strings. This directly addresses the previous Vercel TypeScript failure where `Card.label` was inferred as `string | number`.
+- The Business Admin Team workspace now supports staff creation, role assignment, activation/deactivation and Super Admin-only deletion through the existing Render engine.
+- Deleted staff remain separated from active staff.
+- The Business Admin sidebar now recognises Super Admin as a top-level authority instead of depending only on the returned permission list.
+- Delivery now has an operational workspace with shipment creation/editing/status updates, delivery zones and delivery partners.
+- No PostgreSQL client or database access was added to the Next.js application. All business mutations continue through the existing Render engine proxy.
+- No database reset, migration, seed, truncate, drop or direct data manipulation was performed.
+- TypeScript/TSX transpile syntax audit passed for 52 source files. Full `next build` still requires dependency installation and the Vercel environment.

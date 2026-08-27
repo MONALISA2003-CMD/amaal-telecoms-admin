@@ -275,3 +275,69 @@ A live deployment build was not run from this packaging environment. The deploym
 ## Next
 
 Next core module: **Delivery & Logistics**.
+
+## Permission and business-language hardening — 2026-08-27
+
+### Role behaviour
+- Confirmed the existing Administrator role is populated from the complete business permission catalogue during normal application initialization.
+- Hardened Super Admin checks so Super Admin is treated as an explicit top-level authority in the permission middleware as well as the existing protected administration routes.
+- Confirmed there are no undefined permissions referenced by `need(...)` checks: 127 used permission IDs were compared against the defined permission catalogue and none were missing.
+- Preserved the existing Super Admin-only protection around permanent staff-account deletion.
+
+### ERP-safe deletion rule
+The audit does not treat physical deletion as the default meaning of “delete”. Where records carry operational or financial history, the correct action is cancellation, reversal, archival, deactivation or another controlled lifecycle action. This matches established ERP authorization patterns where create/change/delete/release/status actions are separately controlled and audited. citeturn0search0turn0search1turn0search36
+
+### Technical-language boundary
+Business Admin navigation was reviewed and technical-only workspaces were removed from the normal business navigation, including:
+- feature controls;
+- hosting/domain/health administration;
+- AI administration;
+- integration/webhook administration;
+- system operations;
+- monitoring;
+- backup/recovery execution.
+
+The technical capabilities remain in source/technical areas where required; they are not presented as ordinary business modules.
+
+### Delivery & Logistics hardening
+- Added delayed-delivery and returned-delivery KPIs.
+- Added delivery-zone management presentation.
+- Added shipment editing for open deliveries.
+- Kept closed deliveries protected from ordinary editing.
+- Preserved order fulfilment, stock consumption, serialized-unit validation and finance posting behaviour already provided by the existing engine.
+- Added auditable delivery-update events.
+
+### Validation
+- All JavaScript source files: PASS.
+- Render preflight: PASS.
+- Permission reference audit: PASS; 127 used permissions, 0 missing definitions.
+- Database/schema/seed files were not modified.
+- No database connection was opened for this audit/package pass.
+- No database reset, migration, truncate, drop or reseed was performed.
+- Full production deployment build remains a deployment-environment validation step and is not claimed here.
+
+## Business Admin / Vercel source audit — 2026-08-27
+
+The ZIP contains the actual Next.js Business Admin application under `apps/business-admin`, so the Vercel build path was audited as part of this increment rather than treating the legacy/public application alone as the source.
+
+### Previous Vercel failure
+The reported TS2322 failure was caused by the Business Admin card contract receiving values inferred as `string | number` while `Workspace` requires `Card.label: string`. The current `cardEntries()` helper explicitly converts labels and values to strings. The audited source therefore no longer contains the reported type mismatch at that contract boundary.
+
+### Business Admin permission UX
+- Sidebar now recognises Super Admin as the top-level authority.
+- Team workspace can create staff, assign roles, activate/deactivate accounts and expose Super Admin-only deletion.
+- Deleted staff remain separated from active staff.
+- Delivery workspace can create/edit shipments, update delivery status, create/edit zones and create/edit partners.
+- Existing Render permission enforcement remains authoritative; the Business Admin UI is not the security boundary by itself.
+
+### Static validation
+- TypeScript/TSX transpile syntax: PASS across 52 source files, excluding the generated `next-env.d.ts` declaration stub.
+- JavaScript syntax: PASS.
+- Render preflight: PASS.
+- Permission reference audit: PASS; 127 used permission IDs and 0 missing definitions.
+
+### Build limitation
+The local environment could not complete `npm install` for `apps/business-admin` before the allowed execution window, so a local `next build` is not claimed. Vercel must execute the final dependency installation and production build from the committed source.
+
+### Database safety
+No PostgreSQL schema/seed file changed. No database reset, migration, truncate, drop, reseed or direct data manipulation was performed by this increment.

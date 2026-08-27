@@ -9,7 +9,7 @@ export async function BusinessShell({ children }: { children: ReactNode }) {
   const me = await businessGetSafe<Me>('/api/me');
   return (
     <div className="shell">
-      <Sidebar permissions={me?.permissions ?? []} />
+      <Sidebar permissions={me?.permissions ?? []} isSuperAdmin={Boolean(me?.isSuperAdmin)} />
       <main className="main">
         <Topbar name={me?.user?.name ? `Amaal Telecoms · ${me.user.name}` : 'Amaal Telecoms'} />
         <div className="content">{children}</div>

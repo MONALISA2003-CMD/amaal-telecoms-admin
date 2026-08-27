@@ -48,9 +48,9 @@ const groups = [
   { label: 'Business', items: ['Website', 'Team', 'Business Settings'] },
 ];
 
-export function Sidebar({ permissions = [] }: { permissions?: string[] }) {
+export function Sidebar({ permissions = [], isSuperAdmin = false }: { permissions?: string[]; isSuperAdmin?: boolean }) {
   const pathname = usePathname();
-  const visible = navGroups.filter(item => item.label === 'Overview' || permissions.includes(item.permission));
+  const visible = navGroups.filter(item => item.label === 'Overview' || isSuperAdmin || permissions.includes(item.permission));
   const visibleByLabel = new Map<string, (typeof navGroups)[number]>(visible.map(item => [item.label, item]));
 
   return <aside className="sidebar">

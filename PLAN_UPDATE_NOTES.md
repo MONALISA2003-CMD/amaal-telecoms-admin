@@ -98,3 +98,16 @@ No database operation was performed directly by this increment. Existing records
 - Existing backend source files were byte-for-byte unchanged compared with the incoming ZIP.
 - Only the Business Admin presentation files were changed: `public/app.js` and `public/index.html`.
 - Full production deployment was not run locally because the project requires the live environment for its data connections; no live database connection was opened for this audit.
+
+# Permission, UX and Delivery hardening — 2026-08-27
+
+- Audited the role model before continuing to the next operational module.
+- Administrator already receives the full set of normal business permissions defined by the current engine; this increment preserves that model.
+- Super Admin authorization was hardened so the top-level role is recognized as having every currently supported permission instead of depending on a potentially incomplete permission list.
+- Kept the existing safety boundary for destructive business records: historical sales, finance, stock, orders, deliveries and audit records should be cancelled, voided, reversed, archived or deactivated where appropriate rather than physically erased.
+- Audited Business Admin navigation and removed technical-only areas from the normal business-facing navigation: feature controls, hosting/health controls, AI/integration administration, system operations, monitoring and backup/recovery execution.
+- Added friendlier permission labels in the role editor instead of exposing raw permission names.
+- Added Delivery & Logistics improvements: delayed-delivery KPI, returned-delivery KPI, zone table, partner table, shipment editing for open deliveries, and clearer business wording.
+- Added a safe shipment-edit capability without changing the database structure.
+- No database reset, migration, reseed, truncate, drop or direct data manipulation was performed by this increment.
+- Validation: all JavaScript files pass syntax checking; Render preflight passes; permission usage audit found 127 used permissions with no undefined permission IDs.

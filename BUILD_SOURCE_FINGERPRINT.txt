@@ -1,9 +1,60 @@
-Finance & Credit Business Admin increment
+Amaal Telecoms Business Admin audited increment
 Date: 2026-08-27
-Backend source modified: NO
-Database/schema/seed files modified: NO
-Business Admin files modified: apps/business-admin/app/(business)/[...slug]/page.tsx, apps/business-admin/components/FinanceWorkspace.tsx, apps/business-admin/components/CreditWorkspace.tsx, apps/business-admin/app/globals.css
-Finance: completed
-Credit & instalments: completed
-Next module: Delivery & Logistics
-Validation: all JavaScript syntax PASS; Render preflight PASS; production deployment build not run locally
+Incoming baseline: amaal-telecoms-admin-finance-credit-audited.zip
+Scope: permission hardening, Business Admin Vercel build correction, Team management, Delivery management, technical-language boundary and audit/validation
+
+Authoritative source of truth: existing Render Amaal Engine + PostgreSQL business records
+Database policy: NO database reset, migration, truncate, drop, reseed or direct data manipulation performed
+Schema/seed files modified: NO
+
+Business Admin changes:
+- apps/business-admin/app/(business)/[...slug]/page.tsx
+- apps/business-admin/components/TeamWorkspace.tsx
+- apps/business-admin/components/DeliveryWorkspace.tsx
+- apps/business-admin/components/Sidebar.tsx
+- apps/business-admin/components/BusinessShell.tsx
+- apps/business-admin/lib/business.ts (existing card normalization retained and audited)
+- apps/business-admin/BUILD_SOURCE_FINGERPRINT.txt
+- apps/business-admin/VERCEL_BUILD_NOTES.md
+
+Existing engine changes:
+- server.js — Super Admin permission middleware hardening
+- delivery-logistics.js — delayed/returned metrics and safe editing of open deliveries
+- public/app.js — business-language boundary, Super Admin UI permission helper and legacy Business Admin delivery/permission improvements
+
+Continuity/audit documents updated:
+- Amaal_plan.md
+- CONTINUATION.md
+- AUDIT_REPORT.md
+- PLAN_UPDATE_NOTES.md
+- BUILD_SOURCE_FINGERPRINT.txt
+
+Completed modules carried forward:
+- Authentication/setup
+- Overview
+- Sales/POS
+- Products/catalogue
+- Stock/Warehouse
+- Purchasing
+- Customers/CRM
+- Orders/Fulfilment
+- Finance
+- Credit/Instalments
+- Staff lifecycle + Deleted Staff
+- Delivery & Logistics
+
+Current increment:
+- Administrator business permissions verified against existing permission catalogue.
+- Super Admin treated as top-level authority for supported permissions.
+- Team create/edit/activate/deactivate/delete controls added to Business Admin.
+- Delivery create/edit/status/zone/partner controls added to Business Admin.
+- Technical-only navigation removed from normal Business Admin.
+- Previous `Card.label string | number` Vercel build issue is corrected by explicit string normalization in `cardEntries`.
+
+Validation:
+- All JavaScript syntax: PASS
+- TypeScript/TSX transpile syntax: PASS (52 files; declaration stub excluded)
+- Render preflight: PASS
+- Permission reference audit: PASS (127 used, 0 missing)
+- SQL/schema/seed files: unchanged
+- Production `next build`: not claimed because dependency installation timed out in the restricted local environment
