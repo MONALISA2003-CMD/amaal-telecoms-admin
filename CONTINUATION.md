@@ -411,6 +411,51 @@ The existing Neon database remains unchanged. The centralized Render helper `ser
 ### Next LLM prompt
 Continue Amaal Telecoms ERP audit from Phase 3 safer-route completion. First run authenticated end-to-end tests for serialized physical-unit lifecycle: receiving → In Stock → exact order reservation → release/cancel → fulfilment → delivery → Sold, plus return/warranty/service paths and concurrent duplicate assignment protection. Do not reset Neon or fabricate test results. Then proceed to cross-module transaction integrity audit.
 
-## 2026-08-27 — Phase 3 verification continuation
+## Latest continuation — 2026-08-28
 
-Completed source-level serialized lifecycle verification after centralizing physical-unit transitions. All serialized status/history, exact order assignment, fulfilment/delivery, inventory-unit, and cross-module static audits pass. No Neon changes were required. Next priority is authenticated end-to-end transaction testing, followed by the remaining audit remediation phases.
+### Just completed
+- Added the canonical Master Television Product Catalog source data to the project.
+- Added 7 canonical TV brands: TCL, Hisense, CHiQ, Samsung, LG, Global Star, Black Ark.
+- Added 210 unique TV model/family entries and 236 catalogue variant rows from the supplied source.
+- Added repeat-safe `tv-master-catalogue-sync.sql`.
+- Connected Render startup to the TV master sync.
+- Connected Business Admin starter catalogue data to the same TV master source.
+- Added `tv-master-catalogue-audit.js` and `audit:catalog`.
+- Preserved existing catalogue records and prices; no destructive catalogue cleanup was performed.
+
+### Still pending
+- Execute the prepared TV catalogue synchronization against live Neon once the database connector accepts the existing project identifier.
+- Verify live product/variant counts after synchronization.
+- Run an authenticated Vercel → Render → Neon catalogue smoke test.
+- Continue Phase 4 cross-module transaction integrity audit.
+
+### Must not change
+- Do not reset, truncate, replace, or destructively reseed Neon.
+- Do not delete existing business catalogue/history simply to remove legacy duplicates.
+- Do not invent exact manufacturer model numbers where the source marks a family/generic listing as unverified.
+- Do not put purchase cost or selling price into master product identity.
+
+## Phase 4 cross-module integrity
+
+Completed offline verification of transaction boundaries and key serialized business flows. The current source passes 12/12 transaction-integrity checks and the major module audits. The next live-only gate is an authenticated Vercel → Render → Neon smoke test; do not fabricate this result.
+
+## TV master catalogue deduplication correction — 2026-08-28
+
+### Finding
+The deeper source comparison found 42 legacy generic TV product rows in the original starter seed. They were generic size-based records rather than exact manufacturer model records and were not present in the supplied Master Television Product Catalog v1.0. The master catalog is the authoritative TV source.
+
+### Corrected
+- Removed the 42 legacy generic TV product/variant seed pairs from `starter-catalogue-seed.sql` so they cannot be reintroduced by the repository seed.
+- Added `tv-master-catalogue-cleanup.sql` for a separate, conservative live-database cleanup.
+- Added `tv-master-catalogue-cleanup-audit.js` for repeatable read-only identification of the legacy rows.
+- Kept the 210 canonical TV model/family entries and 236 catalogue variants from the supplied master.
+- Preserved `Amaal_plan.md`.
+
+### Database rule
+The cleanup must never delete a TV product or variant that is referenced by business history. Unreferenced legacy generic records may be deleted; referenced records must be archived/hidden so historical relationships remain intact.
+
+### Live status
+The live Neon cleanup has **not** been executed because the connected Neon SQL operation is currently failing before SQL execution due to a project-identifier validation mismatch. No production data was changed.
+
+### Next step
+Resolve the Neon connector execution issue, then run the cleanup against the production branch only after reviewing the candidate rows. Verify that the canonical master remains the only active TV catalogue source and that no historical inventory/order/service relationship was lost.

@@ -271,14 +271,32 @@ The serialized physical-unit lifecycle was hardened at the Render application tr
 ### Limitation
 Full integration tests against live Neon require the project's runtime dependencies and authenticated test fixtures; they were not fabricated or claimed as passed when unavailable.
 
-## Phase 3 lifecycle verification — 2026-08-27
+## Television master catalogue synchronization — 2026-08-28
 
-- Serialized status/history audit: 14/14 PASS.
-- Exact order serial assignment audit: 20/20 PASS.
-- Fulfilment/delivery reconciliation audit: 14/14 PASS.
-- Inventory unit audit: PASS.
-- Cross-module audit: 104 frontend API references, 568 backend routes, 0 unmatched; 18 connected checks, 0 review checks.
+The supplied Master Television Product Catalog v1.0 is now represented in the project as a canonical, additive catalogue source. It contains 210 unique model/family entries across 7 canonical brands and 236 catalogue variant rows. Existing legacy TV records are preserved; the sync uses canonical product slugs/SKUs and updates catalogue identity/specification metadata without changing existing prices or physical inventory.
 
-The audit scripts were updated where their assertions were checking for legacy direct SQL status updates instead of the centralized `transitionSerializedUnit` implementation. No Neon schema or business data was changed during this verification.
+Canonical brands: TCL, Hisense, CHiQ, Samsung, LG, Global Star, Black Ark.
 
-Live end-to-end authenticated transaction testing remains a deployment/runtime verification item and is not claimed as passed here.
+The catalogue deliberately separates catalogue identity from inventory and pricing. Where the source does not provide an exact regional manufacturer SKU, the record is marked PARTIALLY_VERIFIED or UNVERIFIED rather than inventing a manufacturer model number.
+
+A repeat-safe SQL synchronization file is included as `tv-master-catalogue-sync.sql`, and the Render startup path loads it after the existing starter catalogue. The Business Admin source now imports the same canonical TV master data.
+
+**Live Neon status:** not modified in this pass because the connected database execution tool is currently rejecting its project identifier before SQL execution. No database write was attempted through a workaround. The supplied sync is ready for execution once the live connector accepts the existing project.
+
+## Phase 4 — cross-module transaction integrity
+
+Offline source audit completed on 2026-08-28. The major business modules use transaction boundaries and serialized operations now route through the centralized lifecycle guard. Receiving, Orders, Sales, Delivery, Returns, Warranty/Service and Inventory transaction-boundary checks pass 12/12. Receiving/batch, inventory units, exact order assignment, fulfilment/delivery, serialized status/history, warehouse transfer and cross-module audits all pass.
+
+This is a source-level verification, not a live authenticated production transaction. Neon remains untouched because the live connector currently rejects the existing project identifier before SQL execution.
+
+## TV catalogue deduplication correction — 2026-08-28
+
+A deeper comparison against the supplied **MASTER_TELEVISION_PRODUCT_CATALOG v1.0** identified an important catalogue issue in the earlier starter seed: it contained **42 generic TV product records** (and their 42 generic variants) using names such as `TCL 32 inch TV`, `Hisense 43 inch TV`, `Samsung 55 inch TV`, `LG Global Star 65 inch TV`, `SPJ 50 inch TV`, `Chiq 75 inch TV`, and `Smart Plus 75 inch TV`. These are not entries in the supplied master catalogue and therefore must not remain canonical TV catalogue records.
+
+The project source has now been corrected so the old generic TV seed records are no longer reintroduced. The canonical TV master remains the supplied source: 210 unique model/family entries across TCL, Hisense, CHiQ, Samsung, LG, Global Star and Black Ark.
+
+A separate `tv-master-catalogue-cleanup.sql` is included for the live database. It is intentionally NOT part of Render startup. It targets only the identified legacy generic TV slugs. It deletes a legacy product/variant only when there are no dependent business records; if historical/business references exist, it archives and hides the record instead of deleting it. This is required to preserve sales, inventory, warranty, service and other historical relationships.
+
+**Live Neon cleanup status:** not executed because the connected Neon SQL action is currently rejecting the existing project identifier at the connector boundary. No workaround or destructive write was attempted. Therefore no claim is made that the 42 legacy rows have already been removed from production.
+
+The Vercel Business Admin canonical TV data source contains only the supplied master catalogue and no longer has the old generic TV starter records in its source data.

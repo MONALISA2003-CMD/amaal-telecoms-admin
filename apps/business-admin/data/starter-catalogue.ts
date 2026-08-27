@@ -31,8 +31,7 @@ const galaxyFoldable = Array.from({ length: 5 }, (_, index) => 4 + index).flatMa
 const galaxyA = ['A57', 'A56', 'A36', 'A37', 'A26', 'A27', 'A16', 'A17', 'A07', 'A06']
   .map((model) => `Samsung Galaxy ${model}`);
 
-const tvBrands = ['TCL', 'Hisense', 'Samsung', 'LG Global Star', 'SPJ', 'Chiq', 'Smart Plus'];
-const tvSizes = ['32 inch', '43 inch', '50 inch', '55 inch', '65 inch', '75 inch'];
+import { tvMasterCatalog, tvMasterBrands } from './tv-master-catalogue';
 
 export const starterCatalogueCategories = [
   'Phones',
@@ -49,7 +48,7 @@ export const starterCatalogueCategories = [
 ];
 
 export const starterCatalogueBrands = [
-  'Apple', 'Samsung', 'TCL', 'Hisense', 'LG Global Star', 'SPJ', 'Chiq', 'Smart Plus',
+  'Apple', 'Samsung', 'TCL', 'Hisense', 'LG Global Star', 'LG', 'Global Star', 'Black Ark', 'CHiQ', 'SPJ', 'Smart Plus',
 ];
 
 export const starterCatalogueItems: StarterCatalogueItem[] = [
@@ -57,14 +56,19 @@ export const starterCatalogueItems: StarterCatalogueItem[] = [
   ...galaxyS.map((name) => ({ name, category: 'Phones', subcategory: 'Samsung Galaxy / S Series', brand: 'Samsung', productType: 'Phone' as const })),
   ...galaxyFoldable.map((name) => ({ name, category: 'Phones', subcategory: 'Samsung Galaxy / Foldable', brand: 'Samsung', productType: 'Phone' as const })),
   ...galaxyA.map((name) => ({ name, category: 'Phones', subcategory: 'Samsung Galaxy / A Series', brand: 'Samsung', productType: 'Phone' as const })),
-  ...tvBrands.flatMap((brand) => tvSizes.map((size) => ({
-    name: `${brand} ${size} TV`,
+  ...tvMasterCatalog.map((tv) => ({
+    name: `${tv.brand} ${tv.model} TV`,
     category: 'Entertainment',
     subcategory: 'TV',
-    brand,
+    brand: tv.brand,
     productType: 'TV' as const,
-    size,
-  }))),
+    size: tv.sizes[0] ? `${tv.sizes[0]} inch` : undefined,
+    sizes: tv.sizes,
+    technology: tv.technology,
+    generation: tv.generation,
+    verificationStatus: tv.verificationStatus,
+    market: tv.market,
+  })),
 ];
 
 export const starterCatalogueCollections = [
@@ -73,7 +77,7 @@ export const starterCatalogueCollections = [
 
 export const starterCatalogueSummary = {
   categories: starterCatalogueCategories.length,
-  brands: starterCatalogueBrands.length,
+  brands: starterCatalogueBrands.length + tvMasterBrands.length - 7,
   products: starterCatalogueItems.length,
   stockUnits: 0,
   collections: starterCatalogueCollections.length,

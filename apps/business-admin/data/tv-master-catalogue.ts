@@ -1,0 +1,1964 @@
+// Canonical TV catalogue imported from MASTER TELEVISION PRODUCT CATALOG v1.0 (2026-08-28).
+// Prices and physical inventory are intentionally excluded.
+export type TVCatalogEntry = { brand:string; model:string; sizes:string[]; technology:string; generation:string; verificationStatus:'VERIFIED'|'PARTIALLY_VERIFIED'|'UNVERIFIED'|'RETIRED'; market:'UGANDA'|'EAST_AFRICA'|'AFRICA'|'GLOBAL'; };
+export const tvMasterBrands = [
+  "TCL",
+  "Hisense",
+  "CHiQ",
+  "Samsung",
+  "LG",
+  "Global Star",
+  "Black Ark"
+] as const;
+export const tvMasterCatalog: TVCatalogEntry[] = [
+  {
+    "brand": "TCL",
+    "model": "C655",
+    "sizes": [
+      "43",
+      "50",
+      "55",
+      "65",
+      "75",
+      "85"
+    ],
+    "technology": "QLED / QLED PRO / 4K",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "TCL",
+    "model": "C6K",
+    "sizes": [
+      "50",
+      "55",
+      "65",
+      "75",
+      "85",
+      "98"
+    ],
+    "technology": "QD-Mini LED / QLED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "TCL",
+    "model": "C855",
+    "sizes": [
+      "65",
+      "75",
+      "85"
+    ],
+    "technology": "QD-Mini LED / QLED PRO",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "TCL",
+    "model": "C755",
+    "sizes": [
+      "50",
+      "55",
+      "65",
+      "75",
+      "85",
+      "98"
+    ],
+    "technology": "QD-Mini LED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "TCL",
+    "model": "P6K",
+    "sizes": [
+      "50",
+      "55",
+      "65",
+      "75"
+    ],
+    "technology": "4K LED / HDR",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "TCL",
+    "model": "V6C",
+    "sizes": [
+      "43",
+      "50",
+      "55",
+      "65",
+      "75"
+    ],
+    "technology": "4K LED / HDR",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "TCL",
+    "model": "S5K",
+    "sizes": [
+      "50"
+    ],
+    "technology": "QLED / FHD",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "TCL",
+    "model": "S5400",
+    "sizes": [
+      "43"
+    ],
+    "technology": "FHD LED / Smart TV",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "TCL",
+    "model": "C645",
+    "sizes": [],
+    "technology": "",
+    "generation": "LEGACY",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "TCL",
+    "model": "P635",
+    "sizes": [],
+    "technology": "",
+    "generation": "LEGACY",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "TCL",
+    "model": "P745",
+    "sizes": [],
+    "technology": "",
+    "generation": "LEGACY",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "32A4QS",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "40A4QS",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "43A4QS",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "43A6N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "43A6Q",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "50A6N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "50A6Q",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "55A6N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "55A6Q",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "65A6N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "65A6Q",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "75A6N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "75A6Q",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "85A6N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "40A5200F",
+    "sizes": [],
+    "technology": "",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "32A5200F",
+    "sizes": [],
+    "technology": "",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "32Q4Q",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "43Q6N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "50Q6N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "55Q6N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "65Q6N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "75Q6N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "85Q6N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "85Q7Q",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "55U6N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "55U7N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "65U7N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "75U7N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "85U7N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Hisense",
+    "model": "65A85LEVS",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "CHiQ",
+    "model": "G5000",
+    "sizes": [
+      "32"
+    ],
+    "technology": "",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "CHiQ",
+    "model": "L32G7V",
+    "sizes": [
+      "32"
+    ],
+    "technology": "",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "CHiQ",
+    "model": "G7P",
+    "sizes": [
+      "32",
+      "43",
+      "75"
+    ],
+    "technology": "",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "CHiQ",
+    "model": "32G4500",
+    "sizes": [
+      "32"
+    ],
+    "technology": "",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "CHiQ",
+    "model": "U43G7H",
+    "sizes": [
+      "43"
+    ],
+    "technology": "",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "CHiQ",
+    "model": "43G7P",
+    "sizes": [
+      "43"
+    ],
+    "technology": "",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "CHiQ",
+    "model": "U50G7H",
+    "sizes": [
+      "50"
+    ],
+    "technology": "",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "CHiQ",
+    "model": "U55G7H",
+    "sizes": [
+      "55"
+    ],
+    "technology": "",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "CHiQ",
+    "model": "U65G7H",
+    "sizes": [
+      "65"
+    ],
+    "technology": "",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "CHiQ",
+    "model": "55Q6N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "CHiQ",
+    "model": "55Q7N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "CHiQ",
+    "model": "65Q7N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "CHiQ",
+    "model": "85Q8N",
+    "sizes": [],
+    "technology": "",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "U7000H",
+    "sizes": [],
+    "technology": "Crystal UHD",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "U7020H",
+    "sizes": [],
+    "technology": "Crystal UHD",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "U8000H",
+    "sizes": [],
+    "technology": "Crystal UHD",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "U8020H",
+    "sizes": [],
+    "technology": "Crystal UHD",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "Q5F",
+    "sizes": [],
+    "technology": "QLED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN70H",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN73H",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN80H",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN1EH",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN60H",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "S83H",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "S85H",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "S90H",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "S93H",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "S95H",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "S99H",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "R85H",
+    "sizes": [],
+    "technology": "Micro RGB",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "R95H",
+    "sizes": [],
+    "technology": "Micro RGB",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "U7000F",
+    "sizes": [],
+    "technology": "Crystal UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "U8000F",
+    "sizes": [],
+    "technology": "Crystal UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "Q6F",
+    "sizes": [],
+    "technology": "QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "Q7F",
+    "sizes": [],
+    "technology": "QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "Q8F",
+    "sizes": [],
+    "technology": "QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN70F",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN80F",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN85F",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN90F",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN900F",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN950F",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "S85F",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "S90F",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "S95F",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "The Frame LS03F",
+    "sizes": [],
+    "technology": "Lifestyle",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "DU7000",
+    "sizes": [],
+    "technology": "Crystal UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "DU8000",
+    "sizes": [],
+    "technology": "Crystal UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "Q60D",
+    "sizes": [],
+    "technology": "QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "Q70D",
+    "sizes": [],
+    "technology": "QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "Q80D",
+    "sizes": [],
+    "technology": "QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN85D",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN90D",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN95D",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN800D",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN900D",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "S85D",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "S90D",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "S95D",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "The Frame LS03D",
+    "sizes": [],
+    "technology": "Lifestyle",
+    "generation": "PREVIOUS",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "CU8000",
+    "sizes": [],
+    "technology": "Crystal UHD",
+    "generation": "LEGACY",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "Q60C",
+    "sizes": [],
+    "technology": "QLED",
+    "generation": "LEGACY",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "Q70C",
+    "sizes": [],
+    "technology": "QLED",
+    "generation": "LEGACY",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN90C",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "LEGACY",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN95C",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "LEGACY",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN800C",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "LEGACY",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "QN900C",
+    "sizes": [],
+    "technology": "Neo QLED",
+    "generation": "LEGACY",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Samsung",
+    "model": "The Frame LS03C",
+    "sizes": [],
+    "technology": "Lifestyle",
+    "generation": "LEGACY",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "QNED93",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "QNED87",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "QNED86",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "QNED85",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "QNED83",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "QNED81",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "QNED80",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "QNED8E",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "QNED72",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "QNED71",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "QNED70",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "QNED EVO MINI LED",
+    "sizes": [],
+    "technology": "QNED EVO MINI LED",
+    "generation": "CURRENT",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED55B5",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED55C5",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED55G5",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED65B5",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED65C5",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED65G5",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED77C5",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED77G5",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED83C5",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED83G5",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED97M5",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "43UT8000",
+    "sizes": [],
+    "technology": "UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "50UT8000",
+    "sizes": [],
+    "technology": "UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "55UT8000",
+    "sizes": [],
+    "technology": "UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "65UT8000",
+    "sizes": [],
+    "technology": "UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "75UT8000",
+    "sizes": [],
+    "technology": "UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "86UT8000",
+    "sizes": [],
+    "technology": "UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "43QNED75",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "50QNED75",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "50QNED85",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "55QNED70A6A",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "55QNED80A6A",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "55QNED85",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "55QNED92",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "65QNED70A6A",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "65QNED80A6A",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "65QNED85",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "65QNED92",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "75QNED70A6A",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "75QNED80A6A",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "75QNED85",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "75QNED92",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "86QNED70A6A",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "86QNED80A6A",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "86QNED85",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "43UR7300",
+    "sizes": [],
+    "technology": "UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "43UR8000",
+    "sizes": [],
+    "technology": "UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "50UR7500",
+    "sizes": [],
+    "technology": "UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "55UR8000",
+    "sizes": [],
+    "technology": "UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "65UR8000",
+    "sizes": [],
+    "technology": "UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "75UR8000",
+    "sizes": [],
+    "technology": "UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "86UR8000",
+    "sizes": [],
+    "technology": "UHD",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "43NANO75",
+    "sizes": [],
+    "technology": "NanoCell",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "50NANO77",
+    "sizes": [],
+    "technology": "NanoCell",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "55QNED75",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "55QNED80",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "65QNED80",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "75QNED80",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "86QNED80",
+    "sizes": [],
+    "technology": "QNED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED55B4",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED55C4",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED65B4",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED65C4",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "PREVIOUS",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED55B3",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "LEGACY",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "OLED55C3",
+    "sizes": [],
+    "technology": "OLED",
+    "generation": "LEGACY",
+    "verificationStatus": "VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "UR7300",
+    "sizes": [],
+    "technology": "UHD",
+    "generation": "LEGACY",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "LG",
+    "model": "UR8000",
+    "sizes": [],
+    "technology": "UHD",
+    "generation": "LEGACY",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "GS-2219A",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "GS-24D5",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "GS-26D5 T2",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "GS-2624D",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "32UK50",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "32UK64",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "42UK64",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "43LK50",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "75QD75",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "85QD85",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "22 inch Digital LED",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "24 inch AC/DC Digital LED",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "32 inch Frameless Digital TV",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "32 inch VIDAA Smart",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "40 inch Frameless Digital",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "40 inch Frameless Android Smart",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "43 inch QLED Satellite TV",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "50 inch 4K UHD Android TV",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "55 inch Smart TV",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "55 inch 4K UHD Android Smart TV",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Global Star",
+    "model": "65 inch 4K UHD Android Smart TV",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Black Ark",
+    "model": "22 inch Analog Frameless TV",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Black Ark",
+    "model": "24 inch Digital LED TV",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Black Ark",
+    "model": "32 inch Digital LED HD TV",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Black Ark",
+    "model": "32 inch Android Smart TV",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Black Ark",
+    "model": "40 inch Digital Frameless TV",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Black Ark",
+    "model": "43 inch FHD Smart LED TV",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Black Ark",
+    "model": "50 inch UHD 4K Smart Android TV",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Black Ark",
+    "model": "55 inch 4K Android Smart TV",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Black Ark",
+    "model": "65 inch 4K Android Smart TV",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "UNVERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Black Ark",
+    "model": "P40S10",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  },
+  {
+    "brand": "Black Ark",
+    "model": "T43D10",
+    "sizes": [],
+    "technology": "",
+    "generation": "UNKNOWN",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "market": "GLOBAL"
+  }
+] ;

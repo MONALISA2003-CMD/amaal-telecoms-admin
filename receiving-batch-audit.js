@@ -15,7 +15,7 @@ const checks=[
  ['rejected quantity does not enter stock',/delta:accepted/.test(procurement)&&/received_qty=received_qty\+\$1/.test(procurement)],
  ['PO received quantity tracks accepted quantity',/const accepted=qty-rejected/.test(procurement)&&/received_qty=received_qty\+\$1/.test(procurement)],
  ['duplicate identifiers checked across identifier types',/serializedConflict/.test(procurement)&&/serial_number=\$1 OR imei1=\$1 OR imei2=\$1 OR barcode=\$1 OR qr_code=\$1/.test(procurement)],
- ['receipt cancellation preserves unit history',/UPDATE serialized_units SET status='Voided'/i.test(procurement)&&!/DELETE FROM serialized_units/i.test(procurement)],
+ ['receipt cancellation preserves unit history',(/UPDATE serialized_units SET status='Voided'/i.test(procurement)||/transitionSerializedUnit\([\s\S]*toStatus:'Voided'/i.test(procurement))&&!/DELETE FROM serialized_units/i.test(procurement)],
  ['receipt cancellation preserves batch history',/UPDATE inventory_batches SET status='Cancelled'/i.test(procurement)],
  ['receipt detail exposes batch provenance',/batch_number/.test(procurement)&&/serialized_unit_count/.test(procurement)],
  ['Business Admin uses structured receiving workflow',/openPurchaseReceipt/.test(ui)&&/grSerials/.test(ui)&&/grPost/.test(ui)],

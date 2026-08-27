@@ -24,7 +24,7 @@ type Product = {
 
 type Option = { id: string; name: string; product_count?: number };
 
-type StarterItem = { name: string; category: string; subcategory: string; brand?: string; productType: string; size?: string };
+type StarterItem = { name: string; category: string; subcategory: string; brand?: string; productType: string; size?: string; sizes?: string[]; technology?: string; generation?: string; verificationStatus?: string; market?: string };
 
 type Props = {
   summary: { products?: number; brands?: number; categories?: number; variants?: number; published?: number } | null;
@@ -168,8 +168,8 @@ function StarterCataloguePreview({ data }: { data: { brands: string[]; categorie
     {open && <div className="starterCatalogueBody">
       <div className="starterToolbar"><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search the starter catalogue" aria-label="Search starter catalogue" /><span>{filtered.length} shown</span></div>
       <div className="starterCategoryGrid">{data.categories.map((category) => <span key={category}>{category}</span>)}</div>
-      <div className="starterTableWrap"><table><thead><tr><th>Product</th><th>Brand</th><th>Category</th><th>Type</th><th>Size</th><th>Stock</th></tr></thead><tbody>{filtered.slice(0, 80).map((item) => <tr key={`${item.category}-${item.name}`}><td><strong>{item.name}</strong></td><td>{item.brand || '—'}</td><td>{item.subcategory}</td><td>{item.productType}</td><td>{item.size || '—'}</td><td>0</td></tr>)}</tbody></table></div>
-      {filtered.length > 80 && <small className="starterMore">Showing the first 80 preview rows.</small>}
+      <div className="starterTableWrap"><table><thead><tr><th>Product</th><th>Brand</th><th>Category</th><th>Type</th><th>Sizes</th><th>Technology</th><th>Generation</th><th>Verification</th><th>Market</th><th>Stock</th></tr></thead><tbody>{filtered.map((item) => <tr key={`${item.category}-${item.name}`}><td><strong>{item.name}</strong></td><td>{item.brand || '—'}</td><td>{item.subcategory}</td><td>{item.productType}</td><td>{item.sizes?.join(', ') || item.size || '—'}</td><td>{item.technology || '—'}</td><td>{item.generation || '—'}</td><td>{item.verificationStatus || '—'}</td><td>{item.market || '—'}</td><td>0</td></tr>)}</tbody></table></div>
+      
     </div>}
   </section>;
 }
