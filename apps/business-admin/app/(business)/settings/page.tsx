@@ -1,0 +1,5 @@
+import { redirect } from 'next/navigation';
+import { businessGetSafe } from '@/lib/business';
+import { SettingsWorkspace } from '@/components/SettingsWorkspace';
+type Me={permissions?:string[];isSuperAdmin?:boolean};
+export default async function SettingsPage(){const me=await businessGetSafe<Me>('/api/me');if(!me)redirect('/login');if(!me.permissions?.includes('settings.view'))redirect('/overview');const [organization,settings,branches,departments]=await Promise.all([businessGetSafe<any>('/api/organization'),businessGetSafe<any>('/api/settings'),businessGetSafe<any[]>('/api/branches'),businessGetSafe<any[]>('/api/departments')]);return <SettingsWorkspace organization={organization} settings={settings??{}} branches={branches??[]} departments={departments??[]} canManage={me.permissions.includes('settings.manage')} canOrg={me.permissions.includes('organization.manage')} canBranches={me.permissions.includes('branches.manage')} canDepartments={me.permissions.includes('departments.manage')}/>}
