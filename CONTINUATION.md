@@ -486,3 +486,38 @@ Resolve the Neon connector execution issue, then run the cleanup against the pro
 ## Latest correction — Global Star
 
 The TV master catalog is authoritative. `LG Global Star` must never be treated as a canonical brand. The latest build includes a safe Render startup normalization that maps legacy TV products to `Global Star`, corrects display names, and preserves historical records. The Business Admin starter brand source now contains only the canonical TV brands.
+
+## Phase 5 — Returns / Warranty / Service physical-unit reconciliation — 2026-08-28
+
+Deep audit of the serialized physical-unit identity through returns and warranty/service found two correctness risks and hardened them without destructive database changes.
+
+### Fixed
+- Warranty resolution/collection no longer forces every physical unit to `Sold`. It restores the unit's recorded pre-warranty status and location; a unit that entered warranty from `Sold` remains `Sold`, while an internally held unit can return to its previous operational state.
+- Serialized return lines are now constrained to one physical unit per line at the application and additive database-migration level.
+- Active duplicate return requests for the same physical serialized unit are rejected.
+- Return disposition now drives serialized-unit state: Restock → `Returned`; Repair → `Service`; Scrap → `Damaged`; supplier/quarantine dispositions preserve a non-available `Returned` state rather than silently leaving the unit `Sold`.
+- Legacy inventory adjustment/stocktake receiving paths now check identifiers across serial, IMEI, barcode and QR fields rather than checking only a subset.
+- Serialized-unit creation in these paths now carries authenticated actor context into lifecycle history.
+- Removed a duplicate `res.json(gr)` response in the procurement receipt detail endpoint.
+
+### Verification
+- All repository JavaScript files: syntax PASS.
+- Serialized status/history audit: 19/19 PASS.
+- Returns/Warranty/Service audit: 14/14 PASS.
+- Exact order serial assignment: 20/20 PASS.
+- Fulfilment/delivery: 14/14 PASS.
+- Receiving/batches: PASS.
+- Warehouse transfers: PASS.
+- Inventory unit audit: PASS.
+- Cross-module audit: 18/18 connected, 0 unmatched frontend routes.
+- Transaction integrity audit: 12/12 PASS.
+- TV master catalogue: 210 unique model/family records, 236 variants, 7 canonical brands.
+
+### Database safety
+No production Neon reset, truncate, replacement, destructive reseed, or business-data deletion was performed. The new return-line constraint is additive and repeat-safe. Live execution remains gated until the Neon connector accepts the production project identifier.
+
+### Build limitation
+The Business Admin dependency installation did not complete within the local verification window, so a full Next.js production build was not claimed as passed. Static/source audits and all available Node syntax/audit checks were run.
+
+### Next priority
+Continue with authenticated end-to-end business-flow tests using a safe non-production fixture/branch: purchase → receipt → batch → physical unit → warehouse transfer → order reservation → sale → delivery → return → warranty/service → final disposition. Then perform the live Neon catalogue-deduplication and Global Star normalization only after read-only candidate inspection succeeds.

@@ -14,3 +14,10 @@ CREATE TABLE IF NOT EXISTS return_events(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(), return_id uuid NOT NULL REFERENCES return_requests(id) ON DELETE CASCADE, status text NOT NULL, note text NOT NULL DEFAULT '', actor_id uuid REFERENCES users(id) ON DELETE SET NULL, created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_return_events_return ON return_events(return_id,created_at);
+
+
+-- Phase 5 safety: a physical serialized unit represents exactly one returned item.
+DO $$ BEGIN
+  ALTER TABLE return_lines ADD CONSTRAINT return_lines_serialized_qty_one CHECK (serialized_unit_id IS NULL OR quantity = 1);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+CREATE INDEX IF NOT EXISTS idx_return_lines_serialized_unit ON return_lines(serialized_unit_id) WHERE serialized_unit_id IS NOT NULL;

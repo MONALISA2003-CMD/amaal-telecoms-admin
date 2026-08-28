@@ -1,10 +1,10 @@
 -- Amaal Telecoms additive starter catalogue. Safe to run repeatedly: never clears, resets or overwrites existing records.
 -- Product records only; no inventory balances, receipts, movements or stock quantities are created.
 BEGIN;
-INSERT INTO brands(name,slug,status) VALUES ('Apple','apple','Active') ON CONFLICT(name) DO NOTHING;
-INSERT INTO brands(name,slug,status) VALUES ('Samsung','samsung','Active') ON CONFLICT(name) DO NOTHING;
-INSERT INTO brands(name,slug,status) VALUES ('TCL','tcl','Active') ON CONFLICT(name) DO NOTHING;
-INSERT INTO brands(name,slug,status) VALUES ('Hisense','hisense','Active') ON CONFLICT(name) DO NOTHING;
+INSERT INTO brands(name,slug,status) VALUES ('Apple','apple','Active') ON CONFLICT(slug) DO NOTHING;
+INSERT INTO brands(name,slug,status) VALUES ('Samsung','samsung','Active') ON CONFLICT(slug) DO NOTHING;
+INSERT INTO brands(name,slug,status) VALUES ('TCL','tcl','Active') ON CONFLICT(slug) DO NOTHING;
+INSERT INTO brands(name,slug,status) VALUES ('Hisense','hisense','Active') ON CONFLICT(slug) DO NOTHING;
 INSERT INTO product_categories(name,slug,status) VALUES ('Phones','phones','Active') ON CONFLICT(slug) DO NOTHING;
 INSERT INTO product_categories(name,slug,status) VALUES ('Tablets','tablets','Active') ON CONFLICT(slug) DO NOTHING;
 INSERT INTO product_categories(name,slug,status) VALUES ('Entertainment','entertainment','Active') ON CONFLICT(slug) DO NOTHING;

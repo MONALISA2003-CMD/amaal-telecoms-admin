@@ -339,3 +339,35 @@ The Business Admin screenshot exposed a real catalogue identity error: legacy te
 The connected Neon tool currently rejects its own project arguments before SQL execution (the exposed connector schema and runtime validator disagree on `projectId`/`project_id`). Therefore the live Neon row count and live brand records could not be queried from this session. No production database write was performed through a workaround.
 
 The Render startup normalization is repeat-safe and is intended to correct the live records when this corrected backend is deployed.
+
+## Phase 5 — Returns / Warranty / Service deep reconciliation — 2026-08-28
+
+A deep source audit identified and corrected serialized physical-unit lifecycle issues around returns and warranty/service.
+
+### Findings corrected
+1. Warranty resolution and collection previously forced the physical unit to `Sold`, regardless of the unit's recorded pre-warranty state. The implementation now restores `prior_serial_status` and `prior_serial_location_id`; only a genuinely sold unit is returned to `Sold` with its location cleared.
+2. Serialized return lines now require exactly one physical unit. This is enforced both in the application workflow and through an additive PostgreSQL CHECK constraint in `returns-refunds.sql`.
+3. The return creation workflow now rejects an active return already attached to the same serialized unit, preventing concurrent duplicate return ownership.
+4. Return disposition is now reflected in the physical-unit lifecycle for serialized items: `Restock` → `Returned`, `Repair` → `Service`, `Scrap` → `Damaged`. Supplier/quarantine dispositions do not silently make a sold unit available.
+5. Legacy inventory adjustment and stocktake creation paths were hardened to check serial, IMEI, barcode and QR identifiers across all identifier fields.
+6. Serialized-unit creation paths now provide authenticated actor context to the lifecycle-history trigger.
+7. Removed a duplicate response in procurement receipt detail handling.
+
+### Verification results
+- JavaScript syntax: PASS for all repository `.js` files.
+- Serialized status/history audit: 19/19 PASS.
+- Returns/Warranty/Service audit: 14/14 PASS.
+- Exact order serial assignment audit: 20/20 PASS.
+- Fulfilment/delivery reconciliation: 14/14 PASS.
+- Receiving/batch audit: PASS.
+- Inventory unit audit: PASS.
+- Warehouse transfer audit: PASS.
+- Cross-module audit: 18/18 connected; 0 unmatched frontend routes.
+- Transaction integrity audit: 12/12 PASS.
+- TV master catalogue audit: PASS — 210 unique records, 236 variants, 7 canonical brands.
+
+### Testing limitation
+A full Business Admin production build could not be completed in the local environment because dependency installation exceeded the available execution window. It is therefore explicitly **not claimed as passed**. Live authenticated production transactions were also not fabricated.
+
+### Database safety
+No production database reset, truncate, replacement, destructive reseed, or business-history deletion occurred in this phase. The new schema change is additive and repeat-safe.
