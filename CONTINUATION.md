@@ -596,3 +596,30 @@ Status: completed in ZIP working tree. Purchase receiving and goods-receipt/batc
 - Live Neon reconciliation is blocked by the current connector authorization failure; no production write was attempted.
 - Business Admin TypeScript/build cannot be truthfully marked passed without installing its missing dependencies.
 - GitHub deployment is not used as the working path for this phase.
+
+## PHASE 16 — PUBLIC/PRIVATE SECURITY HARDENING
+
+Completed the public/private API security audit.
+
+### Fixed
+- Public catalogue responses now filter internal identifiers and sensitive operational/commercial fields.
+- Public website catalogue/site responses use the same sensitive-field filtering.
+- Integration connection responses no longer expose arbitrary `config_json` values.
+- Webhook responses use a dedicated safe projection while preserving webhook metadata.
+- Existing public AI rate limiting and published-catalogue boundary were rechecked.
+- Existing CSRF, origin, security-header and integration-host protections were rechecked.
+
+### Not changed
+- MFA remains untouched.
+- Neon production data remains untouched.
+
+### Verification
+- JavaScript syntax: PASS
+- Public route inventory: PASS
+- Security field minimization: PASS
+
+### Next
+1. Deep role-by-role permission regression.
+2. Final live Neon read-only reconciliation.
+3. Only after read-only verification, apply verified non-destructive production corrections.
+4. Final Render/Vercel production verification.

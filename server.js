@@ -107,6 +107,13 @@ const superAdminOnly=async(req,res,next)=>{try{const r=(await q("SELECT 1 FROM u
 app.get('/healthz',(_req,res)=>res.status(200).json({status:'ok'}));
 app.get('/api/health',async(req,res)=>{try{await q('SELECT 1');res.json({ok:true})}catch(e){res.status(503).json({ok:false})}});
 
+function stripPublicSensitive(value){
+  const blocked=/^(id|.*_id|.*cost.*|purchase.*|supplier.*|warehouse.*|serial.*|imei.*|barcode|qr.*|internal.*|tax_rate|promotion_id|promotion_name)$/i;
+  if(Array.isArray(value))return value.map(stripPublicSensitive);
+  if(value&&typeof value==='object'){const out={};for(const [k,v] of Object.entries(value)){if(blocked.test(k))continue;out[k]=stripPublicSensitive(v)}return out;}
+  return value;
+}
+
 app.get('/api/public/catalog',async(req,res)=>{
   try{
     const [categories,brands,products,collections]=await Promise.all([
@@ -115,7 +122,7 @@ app.get('/api/public/catalog',async(req,res)=>{
       q(`SELECT p.id,p.name,p.slug,p.product_type,p.short_description,p.description,p.specifications,p.featured,b.name brand_name,b.slug brand_slug,c.name category_name,c.slug category_slug,(SELECT json_agg(json_build_object('id',v.id,'code',v.sku,'name',v.variant_name,'colour',v.color,'storage',v.storage,'size',v.size,'sellingPrice',v.selling_price) ORDER BY v.sku) FROM product_variants v WHERE v.product_id=p.id AND v.status='Active') variants,(SELECT json_agg(json_build_object('url',i.url,'altText',i.alt_text,'primary',i.is_primary,'sortOrder',i.sort_order) ORDER BY i.is_primary DESC,i.sort_order,i.created_at) FROM product_images i WHERE i.product_id=p.id) images FROM products p LEFT JOIN brands b ON b.id=p.brand_id LEFT JOIN product_categories c ON c.id=p.category_id WHERE p.status='Active' AND p.website_visibility='Published' ORDER BY p.featured DESC,p.updated_at DESC`),
       q(`SELECT c.id,c.name,c.slug,c.description,c.image_url,c.featured,c.sort_order,COALESCE((SELECT json_agg(json_build_object('id',p.id,'name',p.name,'slug',p.slug,'brand',b.name,'category',pc.name) ORDER BY cp.sort_order,p.name) FROM catalog_collection_products cp JOIN products p ON p.id=cp.product_id LEFT JOIN brands b ON b.id=p.brand_id LEFT JOIN product_categories pc ON pc.id=p.category_id WHERE cp.collection_id=c.id AND p.status='Active' AND p.website_visibility='Published'),'[]'::json) products FROM catalog_collections c WHERE c.status='Active' AND c.website_visibility='Published' ORDER BY c.sort_order,c.name`)
     ]);
-    res.json({updatedAt:new Date().toISOString(),categories,brands,products,collections});
+    res.json(stripPublicSensitive({updatedAt:new Date().toISOString(),categories,brands,products,collections}));
   }catch(e){res.status(503).json({error:'Public catalogue is temporarily unavailable.'})}
 });
 
