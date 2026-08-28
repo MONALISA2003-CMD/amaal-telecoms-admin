@@ -114,3 +114,15 @@ The repository includes regression/audit scripts for these controls. They must b
 ## Deployment decision
 
 Do **not** label the release fully production-certified until the unchecked environment-level gates have passed. The application work is ready for that verification step; the remaining blocker is execution infrastructure, not an identified production data-integrity failure.
+
+## Deep Phase 21 completion pass — 2026-08-28
+
+Completed after the initial release-candidate review:
+- Disposable Neon E2E chain rerun and verified across purchase, receipt, batch, serial/IMEI, warehouse transfer, order, payment, serial assignment/picking, dispatch, delivery, sale, warranty, repair and return/restock.
+- Production read-only BI reconciliation rerun: sales/payments, posted finance balance, serialized provenance, sold-unit location safety, and website management activity.
+- Added dedicated website activity BI endpoint and Business Admin/legacy report navigation.
+- Corrected BI failure presentation so unavailable backend data cannot masquerade as legitimate zero-valued KPIs.
+- Added Admin/Superadmin permission matrix and deep business-integrity regression.
+- Saved BI snapshots are presented as retained audit records; the UI no longer offers a misleading delete action.
+
+Final deep audit artifact: `PHASE21_DEEP_AUDIT_RESULT.md`.

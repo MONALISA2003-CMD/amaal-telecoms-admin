@@ -1,0 +1,993 @@
+{
+  "generatedAt": "2026-08-28T18:11:08.462Z",
+  "summary": {
+    "permissions": 134,
+    "guardedRoutes": 131,
+    "unguardedRoutes": 0,
+    "unknownUiPermissions": 0,
+    "biEndpoints": 19,
+    "missingBiEndpoints": 0
+  },
+  "findings": [
+    {
+      "name": "API routes are permission guarded outside explicit public/bootstrap endpoints",
+      "ok": true
+    },
+    {
+      "name": "UI permission identifiers all exist in backend permission registry",
+      "ok": true
+    },
+    {
+      "name": "BI endpoint surface includes deep website activity and export",
+      "ok": true
+    },
+    {
+      "name": "BI reads require bi.view",
+      "ok": true
+    },
+    {
+      "name": "BI export requires bi.export",
+      "ok": true
+    },
+    {
+      "name": "BI snapshot mutation requires bi.manage",
+      "ok": true
+    },
+    {
+      "name": "Live-pulse failure no longer substitutes website/financial zeros",
+      "ok": true
+    },
+    {
+      "name": "Business Admin distinguishes unavailable/partial/live BI data",
+      "ok": true
+    },
+    {
+      "name": "Legacy BI formatting renders null as unavailable rather than zero",
+      "ok": true
+    },
+    {
+      "name": "Canonical backend permission registry is present",
+      "ok": true
+    }
+  ],
+  "adminMatrix": [
+    {
+      "permission": "dashboard.view",
+      "description": "View dashboard",
+      "routes": 1,
+      "actions": "View",
+      "uiExposed": false
+    },
+    {
+      "permission": "search.view",
+      "description": "Use global search",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "staff.view",
+      "description": "View staff",
+      "routes": 2,
+      "actions": "View",
+      "uiExposed": false
+    },
+    {
+      "permission": "staff.manage",
+      "description": "Manage staff",
+      "routes": 6,
+      "actions": "Manage, Create/Execute, Edit",
+      "uiExposed": true
+    },
+    {
+      "permission": "roles.view",
+      "description": "View roles",
+      "routes": 3,
+      "actions": "View",
+      "uiExposed": false
+    },
+    {
+      "permission": "roles.manage",
+      "description": "Manage roles",
+      "routes": 3,
+      "actions": "Create/Execute, Edit, Delete/Archive",
+      "uiExposed": true
+    },
+    {
+      "permission": "branches.view",
+      "description": "View branches",
+      "routes": 1,
+      "actions": "View",
+      "uiExposed": false
+    },
+    {
+      "permission": "branches.manage",
+      "description": "Manage branches",
+      "routes": 2,
+      "actions": "Create/Execute, Edit",
+      "uiExposed": false
+    },
+    {
+      "permission": "settings.view",
+      "description": "View settings",
+      "routes": 2,
+      "actions": "View",
+      "uiExposed": false
+    },
+    {
+      "permission": "settings.manage",
+      "description": "Manage settings",
+      "routes": 1,
+      "actions": "Edit",
+      "uiExposed": true
+    },
+    {
+      "permission": "audit.view",
+      "description": "View audit logs",
+      "routes": 2,
+      "actions": "View",
+      "uiExposed": false
+    },
+    {
+      "permission": "audit.export",
+      "description": "Export audit logs",
+      "routes": 1,
+      "actions": "Export",
+      "uiExposed": true
+    },
+    {
+      "permission": "notifications.view",
+      "description": "View notifications",
+      "routes": 2,
+      "actions": "View",
+      "uiExposed": false
+    },
+    {
+      "permission": "notifications.manage",
+      "description": "Manage notifications",
+      "routes": 1,
+      "actions": "Create/Execute",
+      "uiExposed": true
+    },
+    {
+      "permission": "security.view",
+      "description": "View security settings",
+      "routes": 5,
+      "actions": "View",
+      "uiExposed": false
+    },
+    {
+      "permission": "security.manage",
+      "description": "Manage security settings",
+      "routes": 1,
+      "actions": "Edit",
+      "uiExposed": true
+    },
+    {
+      "permission": "organization.view",
+      "description": "View organization",
+      "routes": 1,
+      "actions": "View",
+      "uiExposed": false
+    },
+    {
+      "permission": "organization.manage",
+      "description": "Manage organization",
+      "routes": 1,
+      "actions": "Edit",
+      "uiExposed": true
+    },
+    {
+      "permission": "departments.view",
+      "description": "View departments",
+      "routes": 1,
+      "actions": "View",
+      "uiExposed": false
+    },
+    {
+      "permission": "departments.manage",
+      "description": "Manage departments",
+      "routes": 3,
+      "actions": "Create/Execute, Edit, Delete/Archive",
+      "uiExposed": true
+    },
+    {
+      "permission": "sessions.manage",
+      "description": "Manage user sessions",
+      "routes": 3,
+      "actions": "Manage, Delete/Archive",
+      "uiExposed": true
+    },
+    {
+      "permission": "staff.profile.manage",
+      "description": "Manage staff profiles",
+      "routes": 1,
+      "actions": "Edit",
+      "uiExposed": true
+    },
+    {
+      "permission": "featureflags.manage",
+      "description": "Manage feature flags",
+      "routes": 1,
+      "actions": "Edit",
+      "uiExposed": true
+    },
+    {
+      "permission": "catalog.view",
+      "description": "View product catalog",
+      "routes": 14,
+      "actions": "View",
+      "uiExposed": false
+    },
+    {
+      "permission": "catalog.manage",
+      "description": "Manage product catalog",
+      "routes": 30,
+      "actions": "Create/Execute, Edit, Delete/Archive, Bulk/Create",
+      "uiExposed": true
+    },
+    {
+      "permission": "catalog.publish",
+      "description": "Publish products to websites",
+      "routes": 1,
+      "actions": "Publish",
+      "uiExposed": true
+    },
+    {
+      "permission": "catalog.export",
+      "description": "Export catalog data",
+      "routes": 1,
+      "actions": "Export",
+      "uiExposed": true
+    },
+    {
+      "permission": "inventory.view",
+      "description": "View inventory",
+      "routes": 16,
+      "actions": "View",
+      "uiExposed": false
+    },
+    {
+      "permission": "inventory.manage",
+      "description": "Manage inventory",
+      "routes": 3,
+      "actions": "Create/Execute, Edit",
+      "uiExposed": true
+    },
+    {
+      "permission": "inventory.receive",
+      "description": "Receive stock",
+      "routes": 1,
+      "actions": "Receive",
+      "uiExposed": true
+    },
+    {
+      "permission": "inventory.transfer",
+      "description": "Transfer stock",
+      "routes": 4,
+      "actions": "Create/Execute, Edit",
+      "uiExposed": true
+    },
+    {
+      "permission": "inventory.adjust",
+      "description": "Adjust stock",
+      "routes": 1,
+      "actions": "Create/Execute",
+      "uiExposed": true
+    },
+    {
+      "permission": "inventory.reserve",
+      "description": "Manage stock reservations",
+      "routes": 2,
+      "actions": "Create/Execute, Edit",
+      "uiExposed": true
+    },
+    {
+      "permission": "inventory.serialized",
+      "description": "Manage serialized inventory",
+      "routes": 2,
+      "actions": "Manage",
+      "uiExposed": false
+    },
+    {
+      "permission": "inventory.export",
+      "description": "Export inventory data",
+      "routes": 1,
+      "actions": "Export",
+      "uiExposed": true
+    },
+    {
+      "permission": "inventory.stocktake",
+      "description": "Perform stocktakes and reconciliation",
+      "routes": 5,
+      "actions": "Create/Execute, Edit",
+      "uiExposed": true
+    },
+    {
+      "permission": "inventory.incidents",
+      "description": "Manage inventory damage and loss",
+      "routes": 2,
+      "actions": "Create/Execute, Edit",
+      "uiExposed": true
+    },
+    {
+      "permission": "catalog.tags",
+      "description": "Manage product tags",
+      "routes": 2,
+      "actions": "Manage, Create/Execute",
+      "uiExposed": true
+    },
+    {
+      "permission": "suppliers.view",
+      "description": "View suppliers",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "suppliers.manage",
+      "description": "Manage suppliers",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "procurement.view",
+      "description": "View procurement",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "procurement.manage",
+      "description": "Manage purchase orders",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "procurement.requisition",
+      "description": "Manage requisitions",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "procurement.approve",
+      "description": "Approve procurement documents",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "procurement.receive",
+      "description": "Receive purchase orders",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "procurement.invoice",
+      "description": "Manage supplier invoices",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "procurement.payments",
+      "description": "Record supplier payments",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "procurement.export",
+      "description": "Export procurement data",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "customers.view",
+      "description": "View customers",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "customers.manage",
+      "description": "Manage customers",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "customers.export",
+      "description": "Export customer data",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "customers.privacy",
+      "description": "Manage customer privacy",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "crm.view",
+      "description": "View CRM",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "crm.manage",
+      "description": "Manage CRM",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "support.view",
+      "description": "View support cases",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "support.manage",
+      "description": "Manage support cases",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "sales.view",
+      "description": "View sales",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "sales.create",
+      "description": "Create sales",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "sales.void",
+      "description": "Void completed sales",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "sales.export",
+      "description": "Export sales",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "sales.approve_discount",
+      "description": "Approve sales discounts",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "sales.approve_price",
+      "description": "Approve sales price overrides",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "sales.shift",
+      "description": "Manage cashier shifts and tills",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "sales.cash_adjust",
+      "description": "Record till cash movements",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "sales.reconcile",
+      "description": "Reconcile and close tills",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "sales.receipts",
+      "description": "Manage receipts and reprints",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "sales.quotes",
+      "description": "Manage sales quotations",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "sales.orders",
+      "description": "Manage sales order handoff",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "sales.refund",
+      "description": "Process sales payment reversals",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "orders.view",
+      "description": "View orders",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "orders.create",
+      "description": "Create orders",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "orders.manage",
+      "description": "Manage orders",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "orders.export",
+      "description": "Export orders",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "web.view",
+      "description": "View web management",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "web.manage",
+      "description": "Manage website content",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "web.publish.request",
+      "description": "Request website publication",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "web.publish.approve",
+      "description": "Approve website publication",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "web.publish.execute",
+      "description": "Execute website publication",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "web.domains",
+      "description": "Manage website domains",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "web.media",
+      "description": "Manage website media",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "media.view",
+      "description": "View media library",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "media.manage",
+      "description": "Manage media library",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "pricing.view",
+      "description": "View pricing",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "pricing.manage",
+      "description": "Manage pricing",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "pricing.export",
+      "description": "Export pricing",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "promotions.view",
+      "description": "View promotions",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "promotions.manage",
+      "description": "Manage promotions",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "promotions.approve",
+      "description": "Approve promotions",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "delivery.view",
+      "description": "View delivery and logistics",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "delivery.manage",
+      "description": "Manage delivery and logistics",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "warranty.view",
+      "description": "View warranty and repairs",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "warranty.manage",
+      "description": "Manage warranty claims and repair jobs",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "returns.view",
+      "description": "View returns and refunds",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "returns.manage",
+      "description": "Manage returns and inspections",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "returns.refund",
+      "description": "Process refunds",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "documents.view",
+      "description": "View documents",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "documents.manage",
+      "description": "Upload and manage documents",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "documents.download",
+      "description": "Download documents",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "delivery.partners",
+      "description": "Manage delivery partners",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "delivery.reports",
+      "description": "View delivery partner reports",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "warranty.partners",
+      "description": "Manage repair partners",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "warranty.reports",
+      "description": "View repair partner reports",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "security.devices",
+      "description": "Manage trusted devices",
+      "routes": 2,
+      "actions": "Manage, Delete/Archive",
+      "uiExposed": true
+    },
+    {
+      "permission": "credit.view",
+      "description": "View credit and installments",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "credit.manage",
+      "description": "Manage credit profiles and applications",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "credit.approve",
+      "description": "Approve credit and restructures",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "credit.payments",
+      "description": "Record credit payments",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "credit.collections",
+      "description": "Manage credit collections",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "finance.view",
+      "description": "View finance and accounting",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "finance.manage",
+      "description": "Manage finance configuration",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "finance.journals",
+      "description": "Create manual journals",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "finance.close",
+      "description": "Close accounting periods",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "finance.sync",
+      "description": "Synchronize operational transactions to finance",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "bi.view",
+      "description": "View business intelligence",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "bi.export",
+      "description": "Export business intelligence reports",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "bi.manage",
+      "description": "Manage saved business intelligence reports",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "ai.view",
+      "description": "View AI business intelligence",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "ai.manage",
+      "description": "Govern AI configuration and training",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "ai.reports",
+      "description": "Generate and view AI reports",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "integrations.view",
+      "description": "View integration hub",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "integrations.manage",
+      "description": "Manage integration connections",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "integrations.secrets",
+      "description": "Manage integration secrets",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "integrations.webhooks",
+      "description": "Manage integration webhooks",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "integrations.export",
+      "description": "Export integration activity",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "operations.view",
+      "description": "View system operations",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "operations.manage",
+      "description": "Manage system operations",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "monitoring.view",
+      "description": "View monitoring and observability",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "monitoring.manage",
+      "description": "Manage monitoring and observability",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "backup.view",
+      "description": "View backups and recovery",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "backup.manage",
+      "description": "Manage backups and recovery",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": true
+    },
+    {
+      "permission": "featureflags.manage",
+      "description": "ai.manage",
+      "routes": 1,
+      "actions": "Edit",
+      "uiExposed": true
+    },
+    {
+      "permission": "maxLoginAttempts",
+      "description": "lockoutMinutes",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "Active",
+      "description": "Suspended",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "Damage",
+      "description": "Loss",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    }
+  ]
+}
