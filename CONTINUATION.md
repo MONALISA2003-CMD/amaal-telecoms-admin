@@ -581,3 +581,18 @@ Working source: latest available generated ZIP `amaal-telecoms-phase7-safe-deplo
 
 ## Phase 11 — Authentication/session hardening
 Completed login/setup/logout/password recovery/session reliability hardening while intentionally leaving MFA unchanged. Next work should continue with non-MFA session/permission regression and live read-only Neon reconciliation when the connector is available. Never reset, truncate, replace or destructively reseed PostgreSQL.
+
+
+## Phase 13 — Transaction Integrity Hardening (2026-08-28)
+
+Completed from the ZIP baseline. Hardened purchase receiving and order fulfillment paths. Fixed the order fulfillment actor propagation bug, removed a duplicate goods-receipt response, and added a repeatable transaction-integrity audit covering serialized receiving, batch linkage, reservation, exact unit assignment, fulfillment consumption, lifecycle transitions, and destructive SQL checks. MFA remains deferred and unchanged. Live Neon data was not modified.
+
+
+## Phase 13 — End-to-End Transaction Integrity
+
+Status: completed in ZIP working tree. Purchase receiving and goods-receipt/batch integration were audited; serialized receiving validates serial/IMEI/barcode/QR identifiers and stores them on physical units; receipt reversal refuses moved units. Order creation reserves inventory, serialized orders require exact physical units before dispatch, fulfillment consumes reservations and transitions assigned units to Sold with the correct acting user. A duplicate goods-receipt response was removed. MFA remains intentionally unchanged. Live Neon data remains untouched.
+
+### Remaining verification limitations
+- Live Neon reconciliation is blocked by the current connector authorization failure; no production write was attempted.
+- Business Admin TypeScript/build cannot be truthfully marked passed without installing its missing dependencies.
+- GitHub deployment is not used as the working path for this phase.

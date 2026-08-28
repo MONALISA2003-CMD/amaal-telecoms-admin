@@ -61,3 +61,9 @@ CREATE INDEX IF NOT EXISTS idx_credit_accounts_source ON credit_accounts(source_
 CREATE INDEX IF NOT EXISTS idx_credit_applications_customer_status ON credit_applications(customer_id,status);
 CREATE INDEX IF NOT EXISTS idx_credit_collection_due ON credit_collection_tasks(status,due_at);
 CREATE INDEX IF NOT EXISTS idx_credit_links_source ON credit_account_links(source_type,source_id);
+
+
+-- Phase 14: preserve credit installment history during restructuring (additive/repeat-safe)
+ALTER TABLE credit_installments ADD COLUMN IF NOT EXISTS superseded_at timestamptz;
+ALTER TABLE credit_installments ADD COLUMN IF NOT EXISTS superseded_by uuid REFERENCES credit_restructures(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_credit_installments_active_account ON credit_installments(credit_account_id, due_date) WHERE superseded_at IS NULL;

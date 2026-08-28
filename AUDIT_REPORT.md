@@ -404,3 +404,12 @@ No production database reset, truncate, replacement, destructive reseed, or busi
 - Password change: recent-password checks use asynchronous bcrypt comparison; other active sessions remain revoked while current session is retained.
 - Password recovery: existing generic responses, rate limiting, expiring single-use tokens and session/device revocation preserved.
 - MFA: intentionally unchanged/deferred in accordance with current instruction.
+
+
+## Phase 13 Transaction Integrity Findings
+- Fixed `consumeOrder()` to use its explicit `userId` parameter when transitioning serialized units during fulfillment; this preserves correct audit attribution.
+- Removed duplicate goods-receipt detail response.
+- Confirmed procurement receiving stores barcode and QR identifiers on serialized units and rejects identifier conflicts.
+- Confirmed goods-receipt reversal refuses to reverse serialized units that have moved beyond In Stock.
+- Added repeatable transaction-integrity audit script.
+- No live Neon writes performed.

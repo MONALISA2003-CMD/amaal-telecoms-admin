@@ -98,7 +98,7 @@ export function registerOrdersEcommerce({app,auth,need,q,pool,audit,changeStock,
       await client.query("UPDATE inventory_reservations SET status='Consumed',released_at=now() WHERE id=$1",[r.id]);
     }
     const serials=(await client.query('SELECT su.id FROM order_serial_units os JOIN serialized_units su ON su.id=os.serialized_unit_id JOIN order_lines ol ON ol.id=os.order_line_id WHERE ol.order_id=$1 FOR UPDATE',[o.id])).rows;
-    for(const su of serials){let updated; try { updated=await transitionSerializedUnit(client,{unitId:su.id,toStatus:'Sold',actorId:req.user.id,reason:`Sold with ${o.order_no}`,sourceType:'OrderFulfillment',sourceId:o.id,soldAt:true,clearLocation:true}); } catch (e) { throw new Error('A serialized unit assigned to this order is no longer available for fulfillment'); }}
+    for(const su of serials){let updated; try { updated=await transitionSerializedUnit(client,{unitId:su.id,toStatus:'Sold',actorId:userId,reason:`Sold with ${o.order_no}`,sourceType:'OrderFulfillment',sourceId:o.id,soldAt:true,clearLocation:true}); } catch (e) { throw new Error('A serialized unit assigned to this order is no longer available for fulfillment'); }}
   }
 
   app.get('/api/orders/summary',auth,need('orders.view'),async(req,res)=>{
