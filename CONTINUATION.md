@@ -623,3 +623,24 @@ Completed the public/private API security audit.
 2. Final live Neon read-only reconciliation.
 3. Only after read-only verification, apply verified non-destructive production corrections.
 4. Final Render/Vercel production verification.
+
+## Phase 17 — Role/Permission & Live Reconciliation Readiness
+
+Completed from the Phase 16 ZIP:
+- Hardened administrator recovery to preserve MFA credentials, password history, roles, branches, notifications and historical records while revoking sessions/trusted devices and suspending active accounts.
+- Added recovery rate limiting.
+- Corrected session idle-timeout messaging to use configured policy.
+- Added read-only production TV reconciliation SQL for brands, duplicate products/models/SKUs/serials and dependency mapping.
+- Added static role/permission regression tooling.
+
+MFA remains intentionally unchanged.
+
+Live Neon status:
+- Amaal project is discoverable as `falling-smoke-22637586` / `Project name: amaal-telecoms`.
+- This execution could discover the project but could not invoke the SQL operation, so no live production query or write was performed.
+
+Next:
+1. Execute the read-only reconciliation against the actual Amaal database.
+2. Review exact TV duplicates and Global Star naming dependencies.
+3. Build a non-destructive merge/archive migration only for verified candidates.
+4. Re-audit Render and Vercel against the corrected canonical records.
