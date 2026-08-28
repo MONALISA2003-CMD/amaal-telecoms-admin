@@ -380,3 +380,11 @@ No production database reset, truncate, replacement, destructive reseed, or busi
 - Product hard-delete path now performs explicit historical dependency checks before deletion.
 - Static JavaScript syntax checks pass for the modified backend files.
 - Live Neon verification remains blocked by connector authorization; no production SQL mutation was attempted.
+
+## Phase 9 Addendum — Safe TV Reconciliation
+
+- Canonical Global Star identity enforced in backend/catalogue synchronization.
+- Legacy `LG Global Star` references are normalized without blind deletion.
+- Conflicting legacy TV slugs are archived only when dependency checks show no serialized, order, sale, or purchase references.
+- Added read-only `tv-catalogue-reconciliation.sql` for production inspection.
+- Removed redundant phase-only Markdown reports while retaining `Amaal_plan.md` and core audit/continuation documentation.

@@ -547,3 +547,13 @@ Working source: latest available generated ZIP `amaal-telecoms-phase7-safe-deplo
 2. Run read-only Neon reconciliation.
 3. Correct verified TV identity duplicates, preserving all historical relationships.
 4. Run the complete purchase-to-return/service regression.
+
+## Phase 9 — Safe TV Reconciliation / Integration Hardening
+
+- Working source remains the generated ZIP, not the GitHub repository.
+- Canonical TV brands are TCL, Hisense, CHiQ, Samsung, LG, Global Star and Black Ark.
+- `LG Global Star` is legacy terminology and must never be recreated as a canonical brand.
+- `tv-catalogue-reconciliation.sql` is read-only and must be run before production cleanup.
+- `tv-global-star-normalization.sql` is idempotent and preserves business history; when a target canonical slug already exists, a legacy duplicate is archived only when no serialized/order/sale/purchase dependency is present.
+- No database reset, truncate, destructive reseed or blind deletion is permitted.
+- Next: run the read-only reconciliation against the real Neon database, review dependencies, then apply only verified corrections.

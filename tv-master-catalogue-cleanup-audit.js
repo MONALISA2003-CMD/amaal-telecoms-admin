@@ -1,23 +1,24 @@
 /**
  * Amaal Telecoms — TV master catalogue duplicate audit.
- *
- * This is deliberately read-only. It reports legacy generic TV slugs that
- * must no longer be treated as canonical after MASTER_TELEVISION_PRODUCT_CATALOG v1.0.
- * It does not connect to PostgreSQL or delete data.
+ * Read-only helper. It never connects to PostgreSQL and never deletes data.
  */
-const LEGACY_GENERIC_TV_SLUGS = [
-  ...['tcl','hisense','samsung','lg-global-star','spj','chiq','smart-plus'].flatMap(brand =>
-    ['32','43','50','55','65','75'].map(size => `${brand}-${size}-inch-tv`)
-  )
-];
-
 const CANONICAL_BRANDS = ['TCL','Hisense','CHiQ','Samsung','LG','Global Star','Black Ark'];
+const LEGACY_BRANDS = ['LG Global Star','SPJ','Smart Plus'];
+
+function normalize(value=''){ return String(value).trim().toLowerCase(); }
 
 function auditRows(rows = []) {
-  const legacy = rows.filter(row => LEGACY_GENERIC_TV_SLUGS.includes(String(row.slug || '').toLowerCase()));
-  const canonicalBrandSet = new Set(CANONICAL_BRANDS.map(v => v.toLowerCase()));
-  const wrongBrand = rows.filter(row => row.product_type === 'TV' && row.brand && !canonicalBrandSet.has(String(row.brand).toLowerCase()));
-  return { legacyCount: legacy.length, legacy, wrongBrandCount: wrongBrand.length, wrongBrand };
+  const tv = rows.filter(r => normalize(r.product_type) === 'tv');
+  const wrongBrand = tv.filter(r => !CANONICAL_BRANDS.map(normalize).includes(normalize(r.brand)));
+  const legacyBrand = tv.filter(r => LEGACY_BRANDS.map(normalize).includes(normalize(r.brand)));
+  const byModel = new Map();
+  for (const row of tv) {
+    const model = normalize(row.manufacturer_model || row.model || row.name);
+    if (!model) continue;
+    const list = byModel.get(model) || []; list.push(row); byModel.set(model,list);
+  }
+  const duplicateModels = [...byModel.entries()].filter(([,list]) => list.length > 1).map(([model,records]) => ({model,records}));
+  return { tvCount: tv.length, legacyBrandCount: legacyBrand.length, legacyBrand, wrongBrandCount: wrongBrand.length, wrongBrand, duplicateModelCount: duplicateModels.length, duplicateModels };
 }
 
-export { LEGACY_GENERIC_TV_SLUGS, CANONICAL_BRANDS, auditRows };
+export { CANONICAL_BRANDS, LEGACY_BRANDS, auditRows };
