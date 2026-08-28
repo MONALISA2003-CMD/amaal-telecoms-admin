@@ -371,3 +371,12 @@ A full Business Admin production build could not be completed in the local envir
 
 ### Database safety
 No production database reset, truncate, replacement, destructive reseed, or business-history deletion occurred in this phase. The new schema change is additive and repeat-safe.
+
+## 2026-08-28 ZIP-BASED DEEP HARDENING
+
+- Fixed Business Admin engine proxy routing for non-catalogue business operations.
+- Added CSRF forwarding through the engine proxy for POST/PUT/PATCH/DELETE requests.
+- Recovery flow no longer purges audit logs, login events, or security events.
+- Product hard-delete path now performs explicit historical dependency checks before deletion.
+- Static JavaScript syntax checks pass for the modified backend files.
+- Live Neon verification remains blocked by connector authorization; no production SQL mutation was attempted.

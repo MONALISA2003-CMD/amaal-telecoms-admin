@@ -211,7 +211,7 @@ app.post('/api/recovery/reset',async(req,res)=>{
     // business records, so deletion is both unsafe and unnecessary. We revoke
     // all authentication state and suspend every administrator account. The
     // setup endpoint can then safely reclaim the same email or create a new one.
-    const securityTables=['audit_logs','login_events','security_events','sessions','trusted_devices','mfa_credentials','password_history','user_roles','user_branches','notifications'];
+    const securityTables=['sessions','trusted_devices','mfa_credentials','password_history','user_roles','user_branches','notifications'];
     for(const table of securityTables)await client.query(`DELETE FROM ${table}`);
     const suspended=(await client.query("UPDATE users SET status='Suspended',failed_attempts=0,locked_until=NULL,updated_at=now(),updated_by=NULL WHERE status='Active' RETURNING id")).rowCount;
     await client.query("INSERT INTO settings(key,value_json) VALUES('administratorSetupRequired','true') ON CONFLICT(key) DO UPDATE SET value_json='true'::jsonb,updated_at=now(),updated_by=NULL");
@@ -573,6 +573,16 @@ app.post('/api/catalog/products/:id/restore',auth,need('catalog.manage'),async(r
 app.delete('/api/catalog/products/:id',auth,need('catalog.manage'),async(req,res)=>{
   if(!req.isSuperAdmin)return res.status(403).json({error:'Only Super Admin can permanently delete catalogue records.'});
   const old=await snapshotProduct(pool,req.params.id);if(!old)return res.status(404).json({error:'Product not found'});
+  const refs=(await q(`SELECT
+    (SELECT count(*) FROM sale_lines sl JOIN product_variants v ON v.id=sl.variant_id WHERE v.product_id=$1) sale_lines,
+    (SELECT count(*) FROM order_lines ol JOIN product_variants v ON v.id=ol.variant_id WHERE v.product_id=$1) order_lines,
+    (SELECT count(*) FROM serialized_units su JOIN product_variants v ON v.id=su.variant_id WHERE v.product_id=$1) serialized_units,
+    (SELECT count(*) FROM purchase_order_lines pol JOIN product_variants v ON v.id=pol.variant_id WHERE v.product_id=$1) purchase_lines,
+    (SELECT count(*) FROM return_lines rl JOIN product_variants v ON v.id=rl.variant_id WHERE v.product_id=$1) return_lines,
+    (SELECT count(*) FROM warranty_claims wc JOIN product_variants v ON v.id=wc.variant_id WHERE v.product_id=$1) warranty_claims,
+    (SELECT count(*) FROM repair_jobs rj JOIN warranty_claims wc ON wc.id=rj.claim_id JOIN product_variants v ON v.id=wc.variant_id WHERE v.product_id=$1) repair_jobs`,[req.params.id]))[0];
+  const historical=Object.entries(refs||{}).some(([_,v])=>Number(v)>0);
+  if(historical)return res.status(409).json({error:'This product has business history or physical inventory attached. Archive it instead so records remain safe.',references:refs});
   try{await q('DELETE FROM products WHERE id=$1',[req.params.id]);await audit(req.user,'PRODUCT_DELETED','Product',req.params.id,`Permanently deleted product ${old.name}`,old,null,req.req);res.json({ok:true});}
   catch(e){if(e.code==='23503')return res.status(409).json({error:'This product is connected to sales, orders, stock, service or another business record. Archive it instead so history remains safe.'});res.status(400).json({error:e.message});}
 });

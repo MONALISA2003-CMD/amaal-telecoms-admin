@@ -521,3 +521,29 @@ The Business Admin dependency installation did not complete within the local ver
 
 ### Next priority
 Continue with authenticated end-to-end business-flow tests using a safe non-production fixture/branch: purchase → receipt → batch → physical unit → warehouse transfer → order reservation → sale → delivery → return → warranty/service → final disposition. Then perform the live Neon catalogue-deduplication and Global Star normalization only after read-only candidate inspection succeeds.
+## ZIP-BASED SAFE HARDENING PHASE — 2026-08-28
+
+Working source: latest available generated ZIP `amaal-telecoms-phase7-safe-deployment-catalogue-fix-2026-08-28.zip`. Repository writes were intentionally not used.
+
+### Changes made
+- Business Admin `/api/engine/*` proxy now supports the existing backend business routes rather than restricting the route to catalogue-only paths.
+- The proxy forwards the `amaal_csrf` cookie value as `X-CSRF-Token` for mutation requests.
+- Administrator recovery preserves audit/security history tables; it only revokes authentication/access state.
+- Permanent product deletion now performs explicit dependency checks before deletion and refuses deletion when sales, orders, serialized units, purchasing, returns, warranty claims, or repair jobs exist.
+- Existing lifecycle, TV master, Global Star normalization, and catalogue pagination work was preserved.
+
+### Safety
+- No live PostgreSQL mutation was performed.
+- No database reset/truncate/drop/reseed.
+- No existing business history was intentionally deleted.
+
+### Remaining live verification
+- Neon authorization currently blocks live read-only SQL.
+- GitHub write integration is unavailable/403, so this phase is packaged as a ZIP rather than pushed to the repository.
+- Production deployment must not be claimed until the ZIP is deployed and verified.
+
+### Next
+1. Deploy this ZIP through the existing Render/Vercel workflow.
+2. Run read-only Neon reconciliation.
+3. Correct verified TV identity duplicates, preserving all historical relationships.
+4. Run the complete purchase-to-return/service regression.
