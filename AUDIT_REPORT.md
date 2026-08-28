@@ -1,5 +1,23 @@
 # Amaal Telecoms — Full Project Audit
 
+## Latest phase status — 2026-08-28
+
+The physical serialized-unit status/history engine was hardened. Direct status writes used by order cancellation and sale void were replaced with the shared lifecycle transition service. New serialized units discovered through receiving, stocktake and inventory incidents now retain actor/source attribution in their automatic lifecycle history.
+
+### Verification
+- Serialized status/history: **19/19 PASS**
+- Exact order-unit assignment: **20/20 PASS**
+- Serialized inventory: **16/16 PASS**
+- Warehouse transfers: **15/15 PASS**
+- Receiving/batches: **15/15 PASS**
+- Fulfilment/delivery: **14/14 PASS**
+- Transaction integrity: **12/12 PASS**
+- Cross-module: **18/18 connected; 0 unmatched frontend routes**
+- Top-level JavaScript syntax: **PASS**
+
+### Production limitation
+No live Neon production mutation was performed from the extracted environment.
+
 ## Audit date
 2026-08-27
 

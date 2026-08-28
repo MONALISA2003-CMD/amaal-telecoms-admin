@@ -17,7 +17,7 @@ const checks = [
  ['assignment changes unit to Reserved', orders.includes("toStatus:'Reserved'")],
  ['assignment has duplicate-safe response', orders.includes("already assigned to another order")],
  ['unassignment endpoint exists', orders.includes("app.delete('/api/orders/:id/serials/:assignmentId'")],
- ['unassignment restores In Stock', orders.includes("SET status='In Stock',updated_at=now()")],
+ ['unassignment restores In Stock', orders.includes("toStatus:'In Stock'") && orders.includes('OrderSerialUnassignment')],
  ['cancelled orders release assigned physical units', orders.includes("ol.order_id=$1 AND su.status='Reserved'")],
  ['fulfilment accepts Reserved assigned units and marks Sold', orders.includes("toStatus:'Sold'")],
  ['Business Admin provides physical-unit assignment UI', app.includes('openOrderSerialAssignment')],

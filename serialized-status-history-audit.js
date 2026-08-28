@@ -22,6 +22,11 @@ const checks=[
  ['returns preserve serialized unit',/serialized_unit_id/.test(returns)&&/toStatus:'Returned'/.test(returns)],
  ['warranty preserves prior status/location',/prior_serial_status/.test(warranty)&&/prior_serial_location_id/.test(warranty)],
  ['history endpoint returns lifecycle ledger',/serialized_unit_status_history h/.test(server)&&/history,movements/.test(server)],
- ['no destructive serialized-unit delete in active receiving code',!/DELETE FROM serialized_units/i.test(server)&&!/DELETE FROM serialized_units/i.test(inventory),],
+ ['no destructive serialized-unit delete in active receiving code',!/DELETE FROM serialized_units/i.test(server)&&!/DELETE FROM serialized_units/i.test(inventory)],
+ ['order cancellation uses lifecycle transition helper',/OrderCancellation/.test(orders)&&/transitionSerializedUnit\(client,\{unitId:su.id,toStatus:'In Stock'/.test(orders)],
+ ['sale void uses lifecycle transition helper',/SaleVoid/.test(sales)&&/transitionSerializedUnit\(client,\{unitId:su.id,toStatus:'In Stock'/.test(sales)],
+ ['stocktake-created units carry lifecycle actor/source context',/Physical unit discovered during stocktake/.test(server)&&/set_config\('app.actor_id'/.test(server)],
+ ['incident-created units carry lifecycle actor/source context',/InventoryIncident/.test(server)&&/set_config\('app.actor_id'/.test(server)],
+ ['goods-receipt-created units carry lifecycle actor context',/set_config\('app.actor_id'/.test(fs.readFileSync('suppliers-procurement.js','utf8'))],
 ];
 let failed=0; for(const [name,ok] of checks){console.log(`${ok?'PASS':'FAIL'} ${name}`);if(!ok)failed++;}console.log(`Serialized status/history audit: ${checks.length-failed}/${checks.length} PASS`);process.exitCode=failed?1:0;

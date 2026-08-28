@@ -1,13 +1,13 @@
 # Amaal Telecoms — Cross-Module Audit
 
 ## Audit date
-2026-08-27
+2026-08-28
 
 ## Result
 PASS
 
 - Frontend API references: 104
-- Backend routes: 564
+- Backend routes: 568
 - Unmatched frontend routes: 0
 - Connected cross-module checks: 18/18
 - Review cross-module checks: 0
@@ -41,7 +41,7 @@ PASS
 - Batch provenance links purchasing and receiving records.
 
 ## Follow-up
-The static audit confirms route and source-level connections. It does not replace controlled staging tests of the full physical workflow. The next high-value integration is exact serialized-unit selection for warehouse transfers, followed by order fulfilment and physical-unit history.
+The static audit confirms route and source-level connections. It does not replace controlled staging tests of the full physical workflow. The next high-value integration is returns / warranty / service reconciliation anchored to the exact serialized physical unit, followed by reports/BI and controlled production verification.
 
 
 ### Warehouse Transfer Integration — 27 Aug 2026

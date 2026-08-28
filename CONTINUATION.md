@@ -148,22 +148,44 @@ Production Next.js build and live database execution were not performed in the e
 - JavaScript syntax: PASS for all top-level JavaScript files checked.
 - No database migration was required for this increment; existing `order_serial_units` uniqueness was reused.
 
+## Completed in the latest increment — Physical Unit History / Status Engine Hardening
+The serialized physical-unit lifecycle has been hardened so workflow-owned status changes consistently pass through the shared lifecycle service while PostgreSQL remains the final enforcement layer.
+
+### Changes made
+- Goods-receipt-created units now attribute lifecycle history to the receiving user.
+- Stocktake-discovered units now record `InventoryStocktake` provenance and actor context.
+- Incident-created units now record `InventoryIncident` provenance and actor context.
+- Order cancellation now releases reserved serialized units through the lifecycle service instead of a direct status update.
+- Sale void now returns sold serialized units through the lifecycle service instead of a direct status update.
+- Existing manual status restrictions remain in place for workflow-owned states.
+- Physical-unit history endpoint continues to expose the lifecycle ledger and related order/sale/warranty/return records.
+
+### Current verification
+- Serialized status/history audit: PASS — 19/19.
+- Exact unit order assignment: PASS — 20/20.
+- Serialized inventory audit: PASS — 16/16.
+- Warehouse transfer audit: PASS — 15/15.
+- Receiving/batch audit: PASS — 15/15.
+- Fulfilment/delivery audit: PASS — 14/14.
+- Transaction integrity audit: PASS — 12/12.
+- Cross-module audit: PASS — 18/18 connected, 0 unmatched frontend routes.
+- Top-level JavaScript syntax: PASS.
+
+### Limitation
+The live production Neon database was not contacted or modified from the extracted environment.
+
 ## Highest-priority next work
-### 1. Physical-unit history / status engine
-Make the exact IMEI/serial timeline authoritative across receiving, transfers, reservations, orders, sales, delivery, returns, warranty and service.
+### 1. Returns / warranty / service reconciliation
+Use IMEI/serial as the reliable identity anchor through return receipt, inspection, disposition, repair and warranty closure. Preserve the original sale/order history and prevent an item from being simultaneously treated as returned, in service and available.
 
-### 2. Fulfilment / delivery reconciliation
-Ensure the exact unit assigned to an order is the exact unit picked, dispatched and delivered.
+### 2. Reports / Business Intelligence
+Audit report field contracts and date ranges against the real business tables. Remove any fabricated KPI/chart values and ensure loading, empty, error and permission states are real.
 
-### 3. Returns / warranty / service
-Use IMEI/serial as a reliable lookup key and preserve the original sale and unit history.
+### 3. Production verification
+Run the full production dependency build and controlled staging database tests when the deployment environment and database connector are available.
 
-### 4. Reports / BI
-Audit current field contracts and expose existing real datasets without fabricating values.
-
-### 5. Production verification
-Run the full production dependency build and controlled staging database tests when the deployment environment is available.
-
+### 4. TV catalogue production reconciliation
+After controlled Neon access is available, inspect existing TV records against `MASTER_TELEVISION_PRODUCT_CATALOG.md`, consolidate true duplicates, archive referenced obsolete records, and correct the canonical `Global Star` brand without deleting business history.
 
 ## Database rules
 NEVER:
