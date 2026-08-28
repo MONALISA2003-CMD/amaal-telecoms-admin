@@ -8,6 +8,8 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
+  const [mfaRequired, setMfaRequired] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [checkingSetup, setCheckingSetup] = useState(true);
@@ -17,7 +19,7 @@ export default function LoginPage() {
     fetch('/api/session/setup/status', { cache: 'no-store' })
       .then(async (response) => {
         const data = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(data.error || 'We could not check account setup status.');
+        if (!response.ok) { throw new Error(data.error || 'We could not check account setup status.'); }
         if (active && data.setupRequired) router.replace('/setup');
       })
       .catch((err) => {
@@ -37,10 +39,16 @@ export default function LoginPage() {
       const response = await fetch('/api/session/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, ...(code ? { code } : {}) }),
       });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'We could not sign you in.');
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        if (data?.codeRequired) setMfaRequired(true);
+        if (response.status === 429) setError(data.error || 'Too many sign-in attempts. Please wait before trying again.');
+        throw new Error(data.error || 'We could not sign you in.');
+      }
+      setMfaRequired(false);
+      setCode('');
       router.replace('/overview');
       router.refresh();
     } catch (err) {
@@ -81,12 +89,20 @@ export default function LoginPage() {
           <p>Sign in to manage Amaal Telecoms with secure, role-based access.</p>
         </div>
 
-        {error && <div className="error" role="alert">{error}</div>}
+        {error && <div className="error" role="alert" aria-live="polite">{error}</div>}
 
         <div className="field">
           <label htmlFor="email">Email address</label>
           <input id="email" type="email" autoComplete="username" value={email} onChange={e => setEmail(e.target.value)} required />
         </div>
+        {mfaRequired && (
+          <div className="field">
+            <label htmlFor="code">Authenticator code</label>
+            <input id="code" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]*" maxLength={6} value={code} onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} required />
+            <p className="note">Enter the current code from your authenticator app.</p>
+          </div>
+        )}
+
         <div className="field">
           <label htmlFor="password">Password</label>
           <input id="password" type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required />

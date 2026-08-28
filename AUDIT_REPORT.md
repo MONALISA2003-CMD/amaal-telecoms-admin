@@ -388,3 +388,19 @@ No production database reset, truncate, replacement, destructive reseed, or busi
 - Conflicting legacy TV slugs are archived only when dependency checks show no serialized, order, sale, or purchase references.
 - Added read-only `tv-catalogue-reconciliation.sql` for production inspection.
 - Removed redundant phase-only Markdown reports while retaining `Amaal_plan.md` and core audit/continuation documentation.
+
+
+## Phase 10 update — 2026-08-28
+- Deep login audit completed. MFA-required login now has a real code-entry path.
+- Login/setup proxy calls have bounded timeouts.
+- Catalogue product DELETE is now a safe archive operation; historical relationships are preserved.
+- Backend syntax and cross-module audits re-run successfully.
+- Production Neon was not mutated.
+
+## Phase 11 — Authentication/session hardening (MFA deferred)
+- Login proxy: bounded upstream timeout and no-store response handling.
+- Setup proxy: bounded upstream timeout added; upstream failures are surfaced without hanging the sign-in/setup experience.
+- Logout: local cookies are cleared even if upstream logout is unavailable; response is no-store.
+- Password change: recent-password checks use asynchronous bcrypt comparison; other active sessions remain revoked while current session is retained.
+- Password recovery: existing generic responses, rate limiting, expiring single-use tokens and session/device revocation preserved.
+- MFA: intentionally unchanged/deferred in accordance with current instruction.

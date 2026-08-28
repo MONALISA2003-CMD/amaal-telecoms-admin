@@ -557,3 +557,27 @@ Working source: latest available generated ZIP `amaal-telecoms-phase7-safe-deplo
 - `tv-global-star-normalization.sql` is idempotent and preserves business history; when a target canonical slug already exists, a legacy duplicate is archived only when no serialized/order/sale/purchase dependency is present.
 - No database reset, truncate, destructive reseed or blind deletion is permitted.
 - Next: run the read-only reconciliation against the real Neon database, review dependencies, then apply only verified corrections.
+
+
+## Latest Phase — 2026-08-28
+### Just completed
+- Deep authentication/login hardening.
+- MFA login UI/backend handshake corrected.
+- Login/setup proxy timeouts added.
+- Product removal changed to safe archive rather than destructive deletion.
+- Full backend syntax and cross-module audits rerun.
+
+### Next
+1. Resolve live Neon authorization.
+2. Run read-only TV/brand reconciliation.
+3. Safely correct Global Star / legacy TV identities based on actual dependencies.
+4. Verify Render startup and Vercel catalogue end-to-end.
+5. Run final production smoke tests.
+
+### Must not change
+- Do not reset/truncate/drop/replace PostgreSQL.
+- Do not delete historical sales, orders, inventory, warranty, service or finance records.
+- Do not treat the frontend as a separate product source of truth.
+
+## Phase 11 — Authentication/session hardening
+Completed login/setup/logout/password recovery/session reliability hardening while intentionally leaving MFA unchanged. Next work should continue with non-MFA session/permission regression and live read-only Neon reconciliation when the connector is available. Never reset, truncate, replace or destructively reseed PostgreSQL.

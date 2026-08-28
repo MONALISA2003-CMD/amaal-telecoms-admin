@@ -9,12 +9,20 @@ function cookiePairs(header: string) {
 export async function POST(request: Request) {
   try {
     const body = await request.text();
-    const upstream = await fetch(`${requireEngineUrl()}/api/login`, {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    let upstream: Response;
+    try {
+      upstream = await fetch(`${requireEngineUrl()}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body,
       cache: 'no-store',
+      signal: controller.signal,
     });
+    } finally {
+      clearTimeout(timeout);
+    }
     const text = await upstream.text();
     const response = new NextResponse(text, {
       status: upstream.status,
@@ -41,7 +49,7 @@ export async function POST(request: Request) {
     return response;
   } catch (error) {
     const message = error instanceof Error ? error.message : 'The business service is unavailable.';
-    const status = message.includes('AMAAL_ENGINE_URL') ? 503 : 502;
+    const status = message.includes('AMAAL_ENGINE_URL') ? 503 : message.includes('aborted') ? 504 : 502;
     return NextResponse.json({ error: message }, { status });
   }
 }
