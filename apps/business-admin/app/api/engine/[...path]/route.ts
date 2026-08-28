@@ -20,7 +20,17 @@ async function forward(request: Request, { params }: { params: Promise<{ path: s
   if (csrf && request.method !== 'GET' && request.method !== 'HEAD') headers.set('X-CSRF-Token', csrf);
 
   const body = ['GET', 'HEAD'].includes(request.method) ? undefined : await request.arrayBuffer();
-  const response = await fetch(target, { method: request.method, headers, body, cache: 'no-store' });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  let response: Response;
+  try {
+    response = await fetch(target, { method: request.method, headers, body, cache: 'no-store', signal: controller.signal });
+  } catch (error) {
+    const message = error instanceof Error && error.name === 'AbortError' ? 'The business service timed out. Please try again.' : 'The business service is unavailable.';
+    return Response.json({ error: message }, { status: 502 });
+  } finally {
+    clearTimeout(timeout);
+  }
   const responseBody = await response.arrayBuffer();
   const out = new Headers();
   const responseType = response.headers.get('content-type');

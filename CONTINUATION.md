@@ -644,3 +644,9 @@ Next:
 2. Review exact TV duplicates and Global Star naming dependencies.
 3. Build a non-destructive merge/archive migration only for verified candidates.
 4. Re-audit Render and Vercel against the corrected canonical records.
+
+## PHASE 19 — DEEP SECURITY / PERMISSION / LOGIN REGRESSION
+
+Completed from the Phase 18 ZIP. Corrected the role regression allow-list so intentional recovery-status/public endpoints are not reported as unguarded. Added a bounded 15-second timeout to the Business Admin engine proxy so slow Render responses fail cleanly instead of hanging. Re-ran role/permission and security regressions: 134 permissions, 131 protected routes, 0 unexpected unguarded routes, 0 unknown sidebar permissions, and security regression PASS. MFA remains intentionally unchanged.
+
+Live Neon remains untouched. Full Business Admin TypeScript compilation is still not claimable because the ZIP has no installed node_modules and dependency installation could not complete in the available environment.
