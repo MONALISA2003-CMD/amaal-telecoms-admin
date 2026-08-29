@@ -1,18 +1,68 @@
-import {Search, UserRound, ShoppingBag, ArrowRight, ShieldCheck, Truck, Wrench} from 'lucide-react';
-import {getCatalog,image,price} from '@/lib/catalog';
+import Link from 'next/link';
+import { Search, ShoppingBag, UserRound, ArrowRight, Truck, ShieldCheck, Wrench, ChevronDown } from 'lucide-react';
+import { getCatalog } from '../lib/catalog';
 
-const fallbackCategories=['Phones','Tablets','TVs','Home Appliances','Kitchen Appliances','Refrigeration','Office Electronics','Sound & Speakers'];
-export default async function Home(){
- const catalog=await getCatalog(); const products=catalog?.products||[]; const categories=(catalog?.categories||[]).filter(c=>!c.parent_id); const brands=(catalog?.brands||[]).slice(0,8); const featured=products.filter(p=>p.featured).slice(0,4); const picks=(featured.length?featured:products).slice(0,4);
- return <main>
-  <header className="header"><div className="brand">AMAAL</div><nav><a href="#shop">Shop</a><a href="#categories">Categories</a><a href="#brands">Brands</a><a href="#deals">Deals</a><a href="#services">Services</a></nav><div className="actions"><button aria-label="Search"><Search size={19}/></button><button aria-label="Account"><UserRound size={19}/></button><button aria-label="Bag"><ShoppingBag size={19}/></button></div></header>
-  <section className="hero"><div className="hero-copy"><p className="eyebrow">PREMIUM CONSUMER ELECTRONICS</p><h1>Technology,<br/><em>beautifully chosen.</em></h1><p className="lead">Phones, appliances, entertainment and everyday technology from brands you can trust.</p><div className="hero-cta"><a className="button dark" href="#shop">Shop now <ArrowRight size={16}/></a><a className="text-link" href="#categories">Explore categories</a></div></div><div className="hero-art"><div className="art-glow"/><div className="art-card"><span>AMAAL</span><strong>Genuine.<br/>Premium.<br/>Everyday.</strong></div></div></section>
-  <section className="trust"><div><ShieldCheck/><b>Genuine products</b><span>Trusted brands and authentic products</span></div><div><Truck/><b>Delivery</b><span>Convenient delivery options</span></div><div><Wrench/><b>Warranty & support</b><span>Help before and after purchase</span></div></section>
-  <section id="categories" className="section"><div className="section-head"><div><p className="eyebrow">DISCOVER</p><h2>Shop by category</h2></div><a className="text-link" href="#shop">View all <ArrowRight size={15}/></a></div><div className="category-grid">{(categories.length?categories:fallbackCategories.map((name,i)=>({id:String(i),name,slug:name.toLowerCase().replaceAll(' ','-')}))).map((c:any)=><a className="category" href={`/category/${c.slug}`} key={c.id}><span>{c.name}</span><ArrowRight size={16}/></a>)}</div></section>
-  <section id="shop" className="section soft"><div className="section-head"><div><p className="eyebrow">THE AMAAL EDIT</p><h2>Featured products</h2></div><a className="text-link" href="/shop">Shop all <ArrowRight size={15}/></a></div><div className="product-grid">{picks.map(p=><article className="product" key={p.id}><div className="product-image">{image(p)?<img src={image(p)} alt={p.name}/>:<div className="image-placeholder">AMAAL</div>}</div><div className="product-meta"><small>{p.brand_name||'AMAAL'}</small><h3>{p.name}</h3><strong>{price(p)}</strong></div></article>)}</div>{!picks.length&&<div className="empty">Your public catalogue is ready to connect. Publish products from the Business Admin Console to see them here.</div>}</section>
-  <section id="brands" className="section"><div className="section-head"><div><p className="eyebrow">BRANDS</p><h2>Names you know. Quality you trust.</h2></div></div><div className="brands">{brands.map(b=><div className="brand-pill" key={b.id}>{b.name}</div>)}</div></section>
-  <section id="deals" className="campaign"><div><p className="eyebrow">AMAAL DEALS</p><h2>Better technology,<br/>beautifully priced.</h2><p>Discover approved promotions and seasonal offers across the Amaal catalogue.</p><a className="button light" href="/deals">Explore deals <ArrowRight size={16}/></a></div><div className="campaign-number">A</div></section>
-  <section id="services" className="service"><div><p className="eyebrow">AFTER SALES</p><h2>We're here after the purchase, too.</h2><p>Track orders, understand delivery, access warranty support and request service from one connected experience.</p></div><div className="service-links"><a href="/track-order">Track an order <ArrowRight size={16}/></a><a href="/services/warranty">Warranty <ArrowRight size={16}/></a><a href="/services/repairs">Repairs & service <ArrowRight size={16}/></a></div></section>
-  <footer><div className="footer-brand"><div className="brand">AMAAL</div><p>Premium consumer electronics for everyday life.</p></div><div><b>Shop</b><a href="#categories">Categories</a><a href="#brands">Brands</a><a href="/deals">Deals</a></div><div><b>Customer care</b><a href="/faq">Help & FAQ</a><a href="/delivery">Delivery</a><a href="/services/warranty">Warranty</a><a href="/services/repairs">Repairs</a></div><div><b>Company</b><a href="/about">About Amaal</a><a href="/contact">Contact</a><a href="/account">Account</a></div></footer>
- </main>
+const categories = [
+  ['Phones', 'Smartphones & accessories', 'phones'],
+  ['Tablets', 'Work, study & play', 'tablets'],
+  ['TVs', 'Premium home entertainment', 'tvs'],
+  ['Fridges', 'Cooling & refrigeration', 'fridges'],
+  ['Home Appliances', 'Comfort for every day', 'home-appliances'],
+  ['Kitchen Appliances', 'Cook with confidence', 'kitchen-appliances'],
+  ['Office Electronics', 'Power your workspace', 'office-electronics'],
+  ['Sound & Speakers', 'Sound worth hearing', 'sound-speakers'],
+] as const;
+
+export default async function Home() {
+  const catalog = await getCatalog();
+  const products = catalog?.products ?? [];
+
+  return (
+    <main>
+      <header className="site-header">
+        <div className="utility">Genuine products · Trusted service · Delivery across Uganda</div>
+        <div className="nav-wrap">
+          <Link className="brand" href="/">AMAAL<span>.</span></Link>
+          <nav className="desktop-nav" aria-label="Primary navigation">
+            <Link href="/shop">Shop</Link>
+            <Link href="/categories">Categories <ChevronDown size={14}/></Link>
+            <Link href="/brands">Brands</Link>
+            <Link href="/deals">Deals</Link>
+            <Link href="/services">Services</Link>
+          </nav>
+          <div className="nav-actions">
+            <Link href="/search" aria-label="Search"><Search size={20}/></Link>
+            <Link href="/account" aria-label="Account"><UserRound size={20}/></Link>
+            <Link href="/cart" aria-label="Shopping bag"><ShoppingBag size={20}/></Link>
+          </div>
+        </div>
+      </header>
+
+      <section className="hero">
+        <div className="hero-copy">
+          <p className="eyebrow">CONSUMER ELECTRONICS, ELEVATED</p>
+          <h1>Technology for<br/><em>every day.</em></h1>
+          <p className="hero-lede">Discover genuine electronics and appliances from brands you trust, with a shopping experience built around confidence.</p>
+          <div className="hero-actions"><Link className="button primary" href="/shop">Shop the collection <ArrowRight size={17}/></Link><Link className="text-link" href="/categories">Explore categories</Link></div>
+        </div>
+        <div className="hero-art" aria-label="Amaal premium electronics collection"><div className="art-glow"/><div className="device-card phone"/><div className="device-card tv"/><div className="device-card speaker"/></div>
+      </section>
+
+      <section className="trust-strip">
+        <div><ShieldCheck/><div><strong>Genuine & trusted</strong><span>Products from reputable brands</span></div></div>
+        <div><Truck/><div><strong>Reliable delivery</strong><span>Order online, delivered to you</span></div></div>
+        <div><Wrench/><div><strong>Support after purchase</strong><span>Warranty, repairs & service</span></div></div>
+      </section>
+
+      <section className="section categories"><div className="section-head"><div><p className="eyebrow">DISCOVER</p><h2>Shop by category</h2></div><Link className="text-link" href="/categories">View all <ArrowRight size={15}/></Link></div><div className="category-grid">{categories.map(([name, sub, slug], i) => <Link className={`category-tile tile-${i}`} href={`/categories/${slug}`} key={slug}><span className="tile-number">0{i + 1}</span><div><h3>{name}</h3><p>{sub}</p></div><ArrowRight size={18}/></Link>)}</div></section>
+
+      <section className="section featured"><div className="section-head"><div><p className="eyebrow">CURATED FOR YOU</p><h2>Featured products</h2></div><Link className="text-link" href="/shop">Shop all <ArrowRight size={15}/></Link></div><div className="product-grid">{products.slice(0, 8).map((p: any) => <Link className="product-card" href={`/product/${p.slug ?? p.id}`} key={p.id ?? p.slug}><div className="product-image">{p.image_url ? <img src={p.image_url} alt=""/> : <span>AMAAL</span>}</div><p className="product-brand">{p.brand_name ?? p.brand ?? 'AMAAL'}</p><h3>{p.name}</h3><strong>{p.price ? `UGX ${Number(p.price).toLocaleString()}` : 'View product'}</strong></Link>)}</div>{products.length === 0 && <div className="empty">Our catalogue is being prepared. Check back soon.</div>}</section>
+
+      <section className="dark-section"><div><p className="eyebrow">THE AMAAL STANDARD</p><h2>Premium doesn't have to be complicated.</h2><p>Clear products. Honest information. Trusted brands. Helpful people when you need them.</p></div><Link className="button light" href="/about">Why Amaal <ArrowRight size={17}/></Link></section>
+
+      <section className="section service-section"><div><p className="eyebrow">BEYOND THE SALE</p><h2>We stay with you.</h2><p>Track your order, understand your warranty, request service or talk to our team whenever you need us.</p></div><div className="service-links"><Link href="/tracking"><span>Track an order</span><ArrowRight size={17}/></Link><Link href="/warranty"><span>Warranty support</span><ArrowRight size={17}/></Link><Link href="/repairs"><span>Repairs & service</span><ArrowRight size={17}/></Link><Link href="/contact"><span>Make an enquiry</span><ArrowRight size={17}/></Link></div></section>
+
+      <footer className="footer"><div className="footer-brand"><div className="brand">AMAAL<span>.</span></div><p>Premium consumer electronics for everyday life.</p></div><div><h4>Shop</h4><Link href="/categories">Categories</Link><Link href="/brands">Brands</Link><Link href="/deals">Deals</Link></div><div><h4>Help</h4><Link href="/tracking">Track order</Link><Link href="/warranty">Warranty</Link><Link href="/repairs">Repairs</Link></div><div><h4>Company</h4><Link href="/about">About Amaal</Link><Link href="/contact">Contact</Link><Link href="/faq">FAQ</Link></div></footer>
+    </main>
+  );
 }

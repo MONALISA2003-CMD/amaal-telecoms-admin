@@ -150,3 +150,25 @@ It must state:
 **NO DATABASE RESET.**
 
 No database migration or destructive database operation is part of this continuation.
+
+---
+
+## Phase 23 — Discovery / Navigation / Vercel Continuation (29 Aug 2026)
+
+### Built
+- Expanded the public website into customer-facing discovery routes: Shop, Search, Categories, Category detail and Product detail.
+- Added responsive discovery/listing/detail styling while preserving the premium light modern luxury direction.
+- Added `apps/public-web/VERCEL.md` with the repository-root-dependent Vercel deployment rule.
+- Kept the original project, Admin Console, backend and database intact.
+
+### Important deployment finding
+The correct Vercel Root Directory is `src/livefix/apps/public-web` only when the Git repository root is the full extracted project. If the repository was initialized from `src/livefix`, use `apps/public-web`. Vercel must see the directory in the Git repository; a ZIP file sitting outside the repository does not count.
+
+### Verification
+Local `npm install` was attempted but timed out in the execution environment, so a successful production build is not claimed.
+
+### Remaining
+Authoritative search/filter API mapping, product detail/variants, cart, checkout/payment, accounts, orders/tracking, promotions, after-sales, enquiries, accessibility/SEO/performance and production verification.
+
+### Database rule
+**NO DATABASE RESET / RECREATION / DROPS / DESTRUCTIVE MIGRATIONS / RE-SEEDING.**
