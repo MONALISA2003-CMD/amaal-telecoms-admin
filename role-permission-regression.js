@@ -1,0 +1,12 @@
+import fs from 'fs';
+const server=fs.readFileSync(new URL('./server.js',import.meta.url),'utf8');
+const frontend=fs.readFileSync(new URL('./apps/business-admin/components/Sidebar.tsx',import.meta.url),'utf8');
+const permissions=[...server.matchAll(/\['([^']+)'\s*,\s*'[^']*'\]/g)].map(m=>m[1]);
+const protectedRoutes=[...server.matchAll(/app\.(get|post|put|patch|delete)\('\/api\/([^']+)'[^\n]*?auth(?:,[^\n]*?)?need\('([^']+)'\)/g)].map(m=>({method:m[1],route:'/api/'+m[2],permission:m[3]}));
+const publicPrefixes=['/api/setup','/api/login','/api/invitations/accept','/api/recovery/reset','/api/password/forgot','/api/password/reset','/api/recovery/status','/api/public','/api/health'];
+const unguarded=[...server.matchAll(/app\.(get|post|put|patch|delete)\('\/api\/([^']+)'([^\n]*)/g)].map(m=>({method:m[1],route:'/api/'+m[2],body:m[3]})).filter(r=>!publicPrefixes.some(p=>r.route===p||r.route.startsWith(p+'/'))&&!r.body.includes('auth'));
+const sidebarPerms=[...frontend.matchAll(/permission:\s*'([^']+)'/g)].map(m=>m[1]);
+const unknownSidebar=sidebarPerms.filter(p=>!permissions.includes(p));
+const report={permissions:permissions.length,protectedRoutes:protectedRoutes.length,unguardedRoutes:unguarded,unknownSidebarPermissions:unknownSidebar};
+console.log(JSON.stringify(report,null,2));
+if(unguarded.length||unknownSidebar.length)process.exitCode=1;
