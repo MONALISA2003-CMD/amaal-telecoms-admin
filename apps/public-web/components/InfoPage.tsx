@@ -1,0 +1,2 @@
+import SiteHeader from './SiteHeader';import SiteFooter from './SiteFooter';
+export default function InfoPage({eyebrow,title,lead,items}:{eyebrow:string;title:string;lead:string;items:Array<[string,string]>}){return <main><SiteHeader/><section className="section info-page"><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p className="info-lead">{lead}</p><div className="info-list">{items.map(([h,p])=><article key={h}><h2>{h}</h2><p>{p}</p></article>)}</div></section><SiteFooter/></main>}
