@@ -701,3 +701,99 @@ The public-web source is merged into this project snapshot. Production build ver
 ### Deployment rule
 
 The public website is a second frontend. It must not be deployed over the existing Business Admin Console. Both frontends should consume the appropriate existing backend/public-safe APIs. The database remains untouched.
+
+---
+
+## PHASE 28 — Amaal Homepage V1: Premium Retail Design Build
+
+**Date:** 2026-08-30
+**Status:** Homepage design direction locked and implementation advanced. Existing Admin, backend and database preserved.
+
+### Locked creative direction
+
+- Reference direction: Concept 2 — Luxury Lifestyle / Premium Retail.
+- Hero direction: dark cinematic luxury environment with real Amaal products; no generic stock lifestyle hero.
+- Headline direction: “Better technology. Better every day.”
+- Visual language: warm ivory, paper white, charcoal, warm brown and restrained champagne/gold accents.
+- Product density rule: minimal hero; richer product discovery below.
+- Design principle: Amaal should read as a premium consumer-electronics and home retailer, not a marketplace or phone-only shop.
+
+### Homepage sections now planned/built
+
+1. Header / primary navigation
+2. Luxury hero with real Amaal product composition
+3. Trust / reassurance strip
+4. Shop by category
+5. Featured at Amaal
+6. Cinematic home-entertainment editorial feature
+7. Explore by lifestyle
+8. Amaal Deals
+9. New at Amaal
+10. Trusted brands
+11. The Amaal Difference
+12. Home / Kitchen / Work & Play breadth section
+13. Customer self-service / after-sales
+14. Customer assistance / enquiry CTA
+15. Newsletter / stay-in-the-loop
+16. Final brand CTA and footer
+
+### Real product assets used in public-web implementation
+
+- iPhone 17 Pro Max 256GB — UGX 5,200,000
+- Galaxy S26 Ultra 256GB — UGX 3,800,000
+- Samsung U8000F 75-inch 4K Smart TV — UGX 5,400,000
+- Samsung B550 Soundbar — price on request pending authoritative catalogue value
+- TCL 606L Top Mount Refrigerator — UGX 2,900,000
+- Hisense HFG60121X 4-Burner Gas Cooker — UGX 1,200,000
+- HP Omen Gaming Laptop — UGX 5,100,000
+
+### Implementation changes
+
+- Reworked `apps/public-web/app/page.tsx` into the expanded homepage structure.
+- Reworked public-web homepage CSS in `apps/public-web/app/globals.css` for the locked luxury direction and responsive layouts.
+- Added real supplied product imagery to hero, category, editorial and product sections.
+- Kept catalogue API integration available for brand data; homepage content remains ready for authoritative backend-driven collections.
+- Preserved existing `AddToBag` interaction for priced homepage products.
+
+### Design research
+
+Firecrawl research was used to sanity-check the premium ecommerce direction. The research reinforced the value of product photography as hero content, disciplined brand conviction, editorial homepage storytelling and branded/f​​riction-light commerce patterns. This research is inspiration only; Amaal's own approved direction and supplied product assets remain authoritative.
+
+### Figma
+
+Updated the existing Figma file `4LnvxI3mJYeJ63n8Q4ErZ6` on page `02 — Homepage V1` with the Premium Retail homepage blueprint. The Figma version includes the locked hierarchy, real Amaal product names and explicit photography slots. Actual supplied raster assets remain in the codebase; Figma asset upload could not be completed from the available runtime because its upload endpoint was not reachable from the container.
+
+### Database / backend preservation
+
+- No database reset.
+- No schema reset.
+- No table drops.
+- No data deletion.
+- No production reseed.
+- `server.js` preserved.
+- `schema.sql` preserved.
+- `apps/business-admin/` preserved.
+- No replacement backend introduced.
+
+### Verification
+
+- Source-level inspection completed.
+- Public homepage TypeScript syntax was reviewed.
+- A dependency installation/build was attempted but timed out in the execution environment; therefore a successful production `next build` is NOT claimed from this runtime.
+- ZIP integrity must be verified before release.
+
+### Remaining homepage work
+
+1. Replace any remaining photography placeholders with supplied assets where a stronger image is available.
+2. Decide whether the hero should use a true composite campaign image or live positioned product assets.
+3. Add authoritative backend-driven homepage collections/promotions rather than hard-coded merchandising once the public-safe endpoints are available.
+4. Finalize mobile art direction and interaction details.
+5. Run Vercel build in CI/target environment and fix any framework/type issues found there.
+6. Perform visual QA at desktop/tablet/mobile widths.
+7. Only after homepage approval, extend the same design system to category, search, PDP, cart, checkout and account journeys.
+
+### Next phase
+
+**PHASE 29 — Homepage QA + Production Data Binding**
+
+Focus only on homepage quality: real API data binding, visual QA, responsive polish, accessibility, performance, SEO metadata and Vercel build verification. Do not modify the Admin Console, backend schema or production database destructively.
