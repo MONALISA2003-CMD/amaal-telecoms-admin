@@ -797,3 +797,16 @@ Updated the existing Figma file `4LnvxI3mJYeJ63n8Q4ErZ6` on page `02 — Homepag
 **PHASE 29 — Homepage QA + Production Data Binding**
 
 Focus only on homepage quality: real API data binding, visual QA, responsive polish, accessibility, performance, SEO metadata and Vercel build verification. Do not modify the Admin Console, backend schema or production database destructively.
+
+## Phase 29 — Homepage Merchandising + Horizontal Motion Rails
+
+Latest homepage direction is documented in `CONTINUATION_PHASE29.md` and `AMAAL_HOMEPAGE_PRODUCT_CONTENT_V1.md`.
+
+Current hard rules:
+- Homepage categories are exactly Phones, TV & Home Entertainment, Audio, Home Appliances, Kitchen Appliances, Gaming & Computing, Accessories.
+- Category, Featured at Amaal, New at Amaal and Shop by Brand are horizontal auto-motion rails.
+- Weekly Deals is included without invented discounts.
+- Homepage cards show quick details and price only; full product information opens on the product page.
+- Homepage product photography is currently placeholder-only so no supplied/placeholder product photo is reused across sections.
+- Official brand logo assets are still required before replacing the brand placeholders.
+- Database/backend/admin console remain untouched.

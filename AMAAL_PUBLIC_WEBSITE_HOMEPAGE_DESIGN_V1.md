@@ -108,3 +108,20 @@ The existing backend and database remain authoritative.
 ## Approval gate
 
 Homepage implementation should be visually and structurally approved before extending the design system to the rest of the customer commerce journeys.
+
+## Phase 29 Homepage Refinement — Locked Merchandising Rules
+
+### Categories
+Phones; TV & Home Entertainment; Audio; Home Appliances; Kitchen Appliances; Gaming & Computing; Accessories.
+
+### Motion
+Category, Featured, New at Amaal and Brand sections are horizontal continuous rails with automatic motion. Hover/focus pauses motion. Reduced-motion users receive a non-animated horizontal scroll experience.
+
+### Product cards
+Homepage cards show only quick details and price. Clicking opens the product detail route for the fuller description/specifications.
+
+### Asset policy
+No product photograph is reused across homepage sections. Current homepage visuals are explicit placeholders awaiting unique Amaal-supplied photography.
+
+### Weekly Deals
+Weekly Deals is present as a merchandising section but contains no fabricated discount percentage or promotional price until Amaal supplies approved promotion data.
