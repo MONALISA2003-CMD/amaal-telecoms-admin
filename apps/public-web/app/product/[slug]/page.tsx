@@ -4,9 +4,9 @@ import SiteFooter from '../../../components/SiteFooter';
 import AddToBag from '../../../components/AddToBag';
 import ProductGallery from '../../../components/ProductGallery';
 import { getCatalog, image, price } from '../../../lib/catalog';
-import { featuredProducts, newProducts, type HomeProduct } from '../../../lib/homepage-data';
+import { featuredProducts, newProducts, weeklyDeals, type HomeProduct } from '../../../lib/homepage-data';
 
-const curated = [...featuredProducts, ...newProducts];
+const curated = [...featuredProducts, ...newProducts, ...weeklyDeals];
 function ugx(value:number){return value ? new Intl.NumberFormat('en-UG',{style:'currency',currency:'UGX',maximumFractionDigits:0}).format(value) : 'Price on request'}
 
 function CuratedDetail({p}:{p:HomeProduct}){

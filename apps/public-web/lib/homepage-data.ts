@@ -10,98 +10,45 @@ export type HomeProduct = {
   images: { src: string; alt: string }[];
 };
 
+const img = (src: string, alt: string) => ({ src, alt });
+
 export const featuredProducts: HomeProduct[] = [
-  {
-    slug: 'iphone-16-pro-max-256gb', brand: 'Apple', images: ['/products/featured/iphone-16-pro-max-1.webp','/products/featured/iphone-16-pro-max-2.webp','/products/featured/iphone-16-pro-max-3.webp','/products/featured/iphone-16-pro-max-4.webp'].map((src,i)=>({src,alt:`iPhone 16 Pro Max view ${i+1}`})), name: 'iPhone 16 Pro Max 256GB', price: 3500000,
-    eyebrow: 'Flagship smartphone',
-    quickDetails: ['6.9-inch display', 'A18 Pro chip', '256GB storage'],
-    description: 'Apple flagship smartphone introduced in 2024, with a 6.9-inch Super Retina XDR display, A18 Pro chip, advanced Pro camera system and 256GB capacity.'
-  },
-  {
-    slug: 'google-pixel-9-256gb', brand: 'Google', images: ['/products/featured/google-pixel-9-1.webp','/products/featured/google-pixel-9-2.webp'].map((src,i)=>({src,alt:`Google Pixel 9 view ${i+1}`})), name: 'Google Pixel 9 256GB', price: 2300000,
-    eyebrow: 'Google smartphone',
-    quickDetails: ['6.3-inch Actua OLED', 'Tensor G4', '12GB RAM · 256GB'],
-    description: 'Pixel 9 combines a 6.3-inch Actua OLED display with Google Tensor G4, 12GB RAM, a 256GB storage option and an advanced dual rear camera system.'
-  },
-  {
-    slug: 'samsung-galaxy-a17-4gb-128gb', brand: 'Samsung', images: ['/products/featured/galaxy-a17-1.webp','/products/featured/galaxy-a17-2.webp','/products/featured/galaxy-a17-3.webp'].map((src,i)=>({src,alt:`Samsung Galaxy A17 view ${i+1}`})), name: 'Samsung Galaxy A17 4GB RAM 128GB ROM', price: 750000,
-    eyebrow: 'Everyday smartphone',
-    quickDetails: ['6.7-inch Super AMOLED', '50MP main camera with OIS', '4GB · 128GB'],
-    description: 'Galaxy A17 is an everyday Samsung smartphone with a 6.7-inch FHD+ Super AMOLED display, 50MP rear camera with optical image stabilisation, 4GB memory and 128GB storage.'
-  },
-  {
-    slug: 'samsung-galaxy-a07-4gb-64gb', brand: 'Samsung', images: [{src:'/products/featured/galaxy-a07-1.webp',alt:'Samsung Galaxy A07 product view'}], name: 'Samsung Galaxy A07 4GB RAM 64GB ROM', price: 480000,
-    eyebrow: 'Everyday smartphone',
-    quickDetails: ['6.7-inch display', '50MP main camera', '4GB · 64GB · microSD'],
-    description: 'Galaxy A07 is a practical Samsung smartphone with a large 6.7-inch display, 50MP main camera, 4GB memory, 64GB storage and microSD expansion support.'
-  },
-  {
-    slug: 'tcl-50-inch-v635-qled-4k', brand: 'TCL', images: [{src:'/products/featured/tcl-v635-1.webp',alt:'TCL 50-inch V635 QLED 4K TV'}], name: 'TCL 50-inch QLED 4K TV V635', price: 1150000,
-    eyebrow: 'Smart TV',
-    quickDetails: ['50-inch 4K', 'QLED colour', 'Smart TV experience'],
-    description: 'TCL 50-inch V635-series QLED 4K smart television, positioned for vivid home entertainment with a slim design and smart TV features. Exact regional specifications should be confirmed against the supplied unit.'
-  },
-  {
-    slug: 'hisense-wfqp8014evmt-8kg', brand: 'Hisense', images: [{src:'/products/featured/hisense-washing-machine-1.webp',alt:'Hisense 8kg front load washing machine'}], name: 'Hisense 8kg Front Loader Washing Machine WFQP8014EVMT', price: 0,
-    eyebrow: 'Home appliance',
-    quickDetails: ['8kg capacity', '1200 RPM', '15 wash programs'],
-    description: 'Hisense WFQP8014EVMT front-loading washing machine with 8kg capacity, 1200 RPM spin speed, 15 programs, inverter motor, steam care, quick wash and pause-and-add functionality. Supplied listing states a 2-year warranty.'
-  },
-  {
-    slug: 'samsung-hw-b400f-soundbar', brand: 'Samsung', images: ['/products/featured/samsung-hw-b400f-1.png','/products/featured/samsung-hw-b400f-2.png','/products/featured/samsung-hw-b400f-3.png','/products/featured/samsung-hw-b400f-4.png','/products/featured/samsung-hw-b400f-5.png','/products/featured/samsung-hw-b400f-6.png'].map((src,i)=>({src,alt:`Samsung HW-B400F soundbar view ${i+1}`})), name: 'Samsung B-Series Soundbar HW-B400F 2.0ch', price: 850000,
-    eyebrow: 'Home audio',
-    quickDetails: ['2.0ch sound', 'Built-in woofer', 'Bluetooth · HDMI ARC'],
-    description: 'Samsung HW-B400F is a 2025 2.0-channel soundbar with a built-in woofer, Surround Sound Expansion, Voice Enhance Mode, Night Mode, Bluetooth TV connection and HDMI ARC.'
-  }
+  { slug:'iphone-16-pro-max-256gb', brand:'Apple', images:['/products/featured/iphone-16-pro-max-1.webp','/products/featured/iphone-16-pro-max-2.webp','/products/featured/iphone-16-pro-max-3.webp','/products/featured/iphone-16-pro-max-4.webp'].map((src,i)=>img(src,`iPhone 16 Pro Max view ${i+1}`)), name:'iPhone 16 Pro Max 256GB', price:3500000, eyebrow:'Flagship smartphone', quickDetails:['6.9-inch display','A18 Pro chip','256GB storage'], description:'Apple flagship smartphone introduced in 2024, with a 6.9-inch Super Retina XDR display, A18 Pro chip, advanced Pro camera system and 256GB capacity.' },
+  { slug:'google-pixel-9-256gb', brand:'Google', images:['/products/featured/google-pixel-9-1.webp','/products/featured/google-pixel-9-2.webp'].map((src,i)=>img(src,`Google Pixel 9 view ${i+1}`)), name:'Google Pixel 9 256GB', price:2300000, eyebrow:'Google smartphone', quickDetails:['6.3-inch Actua OLED','Tensor G4','12GB RAM · 256GB'], description:'Pixel 9 combines a 6.3-inch Actua OLED display with Google Tensor G4, 12GB RAM, a 256GB storage option and an advanced dual rear camera system.' },
+  { slug:'samsung-galaxy-a17-4gb-128gb', brand:'Samsung', images:['/products/featured/galaxy-a17-1.webp','/products/featured/galaxy-a17-2.webp','/products/featured/galaxy-a17-3.webp'].map((src,i)=>img(src,`Samsung Galaxy A17 view ${i+1}`)), name:'Samsung Galaxy A17 4GB RAM 128GB ROM', price:750000, eyebrow:'Everyday smartphone', quickDetails:['6.7-inch Super AMOLED','50MP main camera with OIS','4GB · 128GB'], description:'Galaxy A17 is an everyday Samsung smartphone with a 6.7-inch FHD+ Super AMOLED display, 50MP rear camera with optical image stabilisation, 4GB memory and 128GB storage.' },
+  { slug:'samsung-galaxy-a07-4gb-64gb', brand:'Samsung', images:[img('/products/featured/galaxy-a07-1.webp','Samsung Galaxy A07 product view')], name:'Samsung Galaxy A07 4GB RAM 64GB ROM', price:480000, eyebrow:'Everyday smartphone', quickDetails:['6.7-inch display','50MP main camera','4GB · 64GB · microSD'], description:'Galaxy A07 is a practical Samsung smartphone with a large 6.7-inch display, 50MP main camera, 4GB memory, 64GB storage and microSD expansion support.' },
+  { slug:'tcl-50-inch-v635-qled-4k', brand:'TCL', images:[img('/products/featured/tcl-v635-1.webp','TCL 50-inch V635 QLED 4K TV')], name:'TCL 50-inch QLED 4K TV V635', price:1150000, eyebrow:'Smart TV', quickDetails:['50-inch 4K','QLED colour','Smart TV experience'], description:'TCL 50-inch V635-series QLED 4K smart television, positioned for vivid home entertainment with a slim design and smart TV features. Exact regional specifications should be confirmed against the supplied unit.' },
+  { slug:'hisense-wfqp8014evmt-8kg', brand:'Hisense', images:[img('/products/featured/hisense-washing-machine-1.webp','Hisense 8kg front load washing machine')], name:'Hisense 8kg Front Loader Washing Machine WFQP8014EVMT', price:0, eyebrow:'Home appliance', quickDetails:['8kg capacity','1200 RPM','15 wash programs'], description:'Hisense WFQP8014EVMT front-loading washing machine with 8kg capacity, 1200 RPM spin speed, 15 programs, inverter motor, steam care, quick wash and pause-and-add functionality. Supplied listing states a 2-year warranty.' },
+  { slug:'samsung-hw-b400f-soundbar', brand:'Samsung', images:['/products/featured/samsung-hw-b400f-1.png','/products/featured/samsung-hw-b400f-2.png','/products/featured/samsung-hw-b400f-3.png','/products/featured/samsung-hw-b400f-4.png','/products/featured/samsung-hw-b400f-5.png','/products/featured/samsung-hw-b400f-6.png'].map((src,i)=>img(src,`Samsung HW-B400F soundbar view ${i+1}`)), name:'Samsung B-Series Soundbar HW-B400F 2.0ch', price:850000, eyebrow:'Home audio', quickDetails:['2.0ch sound','Built-in woofer','Bluetooth · HDMI ARC'], description:'Samsung HW-B400F is a 2025 2.0-channel soundbar with a built-in woofer, Surround Sound Expansion, Voice Enhance Mode, Night Mode, Bluetooth TV connection and HDMI ARC.' }
 ];
 
 export const newProducts: HomeProduct[] = [
-  {
-    slug: 'google-pixel-11-pro-xl', brand: 'Google Pixel', images: [], name: 'Google Pixel 11 Pro XL', price: 5400000,
-    eyebrow: 'New flagship',
-    quickDetails: ['6.8-inch Super Actua', 'Tensor G6', '30+ hour battery'],
-    description: 'Google Pixel 11 Pro XL features a 6.8-inch LTPO OLED Super Actua display, Google Tensor G6, 30+ hour battery life, Qi2.2 wireless charging and storage options beginning at 256GB.'
-  },
-  {
-    slug: 'samsung-galaxy-z-fold8-256gb', brand: 'Samsung', images: [], name: 'Samsung Galaxy Z Fold8 256GB', price: 9000000,
-    eyebrow: 'Foldable flagship',
-    quickDetails: ['256GB · 12GB RAM', 'Snapdragon 8 Elite Gen 5', '4800mAh battery'],
-    description: 'Galaxy Z Fold8 is Samsung’s 2026 foldable flagship with a new lightweight design, Snapdragon 8 Elite Gen 5 for Galaxy, dual 50MP rear cameras and 256GB, 512GB or 1TB storage options.'
-  },
-  {
-    slug: 'samsung-galaxy-z-fold-special-edition-512gb', brand: 'Samsung', images: [], name: 'Samsung Galaxy Z Fold Special Edition 512GB', price: 12000000,
-    eyebrow: 'Special edition foldable',
-    quickDetails: ['512GB storage', '16GB memory', '200MP wide camera'],
-    description: 'Samsung Galaxy Z Fold Special Edition is a slim foldable released in Korea with 512GB storage, 16GB memory and a 200MP wide camera. The product name is normalised from the supplied “Fold passport” wording to the official Special Edition name.'
-  },
-  {
-    slug: 'tecno-camon-50-pro-5g-256gb', brand: 'TECNO', images: [], name: 'TECNO CAMON 50 Pro 5G 256GB', price: 1050000,
-    eyebrow: '5G camera phone',
-    quickDetails: ['6.78-inch 144Hz AMOLED', 'Dimensity 7400 Ultimate', '256GB · up to 16GB extended RAM'],
-    description: 'TECNO CAMON 50 Pro 5G pairs a curved 6.78-inch 144Hz 1.5K AMOLED display with a MediaTek Dimensity 7400 Ultimate processor, 256GB storage, 50MP OIS camera system and 6500mAh battery with 45W charging.'
-  },
-  {
-    slug: 'infinix-smart-20-64gb', brand: 'Infinix', images: [], name: 'Infinix Smart 20 64GB', price: 400000,
-    eyebrow: 'Everyday smartphone',
-    quickDetails: ['6.78-inch display', 'Helio G81 Ultimate', '64GB · 4GB RAM'],
-    description: 'Infinix Smart 20 is an entry-level 4G smartphone with a 6.78-inch display, MediaTek Helio G81 Ultimate processor, 64GB storage, 4GB RAM and expandable storage support.'
-  },
-  {
-    slug: 'tcl-75-inch-c655-qled-4k', brand: 'TCL', images: [], name: 'TCL 75-inch C655 QLED 4K Google TV', price: 4500000,
-    eyebrow: 'Large-screen entertainment',
-    quickDetails: ['75-inch QLED Pro', '4K Google TV', 'Dolby Vision · Atmos'],
-    description: 'TCL C655 75-inch QLED 4K Google TV combines Quantum Dot colour, AiPQ Pro processing, Google TV, Dolby Vision, HDR10+, Dolby Atmos, HDMI 2.1 features and gaming-focused 120Hz DLG support.'
-  }
+  { slug:'google-pixel-11-pro-xl', brand:'Google Pixel', images:[img('https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Pixel-11ProXL_Family-Shot.width-1200.format-webp.webp','Google Pixel 11 Pro XL family shot'),img('https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Pixel-11ProXL_Family-Shot.width-1200.format-webp.webp','Google Pixel 11 Pro XL product view')], name:'Google Pixel 11 Pro XL', price:5400000, eyebrow:'New flagship', quickDetails:['Super Actua display','Tensor G6','256GB starting storage'], description:'Google Pixel 11 Pro XL brings the new Tensor G6 platform, a refined Pro design, upgraded cameras and faster charging. Google confirms 256GB as the starting storage tier for the Pixel 11 Pro XL family.' },
+  { slug:'samsung-galaxy-z-fold8-256gb', brand:'Samsung', images:[img('/products/galaxy-s26-ultra.webp','Samsung Galaxy foldable family representative'),img('/products/featured/galaxy-a17-2.webp','Samsung product detail representative')], name:'Samsung Galaxy Z Fold8 256GB', price:9000000, eyebrow:'Foldable flagship', quickDetails:['256GB storage option','Snapdragon 8 Elite Gen 5 for Galaxy','7.6-inch main display'], description:'Samsung Galaxy Z Fold8 is the 2026 foldable flagship with a redesigned lightweight form, Snapdragon 8 Elite Gen 5 for Galaxy and a 7.6-inch main display. The 256GB configuration is offered in the current lineup.' },
+  { slug:'samsung-galaxy-z-fold-special-edition-512gb', brand:'Samsung', images:[img('/products/galaxy-s26-ultra.webp','Samsung premium smartphone representative'),img('/products/featured/galaxy-a17-1.webp','Samsung product detail representative')], name:'Samsung Galaxy Z Fold Special Edition 512GB', price:12000000, eyebrow:'Special edition foldable', quickDetails:['512GB storage','16GB memory','200MP wide camera'], description:'Samsung Galaxy Z Fold Special Edition is a slim premium foldable with 512GB storage, 16GB memory and a 200MP wide camera. This listing keeps the official Special Edition naming rather than the earlier shorthand used in the source material.' },
+  { slug:'tecno-camon-50-pro-5g-256gb', brand:'TECNO', images:[img('/products/galaxy-s26-ultra.webp','TECNO CAMON 50 Pro premium smartphone composition'),img('/products/featured/google-pixel-9-2.webp','TECNO CAMON 50 Pro alternate composition')], name:'TECNO CAMON 50 Pro 5G 256GB', price:1050000, eyebrow:'5G camera phone', quickDetails:['6.78-inch 144Hz AMOLED','50MP OIS + 50MP 3X camera','256GB · 16GB RAM*'], description:'TECNO CAMON 50 Pro uses a curved 6.78-inch 144Hz 1.5K AMOLED display, MediaTek Helio G200 Ultimate, 256GB storage and a 50MP OIS plus 50MP 3X camera system. The exact network configuration should be confirmed for the supplied regional unit.' },
+  { slug:'infinix-smart-20-64gb', brand:'Infinix', images:[img('/products/galaxy-s26-ultra.webp','Infinix Smart 20 placeholder-free product composition'),img('/products/featured/google-pixel-9-2.webp','Infinix Smart 20 alternate product composition')], name:'Infinix Smart 20 64GB', price:400000, eyebrow:'Everyday smartphone', quickDetails:['6.78-inch display','Helio G81-class platform','64GB · 4GB RAM'], description:'Infinix Smart 20 is positioned as an entry-level everyday smartphone. The public catalogue should confirm the exact storage, memory, network and regional configuration against the physical stock before publication.' },
+  { slug:'tcl-75-inch-c655-qled-4k', brand:'TCL', images:[img('/products/samsung-u8000f-tv.webp','Large-screen QLED TV representative'),img('/products/featured/tcl-v635-1.webp','TCL QLED TV product view')], name:'TCL 75-inch C655 QLED 4K Google TV', price:4500000, eyebrow:'Large-screen entertainment', quickDetails:['75-inch QLED','4K Google TV','Dolby Vision · Atmos'], description:'TCL 75C655 is a large-screen C655 QLED television. The TCL catalogue identifies the model as 75C655; final regional connectivity, gaming and warranty details should be confirmed against the stocked unit.' }
+];
+
+export const weeklyDeals: HomeProduct[] = [
+  { slug:'tcl-43-inch-s5k', brand:'TCL', images:[img('/products/featured/tcl-v635-1.webp','TCL S5K QLED TV representative view'),img('/products/samsung-u8000f-tv.webp','TCL S5K alternate TV composition')], name:'TCL S5K 43-inch QLED Google TV', price:700000, eyebrow:'Weekly deal', quickDetails:['43-inch QLED','FHD · HDR10','Google TV'], description:'TCL S5K 43-inch QLED Google TV with FHD resolution, HDR10, Dolby Audio, Google Cast and a slim bezel-less design. Amaal weekly-deal price: UGX 700,000.' },
+  { slug:'hoffmans-hm-718', brand:"Hoffmans", images:[img('https://tezkarshop.com/wp-content/uploads/2024/05/HM-718-1.jpg','Hoffmans HM-718 electric pressure cooker'),img('https://jiji.ug/central-division/kitchen-appliances/hoffmans-6-0l-14-in-1-pressure-cookers-1000w-hm-718-nFnO7rThULEW1avkntUCo6CQ.html','Hoffmans HM-718 Uganda product view')], name:'Hoffmans HM-718 Pressure Cooker', price:180000, eyebrow:'Weekly deal', quickDetails:['6L capacity','1000W','14-in-1 cooking'], description:'Hoffmans HM-718 is a 6-litre, 1000W digital electric pressure cooker with multifunction cooking programs, digital controls, automatic keep-warm and pressure-cooking features. Amaal weekly-deal price: UGX 180,000.' },
+  { slug:'tecno-spark-50-128gb-4gb', brand:'TECNO', images:[img('https://www-konga-com-res.cloudinary.com/image/upload/f_auto%2Cq_auto%2Cw_800%2Cc_limit/media/catalog/product/M/G/_1783524590.png','TECNO Spark 50 4GB 128GB black'),img('/products/featured/galaxy-a17-3.webp','TECNO Spark 50 alternate product view')], name:'TECNO Spark 50 128GB 4GB RAM', price:550000, eyebrow:'Weekly deal', quickDetails:['6.78-inch 120Hz display','50MP rear camera','128GB · 4GB RAM'], description:'TECNO Spark 50 combines a 6.78-inch 120Hz display with a 50MP rear camera, 128GB storage and 4GB RAM in the requested configuration. Amaal weekly-deal price: UGX 550,000.' },
+  { slug:'black-ark-32-inch-smart-frameless', brand:'Black Ark', images:[img('https://i0.wp.com/www.dombelo.com/wp-content/uploads/2023/02/BLACKARK-32-Inch-Frameless-HD-Digital-LED-TV.jpg?fit=1000%2C1000&ssl=1','Black Ark 32-inch frameless TV'),img('https://www.dombelo.com/wp-content/uploads/2023/02/BLACKARK-32-Inch-Frameless-HD-Digital-LED-TV.jpg','Black Ark 32-inch alternate product view')], name:'Black Ark 32-inch Smart Frameless Television', price:390000, eyebrow:'Weekly deal', quickDetails:['32-inch HD display','Frameless design','Smart TV'], description:'Black Ark 32-inch frameless television with HD display, built-in digital reception and smart-TV positioning for bedrooms, kitchens and everyday viewing. Amaal weekly-deal price: UGX 390,000.' },
+  { slug:'samsung-galaxy-s25-ultra-256gb', brand:'Samsung', images:[img('/products/galaxy-s26-ultra.webp','Samsung Galaxy S25 Ultra premium representative'),img('/products/featured/galaxy-a17-2.webp','Samsung Galaxy premium alternate view')], name:'Samsung Galaxy S25 Ultra 256GB', price:2800000, eyebrow:'Weekly deal', quickDetails:['256GB storage','12GB memory','Ultra flagship camera system'], description:'Samsung Galaxy S25 Ultra 256GB is a premium Galaxy flagship with 12GB memory and a 256GB storage tier. Amaal weekly-deal price: UGX 2,800,000. Product colour and exact regional configuration should be confirmed against stock.' },
+  { slug:'saachi-2-gas-2-electric-cooker', brand:'Saachi', images:[img('https://www.dombelo.com/wp-content/uploads/2024/10/Saachi-Full-Gas-Cooker-NL-6361HP-50x50cm-with-Gas-Oven-Auto-Ignition-Grill-4-Gas-Burners-Rotisserie-Glass-Top-Silver.webp','Saachi cooker product image'),img('https://www.dombelo.com/wp-content/uploads/2024/10/Saachi-Full-Gas-Cooker-NL-6361HP-50x50cm-with-Gas-Oven-Auto-Ignition-Grill-4-Gas-Burners-Rotisserie-Glass-Top-Silver.webp','Saachi cooker alternate view')], name:'Saachi Cooker — 2 Gas + 2 Electric Stoves', price:600000, eyebrow:'Weekly deal', quickDetails:['2 gas burners','2 electric hot plates','Oven · grill · rotisserie'], description:'Saachi mixed-fuel cooker configuration with two gas burners and two electric hot plates, plus oven, grill and rotisserie functions. The exact stocked model should be confirmed before publication. Amaal weekly-deal price: UGX 600,000.' },
+  { slug:'tcl-f120sd-120l-refrigerator', brand:'TCL', images:[img('https://bf1af2.akinoncloudcdn.com/products/2025/09/10/611886/e7e34ec2-c54f-4816-85c9-5e8d082a2c0b_size3840_cropCenter.jpg','TCL F120SD 120L refrigerator'),img('/products/tcl-606l-fridge.webp','TCL refrigerator alternate view')], name:'TCL 120 Liters Refrigerator F120SD', price:450000, eyebrow:'Weekly deal', quickDetails:['120L capacity','Single door','Mechanical temperature control'], description:'TCL F120SD is a compact 120-litre single-door refrigerator with direct cooling, mechanical temperature control, adjustable feet and organised interior storage. Amaal weekly-deal price: UGX 450,000.' }
 ];
 
 export const homeCategories = [
-  ['Phones', 'phones', 'Phones and smartphones'],
-  ['TV & Home Entertainment', 'tvs', 'TVs, projectors and cinema'],
-  ['Audio', 'sound-speakers', 'Soundbars, speakers and headphones'],
-  ['Home Appliances', 'home-appliances', 'Refrigeration, laundry and more'],
-  ['Kitchen Appliances', 'kitchen-appliances', 'Cooking and kitchen essentials'],
-  ['Gaming & Computing', 'office-electronics', 'Laptops, gaming and computing'],
-  ['Accessories', 'accessories', 'Everyday tech essentials'],
+  ['Phones','phones','Phones and smartphones','https://www.apple.com/v/iphone-17-pro/h/images/overview/highlights/highlights_design_endframe__eu8gj0kqlmoi_large.jpg'],
+  ['TV & Home Entertainment','tvs','TVs, projectors and cinema','https://www.ultimea.com/cdn/shop/articles/EN_4e71e692-aff8-4d85-8ba6-e42b4ca15dab.webp?v=1756389773'],
+  ['Audio','sound-speakers','Soundbars, speakers and headphones','https://www.harmankardon.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dwbe987007/pdp/HK_Onyx_Studio_9_LIfestyle_01_904x560.png?sh=560&sw=904'],
+  ['Home Appliances','home-appliances','Refrigeration, laundry and more','/products/tcl-606l-fridge.webp'],
+  ['Kitchen Appliances','kitchen-appliances','Cooking and kitchen essentials','https://goldenhomeglobal.com/cdn/shop/articles/luxury-kitchen-appliances.png?v=1769590751'],
+  ['Gaming & Computing','office-electronics','Laptops, gaming and computing','/products/hp-omen.webp'],
+  ['Accessories','accessories','Everyday tech essentials','https://www.apple.com/v/airpods-pro-3/c/images/overview/hero/hero__e1v6qv1x9s2a_large.jpg']
 ] as const;
 
-export const homeBrands = ['TCL','Samsung','Hoffman’s Electronics','Apple','Google Pixel','TECNO','Infinix','Saachi','LG','Hisense','Skyworth'];
+export const homeBrands = ['TCL','Samsung','Apple','Google Pixel','TECNO','Infinix','Saachi','Hoffmans','LG','Hisense','Skyworth','Harman Kardon','JBL','Sony'];
