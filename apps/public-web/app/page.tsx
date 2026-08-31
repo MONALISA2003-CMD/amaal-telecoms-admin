@@ -1,31 +1,22 @@
 import Link from 'next/link';
-import type { ReactNode } from 'react';
 import { ArrowRight, CircleCheck, ChevronRight, Headphones, ShieldCheck, Truck, Wrench } from 'lucide-react';
 import SiteHeader from '../components/SiteHeader';
 import SiteFooter from '../components/SiteFooter';
 import AddToBag from '../components/AddToBag';
+import AutoRail from '../components/AutoRail';
+import ProductGallery from '../components/ProductGallery';
 import { featuredProducts, homeBrands, homeCategories, newProducts, type HomeProduct } from '../lib/homepage-data';
 
 function ugx(value:number){return value ? new Intl.NumberFormat('en-UG',{style:'currency',currency:'UGX',maximumFractionDigits:0}).format(value) : 'Price on request'}
 
-function ProductPlaceholder({kind, label}:{kind:string;label:string}){
-  return <div className={`product-placeholder ${kind}`} aria-label={`${label} image placeholder`}>
-    <span>AMAAL</span><strong>PRODUCT PHOTO</strong><small>Asset to be supplied</small>
-  </div>
-}
-
 function ProductTile({p}:{p:HomeProduct}){
   return <article className="home-product-card">
-    <Link href={`/product/${p.slug}`} className="home-product-link">
-      <ProductPlaceholder kind={p.brand.toLowerCase().replace(/[^a-z]+/g,'-')} label={p.name}/>
+    <ProductGallery images={p.images} compact label={p.name}/>
+    <Link href={`/product/${p.slug}`} className="home-product-link" aria-label={`View ${p.name}`}>
       <div className="home-product-meta"><p>{p.brand}</p><h3>{p.name}</h3><span>{p.quickDetails.slice(0,2).join(' · ')}</span><strong>{ugx(p.price)}</strong></div>
     </Link>
-    {p.price>0 && <AddToBag id={p.slug} name={p.name} price={ugx(p.price)}/>} 
+    {p.price>0 && <AddToBag id={p.slug} name={p.name} price={ugx(p.price)}/>}
   </article>
-}
-
-function AutoRail({children,className=''}:{children:ReactNode;className?:string}){
-  return <div className={`auto-rail ${className}`}><div className="auto-track">{children}{children}</div></div>
 }
 
 function CategoryCard({name,slug,index}:{name:string;slug:string;index:number}){
