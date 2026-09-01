@@ -125,3 +125,9 @@ No product photograph is reused across homepage sections. Current homepage visua
 
 ### Weekly Deals
 Weekly Deals is present as a merchandising section but contains no fabricated discount percentage or promotional price until Amaal supplies approved promotion data.
+
+## Phase 30 — Interaction refinement
+
+Horizontal homepage rails are intentionally auto-moving but remain user-controlled. Auto-motion starts by default. Hovering does not pause it. Customers can pause/play, move left/right with controls, drag horizontally, or use wheel/trackpad input. Manual interaction temporarily pauses motion before resuming. Product/category/brand navigation pauses the rail before the page changes. Reduced-motion preferences disable automatic movement.
+
+Featured product cards now use the supplied Amaal photography where available. Multiple product images are preserved for product-detail galleries; only a single primary image is used per homepage card to avoid repeated photography.

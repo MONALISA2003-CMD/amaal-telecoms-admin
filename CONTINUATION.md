@@ -810,3 +810,59 @@ Current hard rules:
 - Homepage product photography is currently placeholder-only so no supplied/placeholder product photo is reused across sections.
 - Official brand logo assets are still required before replacing the brand placeholders.
 - Database/backend/admin console remain untouched.
+
+## PHASE 30 — Featured Product Assets + User-Controlled Auto Motion
+
+**Date:** 2026-08-31
+**Status:** Featured asset integration and horizontal motion interaction refined. No backend/database/admin changes.
+
+### Product assets
+The supplied `amaal featured zippppppp.zip` was inspected. Supplied images are now used for the Featured at Amaal products. Multiple images are retained per product where provided for the product detail gallery. The homepage uses a single primary image per card to prevent repeated photography across sections.
+
+The Pixel 9a image from the supplied archive was intentionally excluded from the Pixel 9 product because it is a different model.
+
+### Auto-motion standard
+All shared `AutoRail` sections now follow one interaction model:
+- auto-motion ON by default
+- hover does not pause motion
+- visible pause/play control
+- left/right controls
+- horizontal pointer/touch dragging
+- wheel/trackpad horizontal scrolling
+- temporary pause after manual interaction, then automatic resume
+- clicking a linked product/category/brand pauses before navigation
+- duplicated track set for continuous looping
+- reduced-motion preference disables automatic movement
+
+This applies to Shop by Category, Featured at Amaal, New at Amaal and Shop by Brand, and is the reusable standard for future horizontal homepage rails.
+
+### Product detail
+Curated homepage products open their product pages with supplied multi-image galleries where available. Homepage cards remain concise; fuller descriptions and quick specifications are on the product page.
+
+### Preservation
+- No database reset/recreation.
+- No table drops or destructive migrations.
+- No production reseed.
+- `server.js` unchanged.
+- `schema.sql` unchanged.
+- Business Admin Console unchanged.
+- Existing public catalogue API boundary retained.
+
+### Verification
+- 18 homepage image references resolve to supplied assets.
+- ZIP integrity passed.
+- Full production build remains pending because `npm install` timed out in the execution environment; no successful production build is claimed.
+
+### Remaining
+- Final hero assets.
+- Official brand logos.
+- Unique category/lifestyle imagery.
+- Real weekly deal/promotional data.
+- Final TCL and Hisense catalogue confirmation.
+- Vercel/CI production build and responsive visual QA.
+
+---
+
+# Phase 31 — Phone Catalogue
+
+The public website now contains a model-level phone catalogue generated from `MOBILE_PHONE_CATALOGUE_MASTER_2026.md`: 156 models and 351 variants across Apple, Samsung, Google Pixel, TECNO, Infinix and itel. One public product page represents each model; storage/RAM/network configurations are selectable variants. Phone photos are placeholders only and are never reused between models. No inventory data, backend, schema, database or Business Admin Console was changed.

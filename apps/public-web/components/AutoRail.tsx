@@ -1,140 +1,114 @@
 'use client';
 
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import type { PointerEvent as ReactPointerEvent, ReactNode, WheelEvent as ReactWheelEvent } from 'react';
 
-export default function AutoRail({ children, className = '' }: { children: ReactNode; className?: string }) {
+export default function AutoRail({ children, className = '', label = 'Product carousel', speed = 0.55 }: { children: ReactNode; className?: string; label?: string; speed?: number }) {
   const viewportRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
-  const lastRef = useRef<number | null>(null);
-  const dragRef = useRef({ active: false, x: 0, scroll: 0 });
-  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resumeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const draggingRef = useRef(false);
+  const dragStartRef = useRef({ x: 0, scroll: 0 });
   const [paused, setPaused] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const [dragging, setDragging] = useState(false);
 
-  const clearResumeTimer = useCallback(() => {
-    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
-    resumeTimerRef.current = null;
-  }, []);
+  const childrenArray = Array.isArray(children) ? children : [children];
 
-  const pauseTemporarily = useCallback((delay = 1800) => {
-    clearResumeTimer();
+  const pauseTemporarily = () => {
+    if (resumeRef.current) clearTimeout(resumeRef.current);
     setPaused(true);
-    resumeTimerRef.current = setTimeout(() => setPaused(false), delay);
-  }, [clearResumeTimer]);
+    resumeRef.current = setTimeout(() => setPaused(false), 3800);
+  };
 
-  const move = useCallback((direction: 1 | -1) => {
-    const el = viewportRef.current;
-    if (!el) return;
-    pauseTemporarily(2200);
-    el.scrollBy({ left: direction * Math.max(260, el.clientWidth * 0.72), behavior: 'smooth' });
-  }, [pauseTemporarily]);
+  const togglePause = () => {
+    if (resumeRef.current) clearTimeout(resumeRef.current);
+    setPaused((value) => !value);
+  };
 
-  useEffect(() => {
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const update = () => setReducedMotion(media.matches);
-    update();
-    media.addEventListener?.('change', update);
-    return () => media.removeEventListener?.('change', update);
-  }, []);
+  const move = (direction: number) => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    pauseTemporarily();
+    viewport.scrollBy({ left: direction * Math.min(viewport.clientWidth * 0.72, 620), behavior: 'smooth' });
+  };
 
   useEffect(() => {
-    const el = viewportRef.current;
-    if (!el) return;
-
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    let last = performance.now();
     const tick = (now: number) => {
-      const previous = lastRef.current ?? now;
-      const delta = Math.min(40, now - previous);
-      lastRef.current = now;
-
-      if (!paused && !reducedMotion && !dragRef.current.active && document.visibilityState === 'visible') {
-        const half = el.scrollWidth / 2;
-        el.scrollLeft += (delta / 1000) * 22;
-        if (half > 0 && el.scrollLeft >= half) el.scrollLeft -= half;
-        if (el.scrollLeft < 0) el.scrollLeft += half;
+      const dt = Math.min(now - last, 32);
+      last = now;
+      if (!paused && !draggingRef.current) {
+        viewport.scrollLeft += speed * dt;
+        const half = (trackRef.current?.scrollWidth || 0) / 2;
+        if (half > 0 && viewport.scrollLeft >= half) viewport.scrollLeft -= half;
       }
       rafRef.current = requestAnimationFrame(tick);
     };
-
     rafRef.current = requestAnimationFrame(tick);
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      clearResumeTimer();
+      if (resumeRef.current) clearTimeout(resumeRef.current);
     };
-  }, [clearResumeTimer, paused, reducedMotion]);
+  }, [paused, speed]);
 
-  const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
-    const el = viewportRef.current;
-    if (!el) return;
-    dragRef.current = { active: true, x: e.clientX, scroll: el.scrollLeft };
-    setDragging(true);
-    clearResumeTimer();
-    setPaused(true);
-    el.setPointerCapture?.(e.pointerId);
+  const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    draggingRef.current = true;
+    dragStartRef.current = { x: event.clientX, scroll: viewport.scrollLeft };
+    viewport.setPointerCapture(event.pointerId);
+    pauseTemporarily();
   };
 
-  const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (!dragRef.current.active) return;
-    const el = viewportRef.current;
-    if (!el) return;
-    el.scrollLeft = dragRef.current.scroll - (e.clientX - dragRef.current.x);
+  const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!draggingRef.current) return;
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    viewport.scrollLeft = dragStartRef.current.scroll - (event.clientX - dragStartRef.current.x);
   };
 
-  const finishDrag = () => {
-    if (!dragRef.current.active) return;
-    dragRef.current.active = false;
-    setDragging(false);
-    pauseTemporarily(1500);
+  const onPointerUp = () => { draggingRef.current = false; };
+
+  const onWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+    if (Math.abs(delta) < 1) return;
+    event.preventDefault();
+    pauseTemporarily();
+    viewport.scrollLeft += delta;
   };
 
-  const onWheel = (e: ReactWheelEvent<HTMLDivElement>) => {
-    const el = viewportRef.current;
-    if (!el) return;
-    const horizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-    if (Math.abs(horizontal) < 1) return;
-    e.preventDefault();
-    pauseTemporarily(1600);
-    el.scrollLeft += horizontal;
+  const handleClickCapture = (event: React.MouseEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    if (target.closest('a')) pauseTemporarily();
   };
 
   return (
-    <div className={`auto-rail ${className}`}>
-      <button type="button" className="rail-control rail-control-left" aria-label="Scroll left" onClick={() => move(-1)}>
-        <ChevronLeft size={17} />
-      </button>
+    <div className={`auto-rail-shell ${className}`} aria-label={label}>
+      <div className="rail-controls">
+        <button type="button" className="rail-control pause" onClick={togglePause} aria-label={paused ? `Play ${label}` : `Pause ${label}`} title={paused ? 'Play motion' : 'Pause motion'}>{paused ? <Play size={15} /> : <Pause size={15} />}</button>
+        <button type="button" className="rail-control" onClick={() => move(-1)} aria-label={`Scroll ${label} left`}><ChevronLeft size={17} /></button>
+        <button type="button" className="rail-control" onClick={() => move(1)} aria-label={`Scroll ${label} right`}><ChevronRight size={17} /></button>
+      </div>
       <div
         ref={viewportRef}
-        className={`auto-viewport${dragging ? ' is-dragging' : ''}`}
+        className="auto-rail"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onPointerUp={finishDrag}
-        onPointerCancel={finishDrag}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
         onWheel={onWheel}
+        onClickCapture={handleClickCapture}
       >
-        <div className="auto-track">
-          <div className="auto-set">{children}</div>
-          <div className="auto-set" aria-hidden="true">{children}</div>
+        <div ref={trackRef} className="auto-track">
+          <div className="auto-track-set">{childrenArray}</div>
+          <div className="auto-track-set" aria-hidden="true">{childrenArray}</div>
         </div>
       </div>
-      <button type="button" className="rail-control rail-control-right" aria-label="Scroll right" onClick={() => move(1)}>
-        <ChevronRight size={17} />
-      </button>
-      <button
-        type="button"
-        className="rail-pause"
-        aria-label={paused ? 'Resume automatic scrolling' : 'Pause automatic scrolling'}
-        aria-pressed={paused}
-        onClick={() => {
-          clearResumeTimer();
-          setPaused(v => !v);
-        }}
-      >
-        {paused ? <Play size={13} /> : <Pause size={13} />}
-        <span>{paused ? 'Resume' : 'Pause'}</span>
-      </button>
-      <span className="rail-hint">Drag or swipe · scroll both ways</span>
     </div>
   );
 }
