@@ -17,7 +17,8 @@
     "audit:fulfilment-delivery": "node render-preflight.js && node fulfilment-delivery-audit.js && node serialized-status-history-audit.js && node order-serial-assignment-audit.js && node warehouse-transfer-audit.js && node receiving-batch-audit.js && node inventory-unit-audit.js && node cross-module-audit.js",
     "audit:schema": "node schema-reconciliation-audit.js",
     "audit:serialized-lifecycle": "node render-preflight.js && node serialized-status-history-audit.js && node order-serial-assignment-audit.js && node fulfilment-delivery-audit.js && node inventory-unit-audit.js && node cross-module-audit.js",
-    "audit:catalog": "node render-preflight.js && node tv-master-catalogue-audit.js && node cross-module-audit.js"
+    "audit:catalog": "node render-preflight.js && node tv-master-catalogue-audit.js && node audio-catalogue-audit.js && node cross-module-audit.js",
+    "audit:audio": "node audio-catalogue-audit.js && node render-preflight.js && node cross-module-audit.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

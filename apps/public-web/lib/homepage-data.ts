@@ -104,7 +104,7 @@ export const newProducts: HomeProduct[] = [
 export const homeCategories = [
   ['Phones', 'phones', 'Phones and smartphones'],
   ['TV & Home Entertainment', 'tvs', 'TVs, projectors and cinema'],
-  ['Audio', 'sound-speakers', 'Soundbars, speakers and headphones'],
+  ['Audio', 'audio', 'Woofers, party speakers and sound systems'],
   ['Home Appliances', 'home-appliances', 'Refrigeration, laundry and more'],
   ['Kitchen Appliances', 'kitchen-appliances', 'Cooking and kitchen essentials'],
   ['Gaming & Computing', 'office-electronics', 'Laptops, gaming and computing'],
