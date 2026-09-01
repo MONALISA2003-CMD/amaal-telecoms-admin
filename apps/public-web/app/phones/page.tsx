@@ -5,8 +5,7 @@ import { ArrowRight, Search, Sparkles } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import SiteHeader from '../../components/SiteHeader';
 import SiteFooter from '../../components/SiteFooter';
-import { BrandDirectory, BrandSubcatalog } from '../../components/PhoneBrandSubcatalog';
-import { PHONE_BRANDS, brandSlug } from '../../lib/phone-brand-utils';
+import { BrandDirectory, BrandSubcatalog, PHONE_BRANDS, brandSlug } from '../../components/PhoneBrandSubcatalog';
 import { phoneCatalogue } from '../../lib/phone-catalogue';
 
 const counts = Object.fromEntries(PHONE_BRANDS.map((brand) => [brand, phoneCatalogue.filter((p) => p.brand === brand).length]));
