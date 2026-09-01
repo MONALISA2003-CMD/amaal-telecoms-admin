@@ -1020,3 +1020,11 @@ The Phones public catalogue was reorganized so brands are never presented as one
 
 Implemented a persistent brand navigation layer for the public `/phones` catalogue. Desktop now uses a sticky sidebar with All Phones and every phone brand, model counts, active state, and smooth navigation. Mobile uses a dedicated brand drawer with backdrop and close control. Brand selection filters the existing separated brand sub-catalogues rather than creating a mixed phone wall. Search remains compatible with brand selection. No database, schema, backend, inventory logic, or Business Admin Console changes were made. See `CONTINUATION_PHASE37.md` for details and validation status.
 
+
+## Phase 38 — Phone Catalogue UX/UI V2
+- Reworked `/phones` into a calm search-first discovery homepage with first-class brand navigation.
+- Each phone brand now has a dedicated sub-catalogue; homepage previews are separated by brand and full collections remain available under `/phones/brand/[brand]`.
+- Dedicated brand pages provide series filtering, search, pagination and a stable shopping grid.
+- Removed automatic movement from catalogue product grids; motion remains reserved for discovery/marketing sections.
+- Kept 156 models and model-level variants intact; no DB/backend/admin changes.
+- Added `CONTINUATION_PHASE38.md`.
