@@ -866,3 +866,102 @@ Curated homepage products open their product pages with supplied multi-image gal
 # Phase 31 — Phone Catalogue
 
 The public website now contains a model-level phone catalogue generated from `MOBILE_PHONE_CATALOGUE_MASTER_2026.md`: 156 models and 351 variants across Apple, Samsung, Google Pixel, TECNO, Infinix and itel. One public product page represents each model; storage/RAM/network configurations are selectable variants. Phone photos are placeholders only and are never reused between models. No inventory data, backend, schema, database or Business Admin Console was changed.
+
+## Phase 32 — Modern Public Phone Catalogue Organization
+
+### Requested outcome
+The phone catalogue is a public product catalogue, not an inventory screen. All supplied phone models remain represented as one model-level product with selectable variants for storage/RAM/network where present. Product photography remains intentionally placeholder-only until Amaal supplies approved images.
+
+### Built
+- Reworked `/phones` into a structured, top-to-bottom catalogue experience.
+- Added catalogue hero with model/configuration/brand counts.
+- Added global phone search across model, brand, family, series and variant labels.
+- Added Brand and Family filters plus catalogue-order / A–Z sorting.
+- Added quick-jump brand navigation.
+- Grouped all phone models vertically by brand, then series, then model cards.
+- Redesigned phone cards for quick shopping decisions: brand/series, model name, concise model description, configuration chips, option count and clear model-detail CTA.
+- Kept full model information on the individual product page rather than overcrowding the catalogue grid.
+- Kept photo placeholders for every model and did not reuse existing product photography.
+- Added responsive layouts for desktop, tablet and mobile.
+- Added a public-catalogue note explicitly separating catalogue data from internal stock/supplier/warehouse information.
+
+### Catalogue integrity
+- Existing phone master remains the source for the public model list and variants.
+- No phone model was intentionally removed during the UI reorganization.
+- Existing model slugs remain the product-page identifiers.
+- Variant choices remain on the model page; storage/RAM/network options are not represented as duplicate model cards.
+
+### Protected
+- `server.js` unchanged.
+- `schema.sql` unchanged.
+- Business Admin Console unchanged.
+- No database reset, seed, destructive migration, table deletion, or backend replacement.
+
+### Assets still needed
+- One approved primary product photo per phone model.
+- Additional approved gallery photos where available.
+- Optional brand-specific logo assets if Amaal wants official logos displayed on the catalogue.
+
+### Next recommended work
+- Review the catalogue visually on desktop and mobile.
+- Populate/verify model-level technical detail pages from approved source data.
+- Add approved phone photography without reusing an image across different models.
+- Later connect public availability/price data through a safe public API boundary if Amaal wants live commercial information exposed.
+
+
+# Phase 33 — Modern Phone Catalogue + Model Detail UX
+
+## Focus
+Rework the public phone catalogue into a modern, complete product-discovery experience and add a dedicated model-detail experience for all 156 phone models.
+
+## Implemented
+- `/phones` now renders all 156 catalogue models from the supplied master catalogue.
+- Desktop uses a persistent filter rail; mobile uses a full-height filter drawer with a clear result-count apply action.
+- Search covers model, brand, family, series, storage, RAM and network labels.
+- Filters: brand, family, network and storage.
+- Applied filters remain visible and removable.
+- Brand jump navigation remains horizontally scrollable for fast movement through the long catalogue.
+- Models remain grouped by brand for scanability, while filters reduce the visible set without creating duplicate products.
+- Cards now use concise decision information rather than long descriptions.
+- Each model links to `/phones/[slug]`.
+- `generateStaticParams()` covers all 156 phone model slugs.
+- Dedicated phone detail pages provide a gallery placeholder system, variant selector, model information, configuration comparison table, verification note and enquiry CTA.
+- The legacy `/product/[slug]` route still resolves phone slugs through the same shared phone detail component for compatibility.
+- Four image slots are reserved per model page; approved Amaal photography can replace placeholders later without changing the catalogue architecture.
+
+## UX research applied
+- Desktop persistent filters and mobile filter drawer patterns follow current ecommerce product-list research from Baymard.
+- Applied filters remain visible so users can understand and remove their current scope.
+- Product variations remain combined into one model listing rather than becoming duplicate cards.
+- Category-specific attributes are surfaced as filters because phone shoppers need storage and network configuration discovery.
+- Apple’s current official iPhone comparison catalogue was used as a reference for model-family browsing patterns.
+- Amaal’s supplied `MOBILE_PHONE_CATALOGUE_MASTER_2026.md` remains the source of truth for the 156 model records and 351 configurations; web research is used only to enrich/validate where authoritative sources support it.
+
+## Accuracy boundary
+- No unsupported hardware specifications were fabricated for the public catalogue.
+- Regional Uganda availability, exact commercial SKU and warranty status are not implied merely because a model exists in the master catalogue.
+- Current manufacturer research was reviewed for Apple, Google and Samsung; model-level enrichment remains source-dependent.
+
+## Asset rule
+- No phone model has been assigned another model’s product photography.
+- All 156 models remain on dedicated placeholders until Amaal supplies approved images.
+
+## Bug / integrity checks
+- 156 unique phone slugs verified.
+- 156 unique phone model names verified.
+- All changed TS/TSX files passed TypeScript transpilation checks using the installed TypeScript compiler.
+- Full Next.js type/build verification remains pending because npm dependency installation timed out in the execution environment.
+- `server.js` unchanged.
+- `schema.sql` unchanged.
+- Business Admin Console unchanged.
+- No database reset, schema reset, destructive migration, seed or backend replacement.
+
+## Figma
+- Existing Amaal Figma file was inspected.
+- A design-context write was attempted for the phone catalogue/detail direction but the connected Figma workspace returned its Starter-plan MCP rate-limit/paywall. No Figma write is claimed as completed.
+
+## Remaining
+- Replace model placeholders with Amaal-approved photography.
+- Continue official-source field enrichment for models where full specifications are required.
+- Run full `npm install && npm run build` in a network-enabled build environment before Vercel deployment.
+- Continue with tablet/home-appliance/audio catalogue experiences using the same catalogue-not-inventory principle.
