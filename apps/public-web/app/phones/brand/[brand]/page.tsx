@@ -10,10 +10,11 @@ export default async function BrandPhonePage({ params }: { params: Promise<{ bra
   const { brand: slug } = await params;
   const brand = PHONE_BRANDS.find((item) => brandSlug(item) === slug);
   if (!brand) notFound();
-  const products = phoneCatalogue.filter((p) => p.brand === brand);
+  const selectedBrand = brand;
+  const products = phoneCatalogue.filter((p) => p.brand === selectedBrand);
   const counts = Object.fromEntries(PHONE_BRANDS.map((item) => [item, phoneCatalogue.filter((p) => p.brand === item).length]));
   return <main><SiteHeader />
-    <section className="phone-brand-v2-hero"><div><p className="eyebrow">AMAAL PHONES · {brand.toUpperCase()}</p><h1>{brand}<br/><em>collection.</em></h1><p>Browse the complete {brand} phone catalogue. Search within the collection, move through its series and open any model for its configurations and full information.</p></div><div className="phone-brand-v2-stat"><strong>{products.length}</strong><span>models</span></div></section>
-    <section className="section phone-brand-v2-body"><BrandDirectory counts active={brand}/><BrandCatalogueBrowser brand={brand} products={products}/></section>
+    <section className="phone-brand-v2-hero"><div><p className="eyebrow">AMAAL PHONES · {selectedBrand.toUpperCase()}</p><h1>{selectedBrand}<br/><em>collection.</em></h1><p>Browse the complete {selectedBrand} phone catalogue. Search within the collection, move through its series and open any model for its configurations and full information.</p></div><div className="phone-brand-v2-stat"><strong>{products.length}</strong><span>models</span></div></section>
+    <section className="section phone-brand-v2-body"><BrandDirectory counts={counts} active={selectedBrand}/><BrandCatalogueBrowser brand={selectedBrand} products={products}/></section>
     <SiteFooter /></main>;
 }
