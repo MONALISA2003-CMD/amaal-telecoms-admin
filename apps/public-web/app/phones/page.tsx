@@ -42,7 +42,7 @@ export default function PhonesPage() {
       <section className="section phone-home-v2-featured"><div className="section-head-v2"><div><p className="eyebrow">PHONE COLLECTION</p><h2>Start with a brand.</h2></div><p>Each collection is presented separately, then opens into its complete catalogue.</p></div>
         {PHONE_BRANDS.map((brand) => <BrandSubcatalog key={brand} brand={brand} products={phoneCatalogue.filter((p) => p.brand === brand)} preview />)}
       </section>
-      <section className="section phone-home-v2-browse-all"><div><p className="eyebrow">THE COMPLETE COLLECTION</p><h2>Looking for something specific?</h2><p>Open a dedicated brand catalogue to browse every model, search within the collection and move through its series.</p></div><div className="phone-brand-link-grid-v2">{PHONE_BRANDS.map((brand) => <Link key={brand} href={`/phones/brand/${brandSlug(brand)}`}><span>{brand}</span><small>{counts[brand]} models</small><ArrowRight size={15}/></Link>)}</div></section>
+      <section className="section phone-home-v2-browse-all"><div><p className="eyebrow">THE COMPLETE COLLECTION</p><h2>Looking for something specific?</h2><p>Browse the complete collection on this page, organized by brand, series and model.</p></div><div className="phone-brand-link-grid-v2">{PHONE_BRANDS.map((brand) => <Link key={brand} href={`/phones#brand-${brandSlug(brand)}`}><span>{brand}</span><small>{counts[brand]} models</small><ArrowRight size={15}/></Link>)}</div></section>
     </>}
     <SiteFooter />
   </main>;
