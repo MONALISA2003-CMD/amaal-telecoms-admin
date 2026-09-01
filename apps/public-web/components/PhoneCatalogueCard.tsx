@@ -16,6 +16,6 @@ export default function PhoneCatalogueCard({ product }: { product: PhoneProduct 
       </Link>
       <PhoneCompareButton slug={product.slug} name={product.name} />
     </div>
-    <div className="phone-modern-card-body"><p className="phone-modern-brand">{product.brand} <span>·</span> {product.series}</p><h2><Link href={`/phones/${product.slug}`}>{product.name}</Link></h2><p className="phone-modern-summary">{customerPhoneDescription(product)}</p><div className="phone-modern-variants" aria-label={`${product.name} available options`}>{shownVariants.map((v) => <span key={v.label}>{v.label}</span>)}{extra > 0 && <span>+{extra}</span>}</div><div className="phone-modern-card-footer"><Link href={`/phones/${product.slug}`}>View phone</Link><span aria-hidden="true">↗</span></div></div>
+    <div className="phone-modern-card-body"><p className="phone-price-coming">Price coming soon</p><p className="phone-modern-brand">{product.brand} <span>·</span> {product.series}</p><h2><Link href={`/phones/${product.slug}`}>{product.name}</Link></h2><p className="phone-modern-summary">{customerPhoneDescription(product)}</p><div className="phone-modern-variants" aria-label={`${product.name} available options`}>{shownVariants.map((v) => <span key={v.label}>{v.label}</span>)}{extra > 0 && <span>+{extra}</span>}</div><div className="phone-modern-card-footer"><Link href={`/phones/${product.slug}`}>View phone</Link><span aria-hidden="true">↗</span></div></div>
   </article>;
 }

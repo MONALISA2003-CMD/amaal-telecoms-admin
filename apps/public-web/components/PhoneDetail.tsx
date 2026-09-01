@@ -59,7 +59,7 @@ export default function PhoneDetail({ product }: { product: PhoneProduct }) {
           <div className="phone-detail-content">
             <p className="eyebrow">{modelPosition(product)} · {product.network || 'Connectivity details'}</p>
             <h1>{product.name}</h1>
-            <p className="phone-detail-intro">{customerPhoneDescription(product)}</p>
+            <p className="phone-detail-intro">{customerPhoneDescription(product)}</p><div className="phone-price-detail">Price coming soon</div>
             <div className="phone-detail-quickfacts">{quickFacts.map((fact) => <span key={fact}>{fact}</span>)}</div>
             <div className="phone-detail-config">
               <div className="phone-detail-config-heading"><div><p className="eyebrow">OPTIONS</p><h2>Choose your preferred option</h2></div><span>{product.variants.length} available</span></div>

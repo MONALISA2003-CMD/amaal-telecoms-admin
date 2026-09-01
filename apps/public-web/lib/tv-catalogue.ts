@@ -2163,6 +2163,35 @@ export const tvCatalogue: TVProduct[] = [
   }
 ];
 export const tvBrands = [...tvMasterBrands];
+
+function inferredSizes(model:string, sizes:string[]){
+  if(sizes.length) return sizes;
+  const found = model.match(/^(?:OLED|QNED)?(\d{2,3})/i)?.[1];
+  if(found) return [found];
+  const text=model.toLowerCase();
+  const explicit=text.match(/(?:^|\s)(\d{2,3})(?:\s?inch|\")/i)?.[1];
+  return explicit ? [explicit] : [];
+}
+
 export function tvSlug(brand:string, model:string){return `${brand}-${model}`.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");}
-export function tvDescription(p:TVProduct){ const size=p.sizes.length ? p.sizes.map(s=>`${s}\"`).join(' · ') : 'multiple screen-size options'; const tech=p.technology || 'smart television'; return `${p.brand} ${p.model} with ${tech.toLowerCase()}, available in ${size}.`; }
+
+export function tvDisplayProduct(p:TVProduct):TVProduct { return {...p, sizes:inferredSizes(p.model,p.sizes)}; }
+
+const OEM_DESCRIPTIONS:Record<string,string>={
+  'tcl-s5k':'TCL S5K is a QLED Google TV family with Full HD picture quality, HDR10, Dolby Audio, Google Cast and a slim bezel-less design. TCL East Africa lists 50, 43, 40 and 32-inch screen options.',
+  'tcl-c655':'TCL C655 is a QLED PRO 4K Google TV family with TCL AiPQ PRO processing, Dolby Vision and Atmos, HDR10+, and a slim unibody design. TCL East Africa lists 50, 55, 65, 75 and 85-inch versions.',
+  'samsung-u8000h':'Samsung U8000H is a 2026 Crystal UHD 4K Smart TV family with Crystal Processor 4K, Samsung Vision AI features, Tizen, HDR and MetalStream design. Samsung Africa lists 43, 50, 55, 65, 70, 75 and 85-inch sizes.',
+  'samsung-q7f':'Samsung Q7F is a 4K QLED Samsung Vision AI TV with a Q4 AI Processor, Quantum Dot colour and Quantum HDR. Samsung Africa lists 43, 50, 55, 65, 75 and 85-inch sizes.',
+  'lg-50ua8000':'LG UA80 is a 50-inch UHD AI 4K Smart TV with HDR10 Pro, the alpha 7 4K AI Processor Gen8 and 4K Super Upscaling, running webOS25.',
+  'lg-50ut8000':'LG UT80 is a 50-inch UHD AI 4K Smart TV with HDR10 Pro, AI processing, 4K upscaling and webOS24.'
+};
+
+export function tvDescription(p:TVProduct){
+  const known=OEM_DESCRIPTIONS[p.slug]; if(known) return known;
+  const sizes=inferredSizes(p.model,p.sizes);
+  const size=sizes.length?sizes.map(s=>`${s}\"`).join(' · '):'screen sizes vary by model';
+  const tech=p.technology || 'television';
+  return `${p.brand} ${p.model} is part of Amaal's television catalogue. ${size} ${tech ? `screen technology: ${tech}.` : ''} Product specifications are shown on the model page only when confirmed for the exact model.`.replace(/\s+/g,' ').trim();
+}
+
 export function tvMedia(p:TVProduct){ const known:Record<string,string>={'samsung-u8000h':'/products/samsung-u8000f-tv.webp'}; return known[p.slug]||''; }
