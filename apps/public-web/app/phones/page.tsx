@@ -6,7 +6,7 @@ import { useMemo, useState } from 'react';
 import SiteHeader from '../../components/SiteHeader';
 import SiteFooter from '../../components/SiteFooter';
 import PhoneCatalogueCard from '../../components/PhoneCatalogueCard';
-import { PHONE_BRANDS, brandSlug } from '../../components/PhoneBrandSubcatalog';
+import { PHONE_BRANDS, brandSlug } from '../../lib/phone-brand-utils';
 import { phoneCatalogue } from '../../lib/phone-catalogue';
 import { filterPhones, getPhoneBrandSeries, getPhoneCounts, phoneNetworks, phoneRamOptions, phoneStorageOptions, searchPhones, sortPhones, type PhoneSort } from '../../lib/phone-catalogue-utils';
 

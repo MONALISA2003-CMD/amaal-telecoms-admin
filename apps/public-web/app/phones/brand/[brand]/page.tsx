@@ -1,10 +1,9 @@
 import { notFound } from 'next/navigation';
 import SiteHeader from '../../../../components/SiteHeader';
 import SiteFooter from '../../../../components/SiteFooter';
-import { BrandCatalogueBrowser, BrandDirectory, brandSlug } from '../../../../components/PhoneBrandSubcatalog';
+import { BrandCatalogueBrowser, BrandDirectory } from '../../../../components/PhoneBrandSubcatalog';
 import { phoneCatalogue } from '../../../../lib/phone-catalogue';
-
-const PHONE_BRANDS = Array.from(new Set(phoneCatalogue.map((product) => product.brand)));
+import { PHONE_BRANDS, brandSlug } from '../../../../lib/phone-brand-utils';
 
 export function generateStaticParams() {
   return PHONE_BRANDS.map((brand) => ({ brand: brandSlug(brand) }));
