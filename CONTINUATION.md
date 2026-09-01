@@ -1013,3 +1013,10 @@ The source update was written successfully. A complete TypeScript build requires
 ## PHASE 36 — Brand-separated phone sub-catalogues
 
 The Phones public catalogue was reorganized so brands are never presented as one mixed product wall. `/phones` now keeps search-first discovery but renders results as separate brand sub-catalogues, each grouped by series. Dedicated brand routes live under `/phones/brand/[brand]` to avoid conflicting with the existing `/phones/[slug]` model-detail route. Current catalogue counts are Apple 29, Samsung 48, Google Pixel 23, TECNO 23, Infinix 16, itel 17, total 156. No backend, database, schema or Business Admin changes were made. See `CONTINUATION_PHASE36.md`.
+
+---
+
+# PHASE 37 — PHONE CATALOGUE BRAND SIDEBAR
+
+Implemented a persistent brand navigation layer for the public `/phones` catalogue. Desktop now uses a sticky sidebar with All Phones and every phone brand, model counts, active state, and smooth navigation. Mobile uses a dedicated brand drawer with backdrop and close control. Brand selection filters the existing separated brand sub-catalogues rather than creating a mixed phone wall. Search remains compatible with brand selection. No database, schema, backend, inventory logic, or Business Admin Console changes were made. See `CONTINUATION_PHASE37.md` for details and validation status.
+
