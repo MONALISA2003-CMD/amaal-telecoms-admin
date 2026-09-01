@@ -59,3 +59,33 @@
 @media(max-width:1100px){.phone-modern-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.phone-catalogue-layout{grid-template-columns:210px minmax(0,1fr)}.phone-detail-layout{gap:4vw}.phone-detail-information,.phone-detail-verification{gap:5vw}}
 @media(max-width:800px){.phone-catalogue-hero-modern-inner{grid-template-columns:1fr;gap:35px}.phone-catalogue-hero-metrics div{min-width:0;flex:1}.phone-catalogue-topbar{align-items:start}.mobile-filter-trigger{display:inline-flex}.phone-filter-panel{position:fixed;left:0;bottom:0;top:auto;width:min(410px,92vw);height:88vh;transform:translateY(105%);transition:transform .25s ease;overflow:auto;z-index:40;box-shadow:0 -20px 60px rgba(0,0,0,.2)}.phone-filter-panel.open{transform:translateY(0)}.phone-filter-panel-head button{display:grid;place-items:center}.phone-mobile-apply{display:block;width:100%;position:sticky;bottom:0;background:var(--dark);color:#fff;border:0;padding:14px;margin-top:12px;font-size:10px}.phone-filter-backdrop{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:30;border:0}.phone-catalogue-layout{display:block}.phone-result-brand{margin-bottom:55px}.phone-detail-layout,.phone-detail-information,.phone-detail-verification{grid-template-columns:1fr}.phone-detail-content{padding-top:30px}.phone-detail-information-grid{margin-top:10px}.phone-detail-bottom-cta{align-items:start;flex-direction:column}}
 @media(max-width:600px){.phone-catalogue-hero-modern{padding:58px 6% 52px}.phone-catalogue-hero-modern h1{font-size:54px}.phone-catalogue-hero-metrics strong{font-size:22px}.phone-catalogue-page{padding-left:5%;padding-right:5%}.phone-catalogue-topbar{display:grid;gap:18px}.phone-topbar-actions{justify-content:space-between}.phone-catalogue-search{height:52px}.phone-modern-grid{grid-template-columns:1fr}.phone-result-brand-heading h3{font-size:34px}.phone-modern-media{aspect-ratio:1/1.05}.phone-catalogue-footnote{grid-template-columns:1fr;gap:10px}.phone-catalogue-footnote a{white-space:normal}.phone-detail-hero{padding:28px 5% 65px}.phone-detail-breadcrumbs{margin-bottom:25px;overflow-x:auto;white-space:nowrap}.phone-detail-content h1{font-size:55px}.phone-detail-variant-list{grid-template-columns:1fr}.phone-detail-information,.phone-variant-table-section,.phone-detail-verification,.phone-detail-bottom-cta{padding-left:6%;padding-right:6%}.phone-detail-information-intro h2,.phone-variant-table-section h2,.phone-detail-verification h2,.phone-detail-bottom-cta h2{font-size:36px}.phone-detail-information-grid{grid-template-columns:1fr}.phone-detail-information-grid div:nth-child(odd){padding-right:0}.phone-gallery-arrow{width:34px;height:34px}.phone-detail-photo-placeholder strong{font-size:32px}.phone-sort-control select{max-width:150px}}
+
+/* Phase 35 — search-first phone catalogue inspired by the supplied reference */
+.phone-hero-browse{display:inline-flex;align-items:center;gap:8px;margin-top:26px}
+.phone-search-first{display:grid;grid-template-columns:.72fr 1.28fr;gap:45px;align-items:end;padding:8px 0 28px}
+.phone-search-first-copy h2{font-family:Georgia,serif;font-weight:400;font-size:42px;line-height:1;letter-spacing:-.04em;margin:0}
+.phone-search-first-copy p:not(.eyebrow){font-size:11px;line-height:1.6;color:var(--muted);margin:10px 0 0}
+.phone-search-primary{height:62px;margin:0;box-shadow:0 12px 34px rgba(28,25,20,.05);border-color:#d7d0c4}
+.phone-search-primary input{font-size:13px}
+.phone-search-primary button{border:0;background:transparent;display:grid;place-items:center;color:var(--muted);cursor:pointer}
+.phone-brand-nav-modern{padding:0 0 17px;gap:8px}
+.phone-brand-nav-modern button{border:1px solid var(--line);background:#fff;padding:11px 15px;font-size:10px;white-space:nowrap;cursor:pointer;display:inline-flex;align-items:center;gap:9px;transition:.18s ease}
+.phone-brand-nav-modern button span{font-size:8px;color:var(--muted)}
+.phone-brand-nav-modern button:hover{border-color:#bca27a;transform:translateY(-1px)}
+.phone-brand-nav-modern button.active{background:var(--dark);border-color:var(--dark);color:#fff}
+.phone-brand-nav-modern button.active span{color:#cfc8be}
+.phone-page-size{display:flex;align-items:center;gap:8px;font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.phone-page-size select{height:42px;border:1px solid var(--line);background:#fff;padding:0 10px;font-size:10px;color:var(--ink)}
+.phone-results-heading{display:flex;justify-content:space-between;align-items:end;border-top:1px solid var(--ink);padding-top:18px;margin-bottom:18px}
+.phone-results-heading h3{font-family:Georgia,serif;font-weight:400;font-size:34px;line-height:1;letter-spacing:-.035em;margin:0}
+.phone-results-heading>span{font-size:9px;color:var(--muted);padding-bottom:3px}
+.phone-modern-grid-catalogue{grid-template-columns:repeat(3,minmax(0,1fr))}
+.phone-pagination{display:flex;justify-content:center;align-items:center;gap:5px;margin-top:34px}
+.phone-pagination button{min-width:36px;height:36px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;font-size:10px;cursor:pointer}
+.phone-pagination button.active{background:var(--dark);border-color:var(--dark);color:#fff}
+.phone-pagination button:disabled{opacity:.35;cursor:not-allowed}
+.phone-pagination span{display:inline-flex;align-items:center;gap:5px}
+.phone-pagination b{font-size:11px;font-weight:400;color:var(--muted)}
+@media(max-width:1100px){.phone-search-first{grid-template-columns:1fr;gap:18px}.phone-modern-grid-catalogue{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:800px){.phone-search-first-copy h2{font-size:36px}.phone-brand-nav-modern{margin-right:-5vw;padding-right:5vw}.phone-results-heading{align-items:start;gap:18px}.phone-results-heading h3{font-size:29px}.phone-results-heading>span{white-space:nowrap}.phone-page-size{display:none}}
+@media(max-width:600px){.phone-search-primary{height:54px}.phone-modern-grid-catalogue{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.phone-results-heading{display:grid}.phone-results-heading>span{padding:0}.phone-pagination button{min-width:34px;height:34px}.phone-hero-browse{margin-top:20px}}
