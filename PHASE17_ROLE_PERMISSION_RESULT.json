@@ -1,0 +1,17 @@
+{
+  "permissions": 134,
+  "protectedRoutes": 131,
+  "unguardedRoutes": [
+    {
+      "method": "get",
+      "route": "/api/public/catalog",
+      "body": ",async(req,res)=>{"
+    },
+    {
+      "method": "get",
+      "route": "/api/recovery/status",
+      "body": ",(_req,res)=>res.json({enabled:Boolean(process.env.ADMIN_RECOVERY_TOKEN),serverTime:new Date().toISOString()}));"
+    }
+  ],
+  "unknownSidebarPermissions": []
+}

@@ -1,0 +1,17 @@
+export const navGroups = [
+  { label: 'Overview', href: '/overview', permission: 'dashboard.view' },
+  { label: 'Sales', href: '/sales', permission: 'sales.view' },
+  { label: 'Products', href: '/products', permission: 'catalog.view' },
+  { label: 'Stock', href: '/stock', permission: 'inventory.view' },
+  { label: 'Purchasing', href: '/purchasing', permission: 'procurement.view' },
+  { label: 'Customers', href: '/customers', permission: 'customers.view' },
+  { label: 'Orders', href: '/orders', permission: 'orders.view' },
+  { label: 'Finance', href: '/finance', permission: 'finance.view' },
+  { label: 'Credit', href: '/credit', permission: 'credit.view' },
+  { label: 'Delivery', href: '/delivery', permission: 'delivery.view' },
+  { label: 'Service', href: '/service', permission: 'returns.view' },
+  { label: 'Website', href: '/website', permission: 'web.view' },
+  { label: 'Reports', href: '/reports', permission: 'bi.view' },
+  { label: 'Team', href: '/team', permission: 'staff.view' },
+  { label: 'Business Settings', href: '/settings', permission: 'settings.view' },
+] as const;

@@ -1,0 +1,4 @@
+-- Phase 20 disposable end-to-end test.
+-- Run ONLY against a disposable Neon development branch.
+-- This script creates records with P20-TEST-* identifiers so the branch can be discarded after verification.
+-- It must never be run against production.

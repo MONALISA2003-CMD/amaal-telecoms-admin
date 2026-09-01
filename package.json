@@ -1,9 +1,31 @@
 {
-  "name":"amaal-public-web",
-  "version":"1.0.0",
-  "private":true,
-  "scripts":{"dev":"next dev","build":"next build","start":"next start","lint":"eslint ."},
-  "engines":{"node":"24.x"},
-  "dependencies":{"next":"16.3.3","react":"19.2.0","react-dom":"19.2.0","lucide-react":"0.468.0"},
-  "devDependencies":{"eslint":"9.39.5","eslint-config-next":"16.3.3","typescript":"5.9.2","@types/node":"24.0.0","@types/react":"19.2.0","@types/react-dom":"19.2.0"}
+  "name": "amaal-telecoms-admin",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node render-preflight.js && node server.js",
+    "dev": "node --watch server.js",
+    "verify": "node render-preflight.js && node cross-module-audit.js",
+    "readiness": "node deployment-readiness.js",
+    "smoke:production": "node production-smoke.js",
+    "audit:inventory": "node render-preflight.js && node inventory-unit-audit.js && node cross-module-audit.js",
+    "audit:receiving": "node render-preflight.js && node receiving-batch-audit.js && node inventory-unit-audit.js && node cross-module-audit.js",
+    "audit:transfers": "node render-preflight.js && node warehouse-transfer-audit.js && node inventory-unit-audit.js && node receiving-batch-audit.js && node cross-module-audit.js",
+    "audit:orders-serials": "node render-preflight.js && node order-serial-assignment-audit.js && node warehouse-transfer-audit.js && node receiving-batch-audit.js && node inventory-unit-audit.js && node cross-module-audit.js",
+    "audit:serialized-status": "node render-preflight.js && node serialized-status-history-audit.js && node order-serial-assignment-audit.js && node warehouse-transfer-audit.js && node receiving-batch-audit.js && node inventory-unit-audit.js && node cross-module-audit.js",
+    "audit:fulfilment-delivery": "node render-preflight.js && node fulfilment-delivery-audit.js && node serialized-status-history-audit.js && node order-serial-assignment-audit.js && node warehouse-transfer-audit.js && node receiving-batch-audit.js && node inventory-unit-audit.js && node cross-module-audit.js",
+    "audit:schema": "node schema-reconciliation-audit.js",
+    "audit:serialized-lifecycle": "node render-preflight.js && node serialized-status-history-audit.js && node order-serial-assignment-audit.js && node fulfilment-delivery-audit.js && node inventory-unit-audit.js && node cross-module-audit.js",
+    "audit:catalog": "node render-preflight.js && node tv-master-catalogue-audit.js && node cross-module-audit.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3"
+  },
+  "engines": {
+    "node": "20.x"
+  }
 }
