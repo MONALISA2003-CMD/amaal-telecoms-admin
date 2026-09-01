@@ -36,7 +36,7 @@ export default function PhoneDetail({ product }: { product: PhoneProduct }) {
     <main>
       <section className="phone-detail-hero">
         <div className="phone-detail-breadcrumbs">
-          <Link href="/phones/catalogue"><ArrowLeft size={14} /> All phones</Link><span>/</span><span>{product.brand}</span><span>/</span><span>{product.series}</span>
+          <Link href="/phones"><ArrowLeft size={14} /> All phones</Link><span>/</span><span>{product.brand}</span><span>/</span><span>{product.series}</span>
         </div>
         <div className="phone-detail-layout">
           <div className="phone-detail-gallery" aria-label={`${product.name} product gallery`}>
@@ -62,7 +62,7 @@ export default function PhoneDetail({ product }: { product: PhoneProduct }) {
               </div>
               <div className="phone-selected-config"><span>Selected</span><strong>{variant?.label}</strong></div>
             </div>
-            <div className="phone-detail-actions"><Link className="button gold" href={`/contact?product=${encodeURIComponent(product.name)}&variant=${encodeURIComponent(variant?.label ?? '')}`}>Ask about this model</Link><Link className="button" href="/phones/catalogue">Continue browsing</Link></div>
+            <div className="phone-detail-actions"><Link className="button gold" href={`/contact?product=${encodeURIComponent(product.name)}&variant=${encodeURIComponent(variant?.label ?? '')}`}>Ask about this model</Link><Link className="button" href="/phones">Continue browsing</Link></div>
             <div className="phone-detail-assurances"><span><ShieldCheck size={16} /> Public catalogue</span><span><Sparkles size={16} /> Model-level information</span></div>
           </div>
         </div>
@@ -76,7 +76,7 @@ export default function PhoneDetail({ product }: { product: PhoneProduct }) {
         <div className="phone-variant-table-wrap"><table className="phone-variant-table"><thead><tr><th>Configuration</th><th>Storage</th><th>RAM</th><th>Network</th></tr></thead><tbody>{product.variants.map((v, i) => <tr key={`${v.label}-${i}`}><td><strong>{v.label}</strong>{i === selected && <span className="table-selected">Selected</span>}</td><td>{v.storage || '—'}</td><td>{v.ram || '—'}</td><td>{v.network || product.network || '—'}</td></tr>)}</tbody></table></div>
       </section>
       <section className="section phone-detail-verification"><div><p className="eyebrow">ACCURACY FIRST</p><h2>Verified where the source supports it.</h2></div><p>Technical fields are published only when supported by Amaal&apos;s catalogue source or authoritative manufacturer research. Regional availability, exact SKU, warranty and final commercial availability should be confirmed by Amaal before being presented as a live sale.</p></section>
-      <section className="section phone-detail-bottom-cta"><div><p className="eyebrow">STILL EXPLORING?</p><h2>See every phone in the Amaal catalogue.</h2></div><Link className="button gold" href="/phones/catalogue">Browse all {product.brand} phones</Link></section>
+      <section className="section phone-detail-bottom-cta"><div><p className="eyebrow">STILL EXPLORING?</p><h2>See every phone in the Amaal catalogue.</h2></div><Link className="button gold" href="/phones">Browse all {product.brand} phones</Link></section>
     </main>
   );
 }

@@ -1,93 +1,50 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, ChevronRight } from 'lucide-react';
+import { ArrowRight, Search, Sparkles } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import SiteHeader from '../../components/SiteHeader';
 import SiteFooter from '../../components/SiteFooter';
+import { BrandDirectory, BrandSubcatalog } from '../../components/PhoneBrandSubcatalog';
+import { PHONE_BRANDS, brandSlug } from '../../lib/phone-brand-utils';
 import { phoneCatalogue } from '../../lib/phone-catalogue';
 
-const premiumSlugs = [
-  'apple-iphone-17-pro-max',
-  'samsung-galaxy-s26-ultra',
-  'google-pixel-10-pro-xl',
-  'apple-iphone-16-pro-max',
-  'samsung-galaxy-s25-ultra',
-  'google-pixel-9-pro-xl',
-];
-
-const imagery: Record<string, string> = {
-  'apple-iphone-17-pro-max': '/products/iphone17-pro-max.webp',
-  'samsung-galaxy-s26-ultra': '/products/galaxy-s26-ultra.webp',
-  'google-pixel-10-pro-xl': '/products/featured/google-pixel-9-256gb-1.webp',
-  'apple-iphone-16-pro-max': '/products/featured/iphone-16-pro-max-256gb-1.webp',
-  'samsung-galaxy-s25-ultra': '/products/galaxy-s26-ultra.webp',
-  'google-pixel-9-pro-xl': '/products/featured/google-pixel-9-256gb-1.webp',
-};
-
-const premium = premiumSlugs.map((slug) => {
-  const product = phoneCatalogue.find((p) => p.slug === slug);
-  return product ? { ...product, image: imagery[slug] } : null;
-}).filter(Boolean);
-
-const brands = [
-  { name: 'Apple', line: 'iPhone Pro', slug: 'apple', image: '/products/featured/iphone-16-pro-max-256gb-1.webp' },
-  { name: 'Samsung', line: 'Galaxy Ultra', slug: 'samsung', image: '/products/galaxy-s26-ultra.webp' },
-  { name: 'Google Pixel', line: 'Pixel Pro', slug: 'google-pixel', image: '/products/featured/google-pixel-9-256gb-1.webp' },
-];
+const counts = Object.fromEntries(PHONE_BRANDS.map((brand) => [brand, phoneCatalogue.filter((p) => p.brand === brand).length]));
 
 export default function PhonesPage() {
-  return (
-    <main className="premium-phone-landing">
-      <SiteHeader />
+  const [query, setQuery] = useState('');
+  const q = query.trim().toLowerCase();
+  const searchResults = useMemo(() => q ? phoneCatalogue.filter((p) => `${p.name} ${p.brand} ${p.family} ${p.series} ${p.network} ${p.variants.map((v) => `${v.label} ${v.storage ?? ''} ${v.ram ?? ''}`).join(' ')}`.toLowerCase().includes(q)) : [], [q]);
+  const grouped = PHONE_BRANDS.map((brand) => ({ brand, products: searchResults.filter((p) => p.brand === brand) })).filter((g) => g.products.length);
 
-      <section className="premium-phone-hero">
-        <div className="premium-phone-hero-copy">
-          <p className="eyebrow">AMAAL · SIGNATURE PHONES</p>
-          <h1>Only the<br /><em>exceptional.</em></h1>
-          <p>Discover a considered collection of flagship smartphones from Apple, Samsung and Google Pixel.</p>
-          <div className="premium-phone-hero-actions">
-            <Link className="button gold" href="#flagship">Explore flagships <ArrowRight size={15} /></Link>
-            <Link className="button ghost-light" href="/phones/catalogue">View all phones</Link>
-          </div>
-          <div className="premium-phone-hero-meta"><span>Apple</span><i /> <span>Samsung</span><i /> <span>Google Pixel</span></div>
-        </div>
-        <div className="premium-phone-hero-media" aria-label="Amaal premium phone campaign media placeholder">
-          <div className="premium-phone-hero-placeholder">
-            <span>AMAAL</span>
-            <strong>HERO IMAGE / VIDEO</strong>
-            <small>Attach campaign photography or a short product film here.</small>
-          </div>
-          <div className="premium-phone-hero-caption">SIGNATURE COLLECTION · 2026</div>
-        </div>
+  return <main><SiteHeader />
+    <section className="phone-home-v2-hero">
+      <div className="phone-home-v2-hero-copy">
+        <p className="eyebrow">AMAAL · PHONES</p>
+        <h1>Find the phone<br/><em>that feels right.</em></h1>
+        <p>Explore Amaal&apos;s phone collection by brand, series and model. One clear catalogue, with every configuration kept together where it belongs.</p>
+      </div>
+      <div className="phone-home-v2-search-wrap">
+        <label htmlFor="phone-home-search">Search the phone catalogue</label>
+        <div className="phone-home-v2-search"><Search size={20}/><input id="phone-home-search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search iPhone, Galaxy, Pixel, CAMON…"/><kbd>⌘ K</kbd></div>
+        <div className="phone-home-v2-search-hint"><Sparkles size={14}/> Search model, series, storage, RAM or network</div>
+      </div>
+    </section>
+
+    <section className="section phone-home-v2-directory">
+      <div className="section-head-v2"><div><p className="eyebrow">BROWSE BY BRAND</p><h2>Every brand has its own catalogue.</h2></div><p>{phoneCatalogue.length} models across {PHONE_BRANDS.length} dedicated collections.</p></div>
+      <BrandDirectory counts={counts}/>
+    </section>
+
+    {q ? <section className="section phone-home-v2-search-results">
+      <div className="section-head-v2"><div><p className="eyebrow">SEARCH RESULTS</p><h2>{searchResults.length} {searchResults.length === 1 ? 'model' : 'models'} for “{query}”</h2></div><button className="phone-clear-search-v2" onClick={() => setQuery('')}>Clear search</button></div>
+      {grouped.length ? grouped.map(({ brand, products }) => <BrandSubcatalog key={brand} brand={brand} products={products} />) : <div className="phone-empty-v2"><p className="eyebrow">NO MATCHES</p><h2>We couldn&apos;t find that phone.</h2><p>Try a model name, brand, series or storage size.</p></div>}
+    </section> : <>
+      <section className="section phone-home-v2-featured"><div className="section-head-v2"><div><p className="eyebrow">PHONE COLLECTION</p><h2>Start with a brand.</h2></div><p>Each collection is presented separately, then opens into its complete catalogue.</p></div>
+        {PHONE_BRANDS.map((brand) => <BrandSubcatalog key={brand} brand={brand} products={phoneCatalogue.filter((p) => p.brand === brand)} preview />)}
       </section>
-
-      <section className="premium-phone-intro">
-        <p className="eyebrow">THE SIGNATURE COLLECTION</p>
-        <div><h2>Flagship phones,<br /><em>beautifully selected.</em></h2><p>For customers who want the very best, start here. Every model below is part of Amaal's premium phone selection.</p></div>
-      </section>
-
-      <section className="premium-phone-flagships" id="flagship">
-        <div className="premium-phone-section-head"><div><p className="eyebrow">FLAGSHIP EDIT</p><h2>The phones worth looking at twice.</h2></div><Link href="/phones/catalogue">See the complete catalogue <ChevronRight size={15} /></Link></div>
-        <div className="premium-phone-grid">
-          {premium.map((product, index) => product && (
-            <Link className={`premium-phone-card ${index === 0 ? 'featured' : ''}`} key={product.slug} href={`/phones/${product.slug}`}>
-              <div className="premium-phone-card-media"><img src={product.image} alt={product.name} /><span>{product.brand}</span></div>
-              <div className="premium-phone-card-copy"><p>{product.series}</p><h3>{product.name}</h3><span>{product.variants.length} configurations <ArrowRight size={14} /></span></div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="premium-phone-brands">
-        <div className="premium-phone-section-head"><div><p className="eyebrow">CHOOSE YOUR BRAND</p><h2>Three names. One premium destination.</h2></div></div>
-        <div className="premium-phone-brand-grid">
-          {brands.map((brand) => <Link key={brand.slug} href={`/phones/brand/${brand.slug}`} className="premium-phone-brand-card"><div><p>{brand.name}</p><h3>{brand.line}</h3></div><img src={brand.image} alt="" /><ArrowRight size={17} /></Link>)}
-        </div>
-      </section>
-
-      <section className="premium-phone-discover"><div><p className="eyebrow">MORE TO EXPLORE</p><h2>Looking for something beyond the flagship edit?</h2><p>Browse Amaal's complete phone collection, including TECNO, Infinix, itel and every available model.</p></div><Link className="button gold" href="/phones/catalogue">Open full phone catalogue <ArrowRight size={15} /></Link></section>
-
-      <SiteFooter />
-    </main>
-  );
+      <section className="section phone-home-v2-browse-all"><div><p className="eyebrow">THE COMPLETE COLLECTION</p><h2>Looking for something specific?</h2><p>Open a dedicated brand catalogue to browse every model, search within the collection and move through its series.</p></div><div className="phone-brand-link-grid-v2">{PHONE_BRANDS.map((brand) => <Link key={brand} href={`/phones/brand/${brandSlug(brand)}`}><span>{brand}</span><small>{counts[brand]} models</small><ArrowRight size={15}/></Link>)}</div></section>
+    </>}
+    <SiteFooter />
+  </main>;
 }
