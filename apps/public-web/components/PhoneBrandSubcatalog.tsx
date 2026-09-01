@@ -3,8 +3,14 @@
 import Link from 'next/link';
 import { ChevronRight, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { PHONE_BRANDS, brandSlug, type PhoneProduct } from '../lib/phone-catalogue';
+import type { PhoneProduct } from '../lib/phone-catalogue';
 import PhoneCatalogueCard from './PhoneCatalogueCard';
+
+export const PHONE_BRANDS = ['Apple', 'Samsung', 'Google Pixel', 'TECNO', 'Infinix', 'itel'] as const;
+
+export function brandSlug(brand: string) {
+  return brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
 
 const brandCopy: Record<string, string> = {
   Apple: 'iPhone models, grouped by generation and configuration.',
@@ -18,9 +24,9 @@ const brandCopy: Record<string, string> = {
 export function BrandDirectory({ counts, active = 'All' }: { counts: Record<string, number>; active?: string }) {
   return (
     <nav className="phone-brand-directory-v2" aria-label="Browse phone brands">
-      <Link className={active === 'All' ? 'active' : ''} href="/phones"><span>All phones</span><small>Complete collection</small></Link>
+      <Link className={active === 'All' ? 'active' : ''} href="/phones/catalogue"><span>All phones</span><small>Complete collection</small></Link>
       {PHONE_BRANDS.map((brand) => (
-        <Link key={brand} className={active === brand ? 'active' : ''} href={`/phones#brand-${brandSlug(brand)}`}>
+        <Link key={brand} className={active === brand ? 'active' : ''} href={`/phones/brand/${brandSlug(brand)}`}>
           <span>{brand}</span><small>{counts[brand] ?? 0} models</small>
         </Link>
       ))}
@@ -38,7 +44,7 @@ export function BrandSubcatalog({ brand, products, preview = false }: { brand: s
           <div className="phone-brand-mark-v2" aria-hidden="true">{brand === 'Google Pixel' ? 'G' : brand.slice(0, 1)}</div>
           <div><p className="eyebrow">{brand.toUpperCase()} · PHONE CATALOGUE</p><h2>{brand}</h2><p>{brandCopy[brand]}</p></div>
         </div>
-        <Link className="phone-brand-link-v2" href={`/phones#brand-${brandSlug(brand)}`}>View all {products.length} models <ChevronRight size={15} /></Link>
+        <Link className="phone-brand-link-v2" href={`/phones/brand/${brandSlug(brand)}`}>View all {products.length} models <ChevronRight size={15} /></Link>
       </div>
       {series.slice(0, preview ? 1 : series.length).map((currentSeries) => {
         const seriesProducts = visibleProducts.filter((p) => p.series === currentSeries);
@@ -48,7 +54,7 @@ export function BrandSubcatalog({ brand, products, preview = false }: { brand: s
           <div className="phone-horizontal-grid-v2">{seriesProducts.map((product) => <PhoneCatalogueCard key={product.slug} product={product} />)}</div>
         </div>;
       })}
-      {preview && products.length > visibleProducts.length && <Link className="phone-brand-more-v2" href={`/phones#brand-${brandSlug(brand)}`}>Browse the complete {brand} catalogue <ChevronRight size={15} /></Link>}
+      {preview && products.length > visibleProducts.length && <Link className="phone-brand-more-v2" href={`/phones/brand/${brandSlug(brand)}`}>Browse the complete {brand} catalogue <ChevronRight size={15} /></Link>}
     </section>
   );
 }
@@ -76,7 +82,7 @@ export function BrandCatalogueBrowser({ brand, products }: { brand: string; prod
       <p className="eyebrow">BROWSE {brand.toUpperCase()}</p>
       <h2>{brand}</h2>
       <div className="phone-filter-section-v2"><span>Series</span><button className={seriesFilter === 'All' ? 'active' : ''} onClick={() => updateSeries('All')}>All series <b>{products.length}</b></button>{series.map((s) => <button key={s} className={seriesFilter === s ? 'active' : ''} onClick={() => updateSeries(s)}>{s}<b>{products.filter((p) => p.series === s).length}</b></button>)}</div>
-      <Link className="phone-side-back-v2" href="/phones">← All phone brands</Link>
+      <Link className="phone-side-back-v2" href="/phones/catalogue">← All phone brands</Link>
     </aside>
     <div className="phone-brand-browser-results-v2">
       <div className="phone-brand-browser-toolbar-v2">
