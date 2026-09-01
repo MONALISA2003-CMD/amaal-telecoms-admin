@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { ArrowLeft, Check, ChevronLeft, ChevronRight, ShieldCheck, Sparkles } from 'lucide-react';
@@ -7,6 +8,29 @@ import type { PhoneProduct, PhoneVariant } from '../lib/phone-catalogue';
 
 function variantSummary(v: PhoneVariant) {
   return [v.storage, v.ram, v.network].filter(Boolean).join(' · ') || v.label;
+}
+
+function galleryImages(product: PhoneProduct) {
+  const galleries: Record<string, string[]> = {
+    'apple-iphone-16-pro-max': [
+      '/products/featured/iphone-16-pro-max-256gb-1.webp',
+      '/products/featured/iphone-16-pro-max-256gb-2.webp',
+      '/products/featured/iphone-16-pro-max-256gb-3.webp',
+      '/products/featured/iphone-16-pro-max-256gb-4.webp'
+    ],
+    'google-pixel-pixel-9': [
+      '/products/featured/google-pixel-9-256gb-1.webp',
+      '/products/featured/google-pixel-9-256gb-2.webp'
+    ],
+    'samsung-galaxy-a07': ['/products/featured/galaxy-a07-64gb-1.webp'],
+    'samsung-galaxy-a17': [
+      '/products/featured/galaxy-a17-128gb-1.webp',
+      '/products/featured/galaxy-a17-128gb-2.webp',
+      '/products/featured/galaxy-a17-128gb-3.webp'
+    ],
+    'samsung-galaxy-s26-ultra': ['/products/galaxy-s26-ultra.webp']
+  };
+  return galleries[product.slug] ?? (product.image ? [product.image] : []);
 }
 
 function modelPosition(product: PhoneProduct) {
@@ -19,7 +43,8 @@ export default function PhoneDetail({ product }: { product: PhoneProduct }) {
   const [selected, setSelected] = useState(0);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const variant = product.variants[selected] ?? product.variants[0];
-  const gallerySlots = 4;
+  const gallery = galleryImages(product);
+  const gallerySlots = gallery.length || 1;
   const quickFacts = useMemo(() => {
     const values = new Set<string>();
     for (const v of product.variants) {
@@ -41,7 +66,7 @@ export default function PhoneDetail({ product }: { product: PhoneProduct }) {
         <div className="phone-detail-layout">
           <div className="phone-detail-gallery" aria-label={`${product.name} product gallery`}>
             <div className="phone-detail-main-media">
-              <div className="phone-detail-photo-placeholder"><span>AMAAL</span><strong>{product.name}</strong><small>Approved product photography will appear here</small></div>
+              <div className="phone-detail-photo-placeholder">{gallery.length ? <Image src={gallery[galleryIndex % gallery.length]} alt={product.name} fill sizes="(max-width: 900px) 100vw, 55vw" className="phone-detail-product-image" /> : <><span>AMAAL</span><strong>{product.name}</strong><small>Product photography coming soon</small></>}</div>
               <div className="phone-gallery-index">{galleryIndex + 1} / {gallerySlots}</div>
               <button className="phone-gallery-arrow left" type="button" aria-label="Previous product image" onClick={previousGallery}><ChevronLeft size={18} /></button>
               <button className="phone-gallery-arrow right" type="button" aria-label="Next product image" onClick={nextGallery}><ChevronRight size={18} /></button>

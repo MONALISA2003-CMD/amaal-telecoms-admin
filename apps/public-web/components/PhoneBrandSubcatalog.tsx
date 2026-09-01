@@ -4,9 +4,13 @@ import Link from 'next/link';
 import { ChevronRight, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import type { PhoneProduct } from '../lib/phone-catalogue';
-import { PHONE_BRANDS, brandSlug } from '../lib/phone-brand-utils';
 import PhoneCatalogueCard from './PhoneCatalogueCard';
 
+export const PHONE_BRANDS = ['Apple', 'Samsung', 'Google Pixel', 'TECNO', 'Infinix', 'itel'] as const;
+
+export function brandSlug(brand: string) {
+  return brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
 
 const brandCopy: Record<string, string> = {
   Apple: 'iPhone models, grouped by generation and configuration.',

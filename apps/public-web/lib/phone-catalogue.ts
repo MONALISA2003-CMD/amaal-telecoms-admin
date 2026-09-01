@@ -625,7 +625,7 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "iPhone 16 Pro Max is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
-    "image": "",
+    "image": "/products/featured/iphone-16-pro-max-256gb-1.webp",
     "photoNote": "Product photo to be supplied by Amaal",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
@@ -839,7 +839,7 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Galaxy A07 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
-    "image": "",
+    "image": "/products/featured/galaxy-a07-64gb-1.webp",
     "photoNote": "Product photo to be supplied by Amaal",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
@@ -1015,7 +1015,7 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Galaxy A17 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
-    "image": "",
+    "image": "/products/featured/galaxy-a17-128gb-1.webp",
     "photoNote": "Product photo to be supplied by Amaal",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
@@ -1777,7 +1777,7 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Galaxy S26 Ultra is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
-    "image": "",
+    "image": "/products/galaxy-s26-ultra.webp",
     "photoNote": "Product photo to be supplied by Amaal",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
@@ -2316,7 +2316,7 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Pixel 9 is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
-    "image": "",
+    "image": "/products/featured/google-pixel-9-256gb-1.webp",
     "photoNote": "Product photo to be supplied by Amaal",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },

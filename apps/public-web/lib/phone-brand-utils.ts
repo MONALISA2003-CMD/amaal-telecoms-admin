@@ -1,12 +1,7 @@
-/**
- * Server-safe phone brand helpers.
- * Keep catalogue constants and pure transformations outside Client Components
- * so Next.js can safely use them during static generation.
- */
-import { phoneCatalogue } from './phone-catalogue';
+export const PHONE_BRANDS = ['Apple', 'Samsung', 'Google Pixel', 'TECNO', 'Infinix', 'itel'] as const;
 
-export const PHONE_BRANDS = Array.from(new Set(phoneCatalogue.map((product) => product.brand)));
+export type PhoneBrand = (typeof PHONE_BRANDS)[number];
 
-export function brandSlug(brand: string): string {
-  return brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+export function brandSlug(brand: string) {
+  return brand.toLowerCase().replace(/\s+/g, '-');
 }
