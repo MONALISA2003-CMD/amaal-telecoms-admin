@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
 import SiteHeader from '../../../../components/SiteHeader';
 import SiteFooter from '../../../../components/SiteFooter';
-import { BrandCatalogueBrowser, BrandDirectory, PHONE_BRANDS, brandSlug } from '../../../../components/PhoneBrandSubcatalog';
-import { phoneCatalogue } from '../../../../lib/phone-catalogue';
+import { BrandCatalogueBrowser, BrandDirectory } from '../../../../components/PhoneBrandSubcatalog';
+import { PHONE_BRANDS, brandSlug, phoneCatalogue } from '../../../../lib/phone-catalogue';
 
 export function generateStaticParams() { return PHONE_BRANDS.map((brand) => ({ brand: brandSlug(brand) })); }
 

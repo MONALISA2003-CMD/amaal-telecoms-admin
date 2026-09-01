@@ -1,3 +1,11 @@
+export const PHONE_BRANDS = ['Apple', 'Samsung', 'Google Pixel', 'TECNO', 'Infinix', 'itel'] as const;
+
+export type PhoneBrand = (typeof PHONE_BRANDS)[number];
+
+export function brandSlug(brand: string) {
+  return brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
 export type PhoneVariant = { label: string; storage?: string; ram?: string; network?: string };
 export type PhoneProduct = { slug:string; brand:string; family:string; series:string; name:string; network:string; variants:PhoneVariant[]; description:string; image:string; photoNote:string; source:string };
 
