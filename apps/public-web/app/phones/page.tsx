@@ -30,7 +30,7 @@ export default function PhonesPage() {
   const activeCount = [brand, series, storage, ram, network].filter(Boolean).length;
   const seriesOptions = useMemo(() => brand ? getPhoneBrandSeries(brand) : Array.from(new Set(phoneCatalogue.map((p) => p.series))), [brand]);
   const clear = () => { setBrand(''); setSeries(''); setStorage(''); setRam(''); setNetwork(''); setQuery(''); setPage(1); };
-  const update = (setter: (v: string) => void, value: string) => { setter(value); setPage(1); };
+  const update = <T,>(setter: (value: T) => void, value: T) => { setter(value); setPage(1); };
 
   return <main><SiteHeader />
     <section className="phones-catalogue-intro-v3">
