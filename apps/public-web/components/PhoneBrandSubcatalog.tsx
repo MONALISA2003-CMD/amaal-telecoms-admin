@@ -7,11 +7,7 @@ import { getNetworkOptions, getRamOptions, getStorageOptions, sortPhones, type P
 import type { PhoneProduct } from '../lib/phone-catalogue';
 import PhoneCatalogueCard from './PhoneCatalogueCard';
 
-export const PHONE_BRANDS = ['Apple', 'Samsung', 'Google Pixel', 'TECNO', 'Infinix', 'itel'] as const;
-
-export function brandSlug(brand: string) {
-  return brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-}
+import { PHONE_BRANDS, brandSlug } from '../lib/phone-brands';
 
 const brandCopy: Record<string, string> = {
   Apple: 'iPhone models, grouped by generation and available choices.',

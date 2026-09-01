@@ -4,11 +4,11 @@
 
 This app lives at:
 
-`src/livefix/apps/public-web`
+`apps/public-web`
 
 when the Git repository root is the extracted project root.
 
-If the Git repository was created with `src/livefix` as its repository root instead, the Vercel Root Directory becomes:
+If the Git repository was created with the repository root as its repository root instead, the Vercel Root Directory becomes:
 
 `apps/public-web`
 
@@ -28,7 +28,7 @@ Do not put database credentials, JWT signing secrets, payment secrets, webhook s
 
 - Framework Preset: Next.js
 - Node.js: 24.x
-- Root Directory: `src/livefix/apps/public-web` when repository root is the extracted project root
+- Root Directory: `apps/public-web` when repository root is the extracted project root
 - Build Command: `npm run build`
 - Install Command: `npm install`
 - Output Directory: default
