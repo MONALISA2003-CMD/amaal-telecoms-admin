@@ -216,25 +216,54 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
 
   if (key === 'reports') {
     const me = await businessGetSafe<ApiRecord>('/api/me');
-    return <ReportsWorkspace permissions={me?.permissions ?? []} />;
+    const [summary, trend, products, customers, procurement, delivery, warranty, returns, finance, tax, website, snapshots] = await Promise.all([
+      businessGetSafe<any>('/api/bi/summary'),
+      businessGetSafe<any[]>('/api/bi/sales-trend'),
+      businessGetSafe<any[]>('/api/bi/products'),
+      businessGetSafe<any[]>('/api/bi/customers'),
+      businessGetSafe<any[]>('/api/bi/procurement'),
+      businessGetSafe<any[]>('/api/bi/delivery'),
+      businessGetSafe<any[]>('/api/bi/warranty'),
+      businessGetSafe<any[]>('/api/bi/returns'),
+      businessGetSafe<any[]>('/api/bi/finance'),
+      businessGetSafe<any>('/api/bi/tax'),
+      businessGetSafe<any>('/api/bi/website-activity'),
+      businessGetSafe<any[]>('/api/bi/snapshots'),
+    ]);
+    return <ReportsWorkspace
+      summary={summary}
+      trend={trend ?? []}
+      products={products ?? []}
+      customers={customers ?? []}
+      procurement={procurement ?? []}
+      delivery={delivery ?? []}
+      warranty={warranty ?? []}
+      returns={returns ?? []}
+      finance={finance ?? []}
+      tax={tax}
+      website={website}
+      snapshots={snapshots ?? []}
+      canManage={Boolean(me?.permissions?.includes('bi.manage'))}
+      canExport={Boolean(me?.permissions?.includes('bi.export'))}
+    />;
   }
 
   if (key === 'team') {
-    const [me, staff, deletedStaff, roles, departments] = await Promise.all([
-      businessGetSafe<ApiRecord>('/api/me'),
+    const me = await businessGetSafe<ApiRecord>('/api/me');
+    const [staff, roles, permissions, invitations] = await Promise.all([
       businessGetSafe<any[]>('/api/staff'),
-      businessGetSafe<any[]>('/api/staff/deleted'),
       businessGetSafe<any[]>('/api/roles'),
-      businessGetSafe<any[]>('/api/departments'),
+      businessGetSafe<any[]>('/api/permissions'),
+      businessGetSafe<any[]>('/api/invitations'),
     ]);
     return <TeamWorkspace
-      active={Array.isArray(staff) ? staff : []}
-      deleted={Array.isArray(deletedStaff) ? deletedStaff : []}
-      roles={Array.isArray(roles) ? roles : []}
-      departments={Array.isArray(departments) ? departments : []}
-      permissions={me?.permissions ?? []}
+      staff={staff ?? []}
+      roles={roles ?? []}
+      permissions={permissions ?? []}
+      invitations={invitations ?? []}
+      canManage={Boolean(me?.permissions?.includes('staff.manage'))}
+      canRoles={Boolean(me?.permissions?.includes('roles.manage'))}
       isSuperAdmin={Boolean(me?.isSuperAdmin)}
-      currentUserId={me?.user?.id}
     />;
   }
 

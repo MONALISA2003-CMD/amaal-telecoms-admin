@@ -965,3 +965,10 @@ Rework the public phone catalogue into a modern, complete product-discovery expe
 - Continue official-source field enrichment for models where full specifications are required.
 - Run full `npm install && npm run build` in a network-enabled build environment before Vercel deployment.
 - Continue with tablet/home-appliance/audio catalogue experiences using the same catalogue-not-inventory principle.
+
+## Phase 34 — Vercel Business Admin TypeScript Fix
+- Fixed the Vercel-reported TypeScript contract mismatch in `apps/business-admin/app/(business)/[...slug]/page.tsx`.
+- Reports dynamic route now supplies the complete `ReportsWorkspace` props and current permission flags.
+- Team dynamic route now supplies the current `TeamWorkspace` props and permission flags.
+- No DB/schema/backend/public-web changes.
+- Full local dependency installation timed out; Vercel remains the authoritative production build check.
