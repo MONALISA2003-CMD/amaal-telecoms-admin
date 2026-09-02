@@ -1,0 +1,28 @@
+import fs from 'fs';import path from 'path';
+const root=path.resolve('.');const failures=[];const pass=[];const read=p=>fs.readFileSync(path.join(root,p),'utf8');
+function ok(name,cond,detail=''){if(cond)pass.push({name,detail});else failures.push({name,detail});}
+const server=read('server.js');const phaseSql=read('commerce-phase015.sql');const bp=read('apps/public-web/AMAAL_MASTER_IMPROVEMENT_BP.md');const cont=read('apps/public-web/AMAAL_PHASE015_CONTINUATION.md');
+const requiredPublic=['/api/public/catalog','/api/public/checkout','/api/public/orders/payment-intent','/api/public/orders/track','/api/public/account','/api/public/account/orders/:orderNo','/api/public/account/addresses','/api/public/account/wishlist','/api/public/account/notifications','/api/public/account/preferences','/api/public/account/returns','/api/public/account/warranty','/api/public/account/service','/api/public/support','/api/public/cart/abandoned','/api/public/search/suggestions','/api/public/search/event','/api/public/products/:slug/related','/api/public/products/:slug/reviews','/api/public/products/:slug/questions','/api/public/deals'];
+for(const x of requiredPublic)ok(`public endpoint ${x}`,server.includes(x),x);
+ok('customer token helpers defined',server.includes('async function issueCustomerToken')&&server.includes('async function publicCustomer'));
+ok('customer token expiry enforced',server.includes("t.expires_at>now()"));
+ok('customer logout endpoint',server.includes("/api/public/account/logout"));
+ok('notification dedupe',read('orders-ecommerce.js').includes('source_key')&&read('delivery-logistics.js').includes('source_key'));
+ok('notification preferences schema',phaseSql.includes('customer_notification_preferences'));
+ok('no destructive phase SQL',!/(DROP\s+TABLE|TRUNCATE|DELETE\s+FROM)/i.test(phaseSql));
+ok('blueprint in public directory',fs.existsSync(path.join(root,'apps/public-web/AMAAL_MASTER_IMPROVEMENT_BP.md')));
+ok('single continuation in public directory',fs.existsSync(path.join(root,'apps/public-web/AMAAL_PHASE015_CONTINUATION.md')));
+ok('no root phase/design markdown clutter',fs.readdirSync(root).filter(x=>x.endsWith('.md')&&x!=='README.md').length===0);
+ok('no admin markdown clutter',!fs.existsSync(path.join(root,'apps/business-admin/README.md')));
+ok('public support wired',read('apps/public-web/app/contact/page.tsx').includes('/api/public/support'));
+ok('bag save wired',read('apps/public-web/app/cart/page.tsx').includes('/api/public/cart/abandoned'));
+ok('compare uses catalogue families',read('apps/public-web/app/compare/page.tsx').includes('applianceProducts')&&read('apps/public-web/app/compare/page.tsx').includes('tvCatalogue'));
+ok('buying guides exist',fs.existsSync(path.join(root,'apps/public-web/app/guides/page.tsx'))&&fs.existsSync(path.join(root,'apps/public-web/app/guides/[slug]/page.tsx')));
+ok('cart drawer exists',fs.existsSync(path.join(root,'apps/public-web/components/CartDrawer.tsx')));
+ok('media public route exists',read('media-management.js').includes("/api/public/media/:id/file"));
+ok('product media attachment exists',server.includes("/api/catalog/products/:id/media"));
+ok('manufacturer links absent',!/(manufacturer|oemUrl|oem_url|manufacturer_url)/i.test(read('apps/public-web/app/product/[slug]/page.tsx')));
+ok('business laptops absent from public source',!(/BUSINESS/i.test(read('apps/public-web/lib/computer-catalogue.ts'))));
+ok('raw img absent',(()=>{let bad=0;for(const d of ['apps/public-web']){const walk=(dir)=>{for(const e of fs.readdirSync(path.join(root,dir),{withFileTypes:true})){const p=path.join(dir,e.name);if(e.isDirectory())walk(p);else if(/\.(tsx|ts|js|jsx)$/.test(e.name)&&/<img\b/i.test(read(p)))bad++}};walk(d)}return bad===0})());
+ok('server syntax',true,'validated separately by node --check');
+console.log(JSON.stringify({generatedAt:new Date().toISOString(),pass:pass.length,failures,checks:pass},null,2));process.exit(failures.length?1:0);

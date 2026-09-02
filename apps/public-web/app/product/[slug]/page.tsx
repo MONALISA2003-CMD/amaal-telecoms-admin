@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import SiteHeader from '../../../components/SiteHeader';
 import SiteFooter from '../../../components/SiteFooter';
-import { getCatalog } from '../../../lib/catalog';
+import { getCatalog, image } from '../../../lib/catalog';
 import ProductTrustPanel from '../../../components/ProductTrustPanel';import { featuredProducts, newProducts, type HomeProduct } from '../../../lib/homepage-data';
 import { phoneCatalogue } from '../../../lib/phone-catalogue';
 import PhoneDetail from '../../../components/PhoneDetail';import WishlistButton from '../../../components/WishlistButton';import AddToBag from '../../../components/AddToBag';import RelatedProducts from '../../../components/RelatedProducts';import RecentViewed from '../../../components/RecentViewed';
@@ -21,5 +21,5 @@ export default async function ProductPage({params}:{params:Promise<{slug:string}
   const catalog=await getCatalog();
   const p=(catalog?.products??[]).find(x=>(x.slug??String(x.id))===slug);
   if(!p)return <main><SiteHeader/><section className="section empty"><h1>Product not found.</h1><Link href="/shop">Return to shop</Link></section><SiteFooter/></main>;
-  return <main><SiteHeader/><section className="section product-detail"><div className="detail-image"><div className="detail-placeholder"><span>AMAAL</span><strong>PRODUCT PHOTO</strong><small>Product photo coming soon</small></div></div><div className="detail-copy"><p className="eyebrow">{p.brand_name??'AMAAL'}</p><div className="detail-title-row"><h1>{p.name}</h1><WishlistButton id={p.slug}/></div><div className="detail-price">Price coming soon</div><p className="detail-note">{p.description||p.short_description||'Product details will be confirmed by Amaal before listing.'}</p><Link className="button gold" href={`/contact?product=${encodeURIComponent(p.name)}`}>Ask about this product</Link><div className="detail-trust"><span>Genuine product</span><span>Warranty support</span><span>Reliable delivery</span></div></div></section><SiteFooter/></main>;
+  return <main><SiteHeader/><section className="section product-detail"><div className="detail-image"><div className="detail-placeholder" style={image(p)?{backgroundImage:`url(${image(p)})`,backgroundSize:'cover',backgroundPosition:'center'}:undefined}><span>{image(p)?'':'AMAAL'}</span><strong>{image(p)?'':'PRODUCT PHOTO'}</strong><small>{image(p)?'':'Product photo coming soon'}</small></div></div><div className="detail-copy"><p className="eyebrow">{p.brand_name??'AMAAL'}</p><div className="detail-title-row"><h1>{p.name}</h1><WishlistButton id={p.slug}/></div><div className="detail-price">Price coming soon</div><p className="detail-note">{p.description||p.short_description||'Product details will be confirmed by Amaal before listing.'}</p><Link className="button gold" href={`/contact?product=${encodeURIComponent(p.name)}`}>Ask about this product</Link><div className="detail-trust"><span>Genuine product</span><span>Warranty support</span><span>Reliable delivery</span></div></div></section><SiteFooter/></main>;
 }

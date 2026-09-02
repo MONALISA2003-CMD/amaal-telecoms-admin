@@ -1,3 +1,14 @@
+# AMAAL — CURRENT BUILD STATUS
+
+This package is the cleaned **Phase 015 continuation** of the Amaal commerce platform. The public website, Business Console, backend and database migrations are packaged together. The authoritative product-management surface remains the Business Console.
+
+**Current release:** Phase 015 — post-Phase-014 reinspection and completion pass.
+**Master blueprint:** `apps/public-web/AMAAL_MASTER_IMPROVEMENT_BP.md`
+**Continuation:** `apps/public-web/AMAAL_PHASE015_CONTINUATION.md`
+**Database policy:** additive/idempotent migrations only; no database reset.
+
+---
+
 # Amaal Telecoms Admin
 
 ## Production Readiness Release
