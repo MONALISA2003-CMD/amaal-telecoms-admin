@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Check, ChevronLeft, ChevronRight, GitCompareArrows, ShieldCheck } from 'lucide-react';
 import type { PhoneProduct, PhoneVariant } from '../lib/phone-catalogue';
-import { customerPhoneDescription } from '../lib/phone-catalogue-utils';
+import { customerPhoneDescription } from '../lib/phone-catalogue-utils';import SiteHeader from './SiteHeader';import SiteFooter from './SiteFooter';import WishlistButton from './WishlistButton';
 import { togglePhoneCompare, isPhoneCompared } from './PhoneCompareTray';
 
 function variantSummary(v: PhoneVariant) {
@@ -38,7 +38,7 @@ export default function PhoneDetail({ product }: { product: PhoneProduct }) {
   const previousGallery = () => setGalleryIndex((x) => (x - 1 + gallerySlots) % gallerySlots);
 
   return (
-    <main>
+    <main><SiteHeader/>
       <section className="phone-detail-hero">
         <div className="phone-detail-breadcrumbs">
           <Link href="/phones"><ArrowLeft size={14} /> All phones</Link><span>/</span><span>{product.brand}</span><span>/</span><span>{product.series}</span>
@@ -57,7 +57,7 @@ export default function PhoneDetail({ product }: { product: PhoneProduct }) {
           </div>
           <div className="phone-detail-content">
             <p className="eyebrow">{modelPosition(product)} · {product.network || 'Connectivity details'}</p>
-            <h1>{product.name}</h1>
+            <div className="detail-title-row"><div><h1>{product.name}</h1></div><WishlistButton id={product.slug}/></div>
             <p className="phone-detail-intro">{customerPhoneDescription(product)}</p><div className="phone-price-detail">Price coming soon</div>
             <div className="phone-detail-quickfacts">{quickFacts.map((fact) => <span key={fact}>{fact}</span>)}</div>
             <div className="phone-detail-config">
@@ -82,6 +82,6 @@ export default function PhoneDetail({ product }: { product: PhoneProduct }) {
       </section>
       <section className="section phone-detail-verification"><div><p className="eyebrow">SHOP WITH CONFIDENCE</p><h2>Need a final check?</h2></div><p>Contact Amaal to confirm current stock, colour, exact option, warranty and delivery before you order.</p></section>
       <section className="section phone-detail-bottom-cta"><div><p className="eyebrow">STILL EXPLORING?</p><h2>Find your next phone.</h2></div><Link className="button gold" href={`/phones/brand/${product.brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`}>Browse {product.brand} phones</Link></section>
-    </main>
+    <SiteFooter/></main>
   );
 }

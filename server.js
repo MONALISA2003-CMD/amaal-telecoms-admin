@@ -779,6 +779,64 @@ registerSalesPos({app,auth,need,q,pool,audit,changeStock});
 const ordersModule=registerOrdersEcommerce({app,auth,need,q,pool,audit,changeStock,reserveStock,releaseReservation});
 registerWebHosting({app,auth,need,q,pool,audit});
 registerPricingPromotions({app,auth,need,q,pool,audit});
+// Public storefront checkout: guest checkout only. It uses the same authoritative product pricing,
+// inventory reservation and order tables as the Business Console. No product CRUD is exposed here.
+const publicCheckoutRate=new Map();
+function publicCheckoutLimit(req,res,next){
+  const key=`${req.ip}:checkout`; const now=Date.now(); const v=publicCheckoutRate.get(key)||{count:0,resetAt:now+60000};
+  if(v.resetAt<=now){v.count=0;v.resetAt=now+60000;} if(v.count>=20)return res.status(429).json({error:'Too many checkout attempts. Please wait a moment.'}); v.count++; publicCheckoutRate.set(key,v); next();
+}
+app.post('/api/public/checkout',publicCheckoutLimit,async(req,res)=>{
+  const b=req.body||{}, lines=Array.isArray(b.lines)?b.lines:[];
+  const text=v=>String(v??'').trim(); const money=v=>Math.round((Number(v)||0)*100)/100;
+  if(!text(b.name)||!text(b.phone)||!lines.length)return res.status(400).json({error:'Name, phone and at least one product are required.'});
+  if(text(b.countryCode)&&text(b.countryCode)!=='UG')return res.status(400).json({error:'Amaal currently delivers within Uganda.'});
+  if(text(b.paymentMethod)&&!['Mobile Money','Card','Cash'].includes(text(b.paymentMethod)))return res.status(400).json({error:'Unsupported payment method.'});
+  const idem=text(req.get('Idempotency-Key')||b.idempotencyKey); const client=await pool.connect();
+  try{
+    await client.query('BEGIN');
+    if(idem){const existing=(await client.query('SELECT id FROM orders WHERE idempotency_key=$1 FOR SHARE',[idem])).rows[0];if(existing){await client.query('ROLLBACK');const o=(await client.query('SELECT id,order_no,status,payment_status,fulfillment_status,grand_total,currency,shipping_name,shipping_phone,shipping_address,created_at FROM orders WHERE id=$1',[existing.id])).rows[0];return res.json({order:o})}}
+    const loc=(await client.query("SELECT id,name FROM inventory_locations WHERE status='Active' ORDER BY id LIMIT 1")).rows[0]; if(!loc)throw new Error('Amaal has no active fulfilment location configured.');
+    const phone=text(b.phone), email=text(b.email).toLowerCase(), name=text(b.name);
+    let customer=(await client.query("SELECT id FROM customers WHERE phone=$1 AND status<>'Anonymized' ORDER BY created_at DESC LIMIT 1 FOR UPDATE",[phone])).rows[0];
+    if(!customer){
+      customer=(await client.query(`INSERT INTO customers(customer_no,name,customer_type,email,phone,country_code,preferred_currency,address_line1,address_line2,city,region,postal_code,status,notes) VALUES($1,$2,'Individual',$3,$4,'UG','UGX',$5,$6,$7,$8,$9,'Active','Created from public storefront checkout') RETURNING id`,[`CUS-${new Date().getFullYear()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`,name,email,phone,text(b.addressLine1),text(b.addressLine2),text(b.city),text(b.region),text(b.postalCode)])).rows[0];
+      await client.query('INSERT INTO customer_balances(customer_id,balance,credit_limit) VALUES($1,0,0)',[customer.id]);
+    } else {
+      await client.query('UPDATE customers SET name=$1,email=$2,address_line1=$3,address_line2=$4,city=$5,region=$6,postal_code=$7,updated_at=now() WHERE id=$8',[name,email,text(b.addressLine1),text(b.addressLine2),text(b.city),text(b.region),text(b.postalCode),customer.id]);
+    }
+    let subtotal=0,tax=0; const prepared=[];
+    for(const raw of lines){
+      const variantId=text(raw.variantId), lineQty=Math.max(0,Number(raw.quantity)||0); if(!variantId||lineQty<=0||lineQty>100)throw new Error('Every checkout line must contain a valid quantity.');
+      const v=(await client.query(`SELECT v.*,p.name product_name FROM product_variants v JOIN products p ON p.id=v.product_id WHERE (v.id=$1 OR v.sku=$1) AND v.status='Active' AND p.status='Active' AND p.website_visibility='Published' FOR SHARE`,[variantId])).rows[0]; if(!v)throw new Error('One of the selected products is no longer available.');
+      const effective=(await client.query('SELECT * FROM amaal_effective_variant_price_qty($1,$2,$3,$4)',[v.id,'Retail',lineQty,null])).rows[0];
+      const unit=money(effective?.final_price??v.selling_price); if(unit<=0)throw new Error(`${v.product_name} is not yet available for online purchase.`);
+      if(v.serialized&&lineQty!==1)throw new Error(`${v.product_name} is limited to one unit per order line.`);
+      if(v.track_inventory){const bal=(await client.query('SELECT on_hand,reserved FROM inventory_balances WHERE variant_id=$1 AND location_id=$2 FOR UPDATE',[v.id,loc.id])).rows[0];const available=bal?Number(bal.on_hand)-Number(bal.reserved):0;if(available<lineQty)throw new Error(`Only ${Math.max(0,available)} unit(s) of ${v.product_name} are currently available.`)}
+      const tx=money(unit*lineQty*Number(v.tax_rate||0)/100); subtotal=money(subtotal+unit*lineQty); tax=money(tax+tx); prepared.push({v,qty:lineQty,unit,tx});
+    }
+    const shipping=money(b.shippingAmount); const grand=money(subtotal+tax+shipping); if(grand<=0)throw new Error('Order total must be greater than zero.');
+    const orderNo=`WEB-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${crypto.randomUUID().slice(0,8).toUpperCase()}`;
+    const o=(await client.query(`INSERT INTO orders(order_no,idempotency_key,customer_id,location_id,status,payment_status,fulfillment_status,subtotal,discount_amount,tax_amount,shipping_amount,grand_total,currency,shipping_name,shipping_phone,shipping_email,shipping_address,notes,created_by) VALUES($1,$2,$3,$4,'Pending Payment','Pending','Unfulfilled',$5,0,$6,$7,$8,'UGX',$9,$10,$11,$12,$13,NULL) RETURNING id,order_no,status,payment_status,fulfillment_status,grand_total,currency,shipping_name,shipping_phone,shipping_address,created_at`,[orderNo,idem||null,customer.id,loc.id,subtotal,tax,shipping,grand,name,phone,email,[text(b.addressLine1),text(b.addressLine2),text(b.city),text(b.region),text(b.postalCode)].filter(Boolean).join(', '),text(b.notes)])).rows[0];
+    for(const x of prepared){const line=(await client.query(`INSERT INTO order_lines(order_id,variant_id,quantity,unit_price,discount_amount,tax_rate,tax_amount,line_total,cost_price) VALUES($1,$2,$3,$4,0,$5,$6,$7,$8) RETURNING id`,[o.id,x.v.id,x.qty,x.unit,Number(x.v.tax_rate||0),x.tx,money(x.unit*x.qty+x.tx),money(x.v.cost_price)])).rows[0];if(x.v.track_inventory)await reserveStock(client,{variantId:x.v.id,locationId:loc.id,quantity:x.qty,actorId:null,referenceType:'Order',referenceId:o.id,expiresAt:new Date(Date.now()+24*60*60*1000)});}
+    await client.query("INSERT INTO order_status_history(order_id,status,actor_id,notes) VALUES($1,'Pending Payment',NULL,'Order placed through the Amaal storefront')",[o.id]);
+    await client.query('COMMIT');
+    const paymentMethod=text(b.paymentMethod)||'Mobile Money';
+    res.status(201).json({order:o,payment:{method:paymentMethod,status:'Pending',instructions:paymentMethod==='Mobile Money'?'A payment request can be initiated after the order is created.':paymentMethod==='Card'?'Secure card payment can be completed through the configured payment gateway.':'Payment can be completed on delivery.'}});
+  }catch(e){try{await client.query('ROLLBACK')}catch{}res.status(400).json({error:e.message||'Unable to place order.'})}finally{client.release()}
+});
+
+app.post('/api/public/orders/payment-intent',publicCheckoutLimit,async(req,res)=>{
+  const orderNo=String(req.body?.orderNo||'').trim(), phone=String(req.body?.phone||'').trim(), method=String(req.body?.method||'').trim();
+  if(!orderNo||!phone||!['Mobile Money','Card'].includes(method))return res.status(400).json({error:'Order number, phone number and a supported payment method are required.'});
+  try{const o=(await q(`SELECT o.id,o.order_no,o.grand_total,o.payment_status,o.status FROM orders o WHERE o.order_no=$1 AND regexp_replace(o.shipping_phone,'[^0-9+]','','g')=regexp_replace($2,'[^0-9+]','','g')`,[orderNo,phone]))[0];if(!o)return res.status(404).json({error:'Order not found.'});if(['Cancelled','Refunded','Delivered','Returned'].includes(o.status))return res.status(400).json({error:'This order cannot receive a new payment.'});const paid=Number((await q("SELECT COALESCE(sum(amount),0)::numeric total FROM order_payments WHERE order_id=$1 AND status='Completed'",[o.id]))[0].total||0);const due=Math.max(0,Number(o.grand_total)-paid);if(due<=0)return res.json({status:'Paid',amount:0});const ref=`WEBPAY-${crypto.randomUUID().slice(0,12).toUpperCase()}`;const p=(await q("INSERT INTO order_payments(order_id,method,amount,reference,status) VALUES($1,$2,$3,$4,'Pending') RETURNING id,method,amount,reference,status,created_at",[o.id,method,due,ref]))[0];res.status(201).json({payment:p,instructions:method==='Mobile Money'?'Amaal will use the configured mobile-money payment flow for this order. Keep your phone nearby.':'Amaal will use the configured secure card gateway for this order.'})}catch(e){res.status(503).json({error:'Payment setup is temporarily unavailable.'})}
+});
+
+app.get('/api/public/orders/track',async(req,res)=>{
+  const orderNo=String(req.query.orderNo||'').trim(), phone=String(req.query.phone||'').trim(); if(!orderNo||!phone)return res.status(400).json({error:'Order number and phone number are required.'});
+  try{const o=(await q(`SELECT o.id,o.order_no,o.status,o.payment_status,o.fulfillment_status,o.grand_total,o.currency,o.shipping_name,o.shipping_phone,o.shipping_address,o.created_at,o.updated_at FROM orders o WHERE o.order_no=$1 AND regexp_replace(o.shipping_phone,'[^0-9+]','','g')=regexp_replace($2,'[^0-9+]','','g')`,[orderNo,phone]))[0];if(!o)return res.status(404).json({error:'We could not find an order matching those details.'});const d=(await q(`SELECT shipment_no,method,carrier,tracking_number,status,scheduled_at,delivered_at FROM delivery_shipments WHERE order_id=$1 ORDER BY created_at DESC LIMIT 1`,[o.id]))[0]||null;const events=d?await q('SELECT status,note,location_text,created_at FROM delivery_events WHERE shipment_id=(SELECT id FROM delivery_shipments WHERE order_id=$1 ORDER BY created_at DESC LIMIT 1) ORDER BY created_at',[o.id]):[];res.json({order:o,delivery:d,events})}catch(e){res.status(503).json({error:'Tracking is temporarily unavailable.'})}
+});
+
 registerDeliveryLogistics({app,auth,need,q,pool,audit,changeStock,postOrderCompletionFinance:ordersModule?.postOrderCompletionFinance});
 registerWarrantyRepairs({app,auth,need,q,pool,audit,changeStock});
 registerReturnsRefunds({app,auth,need,q,pool,audit,changeStock});

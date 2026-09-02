@@ -1,0 +1,3 @@
+'use client';
+import Link from 'next/link';import {Heart,ShoppingBag} from 'lucide-react';import {useEffect,useState} from 'react';import {getCart,getWishlist} from '../lib/commerce';
+export default function CommerceBar(){const [counts,setCounts]=useState({cart:0,wish:0});useEffect(()=>{const sync=()=>setCounts({cart:getCart().reduce((n,x)=>n+x.qty,0),wish:getWishlist().length});sync();window.addEventListener('amaal-commerce-updated',sync);return()=>window.removeEventListener('amaal-commerce-updated',sync)},[]);return <div className="commerce-bar"><Link href="/account/saved"><Heart size={16}/> Saved <b>{counts.wish}</b></Link><Link href="/cart"><ShoppingBag size={16}/> Bag <b>{counts.cart}</b></Link></div>}
