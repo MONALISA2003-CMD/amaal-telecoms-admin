@@ -1,0 +1,1 @@
+import {redirect} from 'next/navigation';export default async function ComputerBrandRedirect({params}:{params:Promise<{brand:string}>}){const {brand}=await params;redirect(`/categories/computers/laptops/brand/${encodeURIComponent(brand)}`)}

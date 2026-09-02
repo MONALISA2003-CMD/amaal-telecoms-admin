@@ -6,9 +6,9 @@ import { ArrowRight, Search, SlidersHorizontal, X } from 'lucide-react';
 import { audioBrands, audioProducts, audioTiers, type AudioProduct, type AudioTier } from '../lib/audio-catalogue';
 import { getAudioMedia } from '../lib/audio-media';
 
-function AudioCard({ product, remoteMedia }: { product: AudioProduct; remoteMedia?: string }) {
+function AudioCard({ product, remoteMedia, basePath }: { product: AudioProduct; remoteMedia?: string; basePath:string }) {
   const media = remoteMedia || getAudioMedia(product);
-  return <Link href={`/audio/${product.slug}`} className="audio-card">
+  return <Link href={`${basePath}/${product.slug}`} className="audio-card">
     <div className="audio-media">
       {media ? <img src={media} alt={product.name} loading="lazy" /> : <div className="audio-placeholder"><span>{product.brand}</span><strong>{product.type}</strong><small>Product media coming soon</small></div>}
       <span className="audio-tier-badge">{product.tier === 'EVERYDAY' ? 'EVERYDAY' : product.tier}</span>
@@ -23,7 +23,7 @@ function AudioCard({ product, remoteMedia }: { product: AudioProduct; remoteMedi
   </Link>;
 }
 
-export default function AudioCatalogueClient({ initialBrand }: { initialBrand?: string } = {}) {
+export default function AudioCatalogueClient({ initialBrand, basePath='/categories/entertainment/audio' }: { initialBrand?: string; basePath?: string } = {}) {
   const [query, setQuery] = useState('');
   const [brand, setBrand] = useState(initialBrand || 'All brands');
   const [tier, setTier] = useState<'All' | AudioTier>('All');
@@ -73,6 +73,6 @@ export default function AudioCatalogueClient({ initialBrand }: { initialBrand?: 
       </div>
     </section>
     <div className="audio-results-line"><span>{filtered.length} products</span>{(query || brand !== 'All brands' || tier !== 'All' || type !== 'All types') && <button onClick={reset}>Clear filters</button>}</div>
-    {filtered.length ? <div className="audio-grid">{filtered.map(p => <AudioCard key={p.slug} product={p} remoteMedia={remoteMedia[p.slug]}/>)}</div> : <div className="audio-empty"><h3>No sound products found.</h3><p>Try another brand, product type or search.</p><button className="button gold" onClick={reset}>Show all audio</button></div>}
+    {filtered.length ? <div className="audio-grid">{filtered.map(p => <AudioCard key={p.slug} product={p} remoteMedia={remoteMedia[p.slug]} basePath={basePath}/>)}</div> : <div className="audio-empty"><h3>No sound products found.</h3><p>Try another brand, product type or search.</p><button className="button gold" onClick={reset}>Show all audio</button></div>}
   </>;
 }

@@ -3,7 +3,7 @@ export type StarterCatalogueItem = {
   category: string;
   subcategory: string;
   brand?: string;
-  productType: 'Phone' | 'Tablet' | 'TV' | 'Speaker';
+  productType: 'Phone' | 'Tablet' | 'TV' | 'Speaker' | 'Laptop' | 'Desktop' | 'All-in-One';
   size?: string;
 };
 
@@ -42,13 +42,37 @@ export const starterCatalogueCategories = [
   'Phones / Samsung Galaxy / Foldable',
   'Phones / Samsung Galaxy / A Series',
   'Entertainment / TV',
-  'Entertainment / Speakers',
-  'Accessories', 'Computers', 'Networking', 'Wearables', 'Power & Smart Home', 'Gaming', 'Cameras & Security', 'Audio',
+  'Accessories', 'Computers', 'Computers / Laptops', 'Computers / Laptops / HP', 'Computers / Laptops / Lenovo', 'Computers / Laptops / Apple', 'Computers / Desktops', 'Computers / All-in-One', 'Computers / Gaming Laptops', 'Networking', 'Wearables', 'Power & Smart Home', 'Gaming', 'Cameras & Security',
   'Tablets / iPad', 'Tablets / Samsung Galaxy Tab', 'Entertainment / Audio', 'Entertainment / Audio / Woofers', 'Entertainment / Audio / Party Speakers', 'Entertainment / Audio / Sound Towers',
 ];
 
 export const starterCatalogueBrands = [
-  'Apple', 'Samsung', 'TCL', 'Hisense', 'LG', 'Global Star', 'Black Ark', 'CHiQ', 'SPJ', 'CHiQ Smart Plus', 'JBL', 'Sony',
+  'Apple', 'HP', 'Lenovo', 'Samsung', 'TCL', 'Hisense', 'LG', 'Global Star', 'Black Ark', 'CHiQ', 'SPJ', 'CHiQ Smart Plus', 'JBL', 'Sony',
+];
+
+const computerItems: StarterCatalogueItem[] = [
+  { name: 'HP 15 Laptop', category: 'Computers', subcategory: 'Laptops / HP', brand: 'HP', productType: 'Laptop', size: '15.6 inch' },
+  { name: 'HP ProBook 440', category: 'Computers', subcategory: 'Laptops / HP / ProBook', brand: 'HP', productType: 'Laptop', size: '14 inch' },
+  { name: 'HP ProBook 450', category: 'Computers', subcategory: 'Laptops / HP / ProBook', brand: 'HP', productType: 'Laptop', size: '15.6 inch' },
+  { name: 'HP ProBook 445', category: 'Computers', subcategory: 'Laptops / HP / ProBook', brand: 'HP', productType: 'Laptop', size: '14 inch' },
+  { name: 'HP EliteBook 840', category: 'Computers', subcategory: 'Laptops / HP / EliteBook', brand: 'HP', productType: 'Laptop', size: '14 inch' },
+  { name: 'HP Pavilion 15 Laptop', category: 'Computers', subcategory: 'Laptops / HP / Pavilion', brand: 'HP', productType: 'Laptop', size: '15.6 inch' },
+  { name: 'HP Envy 14 Laptop', category: 'Computers', subcategory: 'Laptops / HP / Envy', brand: 'HP', productType: 'Laptop', size: '14 inch' },
+  { name: 'Lenovo IdeaPad Slim 3 15', category: 'Computers', subcategory: 'Laptops / Lenovo / IdeaPad', brand: 'Lenovo', productType: 'Laptop', size: '15.6 inch' },
+  { name: 'Lenovo IdeaPad Slim 3i 15', category: 'Computers', subcategory: 'Laptops / Lenovo / IdeaPad', brand: 'Lenovo', productType: 'Laptop', size: '15.6 inch' },
+  { name: 'Lenovo V15', category: 'Computers', subcategory: 'Laptops / Lenovo / V Series', brand: 'Lenovo', productType: 'Laptop', size: '15.6 inch' },
+  { name: 'Lenovo ThinkBook 14', category: 'Computers', subcategory: 'Laptops / Lenovo / ThinkBook', brand: 'Lenovo', productType: 'Laptop', size: '14 inch' },
+  { name: 'Lenovo ThinkPad E14', category: 'Computers', subcategory: 'Laptops / Lenovo / ThinkPad', brand: 'Lenovo', productType: 'Laptop', size: '14 inch' },
+  { name: 'Lenovo ThinkPad T14', category: 'Computers', subcategory: 'Laptops / Lenovo / ThinkPad', brand: 'Lenovo', productType: 'Laptop', size: '14 inch' },
+  { name: 'Lenovo LOQ 15 Gaming Laptop', category: 'Computers', subcategory: 'Laptops / Lenovo / Gaming / LOQ', brand: 'Lenovo', productType: 'Laptop', size: '15.6 inch' },
+  { name: 'Lenovo Legion 5 Gaming Laptop', category: 'Computers', subcategory: 'Laptops / Lenovo / Gaming / Legion', brand: 'Lenovo', productType: 'Laptop', size: '15/16 inch' },
+  { name: 'MacBook Neo', category: 'Computers', subcategory: 'Laptops / Apple / MacBook Neo', brand: 'Apple', productType: 'Laptop', size: '13 inch class' },
+  { name: 'MacBook Air 13-inch with M5', category: 'Computers', subcategory: 'Laptops / Apple / MacBook Air', brand: 'Apple', productType: 'Laptop', size: '13.6 inch' },
+  { name: 'MacBook Air 15-inch with M5', category: 'Computers', subcategory: 'Laptops / Apple / MacBook Air', brand: 'Apple', productType: 'Laptop', size: '15.3 inch' },
+  { name: 'MacBook Pro 14-inch with M5', category: 'Computers', subcategory: 'Laptops / Apple / MacBook Pro', brand: 'Apple', productType: 'Laptop', size: '14.2 inch' },
+  { name: 'MacBook Pro 14-inch with M5 Pro', category: 'Computers', subcategory: 'Laptops / Apple / MacBook Pro', brand: 'Apple', productType: 'Laptop', size: '14.2 inch' },
+  { name: 'MacBook Pro 16-inch with M5 Pro', category: 'Computers', subcategory: 'Laptops / Apple / MacBook Pro', brand: 'Apple', productType: 'Laptop', size: '16.2 inch' },
+  { name: 'MacBook Pro 16-inch with M5 Max', category: 'Computers', subcategory: 'Laptops / Apple / MacBook Pro', brand: 'Apple', productType: 'Laptop', size: '16.2 inch' },
 ];
 
 const audioItems: StarterCatalogueItem[] = [
@@ -76,6 +100,7 @@ export const starterCatalogueItems: StarterCatalogueItem[] = [
   ...galaxyS.map((name) => ({ name, category: 'Phones', subcategory: 'Samsung Galaxy / S Series', brand: 'Samsung', productType: 'Phone' as const })),
   ...galaxyFoldable.map((name) => ({ name, category: 'Phones', subcategory: 'Samsung Galaxy / Foldable', brand: 'Samsung', productType: 'Phone' as const })),
   ...galaxyA.map((name) => ({ name, category: 'Phones', subcategory: 'Samsung Galaxy / A Series', brand: 'Samsung', productType: 'Phone' as const })),
+  ...computerItems,
   ...audioItems,
   ...tvMasterCatalog.map((tv) => ({
     name: `${tv.brand} ${tv.model} TV`,

@@ -6,8 +6,8 @@ const files = [
   'audio-catalogue-seed.sql',
   'apps/public-web/lib/audio-catalogue.ts',
   'apps/public-web/components/AudioCatalogueClient.tsx',
-  'apps/public-web/app/audio/page.tsx',
-  'apps/public-web/app/audio/[slug]/page.tsx',
+  'apps/public-web/app/categories/entertainment/audio/page.tsx',
+  'apps/public-web/app/categories/entertainment/audio/[slug]/page.tsx',
   'apps/public-web/app/audio/brand/[brand]/page.tsx',
   'apps/public-web/lib/audio-media.ts',
   'apps/business-admin/data/starter-catalogue.ts',
@@ -26,6 +26,6 @@ const slugs = [...ts.matchAll(/slug:'([^']+)'/g)].map(m => m[1]);
 const duplicateSlugs = slugs.filter((x, i) => slugs.indexOf(x) !== i);
 if (duplicateSlugs.length) failures.push(`Duplicate audio slugs: ${[...new Set(duplicateSlugs)].join(', ')}`);
 if (!/Price coming soon/.test(fs.readFileSync(path.join(root, 'apps/public-web/components/AudioCatalogueClient.tsx'), 'utf8'))) failures.push('Customer price placeholder missing.');
-if (!/api\/public\/catalog/.test(fs.readFileSync(path.join(root, 'apps/public-web/app/audio/[slug]/page.tsx'), 'utf8'))) failures.push('Audio detail page is not connected to the public catalogue media path.');
+if (!/api\/public\/catalog/.test(fs.readFileSync(path.join(root, 'apps/public-web/app/categories/entertainment/audio/[slug]/page.tsx'), 'utf8'))) failures.push('Audio detail page is not connected to the public catalogue media path.');
 if (failures.length) { console.error('AUDIO AUDIT FAILED'); failures.forEach(x => console.error(`- ${x}`)); process.exit(1); }
 console.log(`AUDIO AUDIT PASS — ${slugs.length} product definitions, ${new Set(slugs).size} unique slugs, non-destructive seed, media fallback and public catalogue integration present.`);
