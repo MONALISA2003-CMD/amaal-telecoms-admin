@@ -4,10 +4,10 @@ import {useMemo,useState} from 'react';
 import {Search,SlidersHorizontal,X,ArrowRight} from 'lucide-react';
 
 type Item={slug:string;brand:string;name:string;segment:string;shortDescription:string;quickSpecs:string[]};
-export default function CuratedCatalogueClient({items,basePath,filterLabel='Type',filterOptions=[],getFilter=()=>''}:{items:Item[];basePath:string;filterLabel?:string;filterOptions?:string[];getFilter?:(x:Item)=>string}){
+export default function CuratedCatalogueClient({items,basePath,filterLabel='Type',filterOptions=[],filterKey='segment'}:{items:Item[];basePath:string;filterLabel?:string;filterOptions?:string[];filterKey?:'segment'|'type'|'family'}){
  const [q,setQ]=useState('');const [brand,setBrand]=useState('All brands');const [filter,setFilter]=useState('All');const [sort,setSort]=useState('Featured');const [open,setOpen]=useState(false);
  const brands=useMemo(()=>Array.from(new Set(items.map(x=>x.brand))),[items]);
- const filtered=useMemo(()=>{let a=items.filter(x=>(brand==='All brands'||x.brand===brand)&&(filter==='All'||getFilter(x)===filter)&&(!q||`${x.name} ${x.brand} ${x.shortDescription} ${x.quickSpecs.join(' ')}`.toLowerCase().includes(q.toLowerCase())));if(sort==='A–Z')a=[...a].sort((x,y)=>x.name.localeCompare(y.name));if(sort==='Brand')a=[...a].sort((x,y)=>x.brand.localeCompare(y.brand)||x.name.localeCompare(y.name));return a},[items,brand,filter,q,sort,getFilter]);
+ const filtered=useMemo(()=>{let a=items.filter(x=>(brand==='All brands'||x.brand===brand)&&(filter==='All'||String((x as any)[filterKey]).toLowerCase()===filter.toLowerCase())&&(!q||`${x.name} ${x.brand} ${x.shortDescription} ${x.quickSpecs.join(' ')}`.toLowerCase().includes(q.toLowerCase())));if(sort==='A–Z')a=[...a].sort((x,y)=>x.name.localeCompare(y.name));if(sort==='Brand')a=[...a].sort((x,y)=>x.brand.localeCompare(y.brand)||x.name.localeCompare(y.name));return a},[items,brand,filter,q,sort,filterKey]);
  const clear=()=>{setQ('');setBrand('All brands');setFilter('All');setSort('Featured')};
  return <>
   <div className="smart-catalogue-tools">
