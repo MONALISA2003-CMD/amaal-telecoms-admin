@@ -1,0 +1,11 @@
+const fs=require('fs'),path=require('path');
+const root=path.join(__dirname,'apps','public-web');
+const files=[];(function walk(d){for(const x of fs.readdirSync(d,{withFileTypes:true})){const p=path.join(d,x.name);if(x.isDirectory()&&!['node_modules','.next'].includes(x.name))walk(p);else if(/\.(tsx|ts)$/.test(x.name))files.push(p)}})(root);
+const text=files.map(f=>fs.readFileSync(f,'utf8')).join('\n');
+const externalLinks=(text.match(/href=\\?[^\n]*https?:\\?\\?/g)||[]).length;
+const manufacturerButtons=/Manufacturer information|View manufacturer information/.test(text);
+const oemRendered=/\boemUrl\b/.test(text);
+const priceCurrencyRendered=/Intl\.NumberFormat\(['"]en-UG['"]/.test(text);
+const checks={noPublicExternalLinks:externalLinks===0&&!manufacturerButtons&&!oemRendered,noManufacturerDataLinks:!oemRendered,pricePlaceholdersPresent:text.includes('Price coming soon'),photoPlaceholdersPresent:text.includes('Product photo coming soon')||text.includes('Product image coming soon'),publicCatalogueHelpers:text.includes('getPublicCatalogue')};
+for(const [k,v] of Object.entries(checks))console.log(`${v?'PASS':'FAIL'} ${k}`);
+if(Object.values(checks).some(v=>!v))process.exit(1);

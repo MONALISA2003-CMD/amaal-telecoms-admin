@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Check, ChevronLeft, ChevronRight, GitCompareArrows, ShieldCheck } from 'lucide-react';
 import type { PhoneProduct, PhoneVariant } from '../lib/phone-catalogue';
-import { getPhoneMedia } from '../lib/phone-media';
 import { customerPhoneDescription } from '../lib/phone-catalogue-utils';
 import { togglePhoneCompare, isPhoneCompared } from './PhoneCompareTray';
 
@@ -24,7 +23,7 @@ export default function PhoneDetail({ product }: { product: PhoneProduct }) {
   const [compared, setCompared] = useState(false);
   useEffect(() => setCompared(isPhoneCompared(product.slug)), [product.slug]);
   const variant = product.variants[selected] ?? product.variants[0];
-  const media = getPhoneMedia(product);
+  const media:string[] = [];
   const gallerySlots = Math.max(1, Math.min(4, media.length || 4));
   const quickFacts = useMemo(() => {
     const values = new Set<string>();
@@ -47,7 +46,7 @@ export default function PhoneDetail({ product }: { product: PhoneProduct }) {
         <div className="phone-detail-layout">
           <div className="phone-detail-gallery" aria-label={`${product.name} product gallery`}>
             <div className="phone-detail-main-media">
-              <div className="phone-detail-photo-placeholder">{media[galleryIndex] ? <img src={media[galleryIndex]} alt={`${product.name} view ${galleryIndex + 1}`} /> : <><span>AMAAL</span><strong>{product.name}</strong><small>Product image coming soon</small></>}</div>
+              <div className="phone-detail-photo-placeholder"><span>AMAAL</span><strong>{product.name}</strong><small>Product photo coming soon</small></div>
               <div className="phone-gallery-index">{galleryIndex + 1} / {gallerySlots}</div>
               <button className="phone-gallery-arrow left" type="button" aria-label="Previous product image" onClick={previousGallery}><ChevronLeft size={18} /></button>
               <button className="phone-gallery-arrow right" type="button" aria-label="Next product image" onClick={nextGallery}><ChevronRight size={18} /></button>

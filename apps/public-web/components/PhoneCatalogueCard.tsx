@@ -1,17 +1,15 @@
 import Link from 'next/link';
 import type { PhoneProduct } from '../lib/phone-catalogue';
-import { getPhoneMedia } from '../lib/phone-media';
 import { customerPhoneDescription } from '../lib/phone-catalogue-utils';
 import PhoneCompareButton from './PhoneCompareButton';
 
 export default function PhoneCatalogueCard({ product }: { product: PhoneProduct }) {
   const shownVariants = product.variants.slice(0, 3);
   const extra = Math.max(0, product.variants.length - shownVariants.length);
-  const media = getPhoneMedia(product);
   return <article className="phone-modern-card">
     <div className="phone-modern-media">
       <Link href={`/phones/${product.slug}`} className="phone-modern-card-link" aria-label={`View ${product.name}`}>
-        {media[0] ? <img src={media[0]} alt={product.name} loading="lazy" /> : <div className="phone-model-placeholder"><span>AMAAL</span><strong>{product.name}</strong><small>Product image coming soon</small></div>}
+        <div className="phone-model-placeholder"><span>AMAAL</span><strong>{product.name}</strong><small>Product image coming soon</small></div>
         <span className="phone-config-count">{product.variants.length} {product.variants.length === 1 ? 'option' : 'options'}</span>
       </Link>
       <PhoneCompareButton slug={product.slug} name={product.name} />

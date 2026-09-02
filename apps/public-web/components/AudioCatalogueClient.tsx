@@ -4,13 +4,12 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Search, SlidersHorizontal, X } from 'lucide-react';
 import { audioBrands, audioProducts, audioTiers, type AudioProduct, type AudioTier } from '../lib/audio-catalogue';
-import { getAudioMedia } from '../lib/audio-media';
 
 function AudioCard({ product, remoteMedia, basePath }: { product: AudioProduct; remoteMedia?: string; basePath:string }) {
-  const media = remoteMedia || getAudioMedia(product);
+  const media = '';
   return <Link href={`${basePath}/${product.slug}`} className="audio-card">
     <div className="audio-media">
-      {media ? <img src={media} alt={product.name} loading="lazy" /> : <div className="audio-placeholder"><span>{product.brand}</span><strong>{product.type}</strong><small>Product media coming soon</small></div>}
+      <div className="audio-placeholder"><span>{product.brand}</span><strong>{product.type}</strong><small>Product media coming soon</small></div>
       <span className="audio-tier-badge">{product.tier === 'EVERYDAY' ? 'EVERYDAY' : product.tier}</span>
     </div>
     <div className="audio-card-body">

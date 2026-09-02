@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { ArrowRight, CircleCheck, Headphones, ShieldCheck, Truck, Wrench } from 'lucide-react';
 import SiteHeader from '../components/SiteHeader';
 import SiteFooter from '../components/SiteFooter';
-import AddToBag from '../components/AddToBag';
 import { featuredProducts, homeBrands, homeCategories, newProducts, type HomeProduct } from '../lib/homepage-data';
 import AutoRail from '../components/AutoRail';
 
@@ -11,10 +10,10 @@ function ugx(value:number){return value ? new Intl.NumberFormat('en-UG',{style:'
 function ProductTile({p}:{p:HomeProduct}){
   return <article className="home-product-card">
     <Link href={`/product/${p.slug}`} className="home-product-link">
-      <div className="product-media">{p.images?.[0] ? <img src={p.images[0]} alt={p.name} loading="lazy"/> : <div className="product-placeholder"><span>AMAAL</span><strong>PRODUCT PHOTO</strong><small>Asset to be supplied</small></div>}</div>
-      <div className="home-product-meta"><p>{p.brand}</p><h3>{p.name}</h3><span>{p.quickDetails.slice(0,2).join(' · ')}</span><strong>{ugx(p.price)}</strong></div>
+      <div className="product-media"><div className="product-placeholder"><span>AMAAL</span><strong>PRODUCT PHOTO</strong><small>Asset to be supplied</small></div></div>
+      <div className="home-product-meta"><p>{p.brand}</p><h3>{p.name}</h3><span>{p.quickDetails.slice(0,2).join(' · ')}</span><strong>Price coming soon</strong></div>
     </Link>
-    {p.price>0 && <AddToBag id={p.slug} name={p.name} price={ugx(p.price)}/>} 
+    <Link className="button gold" href={`/contact?product=${encodeURIComponent(p.name)}`}>Ask about this product</Link> 
   </article>
 }
 

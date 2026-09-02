@@ -2177,7 +2177,7 @@ export type TVDisplayProduct = TVProduct & {
   connectivity?: string;
   description: string;
   quickSpecs: string[];
-  oemUrl?: string;
+ 
   officialName?: string;
 };
 
@@ -2195,16 +2195,16 @@ export function tvSlug(brand:string, model:string, size?:string){
 }
 
 const VERIFIED: Record<string, Omit<TVDisplayProduct,'brand'|'model'|'sizes'|'technology'|'generation'|'verificationStatus'|'market'|'slug'|'size'|'fullName'|'description'|'quickSpecs'>> = {
-  'tcl-s5k': {officialName:'TCL S5K QLED TV', productCode:'50S5K', resolution:'FHD', smartPlatform:'Google TV', hdr:'HDR10', audio:'Dolby Audio', connectivity:'Google Cast', oemUrl:'https://www.tcl.com/eastafrica/en/tvs/50s5k'},
-  'tcl-c655': {officialName:'TCL C655 QLED TV', productCode:'50C655 / 55C655 / 65C655 / 75C655 / 85C655', resolution:'4K UHD', smartPlatform:'Google TV', refreshRate:'120Hz Game Accelerator*', hdr:'HDR10+', audio:'Dolby Atmos; ONKYO 2.1ch on 55-inch and larger', processor:'AiPQ PRO Processor', connectivity:'HDMI 2.1; Google Cast', oemUrl:'https://www.tcl.com/eastafrica/en/tvs/c655'},
-  'tcl-p6k': {officialName:'TCL P6K 4K HDR TV', productCode:'75P6K family', resolution:'4K UHD', smartPlatform:'Google TV', hdr:'HDR', processor:'AiPQ Processor', connectivity:'MEMC; HVA panel', oemUrl:'https://www.tcl.com/eastafrica/en/tvs'},
-  'tcl-v6c': {officialName:'TCL V6C 4K HDR TV', productCode:'75V6C family', resolution:'4K UHD', smartPlatform:'Google TV', hdr:'HDR', processor:'AiPQ Processor', connectivity:'MEMC; HVA panel', oemUrl:'https://www.tcl.com/eastafrica/en/tvs'},
-  'tcl-s5400': {officialName:'TCL S5400 FHD Smart TV', productCode:'43S5400', resolution:'FHD', hdr:'HDR10', oemUrl:'https://www.tcl.com/eastafrica/en/tvs'},
-  'samsung-u8000h': {officialName:'Samsung U8000H Crystal UHD 4K Samsung Vision AI Smart TV (2026)', productCode:'UA43U8000HUXKE / UA50U8000HUXKE / UA55U8000HUXKE / UA65U8000HUXKE / UA70U8000HUXKE / UA75U8000HUXKE / UA85U8000HUXKE', resolution:'4K UHD', smartPlatform:'Tizen', hdr:'HDR', processor:'Crystal Processor 4K', oemUrl:'https://www.samsung.com/africa_en/tvs/uhd-4k-tv/u8000h-55-inch-crystal-uhd-4k-smart-tv-ua55u8000huxke/'},
-  'samsung-q7f': {officialName:'Samsung Q7F 4K QLED Samsung Vision AI TV', productCode:'QA43Q7FAAUXKE / QA50Q7FAAUXKE / QA55Q7FAAUXKE / QA65Q7FAAUXKE / QA75Q7FAAUXKE / QA85Q7FAAUXKE', resolution:'4K UHD', smartPlatform:'Samsung Vision AI / Tizen', hdr:'Quantum HDR', processor:'Q4 AI Processor', audio:'Object Tracking Sound Lite', oemUrl:'https://www.samsung.com/africa_en/tvs/qled-tv/55-inch-q7f-4k-qled-samsung-vision-ai-tv-55-inch-qled-4k-smart-tv-qa55q7faauxke/'},
-  'lg-50ua8000': {officialName:'LG UHD AI UA80 4K Smart TV HDR10 webOS25', productCode:'50UA80006LC', resolution:'4K UHD', smartPlatform:'webOS 25', hdr:'HDR10 Pro', processor:'alpha 7 4K AI Processor Gen8', connectivity:'Google Cast; AirPlay 2; Multi View', oemUrl:'https://www.lg.com/eastafrica/tvs/lg-50ua80006lc'},
-  'lg-50ut8000': {officialName:'LG UHD AI UT80 4K Smart TV AI Magic Remote HDR10 webOS24', productCode:'50UT80006LB', resolution:'4K UHD', smartPlatform:'webOS 24', hdr:'HDR10 Pro', processor:'alpha 5 AI Processor 4K Gen7', oemUrl:'https://www.lg.com/eastafrica/tvs/lg-50ut80006lb'},
-  'lg-qned80': {officialName:'LG QNED AI QNED80 4K Smart TV AI Magic Remote HDR10 webOS25', productCode:'55QNED80A6A / 65QNED80A6A / 75QNED80A6A', resolution:'4K UHD', smartPlatform:'webOS 25', hdr:'HDR10', processor:'alpha 7 4K AI Processor Gen8', refreshRate:'120Hz', oemUrl:'https://www.lg.com/eastafrica/tvs/lg-55qned80a6a'}
+  'tcl-s5k': {officialName:'TCL S5K QLED TV', productCode:'50S5K', resolution:'FHD', smartPlatform:'Google TV', hdr:'HDR10', audio:'Dolby Audio', connectivity:'Google Cast'},
+  'tcl-c655': {officialName:'TCL C655 QLED TV', productCode:'50C655 / 55C655 / 65C655 / 75C655 / 85C655', resolution:'4K UHD', smartPlatform:'Google TV', refreshRate:'120Hz Game Accelerator*', hdr:'HDR10+', audio:'Dolby Atmos; ONKYO 2.1ch on 55-inch and larger', processor:'AiPQ PRO Processor', connectivity:'HDMI 2.1; Google Cast'},
+  'tcl-p6k': {officialName:'TCL P6K 4K HDR TV', productCode:'75P6K family', resolution:'4K UHD', smartPlatform:'Google TV', hdr:'HDR', processor:'AiPQ Processor', connectivity:'MEMC; HVA panel'},
+  'tcl-v6c': {officialName:'TCL V6C 4K HDR TV', productCode:'75V6C family', resolution:'4K UHD', smartPlatform:'Google TV', hdr:'HDR', processor:'AiPQ Processor', connectivity:'MEMC; HVA panel'},
+  'tcl-s5400': {officialName:'TCL S5400 FHD Smart TV', productCode:'43S5400', resolution:'FHD', hdr:'HDR10'},
+  'samsung-u8000h': {officialName:'Samsung U8000H Crystal UHD 4K Samsung Vision AI Smart TV (2026)', productCode:'UA43U8000HUXKE / UA50U8000HUXKE / UA55U8000HUXKE / UA65U8000HUXKE / UA70U8000HUXKE / UA75U8000HUXKE / UA85U8000HUXKE', resolution:'4K UHD', smartPlatform:'Tizen', hdr:'HDR', processor:'Crystal Processor 4K'},
+  'samsung-q7f': {officialName:'Samsung Q7F 4K QLED Samsung Vision AI TV', productCode:'QA43Q7FAAUXKE / QA50Q7FAAUXKE / QA55Q7FAAUXKE / QA65Q7FAAUXKE / QA75Q7FAAUXKE / QA85Q7FAAUXKE', resolution:'4K UHD', smartPlatform:'Samsung Vision AI / Tizen', hdr:'Quantum HDR', processor:'Q4 AI Processor', audio:'Object Tracking Sound Lite'},
+  'lg-50ua8000': {officialName:'LG UHD AI UA80 4K Smart TV HDR10 webOS25', productCode:'50UA80006LC', resolution:'4K UHD', smartPlatform:'webOS 25', hdr:'HDR10 Pro', processor:'alpha 7 4K AI Processor Gen8', connectivity:'Google Cast; AirPlay 2; Multi View'},
+  'lg-50ut8000': {officialName:'LG UHD AI UT80 4K Smart TV AI Magic Remote HDR10 webOS24', productCode:'50UT80006LB', resolution:'4K UHD', smartPlatform:'webOS 24', hdr:'HDR10 Pro', processor:'alpha 5 AI Processor 4K Gen7'},
+  'lg-qned80': {officialName:'LG QNED AI QNED80 4K Smart TV AI Magic Remote HDR10 webOS25', productCode:'55QNED80A6A / 65QNED80A6A / 75QNED80A6A', resolution:'4K UHD', smartPlatform:'webOS 25', hdr:'HDR10', processor:'alpha 7 4K AI Processor Gen8', refreshRate:'120Hz'}
 };
 
 const SIZE_OVERRIDES: Record<string,string[]> = {

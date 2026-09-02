@@ -8,4 +8,18 @@ export type Catalog={updatedAt:string;categories:Category[];brands:Brand[];produ
 const api=process.env.NEXT_PUBLIC_API_BASE_URL||process.env.AMAAL_API_BASE_URL||'http://localhost:4000';
 export async function getCatalog():Promise<Catalog|null>{try{const r=await fetch(`${api}/api/public/catalog`,{next:{revalidate:60}});if(!r.ok)return null;return await r.json();}catch{return null}}
 export function price(p:Product){const v=p.variants?.[0];return v?.sellingPrice==null?'':new Intl.NumberFormat('en-UG',{style:'currency',currency:'UGX',maximumFractionDigits:0}).format(Number(v.sellingPrice))}
+export function publicPrice(){return 'Price coming soon'}
+export function publicPhoto(){return ''}
 export function image(p:Product){return p.images?.find(x=>x.primary)?.url||p.images?.[0]?.url||''}
+
+export type PublicCatalogueResult = Catalog & {source:'database'|'fallback'};
+export async function getPublicCatalogue():Promise<PublicCatalogueResult>{
+  const live=await getCatalog();
+  if(live) return {...live,source:'database'};
+  return {updatedAt:new Date().toISOString(),categories:[],brands:[],products:[],collections:[],source:'fallback'};
+}
+export function searchProducts(catalog:Catalog, query:string){
+  const q=query.trim().toLowerCase();
+  if(!q) return catalog.products;
+  return catalog.products.filter(p=>`${p.name} ${p.brand_name??''} ${p.category_name??''} ${p.short_description??''} ${p.description??''}`.toLowerCase().includes(q));
+}
