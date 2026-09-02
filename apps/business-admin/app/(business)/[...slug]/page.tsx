@@ -7,6 +7,7 @@ import { TeamWorkspace } from '@/components/TeamWorkspace';
 import { DeliveryWorkspace } from '@/components/DeliveryWorkspace';
 import { ServiceWorkspace } from '@/components/ServiceWorkspace';
 import { ReportsWorkspace } from '@/components/ReportsWorkspace';
+import { ReviewsWorkspace } from '@/components/ReviewsWorkspace';
 import { WebsiteWorkspace } from '@/components/WebsiteWorkspace';
 import { businessGetSafe, cardEntries, money, number } from '@/lib/business';
 
@@ -19,6 +20,7 @@ const titles: Record<string, [string, string]> = {
   stock: ['Stock', 'See stock position, locations and replenishment pressure from the business stock records.'],
   purchasing: ['Purchasing', 'Monitor supplier procurement, purchase orders and receiving.'],
   customers: ['Customers', 'Manage customer relationships and understand outstanding balances and service workload.'],
+  reviews: ['Reviews & Q&A', 'Moderate customer reviews and product questions.'],
   orders: ['Orders', 'Track customer orders from payment through fulfilment and delivery.'],
   finance: ['Finance', 'Review the authoritative accounting position from the business finance records.'],
   credit: ['Credit', 'Monitor customer credit exposure, applications and amounts due.'],
@@ -111,6 +113,11 @@ export default async function BusinessWorkspace({ params }: { params: Promise<Pa
         ['Outstanding balance', money(summary?.outstandingBalance)],
       ])}
       rows={Array.isArray(result) ? result : result?.rows ?? []} columns={[{ key: 'customer_no', label: 'Customer' }, { key: 'name', label: 'Name' }, { key: 'phone', label: 'Phone' }, { key: 'outstanding_balance', label: 'Balance' }, { key: 'open_cases', label: 'Open cases' }]} />;
+  }
+
+  if (key === 'reviews') {
+    const [me, reviews, questions] = await Promise.all([businessGetSafe<ApiRecord>('/api/me'), businessGetSafe<any[]>('/api/catalog/reviews'), businessGetSafe<any[]>('/api/catalog/questions')]);
+    return <ReviewsWorkspace reviews={reviews ?? []} questions={questions ?? []} permissions={me?.permissions ?? []} />;
   }
 
   if (key === 'orders') {

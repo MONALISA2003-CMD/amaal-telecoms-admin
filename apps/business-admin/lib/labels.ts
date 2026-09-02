@@ -6,6 +6,7 @@ export const navGroups = [
   { label: 'Purchasing', href: '/purchasing', permission: 'procurement.view' },
   { label: 'Customers', href: '/customers', permission: 'customers.view' },
   { label: 'Orders', href: '/orders', permission: 'orders.view' },
+  { label: 'Reviews & Q&A', href: '/reviews', permission: 'reviews.view' },
   { label: 'Finance', href: '/finance', permission: 'finance.view' },
   { label: 'Credit', href: '/credit', permission: 'credit.view' },
   { label: 'Delivery', href: '/delivery', permission: 'delivery.view' },

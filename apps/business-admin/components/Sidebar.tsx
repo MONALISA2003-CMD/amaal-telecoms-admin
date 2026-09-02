@@ -18,6 +18,7 @@ import {
   Truck,
   Users,
   WalletCards,
+  MessageCircleQuestion,
 } from 'lucide-react';
 import { navGroups } from '@/lib/labels';
 import { Brand } from './Brand';
@@ -38,11 +39,12 @@ const icons: Record<string, typeof LayoutDashboard> = {
   Reports: BarChart3,
   Team: Users,
   'Business Settings': Settings2,
+  'Reviews & Q&A': MessageCircleQuestion,
 };
 
 const groups = [
   { label: 'Command', items: ['Overview', 'Reports'] },
-  { label: 'Commerce', items: ['Sales', 'Products', 'Orders', 'Customers'] },
+  { label: 'Commerce', items: ['Sales', 'Products', 'Orders', 'Reviews & Q&A', 'Customers'] },
   { label: 'Operations', items: ['Stock', 'Purchasing', 'Delivery', 'Service'] },
   { label: 'Money', items: ['Finance', 'Credit'] },
   { label: 'Business', items: ['Website', 'Team', 'Business Settings'] },
