@@ -124,3 +124,35 @@ Amaal is a new business. Payment and external communications should not be simul
 - CDN/image transformation.
 - Dedicated search index if catalogue/search volume requires it.
 - Queue/job infrastructure for external notifications and scheduled commerce automation.
+
+## Phase 015 build-blocker repair — 2026-09-02
+
+### Real defect fixed
+The Vercel production build reached the TypeScript stage and failed in `apps/public-web/app/compare/page.tsx`. The `all` catalogue expression accidentally created nested arrays because several catalogue `.map()` calls were inserted as array members rather than flattened elements. TypeScript therefore inferred `Row | Row[]`, which broke the `rows`, `find`, and comparison-table rendering types.
+
+### Repair
+The comparison catalogue aggregation was rewritten into explicitly typed intermediate arrays (`catalogue`, `phones`, `computers`, `tvs`, `audio`, `tablets`, `accessories`, `appliances`) and one final flattened `Row[]` return. TV size handling was also made defensive for catalogue entries where `sizes` is not an array.
+
+### Post-repair verification
+- Compare page TypeScript transpilation: PASS.
+- Full public-web TS/TSX transpilation: PASS, 116 files / 0 transpile diagnostics.
+- Backend JS/MJS/CJS syntax sweep: PASS.
+- Relative-import audit: PASS, 0 missing imports.
+- Phase 015 deep audit: PASS.
+- Transaction-integrity audit: PASS, 12/12.
+- Phase 013 transaction-integrity audit: PASS, 11/11.
+- Returns/warranty/service audit: PASS, 14/14.
+- Cross-module audit: PASS, 0 unmatched frontend routes, 18 connected checks.
+- Render preflight: PASS.
+- Category catalogue audit: PASS.
+- Computer catalogue audit: PASS.
+- Public raw `<img>` scan: 0.
+- Public manufacturer/OEM-link scan: no public manufacturer links found.
+- Business-laptop scan: 0 public references.
+- Phase SQL destructive-operation scan: 0 matches in `commerce-phase015.sql`.
+
+### Build limitation during this handoff
+A local full `next build` could not be rerun because this execution environment cannot resolve the npm registry and therefore cannot install the public-web dependencies. The supplied Vercel environment previously completed compilation and failed specifically at the now-fixed TypeScript error. The source-level and project audits above pass after the repair. The next Vercel deployment remains the authoritative final production build check.
+
+### Handoff rule
+Do not mark the deployment as production-ready until Vercel reports the complete `next build` as successful, including its TypeScript stage. If Vercel reports another error, treat it as a new defect, repair it, rerun the complete audit suite, and only then package a new clean archive.
