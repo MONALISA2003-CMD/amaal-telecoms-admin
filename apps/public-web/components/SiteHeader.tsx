@@ -2,9 +2,9 @@
 import Link from 'next/link';
 import { Menu, Search, ShoppingBag, UserRound, X } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';import {getCart} from '../lib/commerce';import {amaalCategoryNavigation} from '../lib/category-navigation';import SearchAssist from './SearchAssist';import CartDrawer from './CartDrawer';
+import { useEffect, useState } from 'react';import {getCart,syncServerCart,serverCartToLegacy} from '../lib/commerce';import {amaalCategoryNavigation} from '../lib/category-navigation';import SearchAssist from './SearchAssist';import CartDrawer from './CartDrawer';
 export default function SiteHeader(){
- const [open,setOpen]=useState(false); const [bagOpen,setBagOpen]=useState(false); const [catOpen,setCatOpen]=useState(false); const [bagCount,setBagCount]=useState(0); useEffect(()=>{const sync=()=>setBagCount(getCart().reduce((n,x)=>n+x.qty,0));sync();window.addEventListener('amaal-commerce-updated',sync);return()=>window.removeEventListener('amaal-commerce-updated',sync)},[]);
+ const [open,setOpen]=useState(false); const [bagOpen,setBagOpen]=useState(false); const [catOpen,setCatOpen]=useState(false); const [bagCount,setBagCount]=useState(0); useEffect(()=>{const sync=()=>setBagCount(getCart().reduce((n,x)=>n+x.qty,0));sync();syncServerCart().then(data=>{const next=serverCartToLegacy(data);localStorage.setItem('amaal_cart_v3',JSON.stringify(next));setBagCount(next.reduce((n,x)=>n+x.qty,0))}).catch(()=>{});window.addEventListener('amaal-commerce-updated',sync);return()=>window.removeEventListener('amaal-commerce-updated',sync)},[]);
  return <>
   <div className="topline">Genuine products <span>·</span> Trusted brands <span>·</span> Delivery across Uganda</div>
   <header className="site-header"><Link className="brand" href="/" aria-label="Amaal home"><Image src="/assets/amaal/logo-official.png" alt="Amaal" width={172} height={27} priority /></Link>

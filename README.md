@@ -365,3 +365,8 @@ The runner never creates, updates or deletes business records. It does not run S
 If the authenticated cookie is omitted, authenticated checks are reported as skipped rather than being falsely reported as passed.
 
 Serialized fulfilment and delivery reconciliation is enforced through exact physical-unit shipment links; see `CONTINUATION.md` and `AUDIT_REPORT.md` for current status.
+
+
+## Phase 016 Commerce Core
+
+Server-backed cart, cart-to-checkout integrity, normalized product attributes, stronger search and comparison, compatibility-ready catalogue data, customer reorder, price/back-in-stock alerts, helpful review voting, saved-search foundation and commerce lifecycle visibility in Business Console. Payment provider integration is intentionally deferred to the final commerce phase.

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useMemo, useState, type ReactNode } from 'react';
+import CommerceLifecyclePanel from '@/components/CommerceLifecyclePanel';
 import { ArrowRight, ChevronRight, CircleUserRound, CreditCard, FileText, Headphones , MessageSquare, Package, Plus, RefreshCw, Search, ShoppingCart, Tag, Truck, Users, X } from 'lucide-react';
 
 type Customer = {
@@ -84,6 +85,7 @@ export function CustomerWorkspace({ summary, customers, total, groups, tasks, ca
       <CustomerDetail detail={detail} busy={busy} canManage={canManage} canCrm={canCrm} canSupport={canSupport} canPrivacy={canPrivacy} onAction={setModal} onRefresh={async () => selected && openCustomer(selected)} />
     </section>
 
+    <CommerceLifecyclePanel canManage={canManage}/>
     <section className="customerBottomGrid">
       <Panel title="Follow-up today" icon={<MessageSquare size={16}/>} action={<Link href="/customers" className="textAction">Customer workspace</Link>}>
         {tasks.filter(t => t.status !== 'Completed').slice(0,6).map(t => <div className="customerMiniRow" key={t.id}><div><strong>{t.title}</strong><span>{t.customer_name || t.customer_no || 'Customer'} · {date(t.due_at)}</span></div><b>{t.priority || 'Normal'}</b></div>)}
