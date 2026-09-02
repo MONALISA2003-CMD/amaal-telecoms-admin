@@ -108,6 +108,7 @@ export const homeCategories = [
   ['Home Appliances', 'home-appliances', 'Refrigeration, laundry and more'],
   ['Kitchen Appliances', 'kitchen-appliances', 'Cooking and kitchen essentials'],
   ['Computers & Laptops', 'computers', 'Laptops, gaming and computing'],
+  ['Tablets', 'tablets', 'iPad and Samsung Galaxy Tab'],
   ['Accessories', 'accessories', 'Everyday tech essentials'],
 ] as const;
 

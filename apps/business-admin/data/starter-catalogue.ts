@@ -42,12 +42,12 @@ export const starterCatalogueCategories = [
   'Phones / Samsung Galaxy / Foldable',
   'Phones / Samsung Galaxy / A Series',
   'Entertainment / TV',
-  'Accessories', 'Computers', 'Computers / Laptops', 'Computers / Laptops / HP', 'Computers / Laptops / Lenovo', 'Computers / Laptops / Apple', 'Computers / Desktops', 'Computers / All-in-One', 'Computers / Gaming Laptops', 'Networking', 'Wearables', 'Power & Smart Home', 'Gaming', 'Cameras & Security',
-  'Tablets / iPad', 'Tablets / Samsung Galaxy Tab', 'Entertainment / Audio', 'Entertainment / Audio / Woofers', 'Entertainment / Audio / Party Speakers', 'Entertainment / Audio / Sound Towers',
+  'Accessories', 'Accessories / Phone Accessories', 'Accessories / Computer Accessories', 'Accessories / Tablet Accessories', 'Accessories / Audio Accessories', 'Accessories / Gaming Accessories', 'Computers', 'Computers / Laptops', 'Computers / Laptops / HP', 'Computers / Laptops / Lenovo', 'Computers / Laptops / Apple', 'Computers / Desktops', 'Computers / All-in-One', 'Computers / Gaming Laptops', 'Networking', 'Wearables', 'Power & Smart Home', 'Gaming', 'Cameras & Security',
+  'Tablets / iPad', 'Tablets / Samsung Galaxy Tab', 'Tablets / iPad Air', 'Tablets / iPad Pro', 'Tablets / Galaxy Tab S11', 'Entertainment / Audio', 'Entertainment / Audio / Woofers', 'Entertainment / Audio / Party Speakers', 'Entertainment / Audio / Sound Towers', 'Entertainment / Audio / Portable Speakers',
 ];
 
 export const starterCatalogueBrands = [
-  'Apple', 'HP', 'Lenovo', 'Samsung', 'TCL', 'Hisense', 'LG', 'Global Star', 'Black Ark', 'CHiQ', 'SPJ', 'CHiQ Smart Plus', 'JBL', 'Sony',
+  'Apple', 'HP', 'Lenovo', 'Samsung', 'TCL', 'Hisense', 'LG', 'Global Star', 'Black Ark', 'CHiQ', 'SPJ', 'CHiQ Smart Plus', 'JBL', 'Sony', 'ASUS', 'Acer', 'MSI',
 ];
 
 const computerItems: StarterCatalogueItem[] = [
@@ -95,6 +95,52 @@ const audioItems: StarterCatalogueItem[] = [
   { name: 'Sony ULT FIELD 7', category: 'Entertainment', subcategory: 'Audio / Party Speakers', brand: 'Sony', productType: 'Speaker' },
 ];
 
+const expansionItems: StarterCatalogueItem[] = [
+  { name: 'Lenovo LOQ Essential 15 Gaming Laptop', category: 'Computers', subcategory: 'Laptops / Lenovo / Gaming / LOQ Essential', brand: 'Lenovo', productType: 'Laptop', size: '15.6 inch class' },
+  { name: 'Lenovo Legion Pro 5 Gaming Laptop', category: 'Computers', subcategory: 'Laptops / Lenovo / Gaming / Legion Pro', brand: 'Lenovo', productType: 'Laptop', size: '16 inch class' },
+  { name: 'Lenovo Legion Pro 7i Gaming Laptop', category: 'Computers', subcategory: 'Laptops / Lenovo / Gaming / Legion Pro', brand: 'Lenovo', productType: 'Laptop', size: '16 inch class' },
+  { name: 'HyperX OMEN MAX 16 Gaming Laptop — AMD', category: 'Computers', subcategory: 'Laptops / HP / Gaming / OMEN MAX', brand: 'HP', productType: 'Laptop', size: '16 inch class' },
+  { name: 'HyperX OMEN MAX 16 Gaming Laptop — Intel', category: 'Computers', subcategory: 'Laptops / HP / Gaming / OMEN MAX', brand: 'HP', productType: 'Laptop', size: '16 inch class' },
+  { name: 'ASUS ROG Zephyrus G14', category: 'Computers', subcategory: 'Laptops / ASUS / Gaming / ROG', brand: 'ASUS', productType: 'Laptop', size: '14 inch class' },
+  { name: 'ASUS ROG Zephyrus G16', category: 'Computers', subcategory: 'Laptops / ASUS / Gaming / ROG', brand: 'ASUS', productType: 'Laptop', size: '16 inch class' },
+  { name: 'ASUS ROG Strix G16', category: 'Computers', subcategory: 'Laptops / ASUS / Gaming / ROG', brand: 'ASUS', productType: 'Laptop', size: '16 inch class' },
+  { name: 'Acer Nitro V 15', category: 'Computers', subcategory: 'Laptops / Acer / Gaming / Nitro', brand: 'Acer', productType: 'Laptop', size: '15.6 inch class' },
+  { name: 'Acer Predator Helios Neo 16', category: 'Computers', subcategory: 'Laptops / Acer / Gaming / Predator', brand: 'Acer', productType: 'Laptop', size: '16 inch class' },
+  { name: 'MSI Cyborg 15', category: 'Computers', subcategory: 'Laptops / MSI / Gaming', brand: 'MSI', productType: 'Laptop', size: '15.6 inch class' },
+  { name: 'MSI Katana 15', category: 'Computers', subcategory: 'Laptops / MSI / Gaming', brand: 'MSI', productType: 'Laptop', size: '15.6 inch class' },
+  { name: 'iPad 11-inch with A16', category: 'Tablets', subcategory: 'iPad', brand: 'Apple', productType: 'Tablet', size: '11 inch' },
+  { name: 'iPad mini with A17 Pro', category: 'Tablets', subcategory: 'iPad', brand: 'Apple', productType: 'Tablet', size: '8.3 inch' },
+  { name: 'iPad Air 11-inch with M4', category: 'Tablets', subcategory: 'iPad Air', brand: 'Apple', productType: 'Tablet', size: '11 inch' },
+  { name: 'iPad Air 13-inch with M4', category: 'Tablets', subcategory: 'iPad Air', brand: 'Apple', productType: 'Tablet', size: '13 inch' },
+  { name: 'iPad Pro 11-inch with M5', category: 'Tablets', subcategory: 'iPad Pro', brand: 'Apple', productType: 'Tablet', size: '11 inch' },
+  { name: 'iPad Pro 13-inch with M5', category: 'Tablets', subcategory: 'iPad Pro', brand: 'Apple', productType: 'Tablet', size: '13 inch' },
+  { name: 'Samsung Galaxy Tab S11', category: 'Tablets', subcategory: 'Samsung Galaxy Tab / S11', brand: 'Samsung', productType: 'Tablet' },
+  { name: 'Samsung Galaxy Tab S11 Ultra', category: 'Tablets', subcategory: 'Samsung Galaxy Tab / S11', brand: 'Samsung', productType: 'Tablet' },
+  { name: 'Samsung Galaxy Tab S10 FE', category: 'Tablets', subcategory: 'Samsung Galaxy Tab / FE', brand: 'Samsung', productType: 'Tablet' },
+  { name: 'Samsung Galaxy Tab S10 FE+', category: 'Tablets', subcategory: 'Samsung Galaxy Tab / FE', brand: 'Samsung', productType: 'Tablet' },
+  { name: 'Samsung Galaxy Tab A9+', category: 'Tablets', subcategory: 'Samsung Galaxy Tab / A Series', brand: 'Samsung', productType: 'Tablet' },
+  { name: 'JBL PartyBox 130', category: 'Entertainment', subcategory: 'Audio / Party Speakers', brand: 'JBL', productType: 'Speaker' },
+  { name: 'JBL PartyBox 330', category: 'Entertainment', subcategory: 'Audio / Party Speakers', brand: 'JBL', productType: 'Speaker' },
+  { name: 'JBL PartyBox Club 120', category: 'Entertainment', subcategory: 'Audio / Party Speakers', brand: 'JBL', productType: 'Speaker' },
+  { name: 'JBL PartyBox Stage 320', category: 'Entertainment', subcategory: 'Audio / Party Speakers', brand: 'JBL', productType: 'Speaker' },
+  { name: 'JBL PartyBox On-The-Go 2 Plus', category: 'Entertainment', subcategory: 'Audio / Party Speakers', brand: 'JBL', productType: 'Speaker' },
+  { name: 'JBL PartyBox Ultimate', category: 'Entertainment', subcategory: 'Audio / Party Speakers', brand: 'JBL', productType: 'Speaker' },
+  { name: 'LG xboom Power 5000', category: 'Entertainment', subcategory: 'Audio / Party Speakers', brand: 'LG', productType: 'Speaker' },
+  { name: 'LG xboom Power 7000', category: 'Entertainment', subcategory: 'Audio / Party Speakers', brand: 'LG', productType: 'Speaker' },
+  { name: 'LG xboom Power 9000', category: 'Entertainment', subcategory: 'Audio / Party Speakers', brand: 'LG', productType: 'Speaker' },
+  { name: 'JBL Clip 5', category: 'Entertainment', subcategory: 'Audio / Portable Speakers', brand: 'JBL', productType: 'Speaker' },
+  { name: 'JBL Charge 5', category: 'Entertainment', subcategory: 'Audio / Portable Speakers', brand: 'JBL', productType: 'Speaker' },
+  { name: 'Sony ULT FIELD 7', category: 'Entertainment', subcategory: 'Audio / Portable Speakers', brand: 'Sony', productType: 'Speaker' },
+  { name: 'Apple Pencil Pro', category: 'Accessories', subcategory: 'Tablet Accessories', brand: 'Apple', productType: 'Tablet' },
+  { name: 'Apple Pencil (USB-C)', category: 'Accessories', subcategory: 'Tablet Accessories', brand: 'Apple', productType: 'Tablet' },
+  { name: 'Magic Keyboard for iPad Air', category: 'Accessories', subcategory: 'Tablet Accessories', brand: 'Apple', productType: 'Tablet' },
+  { name: '20W USB-C Fast Charger', category: 'Accessories', subcategory: 'Phone Accessories', brand: 'Amaal', productType: 'Phone' },
+  { name: 'USB-C 7-in-1 Hub', category: 'Accessories', subcategory: 'Computer Accessories', brand: 'Amaal', productType: 'Laptop' },
+  { name: 'Wireless Mouse', category: 'Accessories', subcategory: 'Computer Accessories', brand: 'Amaal', productType: 'Laptop' },
+  { name: 'Mechanical Gaming Keyboard', category: 'Accessories', subcategory: 'Gaming Accessories', brand: 'Amaal', productType: 'Laptop' },
+  { name: 'USB Gaming Headset', category: 'Accessories', subcategory: 'Gaming Accessories', brand: 'Amaal', productType: 'Laptop' },
+];
+
 export const starterCatalogueItems: StarterCatalogueItem[] = [
   ...iphoneModels.map((name) => ({ name, category: 'Phones', subcategory: 'iPhones', brand: 'Apple', productType: 'Phone' as const })),
   ...galaxyS.map((name) => ({ name, category: 'Phones', subcategory: 'Samsung Galaxy / S Series', brand: 'Samsung', productType: 'Phone' as const })),
@@ -102,6 +148,7 @@ export const starterCatalogueItems: StarterCatalogueItem[] = [
   ...galaxyA.map((name) => ({ name, category: 'Phones', subcategory: 'Samsung Galaxy / A Series', brand: 'Samsung', productType: 'Phone' as const })),
   ...computerItems,
   ...audioItems,
+  ...expansionItems,
   ...tvMasterCatalog.map((tv) => ({
     name: `${tv.brand} ${tv.model} TV`,
     category: 'Entertainment',

@@ -42,12 +42,11 @@ export function CatalogueManager({ products, brands, categories, collections, ca
       {canManage && <div className="adminActionButtons"><button className="primaryAction" onClick={()=>{setSelected(null);setModal('product')}}><Plus size={14}/> Add product</button><button className="softAction" onClick={()=>{setSelected(null);setModal('category')}}><Plus size={14}/> Category</button><button className="softAction" onClick={()=>{setSelected(null);setModal('brand')}}><Plus size={14}/> Brand</button><button className="softAction" onClick={()=>{setSelected(null);setModal('collection')}}><Plus size={14}/> Collection</button></div>}
     </section>
     <section className="phaseCategoryGuide">
-      <span className="eyebrow">PHASE 007 · CATEGORY STRUCTURE</span>
-      <h4>Computers & Laptops are catalogue categories, not a separate management system.</h4>
-      <p>Use the existing Catalogue Manager to manage products. Audio remains inside Entertainment → Audio, while Computers follows Computers → Laptops → Brand → Family → Model → Configuration.</p>
-      <div className="phaseCategoryGuideGrid"><span><b>Computers</b>Laptops · Desktops · All-in-One</span><span><b>Laptops</b>HP · Lenovo · Apple</span><span><b>Entertainment</b>TV · Audio · Speakers</span></div>
+      <span className="eyebrow">CATALOGUE · 2026 STRUCTURE</span>
+      <h4>One catalogue powers the public website, sales, stock and customer orders.</h4>
+      <p>Keep product records in this console. Public browsing is organized as Phones, Tablets, Computers, Entertainment and Accessories. Audio stays inside Entertainment → Audio; Gaming is a laptop specialization; tablets and accessories are ordinary catalogue categories, not separate management systems.</p>
+      <div className="phaseCategoryGuideGrid"><span><b>Computers</b>Laptops · Business · Gaming · MacBook</span><span><b>Tablets</b>Apple iPad · Samsung Galaxy Tab</span><span><b>Entertainment</b>TV · Audio · Woofers · Party · Portable</span><span><b>Accessories</b>Phone · Computer · Tablet · Audio · Gaming</span></div>
     </section>
-
     <div className="catalogueManagerTabs" role="tablist">
       {([['products','Products',rows.products.filter(x=>x.status!=='Archived').length],['categories','Categories',rows.categories.filter(x=>x.status==='Active').length],['brands','Brands',rows.brands.filter(x=>x.status==='Active').length],['collections','Collections',rows.collections.filter(x=>x.status!=='Archived').length],['archived','Archived',archived.length]] as const).map(([id,label,count])=><button key={id} className={tab===id?'active':''} onClick={()=>{setTab(id);setQuery('')}}><span>{label}</span><b>{count}</b></button>)}
     </div>
