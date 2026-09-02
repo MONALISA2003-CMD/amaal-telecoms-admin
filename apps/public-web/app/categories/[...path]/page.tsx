@@ -15,16 +15,10 @@ export default async function CategoryPathPage({params}:{params:Promise<{path:st
  if(key==='audio') redirect('/categories/entertainment/audio');
  if(key==='computers') return <DomainPage title="Computers" description="Laptops, desktops and performance machines, organized by brand, family and configuration." href="/categories" nodes={nodes('computers')} count={computerProducts.length}/>;
  if(key==='computers/laptops') return <ComputerListing title="Laptops" items={computerProducts}/>;
- if(key==='computers/laptops/business') return <ComputerListing title="Business laptops" items={computerProducts.filter(p=>p.tier==='BUSINESS'||p.tier==='PREMIUM')}/>;
  if(key==='computers/laptops/gaming') return <ComputerListing title="Gaming laptops" items={computerProducts.filter(p=>p.tier==='GAMING')}/>;
  if(key==='computers/laptops/apple') return <ComputerListing title="MacBook" items={computerProducts.filter(p=>p.brand==='Apple')}/>;
  if(key==='entertainment') return <DomainPage title="Entertainment" description="Smart TVs and immersive sound, organized in one entertainment category." href="/categories" nodes={nodes('entertainment')} count={0}/>;
  if(key==='entertainment/audio') return <AudioListing title="Audio" items={audioProducts}/>;
- if(key==='entertainment/audio/woofers') return <AudioListing title="Woofers" items={audioProducts.filter(p=>p.type==='Woofer')}/>;
- if(key==='entertainment/audio/party-speakers') return <AudioListing title="Party speakers" items={audioProducts.filter(p=>p.type.toLowerCase().includes('party'))}/>;
- if(key==='entertainment/audio/sound-towers') return <AudioListing title="Sound towers" items={audioProducts.filter(p=>p.type==='Sound Tower')}/>;
- if(key==='entertainment/audio/portable-speakers') return <AudioListing title="Portable speakers" items={audioProducts.filter(p=>p.type.toLowerCase().includes('portable'))}/>;
- if(key==='entertainment/audio/portable-speakers') return <AudioListing title="Portable speakers" items={audioProducts.filter(p=>p.type.toLowerCase().includes('portable'))}/>;
  if(key==='tablets') return <DomainPage title="Tablets" description="Portable screens for work, study and entertainment." href="/categories" nodes={nodes('tablets')} count={0}/>;
  if(key==='accessories') return <DomainPage title="Accessories" description="Useful additions for your devices and everyday setup." href="/categories" nodes={[]} count={0}/>;
  notFound();
