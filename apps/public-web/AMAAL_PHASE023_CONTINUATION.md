@@ -80,3 +80,46 @@ The original Workstream 1 closure was re-audited from the uploaded production so
 
 No data reset, truncation or deletion was introduced.
 Payment remains completely deferred.
+
+## WORKSTREAM 2 — SECURE CUSTOMER AUTHENTICATION & ACCOUNT IDENTITY — 2026-09-03
+
+### COMPLETED
+
+- Added a dedicated customer credential model separate from internal staff users.
+- Added password-based customer registration using email or phone identity.
+- Added secure customer sign-in with failed-attempt tracking and temporary lockout.
+- Added device-bound customer sessions with HttpOnly, Secure, SameSite=None cookies for the cross-origin public web/API deployment model.
+- Added a readable customer CSRF cookie with double-submit header validation for authenticated mutations.
+- Added customer session expiry, revocation, sign-out-all and per-session revocation.
+- Added customer authentication event logging without exposing passwords or authentication internals in the UI.
+- Added profile editing protected by the current password.
+- Added password change protected by the current password and revocation of other active sessions.
+- Added activation of existing guest-checkout customer records using their existing high-entropy Amaal access token, allowing customers to establish a permanent password without forcing account creation before purchase.
+- Updated existing customer account, order, address, wishlist, notification, preference, returns, warranty and service routes to accept secure customer sessions while retaining the previous access-token compatibility path.
+- Updated cart merge to accept the authenticated customer session.
+- Added public account UI for sign-in, registration, activation, profile, password security and active-session management.
+
+### RECOVERY BOUNDARY
+
+No fake email, SMS or WhatsApp provider was introduced. Account activation can use the existing private post-checkout access token. External message-based recovery remains dependent on a real delivery provider and is not fabricated.
+
+### PRESERVED
+
+- Guest checkout remains available.
+- Customers are not forced to create an account before purchasing.
+- Business Console remains the only internal management surface.
+- Existing customer/order/catalogue records remain authoritative.
+- Payment gateway integration remains completely deferred.
+- No database reset, DROP, TRUNCATE or destructive migration was introduced.
+
+### VALIDATION
+
+- Backend JavaScript syntax checks passed.
+- Workstream 2 static audit passed all required authentication/session/security checks.
+- 131 public-web TypeScript/TSX source files transpiled with zero syntax diagnostics (excluding the framework-generated `next-env.d.ts`).
+- Relative import audit passed with zero missing relative imports.
+- Production Next.js build was not falsely claimed as locally executed because dependencies are not installed in the supplied source package.
+
+### NEXT RECOMMENDED WORKSTREAM
+
+Workstream 3: continue from the Master Blueprint after reviewing the exact remaining commerce/checkout requirements and verified backend capability. Payment remains excluded unless explicitly reopened.
