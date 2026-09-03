@@ -36,7 +36,7 @@ ok('compatibility rules persisted and surfaced',commerce.includes('product_compa
 ok('raw img scan clean',!/<img\s/i.test(cart+drawer));
 ok('payment providers remain presentation only',checkout.includes('Payment processing will be connected')||checkout.includes('configured payment gateway'));
 
-ok('category seed is conflict-safe',!read('computer-catalogue-seed.sql').includes("WHERE c.slug='computers' ON CONFLICT(slug) DO NOTHING")&&read('computer-catalogue-seed.sql').includes("WHERE c.slug='computers-laptops' ON CONFLICT DO NOTHING"), 'Laptop subcategory seed must not create duplicate Laptops siblings under Computers');
+ok('category seed is conflict-safe',!read('computer-catalogue-seed.sql').includes("WHERE c.slug='computers' ON CONFLICT(slug) DO NOTHING")&&read('computer-catalogue-seed.sql').includes("WHERE c.slug='computers-laptops'")&&read('computer-catalogue-seed.sql').includes('NOT EXISTS (SELECT 1 FROM product_categories pc WHERE pc.parent_id=c.id')&&read('computer-catalogue-seed.sql').includes('ON CONFLICT DO NOTHING'), 'Laptop subcategory seed must not create duplicate siblings under Computers');
 ok('2026 category inserts are conflict-safe',read('catalogue-category-hierarchy-2026.sql').match(/ON CONFLICT DO NOTHING/g)?.length>=6, 'Taxonomy seed should tolerate pre-existing unique name/parent rows');
 ok('cart payload uses effective retail pricing',server.includes('amaal_effective_variant_price_qty')&&server.includes('final_price'), 'Cart display pricing must reflect authoritative price/promotion calculation');
 ok('non-inventory variants are not shown as unavailable',server.includes('x.track_inventory?Number(x.available||0):null'), 'Availability should be null for non-tracked inventory');

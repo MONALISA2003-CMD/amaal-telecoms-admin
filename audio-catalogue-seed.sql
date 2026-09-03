@@ -4,9 +4,39 @@ INSERT INTO brands(name,slug,status,website_visibility) VALUES
  ('Black Ark','black-ark','Active','Published'),('Global Star','global-star','Active','Published'),('SPJ','spj','Active','Published'),('CHiQ Smart Plus','chiq-smart-plus','Active','Published'),('Hisense','hisense','Active','Published'),('Samsung','samsung','Active','Published'),('LG','lg','Active','Published'),('JBL','jbl','Active','Published'),('Sony','sony','Active','Published')
 ON CONFLICT(slug) DO NOTHING;
 INSERT INTO product_categories(name,slug,status,website_visibility) VALUES ('Audio','audio','Active','Published'),('Woofers','audio-woofers','Active','Published'),('Party Speakers','audio-party-speakers','Active','Published'),('Sound Towers','audio-sound-towers','Active','Published') ON CONFLICT(slug) DO NOTHING;
-INSERT INTO product_categories(parent_id,name,slug,status,website_visibility) SELECT c.id,'Woofers','entertainment-audio-woofers','Active','Published' FROM product_categories c WHERE c.slug='entertainment' ON CONFLICT(slug) DO NOTHING;
-INSERT INTO product_categories(parent_id,name,slug,status,website_visibility) SELECT c.id,'Party Speakers','entertainment-audio-party-speakers','Active','Published' FROM product_categories c WHERE c.slug='entertainment' ON CONFLICT(slug) DO NOTHING;
-INSERT INTO product_categories(parent_id,name,slug,status,website_visibility) SELECT c.id,'Sound Towers','entertainment-audio-sound-towers','Active','Published' FROM product_categories c WHERE c.slug='entertainment' ON CONFLICT(slug) DO NOTHING;
+INSERT INTO product_categories(parent_id,name,slug,status,website_visibility)
+SELECT c.id,'Woofers','entertainment-audio-woofers','Active','Published'
+FROM product_categories c
+WHERE c.slug='entertainment'
+  AND NOT EXISTS (SELECT 1 FROM product_categories x WHERE x.parent_id=c.id AND lower(x.name)=lower('Woofers'))
+ON CONFLICT(slug) DO NOTHING;
+UPDATE product_categories x SET slug='entertainment-audio-woofers',status='Active',website_visibility='Published',updated_at=now()
+FROM product_categories p
+WHERE p.slug='entertainment' AND x.parent_id=p.id AND lower(x.name)=lower('Woofers')
+  AND x.slug<>'entertainment-audio-woofers'
+  AND NOT EXISTS (SELECT 1 FROM product_categories z WHERE z.slug='entertainment-audio-woofers');
+INSERT INTO product_categories(parent_id,name,slug,status,website_visibility)
+SELECT c.id,'Party Speakers','entertainment-audio-party-speakers','Active','Published'
+FROM product_categories c
+WHERE c.slug='entertainment'
+  AND NOT EXISTS (SELECT 1 FROM product_categories x WHERE x.parent_id=c.id AND lower(x.name)=lower('Party Speakers'))
+ON CONFLICT(slug) DO NOTHING;
+UPDATE product_categories x SET slug='entertainment-audio-party-speakers',status='Active',website_visibility='Published',updated_at=now()
+FROM product_categories p
+WHERE p.slug='entertainment' AND x.parent_id=p.id AND lower(x.name)=lower('Party Speakers')
+  AND x.slug<>'entertainment-audio-party-speakers'
+  AND NOT EXISTS (SELECT 1 FROM product_categories z WHERE z.slug='entertainment-audio-party-speakers');
+INSERT INTO product_categories(parent_id,name,slug,status,website_visibility)
+SELECT c.id,'Sound Towers','entertainment-audio-sound-towers','Active','Published'
+FROM product_categories c
+WHERE c.slug='entertainment'
+  AND NOT EXISTS (SELECT 1 FROM product_categories x WHERE x.parent_id=c.id AND lower(x.name)=lower('Sound Towers'))
+ON CONFLICT(slug) DO NOTHING;
+UPDATE product_categories x SET slug='entertainment-audio-sound-towers',status='Active',website_visibility='Published',updated_at=now()
+FROM product_categories p
+WHERE p.slug='entertainment' AND x.parent_id=p.id AND lower(x.name)=lower('Sound Towers')
+  AND x.slug<>'entertainment-audio-sound-towers'
+  AND NOT EXISTS (SELECT 1 FROM product_categories z WHERE z.slug='entertainment-audio-sound-towers');
 WITH x(name,slug,brand,cat,short,descr) AS (VALUES
  ('Black Ark 12-inch Bluetooth Woofer','black-ark-12-inch-bluetooth-woofer','black-ark','entertainment-audio-woofers','A practical Bluetooth woofer for everyday music and home listening.','A compact woofer-style sound system designed for everyday home entertainment, casual music listening and small gatherings.'),
  ('Black Ark 15-inch Bluetooth Woofer','black-ark-15-inch-bluetooth-woofer','black-ark','entertainment-audio-woofers','A larger woofer format for stronger bass and fuller room sound.','A larger Bluetooth woofer format aimed at home entertainment, family gatherings and music playback where stronger bass is preferred.'),

@@ -9,11 +9,11 @@ ON CONFLICT DO NOTHING;
 INSERT INTO product_categories(parent_id,name,slug,status,website_visibility)
 SELECT c.id,x.name,x.slug,'Active','Published' FROM product_categories c CROSS JOIN (VALUES
  ('Laptops','computers-laptops'),('Desktops','computers-desktops'),('All-in-One','computers-all-in-one'),('Gaming Laptops','computers-gaming-laptops')
-) x(name,slug) WHERE c.slug='computers' ON CONFLICT DO NOTHING;
+) x(name,slug) WHERE c.slug='computers' AND NOT EXISTS (SELECT 1 FROM product_categories pc WHERE pc.parent_id=c.id AND lower(pc.name)=lower(x.name)) ON CONFLICT DO NOTHING;
 INSERT INTO product_categories(parent_id,name,slug,status,website_visibility)
 SELECT c.id,x.name,x.slug,'Active','Published' FROM product_categories c CROSS JOIN (VALUES
- ('Laptops','computers-laptops-hp'),('Laptops','computers-laptops-lenovo'),('Laptops','computers-laptops-apple')
-) x(name,slug) WHERE c.slug='computers-laptops' ON CONFLICT DO NOTHING;
+ ('Laptops HP','computers-laptops-hp'),('Laptops Lenovo','computers-laptops-lenovo'),('Laptops Apple','computers-laptops-apple')
+) x(name,slug) WHERE c.slug='computers-laptops' AND NOT EXISTS (SELECT 1 FROM product_categories pc WHERE pc.parent_id=c.id AND lower(pc.name)=lower(x.name)) ON CONFLICT DO NOTHING;
 INSERT INTO product_categories(parent_id,name,slug,status,website_visibility)
 SELECT c.id,'Desktop Brands','computers-desktops-brands','Active','Published' FROM product_categories c WHERE c.slug='computers-desktops' ON CONFLICT DO NOTHING;
 WITH x(name,slug,brand,cat,short,descr,specs) AS (VALUES

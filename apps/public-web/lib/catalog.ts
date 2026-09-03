@@ -7,7 +7,7 @@ export type Brand={id:string;name:string;slug:string;description?:string;logo_ur
 export type Collection={id:string;name:string;slug?:string;description?:string;image_url?:string;featured?:boolean;products?:Array<{id:string;name:string;slug:string;brand?:string;category?:string}>};
 export type Catalog={updatedAt:string;categories:Category[];brands:Brand[];products:Product[];collections:Collection[]};
 const api=process.env.NEXT_PUBLIC_API_BASE_URL||process.env.AMAAL_API_BASE_URL||'http://localhost:4000';
-export async function getCatalog():Promise<Catalog|null>{try{const r=await fetch(`${api}/api/public/catalog`,{next:{revalidate:60}});if(!r.ok)return null;return await r.json();}catch{return null}}
+export async function getCatalog():Promise<Catalog|null>{try{const r=await fetch(`${api}/api/public/catalog`,{cache:'no-store'});if(!r.ok)return null;return await r.json();}catch{return null}}
 export function price(p:Product){const v=p.variants?.[0];return v?.sellingPrice==null?'':new Intl.NumberFormat('en-UG',{style:'currency',currency:'UGX',maximumFractionDigits:0}).format(Number(v.sellingPrice))}
 export function publicPrice(){return 'Price coming soon'}
 export function publicPhoto(){return ''}
