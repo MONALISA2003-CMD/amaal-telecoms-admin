@@ -686,6 +686,57 @@ app.delete('/api/catalog/variants/:id',auth,need('catalog.manage'),async(req,res
   const v=(await q("UPDATE product_variants SET status='Archived',updated_at=now() WHERE id=$1 RETURNING *",[req.params.id]))[0];
   await audit(req.user,'PRODUCT_VARIANT_ARCHIVED','ProductVariant',v.id,`Archived SKU ${v.sku}`,old,v,req.req);res.json(v);
 });
+app.get('/api/catalog/readiness',auth,need('catalog.view'),async(req,res)=>{
+  const rows=await q(`SELECT
+    COUNT(*)::int AS total,
+    COUNT(*) FILTER (WHERE p.status='Active')::int AS active,
+    COUNT(*) FILTER (WHERE p.status='Active' AND p.website_visibility='Published')::int AS published,
+    COUNT(*) FILTER (WHERE p.status='Active' AND p.brand_id IS NOT NULL AND p.category_id IS NOT NULL AND btrim(COALESCE(p.description,''))<>'' AND EXISTS(SELECT 1 FROM product_variants v WHERE v.product_id=p.id AND v.status='Active' AND v.selling_price>0) AND EXISTS(SELECT 1 FROM product_images pi JOIN media_assets m ON m.id=pi.media_id WHERE pi.product_id=p.id AND m.status='Active' AND m.visibility='Public') AND btrim(COALESCE(p.seo_title,''))<>'' AND btrim(COALESCE(p.seo_description,''))<>'' )::int AS ready,
+    COUNT(*) FILTER (WHERE p.status='Active' AND (p.brand_id IS NULL OR p.category_id IS NULL OR btrim(COALESCE(p.description,''))='' OR NOT EXISTS(SELECT 1 FROM product_variants v WHERE v.product_id=p.id AND v.status='Active' AND v.selling_price>0) OR NOT EXISTS(SELECT 1 FROM product_images pi JOIN media_assets m ON m.id=pi.media_id WHERE pi.product_id=p.id AND m.status='Active' AND m.visibility='Public') OR btrim(COALESCE(p.seo_title,''))='' OR btrim(COALESCE(p.seo_description,''))=''))::int AS needs_enrichment
+  FROM products p`);
+  const gaps=await q(`SELECT
+    COUNT(*) FILTER (WHERE p.status='Active' AND (p.seo_title IS NULL OR btrim(p.seo_title)=''))::int AS missing_seo_title,
+    COUNT(*) FILTER (WHERE p.status='Active' AND (p.seo_description IS NULL OR btrim(p.seo_description)=''))::int AS missing_seo_description,
+    COUNT(*) FILTER (WHERE p.status='Active' AND NOT EXISTS(SELECT 1 FROM product_variants v WHERE v.product_id=p.id AND v.status='Active' AND v.selling_price>0))::int AS missing_price,
+    COUNT(*) FILTER (WHERE p.status='Active' AND NOT EXISTS(SELECT 1 FROM product_images pi JOIN media_assets m ON m.id=pi.media_id WHERE pi.product_id=p.id AND m.status='Active' AND m.visibility='Public'))::int AS missing_image
+  FROM products p`);
+  res.json({summary:rows[0],gaps:gaps[0]});
+});
+
+app.post('/api/catalog/products/bulk-enrich',auth,need('catalog.manage'),async(req,res)=>{
+  const rows=Array.isArray(req.body?.rows)?req.body.rows:[];
+  if(!rows.length||rows.length>500)return res.status(400).json({error:'Provide between 1 and 500 catalogue rows.'});
+  const dryRun=req.body?.dryRun===true;
+  const client=await pool.connect(); const results=[]; const errors=[];
+  try{
+    await client.query('BEGIN');
+    for(let i=0;i<rows.length;i++){
+      const row=rows[i]||{}; const key=String(row.id||row.productId||row.slug||row.sku||'').trim();
+      if(!key){errors.push({row:i+1,error:'A product id, slug or SKU is required.'});continue;}
+      const p=(await client.query(`SELECT p.id,p.name,p.slug FROM products p WHERE p.id::text=$1 OR p.slug=$1 OR EXISTS(SELECT 1 FROM product_variants v WHERE v.product_id=p.id AND v.sku=$1) LIMIT 1`,[key])).rows[0];
+      if(!p){errors.push({row:i+1,error:`Product not found: ${key}`});continue;}
+      const fields=[]; const values=[];
+      const add=(column,value)=>{fields.push(`${column}=$${values.length+1}`);values.push(value)};
+      if(row.seoTitle!==undefined)add('seo_title',String(row.seoTitle||'').trim()||null);
+      if(row.seoDescription!==undefined)add('seo_description',String(row.seoDescription||'').trim()||null);
+      if(row.description!==undefined)add('description',String(row.description||'').trim());
+      if(row.shortDescription!==undefined)add('short_description',String(row.shortDescription||'').trim()||null);
+      if(row.brandId!==undefined)add('brand_id',row.brandId||null);
+      if(row.categoryId!==undefined)add('category_id',row.categoryId||null);
+      if(row.status!==undefined)add('status',String(row.status));
+      if(row.websiteVisibility!==undefined)add('website_visibility',String(row.websiteVisibility));
+      if(fields.length&&!dryRun){values.push(req.user.id,p.id);await client.query(`UPDATE products SET ${fields.join(',')},updated_by=$${values.length-1},updated_at=now() WHERE id=$${values.length}`,[...values]);}
+      if(row.sellingPrice!==undefined||row.sku!==undefined){
+        const variant=(await client.query(`SELECT v.id FROM product_variants v WHERE v.product_id=$1 AND ($2='' OR v.sku=$2) ORDER BY CASE WHEN v.status='Active' THEN 0 ELSE 1 END,v.created_at LIMIT 1`,[p.id,String(row.sku||'')])).rows[0];
+        if(row.sellingPrice!==undefined){const price=Number(row.sellingPrice);if(!Number.isFinite(price)||price<0){errors.push({row:i+1,error:'sellingPrice must be a non negative number.'});continue;} if(!variant){errors.push({row:i+1,error:`No variant found for ${key}.`});continue;} if(!dryRun){await client.query('UPDATE product_variants SET selling_price=$1,updated_at=now() WHERE id=$2',[price,variant.id]);}}
+      }
+      results.push({row:i+1,id:p.id,name:p.name,updated:!dryRun});
+    }
+    if(dryRun)await client.query('ROLLBACK'); else await client.query('COMMIT');
+    await audit(req.user,'PRODUCTS_BULK_ENRICHED','Product',null,`${dryRun?'Validated':'Updated'} ${results.length} catalogue enrichment rows`,null,{results,errors},req.req);
+    res.json({dryRun,processed:results.length,updated:dryRun?0:results.length,results,errors});
+  }catch(e){try{await client.query('ROLLBACK')}catch{};res.status(400).json({error:e.message||'Catalogue enrichment failed.'});}finally{client.release()}
+});
 app.post('/api/catalog/products/bulk-status',auth,need('catalog.manage'),async(req,res)=>{
   const ids=Array.isArray(req.body?.productIds)?req.body.productIds.filter(Boolean):[]; const status=String(req.body?.status||'').trim();
   const allowed=['Draft','Active','Inactive','Archived']; if(!ids.length||!allowed.includes(status))return res.status(400).json({error:'Product IDs and a valid status are required'});
