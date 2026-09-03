@@ -184,3 +184,31 @@ The production Neon database was not reset, dropped, truncated or recreated. Exi
 - Public-web TypeScript/TSX transpilation: PASS, framework generated `next-env.d.ts` excluded.
 - Backend JavaScript syntax: PASS.
 - Payment remains untouched and deferred.
+
+## BUILD CONTINUATION HARDENING PASS — 2026-09-03
+
+The build was continued from the original catalogue restoration workspace rather than starting a new implementation.
+
+### Corrective work completed
+
+- Preserved the original seven-area catalogue navigation.
+- Preserved the original catalogue route/runtime restoration.
+- Preserved the Vercel compatibility export for `buildCategoryNavigation`, required by the current `SiteHeader` import.
+- Corrected the cross-module audit so Business Console requests routed through the existing Next.js `/api/engine/[...path]` proxy are recognized as valid backend routes.
+- No business behavior or public catalogue data was changed by the audit correction.
+
+### Validation
+
+- `npm run verify`: PASS
+- Render preflight: PASS
+- Cross-module unmatched frontend routes: 0
+- Connected cross-module checks: 18/18
+- Original catalogue restoration audit: PASS, 56/56 files
+- JavaScript syntax: PASS across repository JavaScript sources
+- TypeScript/TSX transpilation: PASS, 195 files, 0 transpile failures
+- No destructive database operation introduced.
+- Payment remains untouched and deferred.
+
+### Deployment boundary
+
+A full Next.js production build still has not been claimed locally because the isolated workspace does not have a usable installed Next dependency set. The authoritative Vercel build remains the deployment gate.

@@ -42,7 +42,7 @@ for(const [ref,file] of frontendRefs){
   const n=normalize(ref.split('?')[0]);
   const exact=routeSet.has(n);
   const prefix=backendRoutes.some(r=>{const br=normalize(r.path); return br===n || (br.includes(':id') && n.startsWith(br.split(':id')[0]));});
-  const localBridge = ref.startsWith('/api/session/') || ref.startsWith('/api/catalog') && file.includes('app/api/engine/');
+  const localBridge = ref.startsWith('/api/session/') || (ref.startsWith('/api/catalog') && file.includes('app/api/engine/')) || (ref.startsWith('/api/engine/') && fs.existsSync(path.join(frontendRoot,'app','api','engine','[...path]','route.ts')));
   if(!exact&&!prefix&&!localBridge) findings.push({type:'FRONTEND_ROUTE_NOT_FOUND_IN_BACKEND_INVENTORY',path:ref,file});
 }
 

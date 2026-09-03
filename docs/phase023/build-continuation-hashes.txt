@@ -1,0 +1,3 @@
+7b9b4d6aef7f75ba338a6b921e0e0fe76cdf874415568cd3b7a39770cf28ffda  apps/public-web/lib/category-navigation.ts
+6f1770f2b1d5df21b99208c5ee8b419e783970acac9602a2d6776a2e4929b255  cross-module-audit.js
+4609a4d6b58918db9864f100a5542de9f268e136dce84afabe6cad77d0c99665  docs/phase023/original-catalogue-restoration-audit.cjs
