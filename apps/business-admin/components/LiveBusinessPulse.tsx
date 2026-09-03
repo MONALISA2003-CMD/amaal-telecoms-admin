@@ -57,7 +57,9 @@ export function LiveBusinessPulse() {
   const [trend, setTrend] = useState<Any[]>([]);
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
   const [error, setError] = useState('');
-  const [partial, setPartial] = useState(false);
+  const [partial, setPartial] = useState(false); const [feed,setFeed]=useState<Any[]>([]);
+
+  async function loadFeed(){try{const d=await get('/api/commerce/live-feed');setFeed(Array.isArray(d?.events)?d.events:[])}catch{}}
 
   async function load() {
     try {
@@ -84,9 +86,9 @@ export function LiveBusinessPulse() {
 
   useEffect(() => {
     let active = true;
-    const run = async () => { if (active && document.visibilityState !== 'hidden') await load(); };
+    const run = async () => { if (active && document.visibilityState !== 'hidden') { await Promise.all([load(),loadFeed()]); } };
     run();
-    const timer = window.setInterval(run, 15000);
+    const timer = window.setInterval(run, 5000);
     const onVisible = () => { if (document.visibilityState === 'visible') run(); };
     document.addEventListener('visibilitychange', onVisible);
     return () => { active = false; window.clearInterval(timer); document.removeEventListener('visibilitychange', onVisible); };
@@ -114,7 +116,7 @@ export function LiveBusinessPulse() {
       <Pulse icon={WalletCards} label="Finance" value={money(summary?.finance?.net_activity)} note="Posted activity" />
       <Pulse icon={WalletCards} label="Credit" value={money(summary?.credit?.outstanding)} note={`${number(summary?.credit?.accounts)} active accounts`} />
       <Pulse icon={Globe2} label="Website" value={number(summary?.website?.published_products)} note={`${number(summary?.website?.published_pages)} published pages`} />
-    </div>{error && <div className="livePulseError">{error}</div>}
+    </div>{feed.length>0&&<div className="livePulseFeed"><div className="livePulseLabel"><span>Latest storefront activity</span><b>Live</b></div><div className="livePulseFeedRows">{feed.slice(0,8).map((e:any)=><div className="livePulseFeedRow" key={e.id}><span>{String(e.event_type||'activity').replaceAll('_',' ')}</span><strong>{e.product_name||e.order_no||e.customer_name||'Storefront activity'}</strong><small>{new Date(e.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</small></div>)}</div></div>}{error && <div className="livePulseError">{error}</div>}
   </section>;
 }
 
