@@ -1,116 +1,198 @@
+export type HomeVariant = {
+  label: string;
+  price: number;
+};
+
 export type HomeProduct = {
   id?: string;
   slug: string;
   name: string;
   brand: string;
   price: number;
-  images?: string[];
+  images: string[];
   eyebrow: string;
   quickDetails: string[];
   description: string;
-  sourceNote?: string;
+  variants?: HomeVariant[];
 };
+
+const asset = (name: string) => `/assets/amaal/homepage/${name}`;
 
 export const featuredProducts: HomeProduct[] = [
   {
-    slug: 'iphone-16-pro-max-256gb', brand: 'Apple', name: 'iPhone 16 Pro Max 256GB', price: 0,
-    images: ['/products/featured/iphone-16-pro-max-256gb-1.webp','/products/featured/iphone-16-pro-max-256gb-2.webp','/products/featured/iphone-16-pro-max-256gb-3.webp','/products/featured/iphone-16-pro-max-256gb-4.webp'],
+    slug: 'apple-iphone-16-pro-max',
+    brand: 'Apple',
+    name: 'iPhone 16 Pro Max 256GB',
+    price: 3500000,
+    images: [asset('iphone-16-pro-max-256gb-black-titanium.webp')],
     eyebrow: 'Flagship smartphone',
-    quickDetails: ['6.9-inch display', 'A18 Pro chip', '256GB storage'],
-    description: 'Apple flagship smartphone introduced in 2024, with a 6.9-inch Super Retina XDR display, A18 Pro chip, advanced Pro camera system and 256GB capacity.'
+    quickDetails: ['256GB storage', 'A18 Pro chip'],
+    description: 'iPhone 16 Pro Max with 256GB storage. Homepage price supplied by Amaal.',
   },
   {
-    slug: 'google-pixel-9-256gb', brand: 'Google', name: 'Google Pixel 9 256GB', price: 0,
-    images: ['/products/featured/google-pixel-9-256gb-1.webp','/products/featured/google-pixel-9-256gb-2.webp'],
+    slug: 'google-pixel-pixel-9',
+    brand: 'Google Pixel',
+    name: 'Google Pixel 9',
+    price: 1800000,
+    images: ['/products/featured/google-pixel-9-256gb-1.webp'],
     eyebrow: 'Google smartphone',
-    quickDetails: ['6.3-inch Actua OLED', 'Tensor G4', '12GB RAM · 256GB'],
-    description: 'Pixel 9 combines a 6.3-inch Actua OLED display with Google Tensor G4, 12GB RAM, a 256GB storage option and an advanced dual rear camera system.'
+    quickDetails: ['12GB RAM', '256GB storage'],
+    description: 'Google Pixel 9. Homepage price supplied by Amaal.',
   },
   {
-    slug: 'samsung-galaxy-a17-4gb-128gb', brand: 'Samsung', name: 'Samsung Galaxy A17 4GB RAM 128GB ROM', price: 0,
-    images: ['/products/featured/galaxy-a17-128gb-1.webp','/products/featured/galaxy-a17-128gb-2.webp','/products/featured/galaxy-a17-128gb-3.webp'],
+    slug: 'samsung-galaxy-a17',
+    brand: 'Samsung',
+    name: 'Samsung Galaxy A17',
+    price: 700000,
+    images: [asset('samsung-galaxy-a17-128gb-blue.webp')],
     eyebrow: 'Everyday smartphone',
-    quickDetails: ['6.7-inch Super AMOLED', '50MP main camera with OIS', '4GB · 128GB'],
-    description: 'Galaxy A17 is an everyday Samsung smartphone with a 6.7-inch FHD+ Super AMOLED display, 50MP rear camera with optical image stabilisation, 4GB memory and 128GB storage.'
+    quickDetails: ['4GB RAM', '128GB ROM'],
+    description: 'Samsung Galaxy A17. The catalogue supports multiple memory and storage variants; this homepage presentation is the supplied 4GB RAM / 128GB ROM offer.',
   },
   {
-    slug: 'samsung-galaxy-a07-4gb-64gb', brand: 'Samsung', name: 'Samsung Galaxy A07 4GB RAM 64GB ROM', price: 0,
-    images: ['/products/featured/galaxy-a07-64gb-1.webp'],
+    slug: 'samsung-galaxy-a07',
+    brand: 'Samsung',
+    name: 'Samsung Galaxy A07',
+    price: 450000,
+    images: [asset('samsung-galaxy-a07-64gb-gray.webp')],
     eyebrow: 'Everyday smartphone',
-    quickDetails: ['6.7-inch display', '50MP main camera', '4GB · 64GB · microSD'],
-    description: 'Galaxy A07 is a practical Samsung smartphone with a large 6.7-inch display, 50MP main camera, 4GB memory, 64GB storage and microSD expansion support.'
+    quickDetails: ['4GB RAM', '64GB ROM'],
+    description: 'Samsung Galaxy A07. Homepage price supplied by Amaal.',
   },
   {
-    slug: 'tcl-50-inch-v635-qled-4k', brand: 'TCL', name: 'TCL 50-inch QLED 4K TV V635', price: 0,
-    images: ['/products/featured/tcl-50-v635-1.webp'],
+    slug: 'tcl-c655-50inch',
+    brand: 'TCL',
+    name: 'TCL 50-inch C655 QLED 4K',
+    price: 1200000,
+    images: [asset('tcl-50-inch.webp'), asset('tcl-50-inch-back.webp')],
     eyebrow: 'Smart TV',
-    quickDetails: ['50-inch 4K', 'QLED colour', 'Smart TV experience'],
-    description: 'TCL 50-inch V635-series QLED 4K smart television, positioned for vivid home entertainment with a slim design and smart TV features. Exact regional specifications should be confirmed against the supplied unit.'
+    quickDetails: ['50-inch screen', 'QLED · 4K'],
+    description: 'TCL C655 50-inch QLED 4K TV. The public catalogue verifies the C655 model family and 50-inch size.',
   },
   {
-    slug: 'hisense-wfqp8014evmt-8kg', brand: 'Hisense', name: 'Hisense 8kg Front Loader Washing Machine WFQP8014EVMT', price: 0,
-    images: ['/products/featured/hisense-wfqp8014evmt-1.webp'],
+    slug: 'hisense-8kg-front-loader',
+    brand: 'Hisense',
+    name: 'Hisense 8kg Front Loader',
+    price: 1200000,
+    images: [asset('hisense-washing-machine-wfhv8012t.webp')],
     eyebrow: 'Home appliance',
-    quickDetails: ['8kg capacity', '1200 RPM', '15 wash programs'],
-    description: 'Hisense WFQP8014EVMT front-loading washing machine with 8kg capacity, 1200 RPM spin speed, 15 programs, inverter motor, steam care, quick wash and pause-and-add functionality. Supplied listing states a 2-year warranty.'
+    quickDetails: ['8kg capacity', 'Front loading'],
+    description: 'Hisense 8kg front-loading washing machine, presented using the supplied approved product photography.',
   },
   {
-    slug: 'samsung-hw-b400f-soundbar', brand: 'Samsung', name: 'Samsung B-Series Soundbar HW-B400F 2.0ch', price: 0,
-    images: ['/products/featured/samsung-hw-b400f-1.png','/products/featured/samsung-hw-b400f-2.png','/products/featured/samsung-hw-b400f-3.png','/products/featured/samsung-hw-b400f-4.png','/products/featured/samsung-hw-b400f-5.png','/products/featured/samsung-hw-b400f-6.png'],
+    slug: 'samsung-hw-b400f-soundbar',
+    brand: 'Samsung',
+    name: 'Samsung Soundbar HW-B400F 2.0CH',
+    price: 750000,
+    images: [asset('samsung-sound-bar-2.webp'), asset('samsung-sound-bar-1.webp')],
     eyebrow: 'Home audio',
-    quickDetails: ['2.0ch sound', 'Built-in woofer', 'Bluetooth · HDMI ARC'],
-    description: 'Samsung HW-B400F is a 2025 2.0-channel soundbar with a built-in woofer, Surround Sound Expansion, Voice Enhance Mode, Night Mode, Bluetooth TV connection and HDMI ARC.'
-  }
+    quickDetails: ['2.0CH sound', 'Built-in woofer'],
+    description: 'Samsung HW-B400F 2.0-channel soundbar. Homepage price supplied by Amaal.',
+  },
 ];
 
 export const newProducts: HomeProduct[] = [
   {
-    slug: 'google-pixel-11-pro-xl', brand: 'Google Pixel', name: 'Google Pixel 11 Pro XL', price: 0,
+    slug: 'google-pixel-pixel-11-pro-xl',
+    brand: 'Google Pixel',
+    name: 'Google Pixel 11 Pro XL',
+    price: 5500000,
+    images: [asset('pixel-11-pro-xl.webp')],
     eyebrow: 'New flagship',
-    quickDetails: ['6.8-inch Super Actua', 'Tensor G6', '30+ hour battery'],
-    description: 'Google Pixel 11 Pro XL features a 6.8-inch LTPO OLED Super Actua display, Google Tensor G6, 30+ hour battery life, Qi2.2 wireless charging and storage options beginning at 256GB.'
+    quickDetails: ['12GB RAM + 256GB ROM', '16GB RAM + 512GB ROM'],
+    variants: [
+      { label: '12GB RAM + 256GB ROM', price: 5500000 },
+      { label: '16GB RAM + 512GB ROM', price: 6000000 },
+    ],
+    description: 'Google Pixel 11 Pro XL. Homepage offers are shown as clearly separated RAM and storage variants.',
   },
   {
-    slug: 'samsung-galaxy-z-fold8-256gb', brand: 'Samsung', name: 'Samsung Galaxy Z Fold8 256GB', price: 0,
+    slug: 'samsung-galaxy-z-fold8',
+    brand: 'Samsung',
+    name: 'Samsung Galaxy Z Fold8 "Passport"',
+    price: 6000000,
+    images: [asset('galaxy-fold-8-standard-or-passport.webp'), asset('galaxy-fold-8-standard-or-passport-official-banner.webp')],
     eyebrow: 'Foldable flagship',
-    quickDetails: ['256GB · 12GB RAM', 'Snapdragon 8 Elite Gen 5', '4800mAh battery'],
-    description: 'Galaxy Z Fold8 is Samsung’s 2026 foldable flagship with a new lightweight design, Snapdragon 8 Elite Gen 5 for Galaxy, dual 50MP rear cameras and 256GB, 512GB or 1TB storage options.'
+    quickDetails: ['12GB RAM + 256GB ROM', '12GB RAM + 512GB ROM'],
+    variants: [
+      { label: '12GB RAM + 256GB ROM', price: 6000000 },
+      { label: '12GB RAM + 512GB ROM', price: 6180000 },
+    ],
+    description: 'Samsung Galaxy Z Fold8 "Passport" presentation using the supplied approved imagery. The underlying public catalogue model is Galaxy Z Fold8.',
   },
   {
-    slug: 'samsung-galaxy-z-fold-special-edition-512gb', brand: 'Samsung', name: 'Samsung Galaxy Z Fold Special Edition 512GB', price: 0,
-    eyebrow: 'Special edition foldable',
-    quickDetails: ['512GB storage', '16GB memory', '200MP wide camera'],
-    description: 'Samsung Galaxy Z Fold Special Edition is a slim foldable released in Korea with 512GB storage, 16GB memory and a 200MP wide camera. The product name is normalised from the supplied “Fold passport” wording to the official Special Edition name.'
+    slug: 'samsung-galaxy-z-fold8-ultra',
+    brand: 'Samsung',
+    name: 'Samsung Galaxy Z Fold8 Ultra',
+    price: 6450000,
+    images: [asset('fold-8-ultra.webp'), asset('samsung-galaxy-z-fold8-ultra-all-colours.webp')],
+    eyebrow: 'Ultra foldable',
+    quickDetails: ['12GB RAM + 256GB ROM', '12GB RAM + 512GB ROM', '16GB RAM + 1TB Storage'],
+    variants: [
+      { label: '12GB RAM + 256GB ROM', price: 6450000 },
+      { label: '12GB RAM + 512GB ROM', price: 6900000 },
+      { label: '16GB RAM + 1TB Storage', price: 8600000 },
+    ],
+    description: 'Samsung Galaxy Z Fold8 Ultra. The final offer is explicitly 16GB RAM + 1TB Storage.',
   },
   {
-    slug: 'tecno-camon-50-pro-5g-256gb', brand: 'TECNO', name: 'TECNO CAMON 50 Pro 5G 256GB', price: 0,
-    eyebrow: '5G camera phone',
-    quickDetails: ['6.78-inch 144Hz AMOLED', 'Dimensity 7400 Ultimate', '256GB · up to 16GB extended RAM'],
-    description: 'TECNO CAMON 50 Pro 5G pairs a curved 6.78-inch 144Hz 1.5K AMOLED display with a MediaTek Dimensity 7400 Ultimate processor, 256GB storage, 50MP OIS camera system and 6500mAh battery with 45W charging.'
+    slug: 'tecno-camon-50-pro-5g-4g',
+    brand: 'TECNO',
+    name: 'TECNO CAMON 50 Pro 5G/4G',
+    price: 1350000,
+    images: [],
+    eyebrow: '5G / 4G camera phone',
+    quickDetails: ['8GB RAM + 256GB ROM', 'CAMON 50 Pro family'],
+    variants: [{ label: '8GB RAM + 256GB ROM', price: 1350000 }],
+    description: 'The public catalogue uses the verified model name Camon 50 Pro 5G/4G and groups RAM, storage and network combinations as variants.',
   },
   {
-    slug: 'infinix-smart-20-64gb', brand: 'Infinix', name: 'Infinix Smart 20 64GB', price: 0,
-    eyebrow: 'Everyday smartphone',
-    quickDetails: ['6.78-inch display', 'Helio G81 Ultimate', '64GB · 4GB RAM'],
-    description: 'Infinix Smart 20 is an entry-level 4G smartphone with a 6.78-inch display, MediaTek Helio G81 Ultimate processor, 64GB storage, 4GB RAM and expandable storage support.'
-  },
-  {
-    slug: 'tcl-75-inch-c655-qled-4k', brand: 'TCL', name: 'TCL 75-inch C655 QLED 4K Google TV', price: 0,
+    slug: 'tcl-c655-75inch',
+    brand: 'TCL',
+    name: 'TCL 75-inch C655 Quantum Dot QLED Google TV',
+    price: 3500000,
+    images: [asset('tcl-75-c655.webp'), asset('tcl-75-c655-side.webp'), asset('tcl-75-c655-back.webp')],
     eyebrow: 'Large-screen entertainment',
-    quickDetails: ['75-inch QLED Pro', '4K Google TV', 'Dolby Vision · Atmos'],
-    description: 'TCL C655 75-inch QLED 4K Google TV combines Quantum Dot colour, AiPQ Pro processing, Google TV, Dolby Vision, HDR10+, Dolby Atmos, HDMI 2.1 features and gaming-focused 120Hz DLG support.'
-  }
+    quickDetails: ['75-inch screen', 'C655 QLED · Google TV'],
+    description: 'TCL C655 75-inch QLED Google TV. The public catalogue verifies the C655 model family and 75-inch size.',
+  },
 ];
 
 export const homeCategories = [
-  ['Phones', 'phones', 'Phones and smartphones'],
-  ['TV & Home Entertainment', 'tvs', 'TVs, projectors and cinema'],
-  ['Audio', 'entertainment/audio', 'Woofers, party speakers and sound systems'],
-  ['Home Appliances', 'home-appliances', 'Refrigeration, laundry and more'],
-  ['Kitchen Appliances', 'kitchen-appliances', 'Cooking and kitchen essentials'],
-  ['Computers & Laptops', 'computers', 'Laptops, gaming and computing'],
-  ['Tablets', 'tablets', 'iPad and Samsung Galaxy Tab'],
-  ['Accessories', 'accessories', 'Everyday tech essentials'],
+  ['Phones', 'phones', asset('categoryphones.webp'), 'Phones and smartphones'],
+  ['TV & Home Entertainment', 'tvs', asset('category-tvandentertainment.webp'), 'TVs and home cinema'],
+  ['Audio', 'entertainment/audio', asset('category-audio.webp'), 'Speakers and sound systems'],
+  ['Home Appliances', 'home-appliances', asset('category-home-appliances.webp'), 'Laundry, refrigeration and more'],
+  ['Kitchen Appliances', 'kitchen-appliances', asset('categorykitchen-appliances.webp'), 'Cooking and kitchen essentials'],
+  ['Computers & Laptops', 'computers', asset('category-computers-and-laptops.webp'), 'Laptops and computing'],
+  ['Tablets', 'tablets', asset('file-000000002b7881f49b2923ddaa7a0a27.webp'), 'iPad and Android tablets'],
+  ['Accessories', 'accessories', asset('categoryaccessories.webp'), 'Everyday tech essentials'],
 ] as const;
 
-export const homeBrands = ['TCL','Samsung','Hoffman’s Electronics','Apple','Google Pixel','TECNO','Infinix','Saachi','LG','Hisense','Skyworth'];
+export const homeBrands = [
+  ['Apple', 'apple', asset('apple-logo.webp')],
+  ['Samsung', 'samsung', asset('samsung-logo.webp')],
+  ['Google Pixel', 'google-pixel', asset('googlepixellogo.webp')],
+  ['TECNO', 'tecno', asset('tecnomobile.webp')],
+  ['TCL', 'tcl', asset('tcl-logo.webp')],
+  ['Sony', 'sony', asset('sony.webp')],
+  ['JBL', 'jbl', asset('jbl-logo.webp')],
+  ['LG', 'lg', asset('lg-logo-2014-svg.webp')],
+  ['Hisense', 'hisense', asset('hisense-logo.webp')],
+  ['HP', 'hp', asset('hp-logo.webp')],
+  ['Lenovo', 'lenovo', asset('lenovo-global-corporate-logo.webp')],
+  ['ASUS', 'asus', asset('asus-logo.webp')],
+  ['Acer', 'acer', asset('acer-logo.webp')],
+  ['Philips', 'philips', asset('philipslogo.webp')],
+  ['Kenwood', 'kenwood', asset('kenwood.webp')],
+  ['Saachi', 'saachi', asset('saachi-logo.webp')],
+  ['Hoffman’s Electronics', 'hoffman-s-electronics', asset('original-hoffman-electronics-brand-logo.webp')],
+  ['CHiQ', 'chiq', asset('chiq-logo.webp')],
+  ['SPJ', 'spj', asset('spj-logo.webp')],
+  ['Infinix', 'infinix', asset('logo-of-infinix.webp')],
+  ['itel', 'itel', asset('itel-logo.webp')],
+  ['Sonashi', 'sonashi', asset('sonashi-logo.webp')],
+  ['RAF', 'raf', asset('raf-logo.webp')],
+  ['Black Ark', 'black-ark', asset('black-ark-logo.webp')],
+  ['Blue Flame', 'blue-flame', asset('blue-flame-logo.webp')],
+];

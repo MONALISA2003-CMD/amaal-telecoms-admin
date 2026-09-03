@@ -277,3 +277,56 @@ body{background:var(--amaal-ivory);color:var(--amaal-ink)}
 @media(max-width:600px){.brand-directory-page{padding-top:40px}.brand-letter-nav{margin:30px 0 42px}.brand-v5-logo{width:52px;height:52px}.brand-v5-identity{gap:13px}.brand-v5-identity h1{font-size:45px}.brand-v5-overview{grid-template-columns:1fr}.brand-v5-overview div+div{padding-left:0;border-left:0;border-top:1px solid var(--line)}.brand-v5-category-grid{grid-template-columns:1fr}.brand-v5-category-grid a{min-height:110px}}
 
 .category-child-tree{display:grid;gap:6px;padding:10px 0 0 42px}.category-child-tree>div{display:grid;gap:4px}.category-child-tree a{color:#77736b;font-size:13px}.category-child-tree .category-child-tree{padding-left:18px}
+
+/* Homepage asset integration: targeted public-homepage overrides only. */
+.lux-hero{background:#1b1916}
+.hero-stage-image{
+  background:
+    linear-gradient(90deg,rgba(27,25,22,.92) 0%,rgba(27,25,22,.28) 33%,rgba(27,25,22,.05) 65%,rgba(27,25,22,.16) 100%),
+    url('/assets/amaal/home-hero.jpg') center/cover no-repeat;
+}
+.hero-stage-image:after{background:linear-gradient(90deg,rgba(27,25,22,.2),transparent 45%,rgba(0,0,0,.14))}
+.trust-strip{grid-template-columns:repeat(4,1fr)}
+.trust-strip>div{min-width:0}
+.trust-strip img{width:38px;height:38px;object-fit:cover;border-radius:50%;flex:none}
+
+.category-rail .category-card{background:#fff}
+.category-art{height:155px;position:relative;background:#f5f2eb}
+.category-art img{width:100%;height:100%;object-fit:cover;display:block}
+.category-art:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(20,18,13,.16))}
+.category-art>span{position:absolute;z-index:1;top:12px;left:12px;color:#fff;background:rgba(28,25,21,.68);padding:5px 7px;border-radius:999px;font-size:8px;letter-spacing:.16em}
+
+.product-rail .home-product-card{width:270px;min-width:270px}
+.product-media{background:#f6f3ec;border-radius:16px;aspect-ratio:1/1;overflow:hidden}
+.product-media img{width:100%;height:100%;object-fit:contain;display:block;mix-blend-mode:multiply}
+.home-product-meta{padding:15px 3px 8px}
+.home-product-meta h3{min-height:38px}
+.variant-price-list{display:grid;gap:7px;margin-top:3px}
+.variant-price-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:baseline;padding-top:7px;border-top:1px solid var(--line)}
+.variant-price-row span{font-size:9px;line-height:1.35;color:var(--muted)}
+.variant-price-row strong{font-size:11px;white-space:nowrap}
+.home-product-card>.button{width:100%;box-sizing:border-box;margin-top:4px}
+
+.lifestyle-feature{background:#1d1a17}
+.lifestyle-scene img{width:100%;height:100%;object-fit:cover;display:block}
+.lifestyle-scene:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(29,26,23,.05),transparent 35%,rgba(0,0,0,.12))}
+
+.brand-rail .brand-card{padding:18px 20px;box-sizing:border-box}
+.brand-card img{width:min(120px,72%);height:48px;object-fit:contain;display:block}
+.brand-card span{font-size:8px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;text-align:center}
+
+@media(max-width:1000px){
+  .trust-strip{grid-template-columns:1fr 1fr}
+  .product-rail .home-product-card{width:240px;min-width:240px}
+}
+@media(max-width:600px){
+  .lux-hero{min-height:780px}
+  .hero-stage-image{min-height:360px;background-position:center}
+  .trust-strip{grid-template-columns:1fr}
+  .trust-strip>div{justify-content:flex-start}
+  .category-rail .category-card{width:230px;min-width:230px}
+  .category-art{height:160px}
+  .product-rail .home-product-card{width:78vw;min-width:78vw;max-width:300px}
+  .home-product-meta h3{min-height:0}
+  .brand-rail .brand-card{width:160px;min-width:160px}
+}

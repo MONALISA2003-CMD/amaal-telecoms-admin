@@ -1,0 +1,56 @@
+# Amaal public homepage asset inventory
+
+**52/52 supplied assets inspected.** Optimized WebP copies are stored under `public/assets/amaal/homepage/`. The original uploaded asset ZIP was not modified.
+
+- `New-roch-logo-PNG-768x387.png` → **Brand logo** → **Shop by brand** → **New Roch** → `new-roch-logo-png-768x387.webp` | original `PNG 768×387` / `21010` bytes → optimized `768×387` / `24996` bytes
+- `Samsung sound bar 1.jpg` → **Product photography** → **Featured at Amaal** → **Samsung HW-B400F** → `samsung-sound-bar-1.webp` | original `JPEG 500×500` / `8926` bytes → optimized `500×500` / `3396` bytes
+- `Category audio.png` → **Category imagery** → **Shop by Category** → **Audio** → `category-audio.webp` | original `PNG 1448×1086` / `2374305` bytes → optimized `900×675` / `63666` bytes
+- `TecnoMobile.png` → **Brand logo** → **Shop by brand** → **TECNO** → `tecnomobile.webp` | original `PNG 605×229` / `11888` bytes → optimized `605×229` / `6994` bytes
+- `Samsung logo.png` → **Brand logo** → **Shop by brand** → **Samsung** → `samsung-logo.webp` | original `PNG 215×166` / `2652` bytes → optimized `215×166` / `2580` bytes
+- `Galaxy fold 8 standard or passport official banner.jpeg` → **Product/editorial photography** → **New at Amaal** → **Samsung Galaxy Z Fold8 “Passport”** → `galaxy-fold-8-standard-or-passport-official-banner.webp` | original `JPEG 505×607` / `18709` bytes → optimized `505×607` / `12820` bytes
+- `Asus logo.png` → **Brand logo** → **Shop by brand** → **ASUS** → `asus-logo.webp` | original `PNG 259×194` / `1263` bytes → optimized `259×194` / `1108` bytes
+- `TCL 75 C655 BACK.webp` → **Product photography** → **New at Amaal** → **TCL 75-inch C655** → `tcl-75-c655-back.webp` | original `WEBP 1068×801` / `56914` bytes → optimized `1000×750` / `44026` bytes
+- `Samsung Galaxy A17 128GB (Blue).webp` → **Product photography** → **Featured at Amaal** → **Samsung Galaxy A17** → `samsung-galaxy-a17-128gb-blue.webp` | original `WEBP 1024×1024` / `13698` bytes → optimized `1000×1000` / `11316` bytes
+- `TCL 75 C655 .webp` → **Product photography** → **New at Amaal** → **TCL 75-inch C655** → `tcl-75-c655.webp` | original `WEBP 800×600` / `99238` bytes → optimized `800×600` / `75308` bytes
+- `Samsung Galaxy A07 64GB (Gray).webp` → **Product photography** → **Featured at Amaal** → **Samsung Galaxy A07** → `samsung-galaxy-a07-64gb-gray.webp` | original `WEBP 1024×1024` / `10488` bytes → optimized `1000×1000` / `9026` bytes
+- `Fold 8 ultra.jpg` → **Product photography** → **New at Amaal** → **Samsung Galaxy Z Fold8 Ultra** → `fold-8-ultra.webp` | original `JPEG 720×480` / `115054` bytes → optimized `720×480` / `9068` bytes
+- `Logo_of_Infinix.png` → **Brand logo** → **Shop by brand** → **Infinix** → `logo-of-infinix.webp` | original `PNG 5634×2160` / `255304` bytes → optimized `1000×383` / `18522` bytes
+- `HISENSE-Washing-machine-WFHV8012T.webp` → **Product photography** → **Featured at Amaal** → **Hisense 8kg Front Loader** → `hisense-washing-machine-wfhv8012t.webp` | original `WEBP 800×800` / `8350` bytes → optimized `800×800` / `8710` bytes
+- `Saachi logo.png` → **Brand logo** → **Shop by brand** → **Saachi** → `saachi-logo.webp` | original `PNG 318×159` / `4485` bytes → optimized `318×159` / `3684` bytes
+- `Hp logo.webp` → **Brand logo** → **Shop by brand** → **HP** → `hp-logo.webp` | original `WEBP 640×494` / `11562` bytes → optimized `640×494` / `6914` bytes
+- `Googlepixellogo .jpeg` → **Brand logo** → **Shop by brand** → **Google Pixel** → `googlepixellogo.webp` | original `JPEG 554×554` / `6333` bytes → optimized `554×554` / `3344` bytes
+- `Pixel 11 pro xl.jpeg` → **Product photography** → **New at Amaal** → **Google Pixel 11 Pro XL** → `pixel-11-pro-xl.webp` | original `JPEG 447×447` / `16245` bytes → optimized `447×447` / `12098` bytes
+- `LG_logo_(2014).svg.png` → **Brand logo** → **Shop by brand** → **LG** → `lg-logo-2014-svg.webp` | original `PNG 3840×1760` / `142471` bytes → optimized `1000×458` / `21890` bytes
+- `TCL-50-Inch-.png` → **Product photography** → **Featured at Amaal** → **TCL 50-inch C655** → `tcl-50-inch.webp` | original `PNG 720×720` / `505275` bytes → optimized `720×720` / `47774` bytes
+- `Galaxy fold 8 standard or Passport.jpeg` → **Product photography** → **New at Amaal** → **Samsung Galaxy Z Fold8 “Passport”** → `galaxy-fold-8-standard-or-passport.webp` | original `JPEG 447×447` / `11600` bytes → optimized `447×447` / `5694` bytes
+- `Philipslogo.png` → **Brand logo** → **Shop by brand** → **Philips** → `philipslogo.webp` | original `PNG 225×225` / `1556` bytes → optimized `225×225` / `2146` bytes
+- `Sonashi logo.png` → **Brand logo** → **Shop by brand** → **Sonashi** → `sonashi-logo.webp` | original `PNG 225×225` / `1839` bytes → optimized `225×225` / `2116` bytes
+- `Category TVandentertainment.png` → **Category imagery** → **Shop by Category** → **TV & Home Entertainment** → `category-tvandentertainment.webp` | original `PNG 1448×1086` / `2428085` bytes → optimized `900×675` / `79328` bytes
+- `Lifestyle image of homepage.png` → **Lifestyle/editorial photography** → **Lifestyle / Editorial** → **Amaal lifestyle** → `lifestyle-image-of-homepage.webp` | original `PNG 1672×941` / `2387702` bytes → optimized `1400×788` / `135080` bytes
+- `Kenwood.png` → **Brand logo** → **Shop by brand** → **Kenwood** → `kenwood.webp` | original `PNG 226×174` / `2368` bytes → optimized `226×174` / `2470` bytes
+- `Categoryaccessories.png` → **Category imagery** → **Shop by Category** → **Accessories** → `categoryaccessories.webp` | original `PNG 1402×1122` / `2172164` bytes → optimized `900×720` / `43968` bytes
+- `Lenovo_Global_Corporate_Logo.png` → **Brand logo** → **Shop by brand** → **Lenovo** → `lenovo-global-corporate-logo.webp` | original `PNG 3840×1280` / `140841` bytes → optimized `1000×333` / `9952` bytes
+- `Samsung-Galaxy-Z-Fold8-Ultra-All-colours.webp` → **Product photography** → **New at Amaal** → **Samsung Galaxy Z Fold8 Ultra** → `samsung-galaxy-z-fold8-ultra-all-colours.webp` | original `WEBP 875×1050` / `20936` bytes → optimized `833×1000` / `24690` bytes
+- `iPhone 16 Pro Max 256GB (Black Titanium).png` → **Product photography** → **Featured at Amaal** → **iPhone 16 Pro Max 256GB** → `iphone-16-pro-max-256gb-black-titanium.webp` | original `PNG 1024×1024` / `241968` bytes → optimized `1000×1000` / `16612` bytes
+- `TCL 50 inch back.jpg` → **Product photography** → **Featured at Amaal** → **TCL 50-inch C655** → `tcl-50-inch-back.webp` | original `JPEG 500×500` / `12621` bytes → optimized `500×500` / `4590` bytes
+- `file_000000002b7881f49b2923ddaa7a0a27.png` → **Category imagery** → **Shop by Category** → **Tablets** → `file-000000002b7881f49b2923ddaa7a0a27.webp` | original `PNG 1448×1086` / `1922129` bytes → optimized `900×675` / `46344` bytes
+- `Spj logo.png` → **Brand logo** → **Shop by brand** → **SPJ** → `spj-logo.webp` | original `PNG 272×92` / `4677` bytes → optimized `272×92` / `3534` bytes
+- `Chiq logo.png` → **Brand logo** → **Shop by brand** → **CHiQ** → `chiq-logo.webp` | original `PNG 225×225` / `2982` bytes → optimized `225×225` / `3026` bytes
+- `Hisense logo.png` → **Brand logo** → **Shop by brand** → **Hisense** → `hisense-logo.webp` | original `PNG 225×225` / `1614` bytes → optimized `225×225` / `2050` bytes
+- `Categorykitchen appliances.png` → **Category imagery** → **Shop by Category** → **Kitchen Appliances** → `categorykitchen-appliances.webp` | original `PNG 1448×1086` / `2047850` bytes → optimized `900×675` / `57932` bytes
+- `Itel logo.png` → **Brand logo** → **Shop by brand** → **itel** → `itel-logo.webp` | original `PNG 200×200` / `1636` bytes → optimized `200×200` / `2310` bytes
+- `Acer logo.png` → **Brand logo** → **Shop by brand** → **Acer** → `acer-logo.webp` | original `PNG 225×225` / `2231` bytes → optimized `225×225` / `2092` bytes
+- `Category home appliances.png` → **Category imagery** → **Shop by Category** → **Home Appliances** → `category-home-appliances.webp` | original `PNG 1448×1086` / `2020557` bytes → optimized `900×675` / `46338` bytes
+- `Sony.png` → **Brand logo** → **Shop by brand** → **Sony** → `sony.webp` | original `PNG 219×169` / `1718` bytes → optimized `219×169` / `1782` bytes
+- `Samsung sound bar 2.jpg` → **Product photography** → **Featured at Amaal** → **Samsung HW-B400F** → `samsung-sound-bar-2.webp` | original `JPEG 500×500` / `27002` bytes → optimized `500×500` / `22240` bytes
+- `Google Pixel 9a 256gb (Obsidian).webp` → **Product photography** → **Approved library / not forced into homepage** → **Google Pixel 9a** → `google-pixel-9a-256gb-obsidian.webp` | original `WEBP 1024×1024` / `27956` bytes → optimized `1000×1000` / `17966` bytes
+- `Category computers and laptops.png` → **Category imagery** → **Shop by Category** → **Computers & Laptops** → `category-computers-and-laptops.webp` | original `PNG 1448×1086` / `1961195` bytes → optimized `900×675` / `46512` bytes
+- `TCL 75 C655 SIDE.webp` → **Product photography** → **New at Amaal** → **TCL 75-inch C655** → `tcl-75-c655-side.webp` | original `WEBP 1068×801` / `89980` bytes → optimized `1000×750` / `64258` bytes
+- `Apple logo.png` → **Brand logo** → **Shop by brand** → **Apple** → `apple-logo.webp` | original `PNG 225×225` / `2495` bytes → optimized `225×225` / `1128` bytes
+- `Black ark logo.png` → **Brand logo** → **Shop by brand** → **Black Ark** → `black-ark-logo.webp` | original `PNG 225×225` / `5536` bytes → optimized `225×225` / `3394` bytes
+- `Blue flame logo.png` → **Brand logo** → **Shop by brand** → **Blue Flame** → `blue-flame-logo.webp` | original `PNG 225×225` / `2414` bytes → optimized `225×225` / `2886` bytes
+- `Original_Hoffman_Electronics_Brand_Logo.jpg` → **Brand logo** → **Shop by brand** → **Hoffman’s Electronics** → `original-hoffman-electronics-brand-logo.webp` | original `JPEG 2700×700` / `358502` bytes → optimized `1000×259` / `15466` bytes
+- `Raf logo.jpeg` → **Brand logo** → **Shop by brand** → **RAF** → `raf-logo.webp` | original `JPEG 225×225` / `4022` bytes → optimized `225×225` / `1808` bytes
+- `CategoryPhones.png` → **Category imagery** → **Shop by Category** → **Phones** → `categoryphones.webp` | original `PNG 1402×1122` / `2032917` bytes → optimized `900×720` / `40904` bytes
+- `Tcl logo.png` → **Brand logo** → **Shop by brand** → **TCL** → `tcl-logo.webp` | original `PNG 1683×1182` / `14988` bytes → optimized `1000×702` / `6398` bytes
+- `Jbl logo.jpeg` → **Brand logo** → **Shop by brand** → **JBL** → `jbl-logo.webp` | original `JPEG 216×168` / `4440` bytes → optimized `216×168` / `2070` bytes

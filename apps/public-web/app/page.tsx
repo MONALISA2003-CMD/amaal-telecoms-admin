@@ -5,50 +5,209 @@ import SiteFooter from '../components/SiteFooter';
 import { featuredProducts, homeBrands, homeCategories, newProducts, type HomeProduct } from '../lib/homepage-data';
 import AutoRail from '../components/AutoRail';
 
-function ugx(value:number){return value ? new Intl.NumberFormat('en-UG',{style:'currency',currency:'UGX',maximumFractionDigits:0}).format(value) : 'Price on request'}
+function ugx(value: number) {
+  return `UGX ${value.toLocaleString('en-UG')}`;
+}
 
-function ProductTile({p}:{p:HomeProduct}){
-  return <article className="home-product-card">
-    <Link href={`/product/${p.slug}`} className="home-product-link">
-      <div className="product-media"><div className="product-placeholder" aria-hidden="true"><span>AMAAL</span></div></div>
-      <div className="home-product-meta"><p>{p.brand}</p><h3>{p.name}</h3><span>{p.quickDetails.slice(0,2).join(' · ')}</span><strong>Price coming soon</strong></div>
+function ProductTile({ p }: { p: HomeProduct }) {
+  const variants = p.variants?.length ? p.variants : [{ label: p.quickDetails.slice(0, 2).join(' · '), price: p.price }];
+  return (
+    <article className="home-product-card">
+      <Link href={`/product/${p.slug}`} className="home-product-link">
+        <div className="product-media">
+          {p.images.length ? (
+            <img
+              src={p.images[0]}
+              alt={`${p.name} product image`}
+              loading="lazy"
+              decoding="async"
+              sizes="(max-width: 600px) 76vw, (max-width: 1000px) 220px, 245px"
+            />
+          ) : (
+            <div className="product-placeholder product-placeholder-empty" aria-hidden="true">
+              <span>{p.brand}</span>
+              <strong>Product photo</strong>
+              <small>Approved photo not supplied</small>
+            </div>
+          )}
+        </div>
+        <div className="home-product-meta">
+          <p>{p.brand}</p>
+          <h3>{p.name}</h3>
+          <div className="variant-price-list" aria-label={`${p.name} variants and prices`}>
+            {variants.map((variant) => (
+              <div className="variant-price-row" key={`${variant.label}-${variant.price}`}>
+                <span>{variant.label}</span>
+                <strong>{ugx(variant.price)}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Link>
+      <Link className="button gold" href={`/contact?product=${encodeURIComponent(p.name)}`}>
+        Ask about this product <ArrowRight size={14} />
+      </Link>
+    </article>
+  );
+}
+
+function CategoryCard({
+  name,
+  slug,
+  imageSrc,
+  description,
+  index,
+}: {
+  name: string;
+  slug: string;
+  imageSrc: string;
+  description: string;
+  index: number;
+}) {
+  return (
+    <Link className="category-card" href={`/categories/${slug}`}>
+      <div className="category-art">
+        <img src={imageSrc} alt="" loading="lazy" decoding="async" />
+        <span>0{index + 1}</span>
+      </div>
+      <div className="category-copy">
+        <h3>{name}</h3>
+        <p>{description}</p>
+      </div>
     </Link>
-    <Link className="button gold" href={`/contact?product=${encodeURIComponent(p.name)}`}>Ask about this product</Link> 
-  </article>
+  );
 }
 
-function CategoryCard({name,slug,index}:{name:string;slug:string;index:number}){
-  return <Link className="category-card" href={`/categories/${slug}`}><div className="category-placeholder"><span>0{index+1}</span><strong>{name}</strong></div><div className="category-copy"><h3>{name}</h3><p>Explore {name.toLowerCase()} at Amaal.</p></div></Link>
-}
+export default function Home() {
+  return (
+    <main>
+      <SiteHeader />
 
-export default function Home(){
-  return <main>
-    <SiteHeader/>
-    <section className="lux-hero">
-      <div className="hero-copy"><p className="eyebrow">THE NEW STANDARD IN TECHNOLOGY</p><h1>Better technology.<br/><em>Better every day.</em></h1><p>Premium devices and appliances for your home, work and lifestyle — selected for the way you live.</p><div className="hero-actions"><Link className="button gold" href="/shop">Shop now <ArrowRight size={16}/></Link><Link className="button ghost-light" href="/about">Discover Amaal</Link></div><div className="hero-note"><CircleCheck size={15}/> Genuine products from trusted brands</div></div>
-      <div className="hero-stage" aria-hidden="true" />
-    </section>
+      <section className="lux-hero">
+        <div className="hero-copy">
+          <p className="eyebrow">THE NEW STANDARD IN TECHNOLOGY</p>
+          <h1>Better technology.<br /><em>Better every day.</em></h1>
+          <p>Premium devices and appliances for your home, work and lifestyle, selected for the way you live.</p>
+          <div className="hero-actions">
+            <Link className="button gold" href="/shop">Shop now <ArrowRight size={16} /></Link>
+            <Link className="button ghost-light" href="/about">Discover Amaal</Link>
+          </div>
+          <div className="hero-note"><CircleCheck size={15} /> Genuine products from trusted brands</div>
+        </div>
+        <div className="hero-stage hero-stage-image" aria-hidden="true" />
+      </section>
 
-    <section className="trust-strip" aria-label="Amaal assurances"><div><img src="/assets/amaal/trust-authentic.jpg" alt="Authentic products"/><span><strong>100% authentic</strong><small>Genuine products</small></span></div><div><img src="/assets/amaal/trust-warranty.jpg" alt="Warranty support"/><span><strong>Warranty support</strong><small>Here after the sale</small></span></div><div><img src="/assets/amaal/trust-delivery.jpg" alt="Reliable delivery"/><span><strong>Reliable delivery</strong><small>Across Uganda</small></span></div><div><img src="/assets/amaal/trust-payment.jpg" alt="Flexible payment"/><span><strong>Flexible payment</strong><small>Convenient ways to pay</small></span></div></section>
+      <section className="trust-strip" aria-label="Amaal assurances">
+        <div><img src="/assets/amaal/trust-authentic.jpg" alt="Authentic products" /><span><strong>100% authentic</strong><small>Genuine products</small></span></div>
+        <div><img src="/assets/amaal/trust-warranty.jpg" alt="Warranty support" /><span><strong>Warranty support</strong><small>Here after the sale</small></span></div>
+        <div><img src="/assets/amaal/trust-delivery.jpg" alt="Reliable delivery" /><span><strong>Reliable delivery</strong><small>Across Uganda</small></span></div>
+        <div><img src="/assets/amaal/trust-payment.jpg" alt="Flexible payment" /><span><strong>Flexible payment</strong><small>Convenient ways to pay</small></span></div>
+      </section>
 
-    <section className="section category-section"><div className="section-head"><div><p className="eyebrow">EXPLORE OUR WORLD</p><h2>Shop by category</h2><p className="section-intro">Eight everyday categories, moving continuously so customers can discover more without leaving the page.</p></div><Link className="quiet-link" href="/categories">View all <ArrowRight size={15}/></Link></div><AutoRail className="category-rail" label="Shop by category" speed={0.42}>{homeCategories.map(([name,slug],i)=><CategoryCard name={name} slug={slug} index={i} key={name}/>)}</AutoRail></section>
+      <section className="section category-section">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">EXPLORE OUR WORLD</p>
+            <h2>Shop by category</h2>
+            <p className="section-intro">Eight everyday categories, presented with approved Amaal photography and easy paths into the catalogue.</p>
+          </div>
+          <Link className="quiet-link" href="/categories">View all <ArrowRight size={15} /></Link>
+        </div>
+        <AutoRail className="category-rail" label="Shop by category" speed={0.42}>
+          {homeCategories.map(([name, slug, imageSrc, description], i) => (
+            <CategoryCard name={name} slug={slug} imageSrc={imageSrc} description={description} index={i} key={name} />
+          ))}
+        </AutoRail>
+      </section>
 
-    <section className="section featured-section"><div className="section-head"><div><p className="eyebrow">THE AMAAL EDIT</p><h2>Featured at Amaal</h2><p className="section-intro">Quick details and clear pricing on a rotating selection. Open any product for the full story, specifications and buying information.</p></div><Link className="quiet-link" href="/shop">Shop all <ArrowRight size={15}/></Link></div><AutoRail className="product-rail" label="Featured at Amaal" speed={0.34}>{featuredProducts.map(p=><ProductTile key={p.slug} p={p}/>)}</AutoRail></section>
+      <section className="section featured-section">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">THE AMAAL EDIT</p>
+            <h2>Featured at Amaal</h2>
+            <p className="section-intro">A focused selection with clear variant information and exact homepage pricing.</p>
+          </div>
+          <Link className="quiet-link" href="/shop">Shop all <ArrowRight size={15} /></Link>
+        </div>
+        <AutoRail className="product-rail" label="Featured at Amaal" speed={0.34}>
+          {featuredProducts.map((p) => <ProductTile key={p.slug} p={p} />)}
+        </AutoRail>
+      </section>
 
-    <section className="lifestyle-feature"><div className="lifestyle-copy"><p className="eyebrow">AMAAL EDIT</p><h2>Bring home experiences that matter.</h2><p>From brilliant screens to powerful sound, from the kitchen to the office — discover technology selected for real everyday life.</p><Link className="button gold" href="/deals">Explore deals <ArrowRight size={16}/></Link></div><div className="lifestyle-scene" aria-hidden="true"><div className="scene-placeholder scene-tv-placeholder"></div><div className="scene-placeholder scene-sound-placeholder"></div></div></section>
+      <section className="lifestyle-feature">
+        <div className="lifestyle-copy">
+          <p className="eyebrow">AMAAL EDIT</p>
+          <h2>Bring home experiences that matter.</h2>
+          <p>From brilliant screens to powerful sound, from the kitchen to the office, discover technology selected for real everyday life.</p>
+          <Link className="button gold" href="/deals">Explore deals <ArrowRight size={16} /></Link>
+        </div>
+        <div className="lifestyle-scene" aria-hidden="true">
+          <img src="/assets/amaal/homepage/lifestyle-image-of-homepage.webp" alt="" loading="lazy" decoding="async" />
+        </div>
+      </section>
 
-    <section className="section arrivals-section"><div className="section-head"><div><p className="eyebrow">JUST IN</p><h2>New at Amaal</h2><p className="section-intro">Fresh arrivals with the essentials customers need to understand at a glance.</p></div><Link className="quiet-link" href="/shop">View collection <ArrowRight size={15}/></Link></div><AutoRail className="product-rail" label="New at Amaal" speed={0.34}>{newProducts.map(p=><ProductTile key={p.slug} p={p}/>)}</AutoRail></section>
+      <section className="section arrivals-section">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">JUST IN</p>
+            <h2>New at Amaal</h2>
+            <p className="section-intro">A curated rail of current products, with RAM, storage and pricing made unmistakable.</p>
+          </div>
+          <Link className="quiet-link" href="/shop">View collection <ArrowRight size={15} /></Link>
+        </div>
+        <AutoRail className="product-rail" label="New at Amaal" speed={0.34}>
+          {newProducts.map((p) => <ProductTile key={p.slug} p={p} />)}
+        </AutoRail>
+      </section>
 
-    <section className="section brand-section"><div className="section-head"><div><p className="eyebrow">TRUSTED NAMES</p><h2>Shop by brand</h2><p className="section-intro">Recognisable brands, presented simply.</p></div><Link className="quiet-link" href="/brands">Explore brands <ArrowRight size={15}/></Link></div><AutoRail className="brand-rail" label="Shop by brand" speed={0.4}>{homeBrands.map((name,i)=><Link href={`/brands/${name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}`} className="brand-card" key={`${name}-${i}`}><span className="brand-logo-placeholder">{name}</span></Link>)}</AutoRail></section>
+      <section className="section brand-section">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">TRUSTED NAMES</p>
+            <h2>Shop by brand</h2>
+            <p className="section-intro">Recognisable catalogue brands, presented with their supplied approved marks.</p>
+          </div>
+          <Link className="quiet-link" href="/brands">Explore brands <ArrowRight size={15} /></Link>
+        </div>
+        <AutoRail className="brand-rail" label="Shop by brand" speed={0.4}>
+          {homeBrands.map(([name, slug, logo]) => (
+            <Link href={`/brands/${slug}`} className="brand-card" key={name}>
+              <img src={logo} alt={`${name} logo`} loading="lazy" decoding="async" />
+              <span>{name}</span>
+            </Link>
+          ))}
+        </AutoRail>
+      </section>
 
-    <section className="section weekly-section"><div className="weekly-heading"><div><p className="eyebrow">THIS WEEK</p><h2>Weekly deals</h2><p>Fresh weekly offers will live here, with the actual promotion, validity and price supplied by Amaal.</p></div><Link className="button gold" href="/deals">See all deals <ArrowRight size={16}/></Link></div><div className="weekly-grid"><Link href="/deals" className="weekly-card"><span>PHONE DEALS</span><h3>Upgrade your everyday.</h3></Link><Link href="/deals" className="weekly-card dark"><span>HOME ENTERTAINMENT</span><h3>Make movie night better.</h3></Link><Link href="/deals" className="weekly-card"><span>APPLIANCE DEALS</span><h3>Better home, better value.</h3></Link></div></section>
+      <section className="section weekly-section">
+        <div className="weekly-heading">
+          <div>
+            <p className="eyebrow">THIS WEEK</p>
+            <h2>Weekly deals</h2>
+            <p>Fresh weekly offers will live here, with the actual promotion, validity and price supplied by Amaal.</p>
+          </div>
+          <Link className="button gold" href="/deals">See all deals <ArrowRight size={16} /></Link>
+        </div>
+        <div className="weekly-grid">
+          <Link href="/deals" className="weekly-card"><span>PHONE DEALS</span><h3>Upgrade your everyday.</h3></Link>
+          <Link href="/deals" className="weekly-card dark"><span>HOME ENTERTAINMENT</span><h3>Make movie night better.</h3></Link>
+          <Link href="/deals" className="weekly-card"><span>APPLIANCE DEALS</span><h3>Better home, better value.</h3></Link>
+        </div>
+      </section>
 
-    <section className="difference-section"><div className="difference-intro"><p className="eyebrow">THE AMAAL DIFFERENCE</p><h2>More than a purchase.</h2><p>Authentic products, clear information and helpful support — before, during and after you buy.</p></div><div className="difference-grid"><div><span>01</span><h3>Authentic by design</h3><p>Buy with confidence.</p></div><div><span>02</span><h3>Advice that helps</h3><p>Choose with clarity.</p></div><div><span>03</span><h3>Support that stays</h3><p>We're here after checkout.</p></div><div><span>04</span><h3>Technology made simple</h3><p>For real everyday life.</p></div></div></section>
+      <section className="difference-section">
+        <div className="difference-intro"><p className="eyebrow">THE AMAAL DIFFERENCE</p><h2>More than a purchase.</h2><p>Authentic products, clear information and helpful support, before, during and after you buy.</p></div>
+        <div className="difference-grid"><div><span>01</span><h3>Authentic by design</h3><p>Buy with confidence.</p></div><div><span>02</span><h3>Advice that helps</h3><p>Choose with clarity.</p></div><div><span>03</span><h3>Support that stays</h3><p>We're here after checkout.</p></div><div><span>04</span><h3>Technology made simple</h3><p>For real everyday life.</p></div></div>
+      </section>
 
-    <section className="section service-section"><div><p className="eyebrow">BEYOND THE SALE</p><h2>We're here after the purchase, too.</h2><p>Delivery, warranty, repairs, returns and support — in one place.</p></div><div className="service-links"><Link href="/tracking">Track an order <ArrowRight size={16}/></Link><Link href="/delivery">Delivery information <ArrowRight size={16}/></Link><Link href="/warranty">Warranty support <ArrowRight size={16}/></Link><Link href="/repairs">Repairs & service <ArrowRight size={16}/></Link><Link href="/contact">Make an enquiry <ArrowRight size={16}/></Link></div></section>
+      <section className="section service-section">
+        <div><p className="eyebrow">BEYOND THE SALE</p><h2>We're here after the purchase, too.</h2><p>Delivery, warranty, repairs, returns and support, in one place.</p></div>
+        <div className="service-links"><Link href="/tracking">Track an order <ArrowRight size={16} /></Link><Link href="/delivery">Delivery information <ArrowRight size={16} /></Link><Link href="/warranty">Warranty support <ArrowRight size={16} /></Link><Link href="/repairs">Repairs & service <ArrowRight size={16} /></Link><Link href="/contact">Make an enquiry <ArrowRight size={16} /></Link></div>
+      </section>
 
-    <section className="assist-section"><div><p className="eyebrow">NEED A LITTLE HELP?</p><h2>Not sure what you need?</h2><p>Tell us what you're looking for and our team can help you find the right technology for your home, work or everyday life.</p></div><Link className="button gold" href="/contact">Talk to Amaal <ArrowRight size={16}/></Link></section>
-    <section className="newsletter"><div><p className="eyebrow">STAY IN THE LOOP</p><h2>Technology worth knowing about.</h2><p>New arrivals, offers and useful stories from Amaal.</p></div><form><input placeholder="Enter your email" aria-label="Email address"/><button aria-label="Subscribe"><ArrowRight size={17}/></button></form></section>
-    <SiteFooter/>
-  </main>
+      <section className="assist-section"><div><p className="eyebrow">NEED A LITTLE HELP?</p><h2>Not sure what you need?</h2><p>Tell us what you're looking for and our team can help you find the right technology for your home, work or everyday life.</p></div><Link className="button gold" href="/contact">Talk to Amaal <ArrowRight size={16} /></Link></section>
+      <section className="newsletter"><div><p className="eyebrow">STAY IN THE LOOP</p><h2>Technology worth knowing about.</h2><p>New arrivals, offers and useful stories from Amaal.</p></div><form><input placeholder="Enter your email" aria-label="Email address" /><button aria-label="Subscribe"><ArrowRight size={17} /></button></form></section>
+      <SiteFooter />
+    </main>
+  );
 }
