@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, CircleCheck, Headphones, ShieldCheck, Truck, Wrench } from 'lucide-react';
+import { ArrowRight, CircleCheck } from 'lucide-react';
 import SiteHeader from '../components/SiteHeader';
 import SiteFooter from '../components/SiteFooter';
 import { featuredProducts, homeBrands, homeCategories, newProducts, type HomeProduct } from '../lib/homepage-data';
@@ -29,7 +29,7 @@ export default function Home(){
       <div className="hero-stage" aria-hidden="true" />
     </section>
 
-    <section className="trust-strip" aria-label="Amaal assurances"><div><ShieldCheck/><span><strong>100% authentic</strong><small>Genuine products</small></span></div><div><ShieldCheck/><span><strong>Trusted brands</strong><small>Brands you know</small></span></div><div><Truck/><span><strong>Fast delivery</strong><small>Across Uganda</small></span></div><div><Wrench/><span><strong>Warranty support</strong><small>Here after the sale</small></span></div><div><Headphones/><span><strong>Expert assistance</strong><small>Help when you need it</small></span></div></section>
+    <section className="trust-strip" aria-label="Amaal assurances"><div><img src="/assets/amaal/trust-authentic.jpg" alt="Authentic products"/><span><strong>100% authentic</strong><small>Genuine products</small></span></div><div><img src="/assets/amaal/trust-warranty.jpg" alt="Warranty support"/><span><strong>Warranty support</strong><small>Here after the sale</small></span></div><div><img src="/assets/amaal/trust-delivery.jpg" alt="Reliable delivery"/><span><strong>Reliable delivery</strong><small>Across Uganda</small></span></div><div><img src="/assets/amaal/trust-payment.jpg" alt="Flexible payment"/><span><strong>Flexible payment</strong><small>Convenient ways to pay</small></span></div></section>
 
     <section className="section category-section"><div className="section-head"><div><p className="eyebrow">EXPLORE OUR WORLD</p><h2>Shop by category</h2><p className="section-intro">Eight everyday categories, moving continuously so customers can discover more without leaving the page.</p></div><Link className="quiet-link" href="/categories">View all <ArrowRight size={15}/></Link></div><AutoRail className="category-rail" label="Shop by category" speed={0.42}>{homeCategories.map(([name,slug],i)=><CategoryCard name={name} slug={slug} index={i} key={name}/>)}</AutoRail></section>
 
