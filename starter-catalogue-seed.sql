@@ -1,17 +1,17 @@
 -- Amaal Telecoms additive starter catalogue. Safe to run repeatedly: never clears, resets or overwrites existing records.
 -- Product records only; no inventory balances, receipts, movements or stock quantities are created.
 BEGIN;
-INSERT INTO brands(name,slug,status) VALUES ('Apple','apple','Active') ON CONFLICT(slug) DO NOTHING;
-INSERT INTO brands(name,slug,status) VALUES ('Samsung','samsung','Active') ON CONFLICT(slug) DO NOTHING;
-INSERT INTO brands(name,slug,status) VALUES ('TCL','tcl','Active') ON CONFLICT(slug) DO NOTHING;
-INSERT INTO brands(name,slug,status) VALUES ('Hisense','hisense','Active') ON CONFLICT(slug) DO NOTHING;
-INSERT INTO product_categories(name,slug,status) VALUES ('Phones','phones','Active') ON CONFLICT(slug) DO NOTHING;
-INSERT INTO product_categories(name,slug,status) VALUES ('Tablets','tablets','Active') ON CONFLICT(slug) DO NOTHING;
-INSERT INTO product_categories(name,slug,status) VALUES ('Entertainment','entertainment','Active') ON CONFLICT(slug) DO NOTHING;
-INSERT INTO product_categories(name,slug,status) VALUES ('Accessories','accessories','Active') ON CONFLICT(slug) DO NOTHING;
-INSERT INTO product_categories(name,slug,status) VALUES ('Computers','computers','Active') ON CONFLICT(slug) DO NOTHING;
-INSERT INTO product_categories(name,slug,status) VALUES ('Networking','networking','Active') ON CONFLICT(slug) DO NOTHING;
-INSERT INTO product_categories(name,slug,status) VALUES ('Wearables','wearables','Active') ON CONFLICT(slug) DO NOTHING;
+INSERT INTO brands(name,slug,status) VALUES ('Apple','apple','Active') ON CONFLICT DO NOTHING;
+INSERT INTO brands(name,slug,status) VALUES ('Samsung','samsung','Active') ON CONFLICT DO NOTHING;
+INSERT INTO brands(name,slug,status) VALUES ('TCL','tcl','Active') ON CONFLICT DO NOTHING;
+INSERT INTO brands(name,slug,status) VALUES ('Hisense','hisense','Active') ON CONFLICT DO NOTHING;
+INSERT INTO product_categories(name,slug,status) VALUES ('Phones','phones','Active') ON CONFLICT DO NOTHING;
+INSERT INTO product_categories(name,slug,status) VALUES ('Tablets','tablets','Active') ON CONFLICT DO NOTHING;
+INSERT INTO product_categories(name,slug,status) VALUES ('Entertainment','entertainment','Active') ON CONFLICT DO NOTHING;
+INSERT INTO product_categories(name,slug,status) VALUES ('Accessories','accessories','Active') ON CONFLICT DO NOTHING;
+INSERT INTO product_categories(name,slug,status) VALUES ('Computers','computers','Active') ON CONFLICT DO NOTHING;
+INSERT INTO product_categories(name,slug,status) VALUES ('Networking','networking','Active') ON CONFLICT DO NOTHING;
+INSERT INTO product_categories(name,slug,status) VALUES ('Wearables','wearables','Active') ON CONFLICT DO NOTHING;
 INSERT INTO product_categories(name,slug,status) VALUES ('Power & Smart Home','power-smart-home','Active') ON CONFLICT(slug) DO NOTHING;
 INSERT INTO product_categories(name,slug,status) VALUES ('Gaming','gaming','Active') ON CONFLICT(slug) DO NOTHING;
 INSERT INTO product_categories(name,slug,status) VALUES ('Cameras & Security','cameras-security','Active') ON CONFLICT(slug) DO NOTHING;

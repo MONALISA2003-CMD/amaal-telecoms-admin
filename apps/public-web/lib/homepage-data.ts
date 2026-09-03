@@ -1,4 +1,5 @@
 export type HomeProduct = {
+  id?: string;
   slug: string;
   name: string;
   brand: string;

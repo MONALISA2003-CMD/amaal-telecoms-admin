@@ -1,14 +1,24 @@
 -- Amaal category hierarchy hardening. Additive/idempotent. No reset/delete/truncate.
 BEGIN;
--- Audio belongs to Entertainment; audio product types belong to Audio.
-UPDATE product_categories child SET parent_id=parent.id, status='Active', website_visibility='Published'
-FROM product_categories parent WHERE parent.slug='entertainment' AND child.slug='audio';
-UPDATE product_categories child SET parent_id=parent.id, status='Active', website_visibility='Published'
-FROM product_categories parent WHERE parent.slug='audio' AND child.slug IN ('audio-woofers','audio-party-speakers','audio-sound-towers');
-UPDATE product_categories child SET parent_id=parent.id, status='Active', website_visibility='Published'
-FROM product_categories parent WHERE parent.slug='audio' AND child.slug IN ('entertainment-audio-woofers','entertainment-audio-party-speakers','entertainment-audio-sound-towers');
--- Keep legacy duplicate category records hidden rather than deleting them.
-UPDATE product_categories SET status='Inactive', website_visibility='Hidden' WHERE slug IN ('audio-woofers','audio-party-speakers','audio-sound-towers');
+-- Audio belongs to Entertainment; canonical audio product types belong to Audio.
+UPDATE product_categories child
+SET parent_id=parent.id,status='Active',website_visibility='Published'
+FROM product_categories parent
+WHERE parent.slug='entertainment' AND child.slug='audio';
+
+-- Audio category names are canonicalized by audio-catalogue-seed.sql.
+-- Only reparent the canonical slugs here. Legacy records remain hidden and
+-- are never moved back into the live taxonomy.
+UPDATE product_categories child
+SET parent_id=parent.id,status='Active',website_visibility='Published',updated_at=now()
+FROM product_categories parent
+WHERE parent.slug='audio'
+  AND child.slug IN (
+    'entertainment-audio-woofers',
+    'entertainment-audio-party-speakers',
+    'entertainment-audio-sound-towers'
+  );
+
 -- Computers: Laptops / Desktops / AIO are children of Computers.
 UPDATE product_categories child SET parent_id=parent.id, status='Active', website_visibility='Published'
 FROM product_categories parent WHERE parent.slug='computers' AND child.slug IN ('computers-laptops','computers-desktops','computers-all-in-one','computers-gaming-laptops');

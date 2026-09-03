@@ -3,40 +3,102 @@ BEGIN;
 INSERT INTO brands(name,slug,status,website_visibility) VALUES
  ('Black Ark','black-ark','Active','Published'),('Global Star','global-star','Active','Published'),('SPJ','spj','Active','Published'),('CHiQ Smart Plus','chiq-smart-plus','Active','Published'),('Hisense','hisense','Active','Published'),('Samsung','samsung','Active','Published'),('LG','lg','Active','Published'),('JBL','jbl','Active','Published'),('Sony','sony','Active','Published')
 ON CONFLICT(slug) DO NOTHING;
-INSERT INTO product_categories(name,slug,status,website_visibility) VALUES ('Audio','audio','Active','Published'),('Woofers','audio-woofers','Active','Published'),('Party Speakers','audio-party-speakers','Active','Published'),('Sound Towers','audio-sound-towers','Active','Published') ON CONFLICT(slug) DO NOTHING;
-INSERT INTO product_categories(parent_id,name,slug,status,website_visibility)
-SELECT c.id,'Woofers','entertainment-audio-woofers','Active','Published'
-FROM product_categories c
-WHERE c.slug='entertainment'
-  AND NOT EXISTS (SELECT 1 FROM product_categories x WHERE x.parent_id=c.id AND lower(x.name)=lower('Woofers'))
-ON CONFLICT(slug) DO NOTHING;
-UPDATE product_categories x SET slug='entertainment-audio-woofers',status='Active',website_visibility='Published',updated_at=now()
-FROM product_categories p
-WHERE p.slug='entertainment' AND x.parent_id=p.id AND lower(x.name)=lower('Woofers')
-  AND x.slug<>'entertainment-audio-woofers'
-  AND NOT EXISTS (SELECT 1 FROM product_categories z WHERE z.slug='entertainment-audio-woofers');
-INSERT INTO product_categories(parent_id,name,slug,status,website_visibility)
-SELECT c.id,'Party Speakers','entertainment-audio-party-speakers','Active','Published'
-FROM product_categories c
-WHERE c.slug='entertainment'
-  AND NOT EXISTS (SELECT 1 FROM product_categories x WHERE x.parent_id=c.id AND lower(x.name)=lower('Party Speakers'))
-ON CONFLICT(slug) DO NOTHING;
-UPDATE product_categories x SET slug='entertainment-audio-party-speakers',status='Active',website_visibility='Published',updated_at=now()
-FROM product_categories p
-WHERE p.slug='entertainment' AND x.parent_id=p.id AND lower(x.name)=lower('Party Speakers')
-  AND x.slug<>'entertainment-audio-party-speakers'
-  AND NOT EXISTS (SELECT 1 FROM product_categories z WHERE z.slug='entertainment-audio-party-speakers');
-INSERT INTO product_categories(parent_id,name,slug,status,website_visibility)
-SELECT c.id,'Sound Towers','entertainment-audio-sound-towers','Active','Published'
-FROM product_categories c
-WHERE c.slug='entertainment'
-  AND NOT EXISTS (SELECT 1 FROM product_categories x WHERE x.parent_id=c.id AND lower(x.name)=lower('Sound Towers'))
-ON CONFLICT(slug) DO NOTHING;
-UPDATE product_categories x SET slug='entertainment-audio-sound-towers',status='Active',website_visibility='Published',updated_at=now()
-FROM product_categories p
-WHERE p.slug='entertainment' AND x.parent_id=p.id AND lower(x.name)=lower('Sound Towers')
-  AND x.slug<>'entertainment-audio-sound-towers'
-  AND NOT EXISTS (SELECT 1 FROM product_categories z WHERE z.slug='entertainment-audio-sound-towers');
+-- Canonical audio taxonomy. Older audio category rows are retained as hidden
+-- legacy records, while products are migrated to the canonical category.
+DO $$
+DECLARE
+  audio_id uuid;
+  target_id uuid;
+  legacy record;
+  item record;
+BEGIN
+  SELECT id INTO audio_id FROM product_categories WHERE slug='audio' LIMIT 1;
+  IF audio_id IS NULL THEN
+    SELECT id INTO audio_id
+    FROM product_categories
+    WHERE lower(name)=lower('Audio') AND parent_id IS NULL
+    ORDER BY created_at,id
+    LIMIT 1;
+  END IF;
+  IF audio_id IS NULL THEN
+    INSERT INTO product_categories(name,slug,status,website_visibility)
+    VALUES ('Audio','audio','Active','Published')
+    ON CONFLICT(slug) DO NOTHING
+    RETURNING id INTO audio_id;
+    IF audio_id IS NULL THEN
+      SELECT id INTO audio_id FROM product_categories WHERE slug='audio' LIMIT 1;
+    END IF;
+  END IF;
+
+  FOR item IN
+    SELECT * FROM (VALUES
+      ('Woofers','entertainment-audio-woofers'),
+      ('Party Speakers','entertainment-audio-party-speakers'),
+      ('Sound Towers','entertainment-audio-sound-towers')
+    ) AS v(category_name, canonical_slug)
+  LOOP
+    SELECT id INTO target_id
+    FROM product_categories
+    WHERE slug=item.canonical_slug
+    LIMIT 1;
+
+    IF target_id IS NULL THEN
+      SELECT c.id INTO target_id
+      FROM product_categories c
+      WHERE lower(c.name)=lower(item.category_name)
+      ORDER BY CASE WHEN c.parent_id=audio_id THEN 0 ELSE 1 END, c.created_at, c.id
+      LIMIT 1;
+
+      IF target_id IS NOT NULL THEN
+        UPDATE product_categories
+        SET slug=item.canonical_slug,
+            parent_id=audio_id,
+            status='Active',
+            website_visibility='Published',
+            updated_at=now()
+        WHERE id=target_id;
+      ELSE
+        INSERT INTO product_categories(parent_id,name,slug,status,website_visibility)
+        VALUES (audio_id,item.category_name,item.canonical_slug,'Active','Published')
+        ON CONFLICT(slug) DO NOTHING
+        RETURNING id INTO target_id;
+      END IF;
+    END IF;
+
+    SELECT id INTO target_id FROM product_categories WHERE slug=item.canonical_slug LIMIT 1;
+
+    IF target_id IS NOT NULL THEN
+      UPDATE products p
+      SET category_id=target_id, updated_at=now()
+      WHERE p.category_id IN (
+        SELECT c.id
+        FROM product_categories c
+        WHERE lower(c.name)=lower(item.category_name)
+          AND c.id<>target_id
+      );
+
+      FOR legacy IN
+        SELECT c.id, c.slug
+        FROM product_categories c
+        WHERE lower(c.name)=lower(item.category_name)
+          AND c.id<>target_id
+      LOOP
+        UPDATE product_categories
+        SET name='Legacy ' || item.category_name || ' ' || replace(legacy.id::text,'-',''),
+            slug='legacy-' || regexp_replace(legacy.slug,'[^a-zA-Z0-9_-]','','g') || '-' || replace(legacy.id::text,'-',''),
+            status='Inactive',
+            website_visibility='Hidden',
+            updated_at=now()
+        WHERE id=legacy.id;
+      END LOOP;
+
+      UPDATE product_categories
+      SET parent_id=audio_id,status='Active',website_visibility='Published',updated_at=now()
+      WHERE id=target_id;
+    END IF;
+  END LOOP;
+END $$;
+
 WITH x(name,slug,brand,cat,short,descr) AS (VALUES
  ('Black Ark 12-inch Bluetooth Woofer','black-ark-12-inch-bluetooth-woofer','black-ark','entertainment-audio-woofers','A practical Bluetooth woofer for everyday music and home listening.','A compact woofer-style sound system designed for everyday home entertainment, casual music listening and small gatherings.'),
  ('Black Ark 15-inch Bluetooth Woofer','black-ark-15-inch-bluetooth-woofer','black-ark','entertainment-audio-woofers','A larger woofer format for stronger bass and fuller room sound.','A larger Bluetooth woofer format aimed at home entertainment, family gatherings and music playback where stronger bass is preferred.'),
