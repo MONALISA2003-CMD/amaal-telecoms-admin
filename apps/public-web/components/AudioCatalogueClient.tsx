@@ -9,7 +9,7 @@ function AudioCard({ product, remoteMedia, basePath }: { product: AudioProduct; 
   const media = '';
   return <Link href={`${basePath}/${product.slug}`} className="audio-card">
     <div className="audio-media">
-      <div className="audio-placeholder"><span>{product.brand}</span><strong>{product.type}</strong><small>Product image unavailable</small></div>
+      <div className="audio-placeholder"><span>{product.brand}</span><strong>{product.type}</strong><small>Product image</small></div>
       <span className="audio-tier-badge">{product.tier === 'EVERYDAY' ? 'EVERYDAY' : product.tier}</span>
     </div>
     <div className="audio-card-body">

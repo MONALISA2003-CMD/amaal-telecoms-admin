@@ -22,7 +22,7 @@ export default function CuratedCatalogueClient({items,basePath,filterLabel='Type
   </div>
   <div className="smart-results"><span>{filtered.length} {filtered.length===1?'product':'products'}</span>{(q||brand!=='All brands'||filter!=='All'||sort!=='Featured')&&<button onClick={clear}>Clear filters</button>}</div>
   {filtered.length?<div className="premium-product-grid">{filtered.map(x=><Link href={`${basePath}/${x.slug}`} className="premium-product-card" key={x.slug}>
-   <div className="premium-product-media"><span>{x.brand}</span><strong>{x.name}</strong><small>Product image unavailable</small></div>
+   <div className="premium-product-media"><span>{x.brand}</span><strong>{x.name}</strong><small>Product image</small></div>
    <div className="premium-product-body"><p>{x.brand}</p><h3>{x.name}</h3><p>{x.shortDescription}</p><div className="spec-pills">{x.quickSpecs.slice(0,3).map(s=><span key={s}>{s}</span>)}</div><div className="card-footer"><strong>Price coming soon</strong><span>View details <ArrowRight size={13}/></span></div></div>
   </Link>)}</div>:<div className="catalogue-empty"><h3>No products match those choices.</h3><p>Try another brand, filter or search term.</p><button className="button gold" onClick={clear}>Show all products</button></div>}
  </>;

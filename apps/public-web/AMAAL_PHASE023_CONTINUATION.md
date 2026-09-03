@@ -67,3 +67,16 @@ Product image associations now retain a nullable `media_id` reference so an imag
 ## NEXT RECOMMENDED WORKSTREAM
 
 Workstream 2: secure customer authentication and account identity, using the stabilized database catalogue and media foundations.
+
+
+## WORKSTREAM 1 HARDENING PASS — 2026-09-03
+
+The original Workstream 1 closure was re-audited from the uploaded production source package. Four additional catalogue/media authority issues were closed:
+
+- Public catalogue image payloads now resolve only through Active + Public managed media assets. Legacy `product_images.url` values are no longer trusted by the public catalogue.
+- The legacy product-image creation endpoint no longer accepts arbitrary external image URLs. It remains as a compatibility route but requires a managed `mediaId`.
+- Product publication now requires an Active + Public managed media asset, rather than merely any row in `product_images`.
+- Media replacement is now cache-safe. Public product image URLs carry the current media checksum, and immutable caching is used only when that version token matches the current checksum.
+
+No data reset, truncation or deletion was introduced.
+Payment remains completely deferred.
