@@ -140,7 +140,7 @@ export const newProducts: HomeProduct[] = [
     brand: 'TECNO',
     name: 'TECNO CAMON 50 Pro 5G/4G',
     price: 1350000,
-    images: [],
+    images: [asset('tecno-camon-50-pro.webp')],
     eyebrow: '5G / 4G camera phone',
     quickDetails: ['8GB RAM + 256GB ROM', 'CAMON 50 Pro family'],
     variants: [{ label: '8GB RAM + 256GB ROM', price: 1350000 }],

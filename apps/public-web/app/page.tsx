@@ -4,12 +4,16 @@ import SiteHeader from '../components/SiteHeader';
 import SiteFooter from '../components/SiteFooter';
 import { featuredProducts, homeBrands, homeCategories, newProducts, type HomeProduct } from '../lib/homepage-data';
 import AutoRail from '../components/AutoRail';
+import AddToBag from '../components/AddToBag';
+import { getCatalog, type Product } from '../lib/catalog';
 
 function ugx(value: number) {
   return `UGX ${value.toLocaleString('en-UG')}`;
 }
 
-function ProductTile({ p }: { p: HomeProduct }) {
+type HomeCommerce = { productId: string; variantId: string; price: number; variantName?: string };
+
+function ProductTile({ p, commerce }: { p: HomeProduct; commerce?: HomeCommerce }) {
   const variants = p.variants?.length ? p.variants : [{ label: p.quickDetails.slice(0, 2).join(' · '), price: p.price }];
   return (
     <article className="home-product-card">
@@ -44,9 +48,25 @@ function ProductTile({ p }: { p: HomeProduct }) {
           </div>
         </div>
       </Link>
-      <Link className="button gold home-product-cta" href={`/product/${p.slug}`}>
-        Order Now <ArrowRight size={14} />
-      </Link>
+      <div className="home-product-cta">
+        {commerce ? (
+          <AddToBag
+            id={commerce.productId}
+            variantId={commerce.variantId}
+            name={p.name}
+            brand={p.brand}
+            slug={p.slug}
+            price={ugx(commerce.price)}
+            numericPrice={commerce.price}
+            buttonLabel="Add to cart"
+            addedLabel="Added to cart"
+          />
+        ) : (
+          <Link className="button gold" href={`/product/${p.slug}`}>
+            Order Now <ArrowRight size={14} />
+          </Link>
+        )}
+      </div>
     </article>
   );
 }
@@ -75,7 +95,28 @@ const trustItems = [
   ['trust-payment.jpg', 'Flexible payment', 'Convenient ways to pay'],
 ] as const;
 
-export default function Home() {
+function resolveCommerceProduct(p: HomeProduct, catalog: Product[] | undefined): HomeCommerce | undefined {
+  const product = catalog?.find((candidate) => candidate.slug === p.slug);
+  if (!product?.id || !product.variants?.length) return undefined;
+
+  // Only expose a direct cart action when the existing catalogue has an unambiguous
+  // variant matching the exact homepage offer. Never guess a variant.
+  const matching = product.variants.find((variant) => Number(variant.sellingPrice) === Number(p.price) && variant.inStock !== false);
+  if (!matching) return undefined;
+  return {
+    productId: product.id,
+    variantId: matching.code,
+    price: Number(matching.sellingPrice),
+    variantName: matching.name,
+  };
+}
+
+export default async function Home() {
+  const catalog = await getCatalog();
+  const catalogueProducts = catalog?.products;
+  const featuredCommerce = new Map(featuredProducts.map((p) => [p.slug, resolveCommerceProduct(p, catalogueProducts)]));
+  const newCommerce = new Map(newProducts.map((p) => [p.slug, resolveCommerceProduct(p, catalogueProducts)]));
+
   return (
     <main>
       <SiteHeader />
@@ -130,7 +171,7 @@ export default function Home() {
           <Link className="quiet-link" href="/shop">Shop all <ArrowRight size={15} /></Link>
         </div>
         <AutoRail className="product-rail" label="Featured at Amaal" speed={0.34}>
-          {featuredProducts.map((p) => <ProductTile key={p.slug} p={p} />)}
+          {featuredProducts.map((p) => <ProductTile key={p.slug} p={p} commerce={featuredCommerce.get(p.slug)} />)}
         </AutoRail>
       </section>
 
@@ -156,7 +197,7 @@ export default function Home() {
           <Link className="quiet-link" href="/shop">View collection <ArrowRight size={15} /></Link>
         </div>
         <AutoRail className="product-rail" label="New at Amaal" speed={0.34}>
-          {newProducts.map((p) => <ProductTile key={p.slug} p={p} />)}
+          {newProducts.map((p) => <ProductTile key={p.slug} p={p} commerce={newCommerce.get(p.slug)} />)}
         </AutoRail>
       </section>
 

@@ -8,6 +8,7 @@ export default function AutoRail({ children, className = '', label = 'Product ca
   const trackRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
   const draggingRef = useRef(false);
+  const interactionPauseRef = useRef(false);
   const dragStartRef = useRef({ x: 0, scroll: 0 });
 
   const childrenArray = Array.isArray(children) ? children : [children];
@@ -23,7 +24,7 @@ export default function AutoRail({ children, className = '', label = 'Product ca
     const tick = (now: number) => {
       const dt = Math.min(now - last, 32);
       last = now;
-      if (!draggingRef.current) {
+      if (!draggingRef.current && !interactionPauseRef.current) {
         viewport.scrollLeft += speed * dt;
         const half = (trackRef.current?.scrollWidth || 0) / 2;
         if (half > 0 && viewport.scrollLeft >= half) viewport.scrollLeft -= half;
@@ -36,6 +37,14 @@ export default function AutoRail({ children, className = '', label = 'Product ca
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [speed]);
+
+  const onPointerEnter = () => { interactionPauseRef.current = true; };
+  const onPointerLeave = () => { interactionPauseRef.current = false; };
+  const onFocusCapture = () => { interactionPauseRef.current = true; };
+  const onBlurCapture = (event: React.FocusEvent<HTMLDivElement>) => {
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) interactionPauseRef.current = false;
+  };
+  const onClick = () => { interactionPauseRef.current = true; };
 
   const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return;
@@ -60,6 +69,11 @@ export default function AutoRail({ children, className = '', label = 'Product ca
       <div
         ref={viewportRef}
         className="auto-rail"
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+        onFocusCapture={onFocusCapture}
+        onBlurCapture={onBlurCapture}
+        onClick={onClick}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
