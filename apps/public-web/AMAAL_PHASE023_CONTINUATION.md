@@ -123,3 +123,33 @@ No fake email, SMS or WhatsApp provider was introduced. Account activation can u
 ### NEXT RECOMMENDED WORKSTREAM
 
 Workstream 3: continue from the Master Blueprint after reviewing the exact remaining commerce/checkout requirements and verified backend capability. Payment remains excluded unless explicitly reopened.
+
+
+## WORKSTREAMS 1–5 CROSS-WORKSTREAM GAP CLOSURE — 2026-09-03
+
+A cross-workstream audit was performed before starting Workstream 6.
+
+### Closed gaps
+- Removed the remaining public payment-method marks from the customer footer. Payment implementation remains deferred.
+- Removed payment state from public tracking/account order payloads used by the customer-facing experience.
+- Public catalogue variants no longer expose exact inventory quantities or internal inventory-control flags. Customer-safe `inStock` state is used instead.
+- Public cart payloads no longer expose exact stock quantities, internal inventory fields, or unmanaged product image URLs. Cart media now resolves through Active + Public managed media with checksum versioning.
+- Public compatibility media now resolves through managed public media instead of legacy image URLs.
+- Public account order detail now returns an explicit customer-safe order projection rather than `SELECT *`.
+- Homepage featured/new products and brand/category discovery now derive from the authoritative published catalogue instead of hardcoded catalogue selections.
+- Category directory and mobile category navigation now derive from the authoritative published category hierarchy. Public category responses expose a safe `parent_slug` rather than internal parent IDs.
+- Cart summary uses the server-authoritative cart subtotal when available.
+
+### Explicitly preserved
+- No database reset, DROP, TRUNCATE or destructive migration.
+- Business Admin Console remains the management surface.
+- Existing database/backend remains the source of truth.
+- Payment gateway, payment initiation, provider integration and payment verification remain completely deferred and were not implemented.
+- Existing backend payment code was not reworked merely to advance the public workstreams.
+
+### Validation
+- `node --check server.js`: PASS
+- 130 public-web TS/TSX files transpiled with zero TypeScript transpile diagnostics (framework-generated `next-env.d.ts` excluded).
+- No public frontend payment UI references remain.
+- No public catalogue/cart exact inventory quantity exposure remains in the reviewed endpoints.
+- Public catalogue and cart product media queries use managed `media_assets`.

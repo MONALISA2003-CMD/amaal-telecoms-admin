@@ -1,8 +1,8 @@
 export type ImageItem={url:string;altText?:string;primary?:boolean;sortOrder?:number};
-export type Variant={code:string;name:string;colour?:string;storage?:string;size?:string;sellingPrice:number;compareAtPrice?:number|null;trackInventory?:boolean;available?:number};
+export type Variant={code:string;name:string;colour?:string;storage?:string;size?:string;sellingPrice:number;compareAtPrice?:number|null;trackInventory?:boolean;inStock?:boolean};
 export type ProductAttribute={key:string;value:string;unit?:string;sortOrder?:number};
 export type Product={id:string;name:string;slug:string;product_type?:string;short_description?:string;description?:string;specifications?:unknown;attributes?:ProductAttribute[];featured?:boolean;brand_name?:string;brand_slug?:string;category_name?:string;category_slug?:string;variants?:Variant[];images?:ImageItem[]};
-export type Category={id:string;name:string;slug:string;description?:string;image_url?:string;banner_url?:string;icon_url?:string;featured?:boolean;sort_order?:number;parent_id?:string|null};
+export type Category={id:string;name:string;slug:string;description?:string;image_url?:string;banner_url?:string;icon_url?:string;featured?:boolean;sort_order?:number;parent_id?:string|null;parent_slug?:string|null};
 export type Brand={id:string;name:string;slug:string;description?:string;logo_url?:string;image_url?:string;featured?:boolean;sort_order?:number};
 export type Collection={id:string;name:string;slug?:string;description?:string;image_url?:string;featured?:boolean;products?:Array<{id:string;name:string;slug:string;brand?:string;category?:string}>};
 export type Catalog={updatedAt:string;categories:Category[];brands:Brand[];products:Product[];collections:Collection[]};
