@@ -2,23 +2,26 @@ import Link from 'next/link';
 import { ArrowRight, CircleCheck, Headphones, ShieldCheck, Truck, Wrench } from 'lucide-react';
 import SiteHeader from '../components/SiteHeader';
 import SiteFooter from '../components/SiteFooter';
-import ProductCard from '../components/ProductCard';
-import {getPublishedCatalog} from '../lib/catalog-runtime';
-import {buildCategoryNavigation} from '../lib/category-navigation';
+import { featuredProducts, homeBrands, homeCategories, newProducts, type HomeProduct } from '../lib/homepage-data';
 import AutoRail from '../components/AutoRail';
 
-function CategoryCard({name,slug,index}:{name:string;slug:string;index:number}){
-  return <Link className="category-card" href={`/shop?category=${encodeURIComponent(slug)}`}><div className="category-placeholder"><span>{String(index+1).padStart(2,'0')}</span><strong>{name}</strong></div><div className="category-copy"><h3>{name}</h3><p>Explore {name.toLowerCase()} at Amaal.</p></div></Link>
+function ugx(value:number){return value ? new Intl.NumberFormat('en-UG',{style:'currency',currency:'UGX',maximumFractionDigits:0}).format(value) : 'Price on request'}
+
+function ProductTile({p}:{p:HomeProduct}){
+  return <article className="home-product-card">
+    <Link href={`/product/${p.slug}`} className="home-product-link">
+      <div className="product-media"><div className="product-placeholder" aria-hidden="true"><span>AMAAL</span></div></div>
+      <div className="home-product-meta"><p>{p.brand}</p><h3>{p.name}</h3><span>{p.quickDetails.slice(0,2).join(' · ')}</span><strong>Price coming soon</strong></div>
+    </Link>
+    <Link className="button gold" href={`/contact?product=${encodeURIComponent(p.name)}`}>Ask about this product</Link> 
+  </article>
 }
 
-export default async function Home(){
-  const catalog=await getPublishedCatalog();
-  const nav=buildCategoryNavigation(catalog.categories);
-  const liveProducts=catalog.products;
-  const featured=liveProducts.filter(p=>p.featured);
-  const featuredProducts=(featured.length?featured:liveProducts).slice(0,8);
-  const newProducts=liveProducts.filter(p=>!p.featured).slice(0,8);
-  const brands=catalog.brands.filter(b=>liveProducts.some(p=>p.brand_slug===b.slug)).slice(0,12);
+function CategoryCard({name,slug,index}:{name:string;slug:string;index:number}){
+  return <Link className="category-card" href={`/categories/${slug}`}><div className="category-placeholder"><span>0{index+1}</span><strong>{name}</strong></div><div className="category-copy"><h3>{name}</h3><p>Explore {name.toLowerCase()} at Amaal.</p></div></Link>
+}
+
+export default function Home(){
   return <main>
     <SiteHeader/>
     <section className="lux-hero">
@@ -28,15 +31,15 @@ export default async function Home(){
 
     <section className="trust-strip" aria-label="Amaal assurances"><div><ShieldCheck/><span><strong>100% authentic</strong><small>Genuine products</small></span></div><div><ShieldCheck/><span><strong>Trusted brands</strong><small>Brands you know</small></span></div><div><Truck/><span><strong>Fast delivery</strong><small>Across Uganda</small></span></div><div><Wrench/><span><strong>Warranty support</strong><small>Here after the sale</small></span></div><div><Headphones/><span><strong>Expert assistance</strong><small>Help when you need it</small></span></div></section>
 
-    <section className="section category-section"><div className="section-head"><div><p className="eyebrow">EXPLORE OUR WORLD</p><h2>Shop by category</h2><p className="section-intro">Eight everyday categories, moving continuously so customers can discover more without leaving the page.</p></div><Link className="quiet-link" href="/categories">View all <ArrowRight size={15}/></Link></div><AutoRail className="category-rail" label="Shop by category" speed={0.42}>{nav.slice(0,8).map((c,i)=><CategoryCard name={c.name} slug={c.slug} index={i} key={c.slug}/>)}</AutoRail></section>
+    <section className="section category-section"><div className="section-head"><div><p className="eyebrow">EXPLORE OUR WORLD</p><h2>Shop by category</h2><p className="section-intro">Eight everyday categories, moving continuously so customers can discover more without leaving the page.</p></div><Link className="quiet-link" href="/categories">View all <ArrowRight size={15}/></Link></div><AutoRail className="category-rail" label="Shop by category" speed={0.42}>{homeCategories.map(([name,slug],i)=><CategoryCard name={name} slug={slug} index={i} key={name}/>)}</AutoRail></section>
 
-    <section className="section featured-section"><div className="section-head"><div><p className="eyebrow">THE AMAAL EDIT</p><h2>Featured at Amaal</h2><p className="section-intro">Quick details and clear pricing on a rotating selection. Open any product for the full story, specifications and buying information.</p></div><Link className="quiet-link" href="/shop">Shop all <ArrowRight size={15}/></Link></div><AutoRail className="product-rail" label="Featured at Amaal" speed={0.34}>{featuredProducts.map(p=><ProductCard key={p.id} product={p}/>)}</AutoRail></section>
+    <section className="section featured-section"><div className="section-head"><div><p className="eyebrow">THE AMAAL EDIT</p><h2>Featured at Amaal</h2><p className="section-intro">Quick details and clear pricing on a rotating selection. Open any product for the full story, specifications and buying information.</p></div><Link className="quiet-link" href="/shop">Shop all <ArrowRight size={15}/></Link></div><AutoRail className="product-rail" label="Featured at Amaal" speed={0.34}>{featuredProducts.map(p=><ProductTile key={p.slug} p={p}/>)}</AutoRail></section>
 
     <section className="lifestyle-feature"><div className="lifestyle-copy"><p className="eyebrow">AMAAL EDIT</p><h2>Bring home experiences that matter.</h2><p>From brilliant screens to powerful sound, from the kitchen to the office — discover technology selected for real everyday life.</p><Link className="button gold" href="/deals">Explore deals <ArrowRight size={16}/></Link></div><div className="lifestyle-scene" aria-hidden="true"><div className="scene-placeholder scene-tv-placeholder"></div><div className="scene-placeholder scene-sound-placeholder"></div></div></section>
 
-    <section className="section arrivals-section"><div className="section-head"><div><p className="eyebrow">JUST IN</p><h2>New at Amaal</h2><p className="section-intro">Fresh arrivals with the essentials customers need to understand at a glance.</p></div><Link className="quiet-link" href="/shop">View collection <ArrowRight size={15}/></Link></div><AutoRail className="product-rail" label="New at Amaal" speed={0.34}>{newProducts.map(p=><ProductCard key={p.id} product={p}/>)}</AutoRail></section>
+    <section className="section arrivals-section"><div className="section-head"><div><p className="eyebrow">JUST IN</p><h2>New at Amaal</h2><p className="section-intro">Fresh arrivals with the essentials customers need to understand at a glance.</p></div><Link className="quiet-link" href="/shop">View collection <ArrowRight size={15}/></Link></div><AutoRail className="product-rail" label="New at Amaal" speed={0.34}>{newProducts.map(p=><ProductTile key={p.slug} p={p}/>)}</AutoRail></section>
 
-    <section className="section brand-section"><div className="section-head"><div><p className="eyebrow">TRUSTED NAMES</p><h2>Shop by brand</h2><p className="section-intro">Recognisable brands, presented simply.</p></div><Link className="quiet-link" href="/brands">Explore brands <ArrowRight size={15}/></Link></div><AutoRail className="brand-rail" label="Shop by brand" speed={0.4}>{brands.map(b=><Link href={`/brands/${b.slug}`} className="brand-card" key={b.slug}><span className="brand-logo-placeholder">{b.name}</span></Link>)}</AutoRail></section>
+    <section className="section brand-section"><div className="section-head"><div><p className="eyebrow">TRUSTED NAMES</p><h2>Shop by brand</h2><p className="section-intro">Recognisable brands, presented simply.</p></div><Link className="quiet-link" href="/brands">Explore brands <ArrowRight size={15}/></Link></div><AutoRail className="brand-rail" label="Shop by brand" speed={0.4}>{homeBrands.map((name,i)=><Link href={`/brands/${name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}`} className="brand-card" key={`${name}-${i}`}><span className="brand-logo-placeholder">{name}</span></Link>)}</AutoRail></section>
 
     <section className="section weekly-section"><div className="weekly-heading"><div><p className="eyebrow">THIS WEEK</p><h2>Weekly deals</h2><p>Fresh weekly offers will live here, with the actual promotion, validity and price supplied by Amaal.</p></div><Link className="button gold" href="/deals">See all deals <ArrowRight size={16}/></Link></div><div className="weekly-grid"><Link href="/deals" className="weekly-card"><span>PHONE DEALS</span><h3>Upgrade your everyday.</h3></Link><Link href="/deals" className="weekly-card dark"><span>HOME ENTERTAINMENT</span><h3>Make movie night better.</h3></Link><Link href="/deals" className="weekly-card"><span>APPLIANCE DEALS</span><h3>Better home, better value.</h3></Link></div></section>
 

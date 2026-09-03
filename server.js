@@ -723,11 +723,12 @@ app.post('/api/catalog/products/bulk-enrich',auth,need('catalog.manage'),async(r
       if(row.shortDescription!==undefined)add('short_description',String(row.shortDescription||'').trim()||null);
       if(row.brandId!==undefined)add('brand_id',row.brandId||null);
       if(row.categoryId!==undefined)add('category_id',row.categoryId||null);
-      if(row.status!==undefined)add('status',String(row.status));
-      if(row.websiteVisibility!==undefined)add('website_visibility',String(row.websiteVisibility));
+      if(row.status!==undefined){const status=String(row.status);if(!['Draft','Active','Inactive','Archived'].includes(status)){errors.push({row:i+1,error:'status must be Draft, Active, Inactive or Archived.'});continue;}add('status',status);}
+      if(row.websiteVisibility!==undefined){const visibility=String(row.websiteVisibility);if(visibility==='Published'){errors.push({row:i+1,error:'Published visibility must use the catalogue publication gate, not bulk enrichment.'});continue;}if(!['Hidden'].includes(visibility)){errors.push({row:i+1,error:'websiteVisibility may only be Hidden during enrichment.'});continue;}add('website_visibility',visibility);}
       if(fields.length&&!dryRun){values.push(req.user.id,p.id);await client.query(`UPDATE products SET ${fields.join(',')},updated_by=$${values.length-1},updated_at=now() WHERE id=$${values.length}`,[...values]);}
       if(row.sellingPrice!==undefined||row.sku!==undefined){
-        const variant=(await client.query(`SELECT v.id FROM product_variants v WHERE v.product_id=$1 AND ($2='' OR v.sku=$2) ORDER BY CASE WHEN v.status='Active' THEN 0 ELSE 1 END,v.created_at LIMIT 1`,[p.id,String(row.sku||'')])).rows[0];
+        const variantSku=String(row.variantSku||row.sku||(key && key!==String(p.id) && key!==p.slug ? key : '')||'').trim();
+        const variant=(await client.query(`SELECT v.id FROM product_variants v WHERE v.product_id=$1 AND ($2='' OR v.sku=$2) ORDER BY CASE WHEN v.status='Active' THEN 0 ELSE 1 END,v.created_at LIMIT 1`,[p.id,variantSku])).rows[0];
         if(row.sellingPrice!==undefined){const price=Number(row.sellingPrice);if(!Number.isFinite(price)||price<0){errors.push({row:i+1,error:'sellingPrice must be a non negative number.'});continue;} if(!variant){errors.push({row:i+1,error:`No variant found for ${key}.`});continue;} if(!dryRun){await client.query('UPDATE product_variants SET selling_price=$1,updated_at=now() WHERE id=$2',[price,variant.id]);}}
       }
       results.push({row:i+1,id:p.id,name:p.name,updated:!dryRun});

@@ -1,2 +1,16 @@
-import {notFound} from 'next/navigation';import SiteHeader from '@/components/SiteHeader';import SiteFooter from '@/components/SiteFooter';import DatabaseProductDetail from '@/components/DatabaseProductDetail';import {getPublishedCatalog} from '@/lib/catalog-runtime';
-export default async function Page({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const c=await getPublishedCatalog();const p=c.products.find(x=>x.slug===slug);if(!p)notFound();return <main><SiteHeader/><DatabaseProductDetail product={p}/><SiteFooter/></main>}
+import { notFound } from 'next/navigation';
+import SiteHeader from '../../../components/SiteHeader';
+import PhoneCompareTray from '../../../components/PhoneCompareTray';
+import SiteFooter from '../../../components/SiteFooter';
+import PhoneDetail from '../../../components/PhoneDetail';
+import PhoneRelated from '../../../components/PhoneRelated';
+import { phoneCatalogue } from '../../../lib/phone-catalogue';
+
+export function generateStaticParams() { return phoneCatalogue.map((phone) => ({ slug: phone.slug })); }
+
+export default async function PhonePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const product = phoneCatalogue.find((phone) => phone.slug === slug);
+  if (!product) notFound();
+  return <><SiteHeader /><PhoneDetail product={product} /><PhoneRelated product={product} products={phoneCatalogue} /><PhoneCompareTray /><SiteFooter /></>;
+}

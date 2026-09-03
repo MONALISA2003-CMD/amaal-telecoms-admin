@@ -153,3 +153,34 @@ A cross-workstream audit was performed before starting Workstream 6.
 - No public frontend payment UI references remain.
 - No public catalogue/cart exact inventory quantity exposure remains in the reviewed endpoints.
 - Public catalogue and cart product media queries use managed `media_assets`.
+
+## ORIGINAL CATALOGUE RESTORATION PASS — 2026-09-03
+
+The public catalogue presentation was restored to the archived original Amaal catalogue implementation after the request to return categories, brands and catalogue items to their original structure.
+
+### RESTORED
+
+- Original seven top-level catalogue areas and their nested navigation were restored.
+- Original phone catalogue runtime and brand collections were restored.
+- Original computer and laptop catalogue runtime was restored.
+- Original television catalogue runtime was restored.
+- Original audio catalogue runtime was restored, including Audio under Entertainment and its original subgroups.
+- Original tablet catalogue runtime was restored.
+- Original home appliance and kitchen appliance catalogue runtime was restored.
+- Original accessory catalogue runtime was restored.
+- Original catalogue brand lists and product datasets were restored to the public catalogue modules.
+- Original catalogue specific route implementations were restored for browsing, brands, product details and comparison.
+- Original homepage catalogue data presentation was restored.
+- The archived original catalogue files were compared byte-for-byte for the restored scope.
+
+### DATABASE PRESERVATION
+
+The production Neon database was not reset, dropped, truncated or recreated. Existing product records remain intact. Missing original catalogue brand records identified from the restored source catalogue were added only when their brand slug did not already exist. Existing category records were not deleted or replaced.
+
+### VERIFICATION
+
+- Archived original catalogue restoration audit: PASS, 56 files checked.
+- Relative import audit: PASS.
+- Public-web TypeScript/TSX transpilation: PASS, framework generated `next-env.d.ts` excluded.
+- Backend JavaScript syntax: PASS.
+- Payment remains untouched and deferred.
