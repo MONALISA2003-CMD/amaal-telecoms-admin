@@ -50,6 +50,7 @@ export default function AutoRail({ children, className = '', label = 'Product ca
     if (event.pointerType === 'mouse' && event.button !== 0) return;
     const viewport = viewportRef.current;
     if (!viewport) return;
+    interactionPauseRef.current = true;
     draggingRef.current = true;
     dragStartRef.current = { x: event.clientX, scroll: viewport.scrollLeft };
     viewport.setPointerCapture(event.pointerId);

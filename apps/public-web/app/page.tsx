@@ -123,6 +123,7 @@ export default async function Home() {
 
       {/* HERO: intentionally preserved exactly as supplied. */}
       <section className="lux-hero">
+        <div className="hero-stage hero-stage-image" aria-hidden="true" />
         <div className="hero-copy">
           <p className="eyebrow">THE NEW STANDARD IN TECHNOLOGY</p>
           <h1>Better technology.<br /><em>Better every day.</em></h1>
@@ -133,7 +134,6 @@ export default async function Home() {
           </div>
           <div className="hero-note"><CircleCheck size={15} /> Genuine products from trusted brands</div>
         </div>
-        <div className="hero-stage hero-stage-image" aria-hidden="true" />
       </section>
 
       <section className="trust-strip" aria-label="Amaal assurances">

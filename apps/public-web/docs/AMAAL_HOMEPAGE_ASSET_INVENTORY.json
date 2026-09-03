@@ -830,5 +830,19 @@
     "optimized_path": "public/assets/amaal/homepage/jbl-logo.webp",
     "optimized_width": 216,
     "optimized_height": 168
+  },
+  {
+    "source": "User-supplied TECNO CAMON 50 product image",
+    "file": "tecno-camon-50-pro.webp",
+    "subject": "TECNO CAMON 50 Pro",
+    "usage": "New at Amaal product presentation",
+    "optimized_path": "public/assets/amaal/homepage/tecno-camon-50-pro.webp"
+  },
+  {
+    "source": "User-supplied footer editorial image",
+    "file": "footer-lifestyle.webp",
+    "subject": "Amaal electronics lifestyle scene",
+    "usage": "Site footer photographic background",
+    "optimized_path": "public/assets/amaal/homepage/footer-lifestyle.webp"
   }
 ]

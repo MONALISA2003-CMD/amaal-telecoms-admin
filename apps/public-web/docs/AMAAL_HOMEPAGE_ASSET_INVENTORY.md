@@ -1,6 +1,6 @@
 # Amaal public homepage asset inventory
 
-**52/52 supplied assets inspected.** Optimized WebP copies are stored under `public/assets/amaal/homepage/`. The original uploaded asset ZIP was not modified.
+**52/54 supplied assets inspected.** Optimized WebP copies are stored under `public/assets/amaal/homepage/`. The original uploaded asset ZIP was not modified.
 
 - `New-roch-logo-PNG-768x387.png` → **Brand logo** → **Shop by brand** → **New Roch** → `new-roch-logo-png-768x387.webp` | original `PNG 768×387` / `21010` bytes → optimized `768×387` / `24996` bytes
 - `Samsung sound bar 1.jpg` → **Product photography** → **Featured at Amaal** → **Samsung HW-B400F** → `samsung-sound-bar-1.webp` | original `JPEG 500×500` / `8926` bytes → optimized `500×500` / `3396` bytes
