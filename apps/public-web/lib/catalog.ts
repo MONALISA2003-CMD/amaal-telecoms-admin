@@ -11,6 +11,12 @@ export async function getCatalog():Promise<Catalog|null>{try{const r=await fetch
 export function price(p:Product){const v=p.variants?.[0];return v?.sellingPrice==null?'':new Intl.NumberFormat('en-UG',{style:'currency',currency:'UGX',maximumFractionDigits:0}).format(Number(v.sellingPrice))}
 export function image(p:Product){return p.images?.find(x=>x.primary)?.url||p.images?.[0]?.url||''}
 
+export function attributeUnit(attribute: unknown): string | undefined {
+  if (typeof attribute !== 'object' || attribute === null) return undefined;
+  const value = (attribute as Record<string, unknown>).unit;
+  return typeof value === 'string' && value.trim() ? value : undefined;
+}
+
 export type PublicCatalogueResult = Catalog & {source:'database'|'fallback'};
 export async function getPublicCatalogue():Promise<PublicCatalogueResult>{
   const live=await getCatalog();
