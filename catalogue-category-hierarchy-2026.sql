@@ -5,8 +5,11 @@ BEGIN;
 INSERT INTO product_categories(name,slug,description,status,website_visibility)
 SELECT 'Portable speakers','entertainment-audio-portable-speakers','Portable Bluetooth speakers for everyday, travel and outdoor listening.','Active','Published'
 WHERE NOT EXISTS (SELECT 1 FROM product_categories c WHERE c.name='Portable speakers' AND c.parent_id IS NOT NULL) ON CONFLICT DO NOTHING;
-UPDATE product_categories child SET parent_id=parent.id,status='Active',website_visibility='Published'
-FROM product_categories parent WHERE parent.slug='audio' AND child.slug='entertainment-audio-portable-speakers';
+UPDATE product_categories
+SET parent_id=(SELECT id FROM product_categories WHERE slug='audio' LIMIT 1),
+    status='Active', website_visibility='Published', updated_at=now()
+WHERE slug='entertainment-audio-portable-speakers'
+  AND EXISTS (SELECT 1 FROM product_categories WHERE slug='audio');
 
 -- Tablets
 INSERT INTO product_categories(name,slug,description,status,website_visibility)
@@ -18,8 +21,11 @@ WHERE NOT EXISTS (SELECT 1 FROM product_categories WHERE slug='tablets-ipad') AN
 INSERT INTO product_categories(name,slug,description,status,website_visibility)
 SELECT 'Samsung Galaxy Tab','tablets-samsung-galaxy-tab','Samsung Galaxy Tab families and configurations.','Active','Published'
 WHERE NOT EXISTS (SELECT 1 FROM product_categories WHERE slug='tablets-samsung-galaxy-tab') AND NOT EXISTS (SELECT 1 FROM product_categories WHERE lower(name)=lower('Samsung Galaxy Tab')) ON CONFLICT DO NOTHING;
-UPDATE product_categories child SET parent_id=parent.id,status='Active',website_visibility='Published'
-FROM product_categories parent WHERE parent.slug='tablets' AND child.slug IN ('tablets-ipad','tablets-samsung-galaxy-tab');
+UPDATE product_categories
+SET parent_id=(SELECT id FROM product_categories WHERE slug='tablets' LIMIT 1),
+    status='Active', website_visibility='Published', updated_at=now()
+WHERE slug IN ('tablets-ipad','tablets-samsung-galaxy-tab')
+  AND EXISTS (SELECT 1 FROM product_categories WHERE slug='tablets');
 
 -- Accessories and useful device-specific groupings
 INSERT INTO product_categories(name,slug,description,status,website_visibility)
@@ -34,7 +40,10 @@ SELECT x.name,x.slug,x.description,'Active','Published' FROM (VALUES
  ('Gaming Accessories','accessories-gaming','Peripherals and setup essentials for PC gaming.')
 ) x(name,slug,description)
 WHERE NOT EXISTS (SELECT 1 FROM product_categories c WHERE c.slug=x.slug) ON CONFLICT DO NOTHING;
-UPDATE product_categories child SET parent_id=parent.id,status='Active',website_visibility='Published'
-FROM product_categories parent WHERE parent.slug='accessories' AND child.slug IN ('accessories-phone','accessories-computer','accessories-tablet','accessories-audio','accessories-gaming');
+UPDATE product_categories
+SET parent_id=(SELECT id FROM product_categories WHERE slug='accessories' LIMIT 1),
+    status='Active', website_visibility='Published', updated_at=now()
+WHERE slug IN ('accessories-phone','accessories-computer','accessories-tablet','accessories-audio','accessories-gaming')
+  AND EXISTS (SELECT 1 FROM product_categories WHERE slug='accessories');
 
 COMMIT;
