@@ -26,7 +26,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 11 is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -53,7 +53,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 11 Pro is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -80,7 +80,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 11 Pro Max is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -107,7 +107,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 12 mini is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -134,7 +134,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 12 is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -160,7 +160,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 12 Pro is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -186,7 +186,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 12 Pro Max is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -212,7 +212,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 13 mini is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -238,7 +238,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 13 is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -268,7 +268,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 13 Pro is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -298,7 +298,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 13 Pro Max is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -324,7 +324,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 14 is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -350,7 +350,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 14 Plus is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -380,7 +380,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 14 Pro is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -410,7 +410,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 14 Pro Max is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -436,7 +436,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 15 is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -462,7 +462,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 15 Plus is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -492,7 +492,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 15 Pro is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -518,7 +518,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 15 Pro Max is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -544,7 +544,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 16 is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -570,7 +570,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 16 Plus is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -600,7 +600,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 16 Pro is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -626,7 +626,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 16 Pro Max is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -652,7 +652,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 16e is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -674,7 +674,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 17 is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -700,7 +700,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone Air is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -726,7 +726,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 17 Pro is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -756,7 +756,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 17 Pro Max is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -778,7 +778,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "iPhone 17e is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -815,7 +815,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A06 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -840,7 +840,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A07 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -871,7 +871,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A14 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -901,7 +901,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A15 4G is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -926,7 +926,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A15 5G is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -956,7 +956,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A16 4G is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -986,7 +986,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A16 5G is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1016,7 +1016,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A17 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1046,7 +1046,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A24 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1075,7 +1075,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A25 5G is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1099,7 +1099,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A26 5G is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1123,7 +1123,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A34 5G is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1147,7 +1147,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A35 5G is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1171,7 +1171,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A36 5G is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1195,7 +1195,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A54 5G is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1219,7 +1219,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A55 5G is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1243,7 +1243,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A56 5G is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1277,7 +1277,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy A57 5G is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1301,7 +1301,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S21 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1325,7 +1325,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S21+ is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1354,7 +1354,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S21 Ultra is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1378,7 +1378,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S22 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1402,7 +1402,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S22+ is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1436,7 +1436,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S22 Ultra is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1460,7 +1460,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S23 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1484,7 +1484,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S23+ is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1518,7 +1518,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S23 Ultra is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1542,7 +1542,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S24 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1566,7 +1566,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S24+ is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1595,7 +1595,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S24 Ultra is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1624,7 +1624,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S25 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1648,7 +1648,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S25+ is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1677,7 +1677,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S25 Ultra is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1701,7 +1701,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S25 Edge is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1725,7 +1725,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S26 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1749,7 +1749,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S26+ is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1778,7 +1778,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy S26 Ultra is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1807,7 +1807,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy Z Fold4 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1836,7 +1836,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy Z Fold5 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1865,7 +1865,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy Z Fold6 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1889,7 +1889,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy Z Fold7 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1918,7 +1918,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy Z Fold8 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1947,7 +1947,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy Z Fold8 Ultra is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -1976,7 +1976,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy Z Flip4 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2000,7 +2000,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy Z Flip5 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2024,7 +2024,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy Z Flip6 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2048,7 +2048,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy Z Flip7 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2072,7 +2072,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Galaxy Z Flip8 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2096,7 +2096,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 6 is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2125,7 +2125,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 6 Pro is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2144,7 +2144,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 6a is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2168,7 +2168,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 7 is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2197,7 +2197,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 7 Pro is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2216,7 +2216,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 7a is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2240,7 +2240,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 8 is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2269,7 +2269,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 8 Pro is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2293,7 +2293,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 8a is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2317,7 +2317,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 9 is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2351,7 +2351,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 9 Pro is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2385,7 +2385,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 9 Pro XL is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2409,7 +2409,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 9 Pro Fold is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2433,7 +2433,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 9a is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2457,7 +2457,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 10 is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2491,7 +2491,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 10 Pro is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2520,7 +2520,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 10 Pro XL is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2549,7 +2549,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 10 Pro Fold is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2573,7 +2573,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 10a is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2592,7 +2592,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 11 is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2621,7 +2621,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 11 Pro is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2650,7 +2650,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 11 Pro XL is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2679,7 +2679,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pixel 11 Pro Fold is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2698,7 +2698,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Camon 50 Ultra 5G is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2717,7 +2717,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Camon Slim is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2741,7 +2741,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Camon 50 Pro 5G/4G is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2765,7 +2765,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Camon 50 4G is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2789,7 +2789,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Camon 40 Pro 5G is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2808,7 +2808,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Spark 50 Pro is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2833,7 +2833,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Spark 50 5G is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2858,7 +2858,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Spark 50 4G is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2878,7 +2878,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Spark 50C is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2898,7 +2898,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Spark 30C is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2918,7 +2918,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Spark 30C 5G is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2944,7 +2944,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Spark Go 1 is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2970,7 +2970,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Spark Go 2 is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -2989,7 +2989,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "POVA 8 Pro 5G is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3008,7 +3008,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "POVA 8 5G is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3027,7 +3027,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "POVA Curve 2 5G is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3051,7 +3051,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "POVA 6 Neo is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3070,7 +3070,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Phantom V Fold2 5G is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3089,7 +3089,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Phantom V Flip2 5G is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3108,7 +3108,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Phantom X3 Pro is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3134,7 +3134,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pop 9 5G is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3160,7 +3160,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pop 20 is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3186,7 +3186,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Pop 10 is a TECNO smartphone catalogue entry. Amaal groups the listed RAM, storage and network combinations as variants of the same model, allowing customers to choose the configuration they want without duplicating the model across the catalogue.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3205,7 +3205,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Note 60 Ultra is an Infinix smartphone catalogue entry. The listed RAM and storage combinations are selectable variants of the same model. Regional availability and final commercial details should be confirmed by Amaal before the model is presented as available for purchase.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3229,7 +3229,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Note 60 Pro 5G is an Infinix smartphone catalogue entry. The listed RAM and storage combinations are selectable variants of the same model. Regional availability and final commercial details should be confirmed by Amaal before the model is presented as available for purchase.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3248,7 +3248,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Note Edge 5G is an Infinix smartphone catalogue entry. The listed RAM and storage combinations are selectable variants of the same model. Regional availability and final commercial details should be confirmed by Amaal before the model is presented as available for purchase.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3267,7 +3267,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Note 50X 5G is an Infinix smartphone catalogue entry. The listed RAM and storage combinations are selectable variants of the same model. Regional availability and final commercial details should be confirmed by Amaal before the model is presented as available for purchase.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3286,7 +3286,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Note 50S is an Infinix smartphone catalogue entry. The listed RAM and storage combinations are selectable variants of the same model. Regional availability and final commercial details should be confirmed by Amaal before the model is presented as available for purchase.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3305,7 +3305,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Hot 70 Pro 5G+ is an Infinix smartphone catalogue entry. The listed RAM and storage combinations are selectable variants of the same model. Regional availability and final commercial details should be confirmed by Amaal before the model is presented as available for purchase.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3324,7 +3324,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Hot 70 is an Infinix smartphone catalogue entry. The listed RAM and storage combinations are selectable variants of the same model. Regional availability and final commercial details should be confirmed by Amaal before the model is presented as available for purchase.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3343,7 +3343,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Hot 60 Pro+ is an Infinix smartphone catalogue entry. The listed RAM and storage combinations are selectable variants of the same model. Regional availability and final commercial details should be confirmed by Amaal before the model is presented as available for purchase.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3363,7 +3363,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Hot 60i is an Infinix smartphone catalogue entry. The listed RAM and storage combinations are selectable variants of the same model. Regional availability and final commercial details should be confirmed by Amaal before the model is presented as available for purchase.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3387,7 +3387,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Hot 50 Pro+ 4G is an Infinix smartphone catalogue entry. The listed RAM and storage combinations are selectable variants of the same model. Regional availability and final commercial details should be confirmed by Amaal before the model is presented as available for purchase.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3407,7 +3407,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Hot 50i is an Infinix smartphone catalogue entry. The listed RAM and storage combinations are selectable variants of the same model. Regional availability and final commercial details should be confirmed by Amaal before the model is presented as available for purchase.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3426,7 +3426,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "GT 50 Pro is an Infinix smartphone catalogue entry. The listed RAM and storage combinations are selectable variants of the same model. Regional availability and final commercial details should be confirmed by Amaal before the model is presented as available for purchase.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3445,7 +3445,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "GT 30 Pro is an Infinix smartphone catalogue entry. The listed RAM and storage combinations are selectable variants of the same model. Regional availability and final commercial details should be confirmed by Amaal before the model is presented as available for purchase.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3465,7 +3465,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Smart 20 is an Infinix smartphone catalogue entry. The listed RAM and storage combinations are selectable variants of the same model. Regional availability and final commercial details should be confirmed by Amaal before the model is presented as available for purchase.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3491,7 +3491,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Smart 10 Plus is an Infinix smartphone catalogue entry. The listed RAM and storage combinations are selectable variants of the same model. Regional availability and final commercial details should be confirmed by Amaal before the model is presented as available for purchase.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3517,7 +3517,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Smart 10 HD is an Infinix smartphone catalogue entry. The listed RAM and storage combinations are selectable variants of the same model. Regional availability and final commercial details should be confirmed by Amaal before the model is presented as available for purchase.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3541,7 +3541,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Super 26 Ultra is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3565,7 +3565,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "S25 Ultra is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3589,7 +3589,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "S25 is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3609,7 +3609,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Power 80 is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3629,7 +3629,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "Power 70 is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3649,7 +3649,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "P65 is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3673,7 +3673,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "P55 is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3697,7 +3697,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "P55 5G is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3717,7 +3717,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "City 200 is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3737,7 +3737,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "City 200s is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3762,7 +3762,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "City 100 is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3782,7 +3782,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "A100C is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3802,7 +3802,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "A100 Pro is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3827,7 +3827,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "A80 is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3858,7 +3858,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "A70 is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3878,7 +3878,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "A50 is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   },
   {
@@ -3898,7 +3898,7 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "description": "A50C is an itel smartphone catalogue entry. The listed memory and storage combinations are selectable variants of the same model, keeping the catalogue simple while preserving the differences customers need when choosing a phone.",
     "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "photoNote": "Product image unavailable",
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   }
 ];

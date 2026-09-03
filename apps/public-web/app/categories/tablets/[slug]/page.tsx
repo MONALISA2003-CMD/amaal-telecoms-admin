@@ -1,3 +1,2 @@
-import {notFound} from 'next/navigation';import {tabletProducts,tabletProduct} from '../../../../lib/tablet-catalogue';import CuratedProductDetail from '../../../../components/CuratedProductDetail';
-export function generateStaticParams(){return tabletProducts.map(p=>({slug:p.slug}))}
-export default async function TabletDetail({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const product=tabletProduct(slug);if(!product)notFound();return <CuratedProductDetail product={product} backHref="/categories/tablets" backLabel="Tablets"/>}
+import {notFound} from 'next/navigation';import SiteHeader from '@/components/SiteHeader';import SiteFooter from '@/components/SiteFooter';import DatabaseProductDetail from '@/components/DatabaseProductDetail';import {getPublishedCatalog} from '@/lib/catalog-runtime';
+export default async function Page({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const c=await getPublishedCatalog();const p=c.products.find(x=>x.slug===slug);if(!p)notFound();return <main><SiteHeader/><DatabaseProductDetail product={p}/><SiteFooter/></main>}

@@ -46,7 +46,7 @@ export default function PhoneDetail({ product }: { product: PhoneProduct }) {
         <div className="phone-detail-layout">
           <div className="phone-detail-gallery" aria-label={`${product.name} product gallery`}>
             <div className="phone-detail-main-media">
-              <div className="phone-detail-photo-placeholder"><span>AMAAL</span><strong>{product.name}</strong><small>Product photo coming soon</small></div>
+              <div className="phone-detail-photo-placeholder"><span>AMAAL</span><strong>{product.name}</strong><small>Product image unavailable</small></div>
               <div className="phone-gallery-index">{galleryIndex + 1} / {gallerySlots}</div>
               <button className="phone-gallery-arrow left" type="button" aria-label="Previous product image" onClick={previousGallery}><ChevronLeft size={18} /></button>
               <button className="phone-gallery-arrow right" type="button" aria-label="Next product image" onClick={nextGallery}><ChevronRight size={18} /></button>

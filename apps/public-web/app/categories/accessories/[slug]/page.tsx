@@ -1,3 +1,2 @@
-import {notFound} from 'next/navigation';import {accessoryProducts,accessoryProduct} from '../../../../lib/accessory-catalogue';import CuratedProductDetail from '../../../../components/CuratedProductDetail';
-export function generateStaticParams(){return accessoryProducts.map(p=>({slug:p.slug}))}
-export default async function AccessoryDetail({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const product=accessoryProduct(slug);if(!product)notFound();return <CuratedProductDetail product={product} backHref="/categories/accessories" backLabel="Accessories"/>}
+import {notFound} from 'next/navigation';import SiteHeader from '@/components/SiteHeader';import SiteFooter from '@/components/SiteFooter';import DatabaseProductDetail from '@/components/DatabaseProductDetail';import {getPublishedCatalog} from '@/lib/catalog-runtime';
+export default async function Page({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const c=await getPublishedCatalog();const p=c.products.find(x=>x.slug===slug);if(!p)notFound();return <main><SiteHeader/><DatabaseProductDetail product={p}/><SiteFooter/></main>}

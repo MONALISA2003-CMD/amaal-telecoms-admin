@@ -211,6 +211,7 @@ CREATE TABLE IF NOT EXISTS product_images(
  created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_product_images_product ON product_images(product_id,sort_order);
+
 CREATE TABLE IF NOT EXISTS product_tags(
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
  name text UNIQUE NOT NULL,
@@ -2235,6 +2236,8 @@ CREATE INDEX IF NOT EXISTS idx_media_assets_checksum ON media_assets(checksum_sh
 CREATE INDEX IF NOT EXISTS idx_media_assets_search ON media_assets USING gin(to_tsvector('simple',coalesce(filename,'')||' '||coalesce(title,'')||' '||coalesce(description,'')||' '||coalesce(alt_text,'')));
 CREATE INDEX IF NOT EXISTS idx_media_relationships_entity ON media_relationships(entity_type,entity_id);
 CREATE INDEX IF NOT EXISTS idx_media_events_media ON media_events(media_id,created_at DESC);
+ALTER TABLE product_images ADD COLUMN IF NOT EXISTS media_id uuid REFERENCES media_assets(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_product_images_media ON product_images(media_id);
 -- Amaal catalogue management upgrade.
 -- Additive only: no reset, truncate, delete-all or inventory changes.
 BEGIN;
