@@ -11,7 +11,8 @@ export type CommerceItem={
   available?:number;
   variantName?:string;
 };
-export type ServerCart={cartId:string|null;items:CommerceItem[];subtotal:number;itemCount:number;currency:string};
+export type ServerCartItem={item_id:string;variant_id:string;quantity:number;sku?:string|null;variant_name?:string|null;color?:string|null;storage?:string|null;size?:string|null;selling_price:number;compare_at_price?:number|null;tax_rate?:number|null;track_inventory?:boolean;serialized?:boolean;product_id:string;name:string;slug:string;short_description?:string|null;brand_name?:string|null;available:number|null;image_url?:string|null;unit_price?:number;line_total?:number};
+export type ServerCart={cartId:string|null;items:ServerCartItem[];subtotal:number;itemCount:number;currency:string};
 export const CART_KEY='amaal_cart_v3';
 export const GUEST_CART_KEY='amaal_guest_cart_v1';
 export const WISHLIST_KEY='amaal_wishlist_v1';
@@ -28,7 +29,7 @@ export async function addServerCart(variantId:string,quantity=1):Promise<ServerC
 export async function updateServerCart(itemId:string,quantity:number):Promise<ServerCart>{return cartRequest(`/api/public/cart/items/${itemId}`,{method:'PATCH',body:JSON.stringify({quantity})})}
 export async function removeServerCart(itemId:string):Promise<ServerCart>{return cartRequest(`/api/public/cart/items/${itemId}`,{method:'DELETE'})}
 export async function clearServerCart():Promise<ServerCart>{return cartRequest('/api/public/cart/clear',{method:'POST'})}
-export function serverCartToLegacy(data:ServerCart):CommerceItem[]{return data.items.map(x=>({...x,id:x.productId||x.variantId||x.cartItemId||x.id,variantId:x.variantId,qty:x.quantity,price:x.unit_price,name:x.name,brand:x.brand_name,slug:x.slug,cartItemId:x.item_id,imageUrl:x.image_url,available:x.available,variantName:x.variant_name}))}
+export function serverCartToLegacy(data:ServerCart):CommerceItem[]{return data.items.map(x=>({...x,id:x.product_id||x.variant_id||x.item_id,variantId:x.variant_id,qty:x.quantity,price:Number(x.unit_price??x.selling_price??0),name:x.name,brand:x.brand_name??undefined,slug:x.slug,cartItemId:x.item_id,imageUrl:x.image_url??undefined,available:x.available,variantName:x.variant_name??undefined}))}
 export async function addCart(item:Omit<CommerceItem,'qty'>,qty=1){try{const data=await addServerCart(String(item.variantId||item.id),qty);write(CART_KEY,serverCartToLegacy(data));return data}catch(error){const items=getCart();const existing=items.find(x=>x.id===item.id&&x.variantId===item.variantId);if(existing)existing.qty+=qty;else items.push({...item,qty});write(CART_KEY,items);throw error}}
 export async function getServerCartSafe():Promise<ServerCart|null>{try{return await syncServerCart()}catch{return null}}
 export function getCart():CommerceItem[]{return read(CART_KEY,[])}

@@ -35,6 +35,14 @@ ok('admin lifecycle surface wired',admin.includes('/api/catalog/commerce/lifecyc
 ok('compatibility rules persisted and surfaced',commerce.includes('product_compatibility_rules')&&server.includes('/api/public/products/:slug/compatible')&&server.includes('/api/catalog/products/:id/compatibility')&&compat.includes('/compatible'));
 ok('raw img scan clean',!/<img\s/i.test(cart+drawer));
 ok('payment providers remain presentation only',checkout.includes('Payment processing will be connected')||checkout.includes('configured payment gateway'));
+
+ok('category seed is conflict-safe',!read('computer-catalogue-seed.sql').includes("WHERE c.slug='computers' ON CONFLICT(slug) DO NOTHING")&&read('computer-catalogue-seed.sql').includes("WHERE c.slug='computers-laptops' ON CONFLICT DO NOTHING"), 'Laptop subcategory seed must not create duplicate Laptops siblings under Computers');
+ok('2026 category inserts are conflict-safe',read('catalogue-category-hierarchy-2026.sql').match(/ON CONFLICT DO NOTHING/g)?.length>=6, 'Taxonomy seed should tolerate pre-existing unique name/parent rows');
+ok('cart payload uses effective retail pricing',server.includes('amaal_effective_variant_price_qty')&&server.includes('final_price'), 'Cart display pricing must reflect authoritative price/promotion calculation');
+ok('non-inventory variants are not shown as unavailable',server.includes('x.track_inventory?Number(x.available||0):null'), 'Availability should be null for non-tracked inventory');
+ok('checkout cart ownership is enforced',server.includes('guest_token_hash=$3')&&server.includes('RETURNING id'), 'Checkout must not mutate another guest cart by UUID alone');
+ok('checkout shipping is server-authoritative',server.includes('FROM delivery_zones')&&!server.includes('const shipping=money(b.shippingAmount)'), 'Client cannot override delivery fee');
+ok('guest/customer cart merge response matches cart contract',server.includes('const payload=cart?await publicCartPayload')&&server.includes('res.json(payload)'), 'Merge must return the same cart shape consumed by the frontend');
 const failures=checks.filter(x=>!x.ok);
 console.log(JSON.stringify({generatedAt:new Date().toISOString(),checks,pass:checks.length-failures.length,failures},null,2));
 process.exitCode=failures.length?1:0;

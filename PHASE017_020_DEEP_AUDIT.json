@@ -1,0 +1,127 @@
+{
+  "generatedAt": "2026-09-02T19:11:31.164Z",
+  "pass": 24,
+  "failures": [],
+  "checks": [
+    {
+      "name": "growth migration is loaded at startup",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "growth module is registered",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "route /api/public/recommendations",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "route /api/public/bundles",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "route /api/public/account/loyalty",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "route /api/public/account/registrations",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "route /api/public/account/support",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "route /api/public/account/returns",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "route /api/catalog/growth/summary",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "route /api/catalog/bundles",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "route /api/catalog/customers/:id/loyalty",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "route /api/catalog/customers/:id/store-credit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "payment remains on hold",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no payment provider work added",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "bundle tables present",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "loyalty and store credit ledgers present",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "product registration present",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "support message thread present",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "buying guide data model present",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "migration contains no destructive reset commands",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "live shop no longer injects static catalogue families",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "recommendation rail wired into product page",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "bundles discoverable in header",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "account care centre wired",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

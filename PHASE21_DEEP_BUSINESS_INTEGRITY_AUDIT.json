@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-08-28T18:11:08.462Z",
+  "generatedAt": "2026-09-02T19:11:00.332Z",
   "summary": {
-    "permissions": 134,
-    "guardedRoutes": 131,
+    "permissions": 137,
+    "guardedRoutes": 145,
     "unguardedRoutes": 0,
     "unknownUiPermissions": 0,
     "biEndpoints": 19,
@@ -215,14 +215,14 @@
     {
       "permission": "catalog.view",
       "description": "View product catalog",
-      "routes": 14,
+      "routes": 16,
       "actions": "View",
       "uiExposed": false
     },
     {
       "permission": "catalog.manage",
       "description": "Manage product catalog",
-      "routes": 30,
+      "routes": 34,
       "actions": "Create/Execute, Edit, Delete/Archive, Bulk/Create",
       "uiExposed": true
     },
@@ -390,15 +390,15 @@
     {
       "permission": "customers.view",
       "description": "View customers",
-      "routes": 0,
-      "actions": "UI/permission only",
+      "routes": 3,
+      "actions": "View",
       "uiExposed": false
     },
     {
       "permission": "customers.manage",
       "description": "Manage customers",
-      "routes": 0,
-      "actions": "UI/permission only",
+      "routes": 1,
+      "actions": "Create/Execute",
       "uiExposed": true
     },
     {
@@ -539,6 +539,20 @@
       "description": "View orders",
       "routes": 0,
       "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "reviews.view",
+      "description": "View product reviews and questions",
+      "routes": 2,
+      "actions": "View",
+      "uiExposed": false
+    },
+    {
+      "permission": "reviews.manage",
+      "description": "Moderate product reviews and questions",
+      "routes": 2,
+      "actions": "Edit",
       "uiExposed": false
     },
     {
@@ -985,6 +999,13 @@
     {
       "permission": "Damage",
       "description": "Loss",
+      "routes": 0,
+      "actions": "UI/permission only",
+      "uiExposed": false
+    },
+    {
+      "permission": "Mobile Money",
+      "description": "Card",
       "routes": 0,
       "actions": "UI/permission only",
       "uiExposed": false

@@ -1,0 +1,2 @@
+import {redirect} from 'next/navigation';import {businessGetSafe} from '@/lib/business';import GrowthOperationsPanel from '@/components/GrowthOperationsPanel';
+export default async function Growth(){const me=await businessGetSafe<any>('/api/me');if(!me)redirect('/login');return <div className="page"><div className="pageHeading"><div><p className="eyebrow">COMMERCE</p><h1>Discovery & growth</h1><p>Operate merchandising, customer retention and after-sales signals without touching payment.</p></div></div><GrowthOperationsPanel/></div>}

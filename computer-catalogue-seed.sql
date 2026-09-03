@@ -4,12 +4,18 @@ INSERT INTO brands(name,slug,status,website_visibility) VALUES
  ('HP','hp','Active','Published'),('Lenovo','lenovo','Active','Published'),('Apple','apple','Active','Published')
 ON CONFLICT(slug) DO NOTHING;
 INSERT INTO product_categories(name,slug,status,website_visibility) VALUES
- ('Computers','computers','Active','Published'),('Laptops','computers-laptops','Active','Published'),('Desktops','computers-desktops','Active','Published'),('All-in-One','computers-all-in-one','Active','Published'),('Gaming Laptops','computers-gaming-laptops','Active','Published')
-ON CONFLICT(slug) DO NOTHING;
+ ('Computers','computers','Active','Published')
+ON CONFLICT DO NOTHING;
 INSERT INTO product_categories(parent_id,name,slug,status,website_visibility)
 SELECT c.id,x.name,x.slug,'Active','Published' FROM product_categories c CROSS JOIN (VALUES
- ('Laptops','computers-laptops-hp'),('Laptops','computers-laptops-lenovo'),('Laptops','computers-laptops-apple'),('Desktops','computers-desktops-brands')
-) x(name,slug) WHERE c.slug='computers' ON CONFLICT(slug) DO NOTHING;
+ ('Laptops','computers-laptops'),('Desktops','computers-desktops'),('All-in-One','computers-all-in-one'),('Gaming Laptops','computers-gaming-laptops')
+) x(name,slug) WHERE c.slug='computers' ON CONFLICT DO NOTHING;
+INSERT INTO product_categories(parent_id,name,slug,status,website_visibility)
+SELECT c.id,x.name,x.slug,'Active','Published' FROM product_categories c CROSS JOIN (VALUES
+ ('Laptops','computers-laptops-hp'),('Laptops','computers-laptops-lenovo'),('Laptops','computers-laptops-apple')
+) x(name,slug) WHERE c.slug='computers-laptops' ON CONFLICT DO NOTHING;
+INSERT INTO product_categories(parent_id,name,slug,status,website_visibility)
+SELECT c.id,'Desktop Brands','computers-desktops-brands','Active','Published' FROM product_categories c WHERE c.slug='computers-desktops' ON CONFLICT DO NOTHING;
 WITH x(name,slug,brand,cat,short,descr,specs) AS (VALUES
  ('HP 15 Laptop','hp-15','hp','computers-laptops','A practical everyday laptop for study, work and home computing.','The HP 15 family is designed for everyday productivity, study, browsing and general home computing. Exact configurations vary by model and region.','{"Screen":"15.6-inch","Processor":"Intel Core or AMD Ryzen, configuration dependent","Memory":"8GB–16GB, configuration dependent","Storage":"256GB–512GB SSD, configuration dependent","Graphics":"Integrated Intel or AMD graphics","Operating system":"Windows 11"}'),
  ('HP ProBook 440','hp-probook-440','hp','computers-laptops-hp','A compact business laptop for professional work.','The HP ProBook 440 family combines a compact 14-inch format with business-focused features. Specifications vary by generation and regional configuration.','{"Screen":"14-inch","Processor":"Intel Core / Core Ultra, generation dependent","Memory":"Up to 32GB on supported configurations","Storage":"SSD, configuration dependent","Graphics":"Integrated Intel graphics","Operating system":"Windows 11 Pro / Windows 11"}'),
