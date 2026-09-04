@@ -28,7 +28,6 @@ import {registerMonitoringObservability} from './monitoring-observability.js';
 import {registerBackupRecovery} from './backup-recovery.js';
 import {registerSerializedInventory} from './inventory-serialized.js';
 import { transitionSerializedUnit } from './serialized-unit-lifecycle.js';
-import {createPaymentSession,paymentStatus,paymentReference} from './payment-provider.js';
 
 const {Pool}=pg; const __dirname=path.dirname(fileURLToPath(import.meta.url));
 const app=express();
@@ -841,44 +840,6 @@ const ordersModule=registerOrdersEcommerce({app,auth,need,q,pool,audit,changeSto
 registerWebHosting({app,auth,need,q,pool,audit});
 registerPricingPromotions({app,auth,need,q,pool,audit});
 
-// Google customer OAuth/OpenID Connect. Credentials remain server-side and are supplied through environment variables.
-function googleAuthConfig(){return {clientId:String(process.env.GOOGLE_CLIENT_ID||'').trim(),clientSecret:String(process.env.GOOGLE_CLIENT_SECRET||'').trim(),redirectUri:String(process.env.GOOGLE_REDIRECT_URI||`${String(process.env.APP_BASE_URL||'').replace(/\/$/,'')}/api/public/auth/google/callback`).trim(),publicWebUrl:String(process.env.PUBLIC_WEB_URL||process.env.APP_BASE_URL||'').trim()};}
-function googleAuthCookie(name,value,maxAge=600){return `${name}=${encodeURIComponent(value)}; Path=/api/public/auth/google; HttpOnly; Secure; SameSite=Lax; Max-Age=${Math.max(60,maxAge)}`}
-function googleStatePayload(payload){const body=Buffer.from(JSON.stringify(payload)).toString('base64url');const sig=crypto.createHmac('sha256',String(JWT_SECRET||'')).update(body).digest('base64url');return `${body}.${sig}`}
-function verifyGoogleState(raw){try{const [body,sig]=String(raw||'').split('.');if(!body||!sig)return null;const expected=crypto.createHmac('sha256',String(JWT_SECRET||'')).update(body).digest('base64url');if(sig.length!==expected.length||!crypto.timingSafeEqual(Buffer.from(sig),Buffer.from(expected)))return null;const data=JSON.parse(Buffer.from(body,'base64url').toString('utf8'));if(!data.exp||Date.now()>Number(data.exp))return null;return data;}catch{return null}}
-async function googleTokenExchange(code,verifier,c){const r=await fetch('https://oauth2.googleapis.com/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({code,client_id:c.clientId,client_secret:c.clientSecret,redirect_uri:c.redirectUri,grant_type:'authorization_code',code_verifier:verifier})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.access_token)throw new Error('Google sign-in could not be completed.');return d;}
-async function googleUserInfo(accessToken){const r=await fetch('https://openidconnect.googleapis.com/v1/userinfo',{headers:{Authorization:`Bearer ${accessToken}`}});const d=await r.json().catch(()=>({}));if(!r.ok||!d.sub||!d.email)throw new Error('Google did not return a usable verified account.');if(d.email_verified!==true)throw new Error('Your Google email must be verified before it can be used with Amaal.');return d;}
-function randomPkceVerifier(){return crypto.randomBytes(48).toString('base64url')}
-function pkceChallenge(verifier){return crypto.createHash('sha256').update(verifier).digest('base64url')}
-async function signInGoogleCustomer(req,res,profile){
-  const email=safeCustomerIdentifier(profile.email), name=String(profile.name||email.split('@')[0]||'Amaal customer').trim().slice(0,160), subject=String(profile.sub).slice(0,255);
-  const client=await pool.connect();
-  try{await client.query('BEGIN');
-    let identity=(await client.query("SELECT cai.*,c.* FROM customer_auth_identities cai JOIN customers c ON c.id=cai.customer_id WHERE cai.provider='google' AND cai.provider_subject=$1 AND c.status='Active' FOR UPDATE",[subject])).rows[0];
-    let c=identity;
-    if(!c){
-      c=(await client.query("SELECT c.* FROM customers c WHERE c.status<>'Anonymized' AND lower(c.email)=lower($1) ORDER BY c.created_at ASC LIMIT 1 FOR UPDATE",[email])).rows[0];
-      if(!c){c=(await client.query("INSERT INTO customers(customer_no,name,customer_type,email,phone,country_code,preferred_currency,status,notes) VALUES($1,$2,'Individual',$3,'','UG','UGX','Active','Created through Google customer sign-in') RETURNING *",[`CUS-${new Date().getFullYear()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`,name,email])).rows[0];await client.query('INSERT INTO customer_balances(customer_id,balance,credit_limit) VALUES($1,0,0) ON CONFLICT DO NOTHING',[c.id]);}
-      const existingProvider=(await client.query("SELECT id FROM customer_auth_identities WHERE customer_id=$1 AND provider='google'",[c.id])).rows[0];
-      if(existingProvider)throw new Error('This customer is already linked to a different Google account.');
-      await client.query("INSERT INTO customer_auth_identities(customer_id,provider,provider_subject,provider_email,email_verified,profile_json) VALUES($1,'google',$2,$3,true,$4)",[c.id,subject,email,JSON.stringify({name, picture:String(profile.picture||'').slice(0,1000)})]);
-    }
-    await client.query('INSERT INTO customer_auth_events(customer_id,identifier,success,reason,ip,user_agent) VALUES($1,$2,true,$3,$4,$5)',[c.id,email,'Google sign-in',req.ip,req.get('user-agent')||'']);
-    const session=await issueCustomerSession(client,c.id,req,true);await client.query('COMMIT');setCustomerSessionCookies(res,session);return c;
-  }catch(e){try{await client.query('ROLLBACK')}catch{}throw e}finally{client.release()}
-}
-app.get('/api/public/auth/google/start',async(req,res)=>{
-  const c=googleAuthConfig();if(!c.clientId||!c.clientSecret||!c.redirectUri)return res.status(503).send('Google sign-in is not configured yet.');
-  const verifier=randomPkceVerifier(), state=googleStatePayload({exp:Date.now()+10*60*1000,returnTo:String(req.query.returnTo||'/account').slice(0,300)});
-  res.setHeader('Set-Cookie',[googleAuthCookie('amaal_google_state',state),googleAuthCookie('amaal_google_pkce',verifier)]);
-  const url=new URL('https://accounts.google.com/o/oauth2/v2/auth');url.searchParams.set('client_id',c.clientId);url.searchParams.set('redirect_uri',c.redirectUri);url.searchParams.set('response_type','code');url.searchParams.set('scope','openid email profile');url.searchParams.set('state',state);url.searchParams.set('code_challenge',pkceChallenge(verifier));url.searchParams.set('code_challenge_method','S256');url.searchParams.set('prompt','select_account');res.redirect(url.toString());
-});
-app.get('/api/public/auth/google/callback',async(req,res)=>{
-  const c=googleAuthConfig(),cookies=parseCookies(req),state=verifyGoogleState(cookies.amaal_google_state),code=String(req.query.code||'');
-  const clear=['amaal_google_state=; Path=/api/public/auth/google; HttpOnly; Secure; SameSite=Lax; Max-Age=0','amaal_google_pkce=; Path=/api/public/auth/google; HttpOnly; Secure; SameSite=Lax; Max-Age=0'];res.setHeader('Set-Cookie',clear);
-  if(!state||!code)return res.status(400).send('Google sign-in could not be verified.');
-  try{const tokens=await googleTokenExchange(code,cookies.amaal_google_pkce,c),profile=await googleUserInfo(tokens.access_token);await signInGoogleCustomer(req,res,profile);const target=new URL(state.returnTo||'/account',c.publicWebUrl||`https://${req.get('host')}`);target.searchParams.set('google','success');res.redirect(target.toString());}catch(e){const target=new URL('/account',c.publicWebUrl||`https://${req.get('host')}`);target.searchParams.set('google','error');target.searchParams.set('message',String(e.message||'Google sign-in failed').slice(0,180));res.redirect(target.toString());}
-});
 // Public customer authentication. Customer identity is separate from internal staff authentication.
 app.get('/api/public/auth/me',async(req,res)=>{
   const c=await publicAuthenticatedCustomer(req); if(!c)return res.status(401).json({authenticated:false});
@@ -1022,28 +983,10 @@ app.post('/api/public/checkout',publicCheckoutLimit,async(req,res)=>{
   }catch(e){try{await client.query('ROLLBACK')}catch{}res.status(400).json({error:e.message||'Unable to place order.'})}finally{client.release()}
 });
 
-app.get('/api/public/payments/config',async(_req,res)=>{
-  const s=paymentStatus();
-  res.json({provider:s.provider,configured:s.configured,publicConfigured:s.publicConfigured,currency:s.currency,country:s.country,methods:['Mobile Money','Card'],message:s.configured?'Amaal payment gateway configuration is present.':'Amaal checkout is payment-ready, but the gateway API variables are intentionally left open for final provider configuration.'});
-});
-
 app.post('/api/public/orders/payment-intent',publicCheckoutLimit,async(req,res)=>{
   const orderNo=String(req.body?.orderNo||'').trim(), phone=String(req.body?.phone||'').trim(), method=String(req.body?.method||'').trim();
   if(!orderNo||!phone||!['Mobile Money','Card'].includes(method))return res.status(400).json({error:'Order number, phone number and a supported payment method are required.'});
-  try{
-    const o=(await q(`SELECT o.id,o.order_no,o.grand_total,o.currency,o.payment_status,o.status,o.shipping_name,o.shipping_phone,o.shipping_email FROM orders o WHERE o.order_no=$1 AND regexp_replace(o.shipping_phone,'[^0-9+]','','g')=regexp_replace($2,'[^0-9+]','','g')`,[orderNo,phone]))[0];
-    if(!o)return res.status(404).json({error:'Order not found.'});
-    if(['Cancelled','Refunded','Delivered','Returned'].includes(o.status))return res.status(400).json({error:'This order cannot receive a new payment.'});
-    const paid=Number((await q("SELECT COALESCE(sum(amount),0)::numeric total FROM order_payments WHERE order_id=$1 AND status='Completed'",[o.id]))[0].total||0);
-    const due=Math.max(0,Number(o.grand_total)-paid);
-    if(due<=0)return res.json({status:'Paid',amount:0,provider:paymentStatus().provider||null});
-    let p=(await q("SELECT id,method,amount,reference,status,created_at FROM order_payments WHERE order_id=$1 AND status='Pending' ORDER BY created_at DESC LIMIT 1",[o.id]))[0];
-    if(p && p.method!==method){p=(await q("UPDATE order_payments SET method=$1,amount=$2 WHERE id=$3 RETURNING id,method,amount,reference,status,created_at",[method,due,p.id]))[0];}
-    if(!p)p=(await q("INSERT INTO order_payments(order_id,method,amount,reference,status) VALUES($1,$2,$3,$4,'Pending') RETURNING id,method,amount,reference,status,created_at",[o.id,method,due,paymentReference()]))[0];
-    const customer=(await q('SELECT id,name,email,phone FROM customers WHERE id=(SELECT customer_id FROM orders WHERE id=$1)',[o.id]))[0];
-    const session=createPaymentSession({order:o,payment:p,customer,method});
-    res.status(200).json({payment:p,session,provider:paymentStatus()});
-  }catch(e){res.status(503).json({error:'Payment setup is temporarily unavailable.'})}
+  try{const o=(await q(`SELECT o.id,o.order_no,o.grand_total,o.payment_status,o.status FROM orders o WHERE o.order_no=$1 AND regexp_replace(o.shipping_phone,'[^0-9+]','','g')=regexp_replace($2,'[^0-9+]','','g')`,[orderNo,phone]))[0];if(!o)return res.status(404).json({error:'Order not found.'});if(['Cancelled','Refunded','Delivered','Returned'].includes(o.status))return res.status(400).json({error:'This order cannot receive a new payment.'});const paid=Number((await q("SELECT COALESCE(sum(amount),0)::numeric total FROM order_payments WHERE order_id=$1 AND status='Completed'",[o.id]))[0].total||0);const due=Math.max(0,Number(o.grand_total)-paid);if(due<=0)return res.json({status:'Paid',amount:0});const ref=`WEBPAY-${crypto.randomUUID().slice(0,12).toUpperCase()}`;const p=(await q("INSERT INTO order_payments(order_id,method,amount,reference,status) VALUES($1,$2,$3,$4,'Pending') RETURNING id,method,amount,reference,status,created_at",[o.id,method,due,ref]))[0];res.status(201).json({payment:p,instructions:method==='Mobile Money'?'Amaal will use the configured mobile-money payment flow for this order. Keep your phone nearby.':'Amaal will use the configured secure card gateway for this order.'})}catch(e){res.status(503).json({error:'Payment setup is temporarily unavailable.'})}
 });
 
 app.get('/api/public/orders/track',async(req,res)=>{
@@ -1068,7 +1011,6 @@ app.get('/api/public/account/service',async(req,res)=>{const c=await publicAccou
 app.post('/api/public/account/warranty',async(req,res)=>{if(!(await requireCustomerCsrf(req,res)))return;const c=await publicAccountCustomer(req);if(!c)return res.status(401).json({error:'Customer access expired or unavailable.'});const b=req.body||{};if(!String(b.issue||'').trim())return res.status(400).json({error:'Please describe the issue.'});try{const order=b.orderNo?(await q('SELECT id FROM orders WHERE order_no=$1 AND customer_id=$2',[String(b.orderNo),c.id]))[0]:null;if(b.orderNo&&!order)return res.status(404).json({error:'Order not found.'});const claimNo=`WEB-W-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${crypto.randomUUID().slice(0,8).toUpperCase()}`;const r=(await q("INSERT INTO warranty_claims(claim_no,customer_id,order_id,variant_id,issue,status,warranty_status,created_by) VALUES($1,$2,$3,$4,$5,'Submitted','Pending',NULL) RETURNING claim_no,status,warranty_status,created_at",[claimNo,c.id,order?.id||null,b.variantId||null,String(b.issue).slice(0,2000)]))[0];await q("INSERT INTO customer_notifications(customer_id,title,body) VALUES($1,'Warranty request received',$2)",[c.id,`Your warranty request ${claimNo} has been received by Amaal.`]);res.status(201).json({claim:r})}catch(e){res.status(400).json({error:'Unable to submit the warranty request.'})}});
 app.get('/api/public/account/wishlist',async(req,res)=>{const c=await publicAccountCustomer(req);if(!c)return res.status(401).json({error:'Customer access expired or unavailable.'});res.json(await q(`SELECT p.id,p.slug,p.name,b.name brand_name FROM customer_wishlist_items w JOIN products p ON p.id=w.product_id LEFT JOIN brands b ON b.id=p.brand_id WHERE w.customer_id=$1 AND p.status='Active' ORDER BY w.created_at DESC`,[c.id]))});
 app.post('/api/public/account/wishlist',async(req,res)=>{if(!(await requireCustomerCsrf(req,res)))return;const c=await publicAccountCustomer(req);if(!c)return res.status(401).json({error:'Customer access expired or unavailable.'});const productId=String(req.body?.productId||'');if(!productId)return res.status(400).json({error:'Product is required.'});try{const exists=(await q("SELECT id FROM products WHERE id=$1 AND status='Active'",[productId]))[0];if(!exists)return res.status(404).json({error:'Product not found.'});if(req.body?.saved===false)await q('DELETE FROM customer_wishlist_items WHERE customer_id=$1 AND product_id=$2',[c.id,productId]);else await q('INSERT INTO customer_wishlist_items(customer_id,product_id) VALUES($1,$2) ON CONFLICT DO NOTHING',[c.id,productId]);res.json({saved:req.body?.saved!==false})}catch(e){res.status(400).json({error:'Unable to update saved products.'})}});
-app.post('/api/public/account/wishlist/merge',async(req,res)=>{if(!(await requireCustomerCsrf(req,res)))return;const c=await publicAccountCustomer(req);if(!c)return res.status(401).json({error:'Customer access expired or unavailable.'});const ids=Array.isArray(req.body?.productIds)?req.body.productIds.map(x=>String(x||'').trim()).filter(Boolean).slice(0,200):[];if(!ids.length)return res.json({ok:true,merged:0});try{const valid=(await q("SELECT id FROM products WHERE id=ANY($1::uuid[]) AND status='Active'",[ids])).map(x=>x.id);for(const id of valid)await q('INSERT INTO customer_wishlist_items(customer_id,product_id) VALUES($1,$2) ON CONFLICT DO NOTHING',[c.id,id]);res.json({ok:true,merged:valid.length})}catch(e){res.status(400).json({error:'Unable to merge saved products.'})}});
 app.get('/api/public/account/notifications',async(req,res)=>{const c=await publicAccountCustomer(req);if(!c)return res.status(401).json({error:'Customer access expired or unavailable.'});res.json(await q('SELECT id,title,body,created_at,read_at FROM customer_notifications WHERE customer_id=$1 ORDER BY created_at DESC LIMIT 100',[c.id]))});
 
 // Phase 015 customer completion endpoints.
@@ -1083,7 +1025,7 @@ app.post('/api/public/support',publicCheckoutLimit,async(req,res)=>{const b=req.
 function guestCartToken(req){return String(req.get('X-Amaal-Guest-Cart-Token')||'').trim();}
 function hashGuestCartToken(raw){return raw?crypto.createHash('sha256').update(raw).digest('hex'):'';}
 async function resolvePublicCart(req,client,create=true){
-  const customer=await publicAuthenticatedCustomer(req)||await publicCustomer(req);
+  const customer=await publicCustomer(req);
   const guest=guestCartToken(req); const guestHash=hashGuestCartToken(guest);
   let cart=null;
   if(customer) cart=(await client.query("SELECT * FROM commerce_carts WHERE customer_id=$1 AND status='Active' AND expires_at>now() ORDER BY updated_at DESC LIMIT 1 FOR UPDATE",[customer.id])).rows[0];
@@ -1177,7 +1119,6 @@ app.get('/api/catalog/products/:id/compatibility',auth,need('catalog.view'),asyn
 app.post('/api/catalog/products/:id/compatibility',auth,need('catalog.manage'),async(req,res)=>{const b=req.body||{};const target=String(b.targetProductId||'');if(!target)return res.status(400).json({error:'Target product is required.'});if(target===req.params.id&&String(b.sourceVariantId||'')===String(b.targetVariantId||''))return res.status(400).json({error:'A product cannot be compatible with the exact same variant.'});const exists=(await q('SELECT id FROM products WHERE id=$1',[target]))[0];if(!exists)return res.status(404).json({error:'Target product not found.'});try{const r=(await q(`INSERT INTO product_compatibility_rules(source_product_id,source_variant_id,target_product_id,target_variant_id,relation_type,confidence,notes) VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT DO NOTHING RETURNING *`,[req.params.id,b.sourceVariantId||null,target,b.targetVariantId||null,b.relationType||'Compatible',b.confidence||'Verified',String(b.notes||'').slice(0,1000)]))[0];if(!r)return res.status(409).json({error:'That compatibility rule already exists.'});await audit(req.user,'PRODUCT_COMPATIBILITY_CREATED','ProductCompatibility',r.id,'Added product compatibility rule',null,r,req.req);res.status(201).json(r)}catch(e){res.status(400).json({error:e.message||'Unable to create compatibility rule.'})}});
 app.patch('/api/catalog/compatibility/:id',auth,need('catalog.manage'),async(req,res)=>{const r=(await q('UPDATE product_compatibility_rules SET status=COALESCE($1,status),notes=COALESCE($2,notes),confidence=COALESCE($3,confidence),updated_at=now() WHERE id=$4 RETURNING *',[req.body?.status,req.body?.notes,req.body?.confidence,req.params.id]))[0];if(!r)return res.status(404).json({error:'Compatibility rule not found.'});await audit(req.user,'PRODUCT_COMPATIBILITY_UPDATED','ProductCompatibility',r.id,'Updated product compatibility rule',null,r,req.req);res.json(r)});
 
-app.get('/api/commerce/live-feed',auth,need('dashboard.view'),async(req,res)=>{try{const rows=await q(`SELECT e.id,e.event_type,e.created_at,e.customer_id,e.product_id,e.variant_id,e.metadata,p.name product_name,c.name customer_name,o.order_no FROM commerce_events e LEFT JOIN products p ON p.id=e.product_id LEFT JOIN customers c ON c.id=e.customer_id LEFT JOIN orders o ON (e.metadata->>'orderNo')=o.order_no WHERE e.created_at>now()-interval '24 hours' ORDER BY e.created_at DESC LIMIT 30`);res.json({events:rows});}catch(e){res.status(503).json({error:'Live commerce activity is temporarily unavailable.'})}});
 app.get('/api/catalog/commerce/lifecycle',auth,need('customers.view'),async(req,res)=>{try{const [abandoned,alerts,stockAlerts,saved,events]=await Promise.all([q("SELECT ((SELECT count(*) FROM abandoned_carts WHERE recovered_at IS NULL AND last_seen_at>now()-interval '30 days')+(SELECT count(*) FROM commerce_carts WHERE status='Abandoned' AND updated_at>now()-interval '30 days'))::int c"),q("SELECT count(*)::int c FROM product_price_alerts WHERE status='Active'"),q("SELECT count(*)::int c FROM product_stock_alerts WHERE status='Active'"),q("SELECT count(*)::int c FROM saved_searches WHERE status='Active'"),q("SELECT event_type,count(*)::int c FROM commerce_events WHERE created_at>now()-interval '30 days' GROUP BY event_type ORDER BY c DESC LIMIT 20")]);res.json({abandoned:abandoned[0].c,priceAlerts:alerts[0].c,stockAlerts:stockAlerts[0].c,savedSearches:saved[0].c,events});}catch(e){res.status(503).json({error:'Commerce lifecycle metrics are unavailable.'})}});
 app.get('/api/catalog/commerce/abandoned',auth,need('customers.view'),async(req,res)=>res.json(await q("SELECT id,email,phone,items,subtotal,last_seen_at,recovered_at FROM abandoned_carts ORDER BY last_seen_at DESC LIMIT 200")));
 app.get('/api/catalog/commerce/alerts',auth,need('customers.view'),async(req,res)=>{const [prices,stocks]=await Promise.all([q("SELECT a.*,p.name product_name,p.slug FROM product_price_alerts a JOIN products p ON p.id=a.product_id WHERE a.status='Active' ORDER BY a.created_at DESC LIMIT 200"),q("SELECT a.*,p.name product_name,p.slug,v.sku,v.variant_name FROM product_stock_alerts a JOIN product_variants v ON v.id=a.variant_id JOIN products p ON p.id=v.product_id WHERE a.status='Active' ORDER BY a.created_at DESC LIMIT 200")]);res.json({prices,stocks});});
