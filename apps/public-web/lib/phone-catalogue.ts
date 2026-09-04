@@ -1,7 +1,8 @@
-export type PhoneVariant = { label: string; storage?: string; ram?: string; network?: string };
+import { amaalMasterPhones } from './amaal-master-data';
+export type PhoneVariant = { label: string; storage?: string; ram?: string; network?: string; price?: number };
 export type PhoneProduct = { slug:string; brand:string; family:string; series:string; name:string; network:string; variants:PhoneVariant[]; description:string; image:string; photoNote:string; source:string };
 
-export const phoneCatalogue: PhoneProduct[] = [
+const curatedPhoneCatalogue: PhoneProduct[] = [
   {
     "slug": "apple-iphone-11",
     "brand": "Apple",
@@ -3902,3 +3903,38 @@ export const phoneCatalogue: PhoneProduct[] = [
     "source": "Mobile_Phone_Catalogue_Master_2026.md"
   }
 ];
+
+const masterByPhoneSlug = new Map(amaalMasterPhones.map((p) => [p.slug, p]));
+const enrichedPhoneCatalogue: PhoneProduct[] = curatedPhoneCatalogue.map((product) => {
+  const master = masterByPhoneSlug.get(product.slug);
+  if (!master) return product;
+  return {
+    ...product,
+    name: master.name,
+    variants: master.variants,
+    description: master.description,
+    image: master.imageFile ? `/products/amaal-master/${master.imageFile}` : '',
+    photoNote: master.imageFile ? 'Supplied Amaal product image' : 'Product photo coming soon',
+    source: 'amaal_phones_and_speakers_master_catalogue.md',
+  };
+});
+
+for (const master of amaalMasterPhones) {
+  if (enrichedPhoneCatalogue.some((p) => p.slug === master.slug)) continue;
+  const network = master.variants.find((v) => v.network)?.network ?? (master.brand === 'Apple' || master.brand === 'Google Pixel' ? '5G' : '5G');
+  enrichedPhoneCatalogue.push({
+    slug: master.slug,
+    brand: master.brand,
+    family: master.brand === 'Apple' ? 'iPhone' : master.brand === 'Samsung' ? 'Galaxy' : 'Pixel',
+    series: master.name.startsWith('iPhone') ? master.name.replace(/^iPhone\s+/,'').replace(/\s+Pro.*$/,' Series') : master.name.split(' ')[0] === 'Pixel' ? master.name.replace(/^Pixel\s+/,'').replace(/\s.*$/,'') : 'S Series',
+    name: master.name,
+    network,
+    variants: master.variants,
+    description: master.description,
+    image: master.imageFile ? `/products/amaal-master/${master.imageFile}` : '',
+    photoNote: master.imageFile ? 'Supplied Amaal product image' : 'Product photo coming soon',
+    source: 'amaal_phones_and_speakers_master_catalogue.md',
+  });
+}
+
+export const phoneCatalogue: PhoneProduct[] = enrichedPhoneCatalogue;

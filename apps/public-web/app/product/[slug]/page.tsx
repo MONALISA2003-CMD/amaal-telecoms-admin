@@ -17,7 +17,22 @@ function CuratedDetail({p}:{p:HomeProduct}){
 export default async function ProductPage({params}:{params:Promise<{slug:string}>}){
   const {slug}=await params;
   const phone=phoneCatalogue.find(x=>x.slug===slug);
-  if(phone)return <PhoneDetail product={phone}/>;
+  if(phone){
+    const catalog = await getCatalog();
+    const dbProduct = catalog?.products?.find((candidate) => candidate.slug === phone.slug);
+    const commerce: Record<string,{id:string;variantId:string;price:number}> = {};
+    if (dbProduct?.id) {
+      for (const variant of phone.variants) {
+        const match = dbProduct.variants?.find((candidate) => {
+          const storageMatch = !variant.storage || String(candidate.storage || '').toLowerCase() === variant.storage.toLowerCase();
+          const ramMatch = !variant.ram || String(candidate.name || '').toLowerCase().includes(variant.ram.toLowerCase());
+          return storageMatch && ramMatch && Number(candidate.sellingPrice) === Number(variant.price) && candidate.inStock === true;
+        });
+        if (match?.code) commerce[variant.label] = { id: dbProduct.id, variantId: match.code, price: Number(match.sellingPrice) };
+      }
+    }
+    return <PhoneDetail product={phone} commerce={commerce}/>;
+  }
   const local=curated.find(x=>x.slug===slug);
   if(local)return <CuratedDetail p={local}/>;
   const catalog=await getCatalog();

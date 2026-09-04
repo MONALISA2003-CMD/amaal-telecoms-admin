@@ -101,7 +101,7 @@ function resolveCommerceProduct(p: HomeProduct, catalog: Product[] | undefined):
 
   // Only expose a direct cart action when the existing catalogue has an unambiguous
   // variant matching the exact homepage offer. Never guess a variant.
-  const matching = product.variants.find((variant) => Number(variant.sellingPrice) === Number(p.price) && variant.inStock !== false);
+  const matching = product.variants.find((variant) => Number(variant.sellingPrice) === Number(p.price) && variant.inStock === true);
   if (!matching) return undefined;
   return {
     productId: product.id,
