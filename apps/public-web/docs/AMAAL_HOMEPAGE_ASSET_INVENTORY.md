@@ -38,7 +38,6 @@
 - `Chiq logo.png` → **Brand logo** → **Shop by brand** → **CHiQ** → `chiq-logo.webp` | original `PNG 225×225` / `2982` bytes → optimized `225×225` / `3026` bytes
 - `Hisense logo.png` → **Brand logo** → **Shop by brand** → **Hisense** → `hisense-logo.webp` | original `PNG 225×225` / `1614` bytes → optimized `225×225` / `2050` bytes
 - `Categorykitchen appliances.png` → **Category imagery** → **Shop by Category** → **Kitchen Appliances** → `categorykitchen-appliances.webp` | original `PNG 1448×1086` / `2047850` bytes → optimized `900×675` / `57932` bytes
-- `Itel logo.png` → **Brand logo** → **Shop by brand** → **itel** → `itel-logo.webp` | original `PNG 200×200` / `1636` bytes → optimized `200×200` / `2310` bytes
 - `Acer logo.png` → **Brand logo** → **Shop by brand** → **Acer** → `acer-logo.webp` | original `PNG 225×225` / `2231` bytes → optimized `225×225` / `2092` bytes
 - `Category home appliances.png` → **Category imagery** → **Shop by Category** → **Home Appliances** → `category-home-appliances.webp` | original `PNG 1448×1086` / `2020557` bytes → optimized `900×675` / `46338` bytes
 - `Sony.png` → **Brand logo** → **Shop by brand** → **Sony** → `sony.webp` | original `PNG 219×169` / `1718` bytes → optimized `219×169` / `1782` bytes

@@ -6,6 +6,7 @@ const localMedia: Record<string, string[]> = {
 };
 
 export function getPhoneMedia(product: PhoneProduct): string[] {
+  if (product.images?.length) return product.images;
   if (product.image) return [product.image];
   return localMedia[product.slug] ?? [];
 }

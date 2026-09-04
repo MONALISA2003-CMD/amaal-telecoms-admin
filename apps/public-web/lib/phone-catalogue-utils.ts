@@ -71,7 +71,6 @@ export function customerPhoneDescription(product: PhoneProduct) {
     'Google Pixel': `Explore ${product.name} and choose the option that suits you.`,
     TECNO: `Explore ${product.name} and choose the memory and storage option you prefer.`,
     Infinix: `Explore ${product.name} and choose the option that fits your needs.`,
-    itel: `Explore ${product.name} with the available choices from Amaal.`,
   };
   return custom[product.brand] ?? `Explore ${product.name} and choose the option that suits you.`;
 }

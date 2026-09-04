@@ -1,9 +1,8 @@
-import { amaalMasterAudio } from './amaal-master-data';
 export type AudioTier='ENTRY'|'EVERYDAY'|'PARTY'|'PREMIUM';
-export type AudioProduct={slug:string;brand:string;name:string;type:string;tier:AudioTier;shortDescription:string;description:string;quickSpecs:string[];specs:Record<string,string>;image?:string;price?:number;source?:string;};
+export type AudioProduct={slug:string;brand:string;name:string;type:string;tier:AudioTier;shortDescription:string;description:string;quickSpecs:string[];specs:Record<string,string>;image?:string;};
 const p=(x:AudioProduct)=>x;
 export const audioBrands=['Black Ark','Global Star','SPJ','CHiQ Smart Plus','Hisense','Samsung','LG','JBL','Sony'] as const;
-const curatedAudioProducts:AudioProduct[]=[
+export const audioProducts:AudioProduct[]=[
  p({slug:'black-ark-12-inch-bluetooth-woofer',brand:'Black Ark',name:'Black Ark 12-inch Bluetooth Woofer',type:'Woofer',tier:'ENTRY',shortDescription:'A practical Bluetooth woofer for everyday music and home listening.',description:'A compact woofer-style sound system designed for everyday home entertainment, casual music listening and small gatherings.',quickSpecs:['12-inch woofer','Bluetooth','USB / FM'],specs:{'Speaker type':'Woofer','Woofer size':'12-inch','Wireless':'Bluetooth','Inputs':'USB / FM / AUX'}}),
  p({slug:'black-ark-15-inch-bluetooth-woofer',brand:'Black Ark',name:'Black Ark 15-inch Bluetooth Woofer',type:'Woofer',tier:'EVERYDAY',shortDescription:'A larger woofer format for stronger bass and fuller room sound.',description:'A larger Bluetooth woofer format aimed at home entertainment, family gatherings and music playback where stronger bass is preferred.',quickSpecs:['15-inch woofer','Bluetooth','USB / FM'],specs:{'Speaker type':'Woofer','Woofer size':'15-inch','Wireless':'Bluetooth','Inputs':'USB / FM / AUX'}}),
  p({slug:'global-star-12-inch-bluetooth-woofer',brand:'Global Star',name:'Global Star 12-inch Bluetooth Woofer',type:'Woofer',tier:'ENTRY',shortDescription:'An accessible Bluetooth woofer for everyday listening and home entertainment.',description:'An entry-level woofer-style system for music, radio and casual home entertainment.',quickSpecs:['12-inch woofer','Bluetooth','USB / FM'],specs:{'Speaker type':'Woofer','Woofer size':'12-inch','Wireless':'Bluetooth','Inputs':'USB / FM / AUX'}}),
@@ -39,43 +38,3 @@ export const audioTiers=[['ENTRY','Everyday listening'],['EVERYDAY','Home & fami
 export function audioProduct(slug:string){return audioProducts.find(p=>p.slug===slug)}
 export function audioBrandsForProducts(){return Array.from(new Set(audioProducts.map(p=>p.brand)))}
 export function audioByBrand(brand:string){return audioProducts.filter(p=>p.brand===brand)}
-
-const masterAudioBySlug = new Map(amaalMasterAudio.map((p) => [p.slug, p]));
-const enrichedAudioProducts: AudioProduct[] = curatedAudioProducts.map((product) => {
-  const master = masterAudioBySlug.get(product.slug);
-  if (!master) return product;
-  return {
-    ...product,
-    name: master.name,
-    brand: master.brand,
-    type: master.type,
-    tier: master.tier,
-    shortDescription: master.quickSpecs.slice(0, 2).join(' · '),
-    description: master.description,
-    quickSpecs: master.quickSpecs,
-    specs: master.specs,
-    image: master.imageFile ? `/products/amaal-master/${master.imageFile}` : undefined,
-    price: master.price,
-    source: 'amaal_phones_and_speakers_master_catalogue.md',
-  };
-});
-
-for (const master of amaalMasterAudio) {
-  if (enrichedAudioProducts.some((p) => p.slug === master.slug)) continue;
-  enrichedAudioProducts.push({
-    slug: master.slug,
-    brand: master.brand,
-    name: master.name,
-    type: master.type,
-    tier: master.tier,
-    shortDescription: master.quickSpecs.slice(0, 2).join(' · '),
-    description: master.description,
-    quickSpecs: master.quickSpecs,
-    specs: master.specs,
-    image: master.imageFile ? `/products/amaal-master/${master.imageFile}` : undefined,
-    price: master.price,
-    source: 'amaal_phones_and_speakers_master_catalogue.md',
-  });
-}
-
-export const audioProducts: AudioProduct[] = enrichedAudioProducts;

@@ -1,5 +1,5 @@
 /** Shared phone brand metadata safe for Server and Client Components. */
-export const PHONE_BRANDS = ['Apple', 'Samsung', 'Google Pixel', 'TECNO', 'Infinix', 'itel'] as const;
+export const PHONE_BRANDS = ['Apple', 'Samsung', 'Google Pixel', 'TECNO', 'Infinix'] as const;
 
 export type PhoneBrand = (typeof PHONE_BRANDS)[number];
 

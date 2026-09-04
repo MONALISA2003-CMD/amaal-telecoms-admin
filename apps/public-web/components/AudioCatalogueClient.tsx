@@ -3,27 +3,23 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Search, SlidersHorizontal, X } from 'lucide-react';
-import WishlistButton from './WishlistButton';
 import { audioBrands, audioProducts, audioTiers, type AudioProduct, type AudioTier } from '../lib/audio-catalogue';
 
 function AudioCard({ product, remoteMedia, basePath }: { product: AudioProduct; remoteMedia?: string; basePath:string }) {
-  const media = product.image || remoteMedia;
-  return <article className="audio-card">
-    <Link href={`${basePath}/${product.slug}`} className="audio-card-link">
-      <div className="audio-media">
-        {media ? <img className="audio-real-image" src={media} alt={`${product.name} product image`} loading="lazy" decoding="async" /> : <div className="audio-placeholder"><span>{product.brand}</span><strong>{product.type}</strong><small>Photo coming soon</small></div>}
-        <span className="audio-tier-badge">{product.tier === 'EVERYDAY' ? 'EVERYDAY' : product.tier}</span>
-      </div>
-      <div className="audio-card-body">
-        <p>{product.brand}</p>
-        <h4>{product.name}</h4>
-        <div className="audio-quick">{product.quickSpecs.slice(0, 3).map(s => <span key={s}>{s}</span>)}</div>
-        <strong className="audio-price">{product.price ? `UGX ${product.price.toLocaleString('en-UG')}` : 'Price coming soon'}</strong>
-        <span className="audio-view">View product <ArrowRight size={13}/></span>
-      </div>
-    </Link>
-    <div className="audio-card-wishlist"><WishlistButton id={product.slug}/></div>
-  </article>;
+  const media = '';
+  return <Link href={`${basePath}/${product.slug}`} className="audio-card">
+    <div className="audio-media">
+      <div className="audio-placeholder"><span>{product.brand}</span><strong>{product.type}</strong><small>Product media coming soon</small></div>
+      <span className="audio-tier-badge">{product.tier === 'EVERYDAY' ? 'EVERYDAY' : product.tier}</span>
+    </div>
+    <div className="audio-card-body">
+      <p>{product.brand}</p>
+      <h4>{product.name}</h4>
+      <div className="audio-quick">{product.quickSpecs.slice(0, 3).map(s => <span key={s}>{s}</span>)}</div>
+      <strong className="audio-price">Price coming soon</strong>
+      <span className="audio-view">View product <ArrowRight size={13}/></span>
+    </div>
+  </Link>;
 }
 
 export default function AudioCatalogueClient({ initialBrand, basePath='/categories/entertainment/audio' }: { initialBrand?: string; basePath?: string } = {}) {

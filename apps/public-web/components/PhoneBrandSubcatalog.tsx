@@ -15,7 +15,6 @@ const brandCopy: Record<string, string> = {
   'Google Pixel': 'Pixel phones, organized by generation and model.',
   TECNO: 'CAMON, SPARK, POVA, PHANTOM and POP collections.',
   Infinix: 'NOTE, HOT, SMART and performance-led phone families.',
-  itel: 'Everyday smartphones organized by their model families.',
 };
 
 export function BrandDirectory({ counts, active = 'All' }: { counts: Record<string, number>; active?: string }) {

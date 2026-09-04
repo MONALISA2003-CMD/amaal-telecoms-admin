@@ -1,0 +1,227 @@
+{
+  "product_count": 111,
+  "image_matches": 70,
+  "markdown_matches": 66,
+  "unmatched_markdown": [
+    "Spark Slim"
+  ],
+  "images": {
+    "Galaxy S24+": [
+      "/products/phones/Galaxy S24+.jpg"
+    ],
+    "Pixel 8a": [
+      "/products/phones/Pixel 8a.jpg"
+    ],
+    "Pixel 9": [
+      "/products/phones/Pixel 9.jpg"
+    ],
+    "Galaxy S21+": [
+      "/products/phones/Galaxy S21+ .jpg"
+    ],
+    "Galaxy A57 5G": [
+      "/products/phones/Galaxy A57.jpg"
+    ],
+    "Pixel 7 Pro": [
+      "/products/phones/Pixel 7 pro .jpg"
+    ],
+    "Galaxy A26 5G": [
+      "/products/phones/Galaxy A26 .jpg"
+    ],
+    "iPhone 13 Pro Max": [
+      "/products/phones/Iphone 13 pro max .jpg"
+    ],
+    "iPhone 12 Pro": [
+      "/products/phones/Iphone 12 pro .jpg"
+    ],
+    "Galaxy S22": [
+      "/products/phones/Galaxy S22.jpg"
+    ],
+    "iPhone 11 Pro": [
+      "/products/phones/Iphone 11 pro .jpg"
+    ],
+    "Pixel 7a": [
+      "/products/phones/Pixel 7a .jpg"
+    ],
+    "Camon 50 Pro 5G/4G": [
+      "/products/phones/Tecno camon 50 pro .jpg"
+    ],
+    "Smart 20": [
+      "/products/phones/Infinix smart 20.jpg"
+    ],
+    "Galaxy A06": [
+      "/products/phones/Galaxy A06 .jpg"
+    ],
+    "Galaxy S22 Ultra": [
+      "/products/phones/Galaxy S22 ultra .jpg"
+    ],
+    "Galaxy S21 Ultra": [
+      "/products/phones/Galaxy S21 ultra.jpg"
+    ],
+    "Spark 50 Pro": [
+      "/products/phones/Spark 50 pro tecno .jpg"
+    ],
+    "Galaxy A56 5G": [
+      "/products/phones/Galaxy A56.jpg"
+    ],
+    "Spark 50 4G": [
+      "/products/phones/Tecno spark 50.jpg"
+    ],
+    "Galaxy S23+": [
+      "/products/phones/Galaxy S23+ .jpg"
+    ],
+    "Galaxy Z Flip6": [
+      "/products/phones/Flip 6.jpg"
+    ],
+    "iPhone 14": [
+      "/products/phones/Iphone 14.jpg"
+    ],
+    "Note 60 Ultra": [
+      "/products/phones/Infinix note 60 ultra.jpg"
+    ],
+    "Hot 70": [
+      "/products/phones/Infinix hot 70.jpg"
+    ],
+    "Hot 60 Pro": [
+      "/products/phones/Infinix hot 60 pro .jpg"
+    ],
+    "Camon 50 4G": [
+      "/products/phones/Tecno camon 50.jpg"
+    ],
+    "Galaxy A37 5G": [
+      "/products/phones/Galaxy A37.jpg"
+    ],
+    "Galaxy S26+": [
+      "/products/phones/Galaxy S26 plus .jpg"
+    ],
+    "Note Edge 5G": [
+      "/products/phones/Infinix note edge .jpg"
+    ],
+    "iPhone 13": [
+      "/products/phones/Iphone 13 .jpg"
+    ],
+    "Pixel 11 Pro Fold": [
+      "/products/phones/Pixel 11 pro fold .jpg"
+    ],
+    "Pixel 11 Pro": [
+      "/products/phones/Pixel 11 pro .jpg"
+    ],
+    "Pixel 6a": [
+      "/products/phones/Pixel 6a.jpg"
+    ],
+    "Galaxy S24 Ultra": [
+      "/products/phones/Galaxy S24 ultra.jpg"
+    ],
+    "Pixel 7": [
+      "/products/phones/Pixel 7.jpg"
+    ],
+    "Galaxy A27 5G": [
+      "/products/phones/Galaxy A27.jpg"
+    ],
+    "iPhone 12 Pro Max": [
+      "/products/phones/Iphone 12 pro max .jpg"
+    ],
+    "Galaxy S23": [
+      "/products/phones/Galaxy S23.jpg"
+    ],
+    "Pop 20": [
+      "/products/phones/Tecno pop 20.jpg",
+      "/products/phones/Tecno pop 20...jpg"
+    ],
+    "iPhone 11 Pro Max": [
+      "/products/phones/Iphone 11 pro max .jpg"
+    ],
+    "Galaxy S21": [
+      "/products/phones/Galaxy S21 .jpg"
+    ],
+    "Spark 40C": [
+      "/products/phones/Tecno spark 40c .jpg"
+    ],
+    "Note 60 Pro 5G": [
+      "/products/phones/Infinix note 60 pro .jpg"
+    ],
+    "Pixel 8 Pro": [
+      "/products/phones/Pixel 8 pro .jpg"
+    ],
+    "Camon 50 Ultra 5G": [
+      "/products/phones/Tecno camon 50 Ultra.jpg"
+    ],
+    "iPhone 14 Plus": [
+      "/products/phones/Iphone 14 plus .jpg"
+    ],
+    "Galaxy S22+": [
+      "/products/phones/Galaxy S22+.jpg"
+    ],
+    "Galaxy S24": [
+      "/products/phones/Galaxy S24.jpg"
+    ],
+    "Hot 60 Pro+": [
+      "/products/phones/Infinix hot 60 pro plus .jpg"
+    ],
+    "iPhone 14 Pro": [
+      "/products/phones/Iphone 14 pro .jpg"
+    ],
+    "Spark 40 Pro+": [
+      "/products/phones/Tecno spark 40 pro plus.jpg"
+    ],
+    "Pixel 9 Pro XL": [
+      "/products/phones/Pixel 9 pro XL.jpg"
+    ],
+    "Galaxy Z Flip8": [
+      "/products/phones/Flip 8.jpg"
+    ],
+    "Spark 40 Pro": [
+      "/products/phones/Tecno spark 40 pro.jpg"
+    ],
+    "iPhone 11": [
+      "/products/phones/Iphone 11.jpg"
+    ],
+    "iPhone 13 Pro": [
+      "/products/phones/Iphone 13 pro .jpg"
+    ],
+    "Hot 60i": [
+      "/products/phones/Infinix hot 60i.jpg"
+    ],
+    "Galaxy A16 4G": [
+      "/products/phones/Galaxy A16 .jpg"
+    ],
+    "Pixel 8": [
+      "/products/phones/Pixel 8.jpg"
+    ],
+    "Pixel 11": [
+      "/products/phones/Pixel 11.jpg"
+    ],
+    "Spark 50 5G": [
+      "/products/phones/Tecno spark 50 5G.jpg"
+    ],
+    "iPhone 12": [
+      "/products/phones/Iphone 12.jpg"
+    ],
+    "iPhone 14 Pro Max": [
+      "/products/phones/Iphone 14 pro max .jpg"
+    ],
+    "Spark 40": [
+      "/products/phones/Tecno spark 40.jpg"
+    ],
+    "Pixel 9 Pro": [
+      "/products/phones/Pixel 9 pro .jpg"
+    ],
+    "Pixel 6": [
+      "/products/phones/Pixel 6.jpg"
+    ],
+    "Hot 70 Pro 5G+": [
+      "/products/phones/Infinix hot 70 pro 5g+.jpg"
+    ],
+    "Galaxy S23 Ultra": [
+      "/products/phones/Galaxy S23 ultra.jpg"
+    ],
+    "Pixel 6 Pro": [
+      "/products/phones/Pixel 6 pro .jpg"
+    ],
+    "Galaxy A36 5G": [
+      "/products/phones/Galaxy A36.jpg"
+    ],
+    "Spark Slim": [
+      "/products/phones/Tecno spark slim.jpg"
+    ]
+  }
+}
