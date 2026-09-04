@@ -8,6 +8,7 @@ import { getPhoneMedia } from '../lib/phone-media';
 import { masterPhone } from '../lib/amaal-master-data-utils';
 import WishlistButton from './WishlistButton';
 import AddToBag from './AddToBag';
+import SiteFooter from './SiteFooter';
 import { togglePhoneCompare, isPhoneCompared } from './PhoneCompareTray';
 
 type CommerceOption = { id: string; variantId: string; price: number };
