@@ -1,432 +1,374 @@
-name: Replace Project From ZIP
+name: Replace Business Platform From ZIP
 
 on:
   workflow_dispatch:
-
   push:
     branches:
       - main
     paths:
-      - "**/*.zip"
+      - "*.zip"
 
 permissions:
   contents: write
 
-concurrency:
-  group: replace-project-main
-  cancel-in-progress: true
-
 jobs:
-  replace-project:
+  replace-business-platform:
     runs-on: ubuntu-latest
 
     steps:
-
-      # =========================================================
-      # 1. Checkout repository
-      # =========================================================
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: main
 
-      # =========================================================
-      # 2. Determine WHY this workflow was triggered
-      #
-      # A ZIP must have been ADDED or MODIFIED.
-      #
-      # If the ZIP was DELETED, this run does nothing.
-      # =========================================================
-      - name: Check ZIP change
-        id: zip_change
+      - name: Find replacement ZIP
+        id: zip
         shell: bash
         run: |
           set -euo pipefail
 
-          # Manual workflow execution:
-          # allow it to look for an existing ZIP.
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "Manual workflow execution."
+          ZIP_COUNT=$(find . -maxdepth 1 -type f -name "*.zip" | wc -l)
 
-            ZIP_FILE="$(
-              find . \
-                -type f \
-                -iname "*.zip" \
-                -not -path "./.git/*" \
-                -printf "%T@ %p\n" \
-              | sort -nr \
-              | head -n 1 \
-              | cut -d' ' -f2- || true
-            )"
-
-            if [ -z "$ZIP_FILE" ]; then
-              echo "No ZIP exists."
-              echo "Nothing to process."
-
-              echo "should_process=false" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-
-            echo "Manual run found ZIP:"
-            echo "$ZIP_FILE"
-
-            echo "should_process=true" >> "$GITHUB_OUTPUT"
-            echo "ZIP_FILE=$ZIP_FILE" >> "$GITHUB_OUTPUT"
-
-            exit 0
-          fi
-
-          # -----------------------------------------------------
-          # Automatic push-triggered workflow
-          # -----------------------------------------------------
-
-          echo "Checking files changed by commit:"
-          echo "$GITHUB_SHA"
-
-          ZIP_CHANGE="$(
-            git diff-tree \
-              --no-commit-id \
-              --name-status \
-              --diff-filter=AMR \
-              -r \
-              "$GITHUB_SHA" \
-            | grep -Ei '\.zip$' \
-            | head -n 1 \
-            || true
-          )"
-
-          if [ -z "$ZIP_CHANGE" ]; then
-            echo ""
-            echo "No ZIP was added or modified."
-            echo "This was probably a ZIP deletion."
-            echo "Nothing to process."
-
-            echo "should_process=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo ""
-          echo "ZIP addition/modification detected:"
-          echo "$ZIP_CHANGE"
-
-          ZIP_FILE="$(
-            find . \
-              -type f \
-              -iname "*.zip" \
-              -not -path "./.git/*" \
-              -printf "%T@ %p\n" \
-            | sort -nr \
-            | head -n 1 \
-            | cut -d' ' -f2- \
-            || true
-          )"
-
-          if [ -z "$ZIP_FILE" ]; then
-            echo "ERROR: ZIP was reported as added/modified but cannot be found."
+          if [ "$ZIP_COUNT" -eq 0 ]; then
+            echo "No replacement ZIP found."
             exit 1
           fi
 
-          echo "Using ZIP:"
-          echo "$ZIP_FILE"
+          if [ "$ZIP_COUNT" -gt 1 ]; then
+            echo "More than one ZIP found:"
+            find . -maxdepth 1 -type f -name "*.zip" -print
+            echo "Please keep only the intended replacement ZIP."
+            exit 1
+          fi
 
-          echo "should_process=true" >> "$GITHUB_OUTPUT"
-          echo "ZIP_FILE=$ZIP_FILE" >> "$GITHUB_OUTPUT"
+          ZIP_PATH=$(find . -maxdepth 1 -type f -name "*.zip" -print -quit)
 
-      # =========================================================
-      # 3. Validate ZIP
-      # =========================================================
-      - name: Validate ZIP
-        if: steps.zip_change.outputs.should_process == 'true'
-        shell: bash
+          echo "zip_path=$ZIP_PATH" >> "$GITHUB_OUTPUT"
+          echo "Using replacement ZIP: $ZIP_PATH"
+
+      - name: Prepare extraction directory
+        run: |
+          set -euo pipefail
+          rm -rf .replacement
+          mkdir -p .replacement
+
+      - name: Extract replacement ZIP
         env:
-          ZIP_FILE: ${{ steps.zip_change.outputs.ZIP_FILE }}
+          ZIP_PATH: ${{ steps.zip.outputs.zip_path }}
         run: |
           set -euo pipefail
 
-          echo "Testing ZIP integrity..."
+          unzip -q "$ZIP_PATH" -d .replacement
 
-          unzip -t "$ZIP_FILE"
+          echo "Extracted replacement package:"
+          find .replacement -maxdepth 2 -type f | sort | head -100
 
-          echo "ZIP integrity check passed."
-
-      # =========================================================
-      # 4. Extract ZIP
-      # =========================================================
-      - name: Extract ZIP
-        if: steps.zip_change.outputs.should_process == 'true'
-        shell: bash
-        env:
-          ZIP_FILE: ${{ steps.zip_change.outputs.ZIP_FILE }}
-        run: |
-          set -euo pipefail
-
-          rm -rf /tmp/project-extracted
-          mkdir -p /tmp/project-extracted
-
-          echo "Extracting:"
-          echo "$ZIP_FILE"
-
-          unzip -q -o "$ZIP_FILE" -d /tmp/project-extracted
-
-          echo ""
-          echo "Extraction successful."
-
-          echo ""
-          echo "Extracted contents:"
-          find /tmp/project-extracted \
-            -maxdepth 5 \
-            -print \
-            | sort \
-            | head -300
-
-      # =========================================================
-      # 5. Detect project root
-      # =========================================================
       - name: Detect project root
-        if: steps.zip_change.outputs.should_process == 'true'
-        id: project
+        id: root
         shell: bash
         run: |
           set -euo pipefail
 
-          ROOT=""
-
-          # -----------------------------------------------------
-          # Direct project
-          # -----------------------------------------------------
-          if [ -f "/tmp/project-extracted/package.json" ]; then
-            ROOT="/tmp/project-extracted"
+          if [ -f ".replacement/package.json" ] && [ -f ".replacement/server.js" ]; then
+            echo "root=.replacement" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
-          # -----------------------------------------------------
-          # One enclosing directory
-          # -----------------------------------------------------
-          if [ -z "$ROOT" ]; then
-            FOUND="$(
-              find /tmp/project-extracted \
-                -mindepth 2 \
-                -maxdepth 2 \
-                -type f \
-                -name "package.json" \
-                | head -n 1 \
-                || true
-            )"
+          CANDIDATES=$(find .replacement -mindepth 1 -maxdepth 2 -type f \
+            -name "package.json" \
+            -printf '%h\n' | sort -u)
 
-            if [ -n "$FOUND" ]; then
-              ROOT="$(dirname "$FOUND")"
+          FOUND=""
+
+          while IFS= read -r DIR; do
+            [ -z "$DIR" ] && continue
+
+            if [ -f "$DIR/package.json" ] && [ -f "$DIR/server.js" ]; then
+              if [ -z "$FOUND" ]; then
+                FOUND="$DIR"
+              else
+                echo "Multiple possible backend roots found:"
+                echo "$FOUND"
+                echo "$DIR"
+                exit 1
+              fi
             fi
-          fi
+          done <<< "$CANDIDATES"
 
-          # -----------------------------------------------------
-          # Deeper project
-          # -----------------------------------------------------
-          if [ -z "$ROOT" ]; then
-            FOUND="$(
-              find /tmp/project-extracted \
-                -type f \
-                -name "package.json" \
-                | head -n 1 \
-                || true
-            )"
-
-            if [ -n "$FOUND" ]; then
-              ROOT="$(dirname "$FOUND")"
-            fi
-          fi
-
-          # -----------------------------------------------------
-          # Current Amaal monorepo
-          # -----------------------------------------------------
-          BUSINESS_PACKAGE="$(
-            find /tmp/project-extracted \
-              -type f \
-              -path "*/apps/business-admin/package.json" \
-              | head -n 1 \
-              || true
-          )"
-
-          if [ -n "$BUSINESS_PACKAGE" ]; then
-            BUSINESS_ROOT="$(dirname "$BUSINESS_PACKAGE")"
-            MONOREPO_ROOT="$(dirname "$(dirname "$BUSINESS_ROOT")")"
-
-            if [ -f "$MONOREPO_ROOT/package.json" ]; then
-              ROOT="$MONOREPO_ROOT"
-            fi
-          fi
-
-          # -----------------------------------------------------
-          # Verify
-          # -----------------------------------------------------
-          if [ -z "$ROOT" ]; then
-            echo "ERROR: Could not determine project root."
-
-            find /tmp/project-extracted \
-              -maxdepth 6 \
-              -print \
-              | sort
-
+          if [ -z "$FOUND" ]; then
+            echo "Could not find backend root containing package.json and server.js."
             exit 1
           fi
 
-          if [ ! -f "$ROOT/package.json" ]; then
-            echo "ERROR: package.json not found at:"
-            echo "$ROOT"
+          echo "root=$FOUND" >> "$GITHUB_OUTPUT"
+
+      - name: Validate replacement package
+        env:
+          SOURCE_ROOT: ${{ steps.root.outputs.root }}
+        run: |
+          set -euo pipefail
+
+          echo "Validating replacement package at: $SOURCE_ROOT"
+
+          test -f "$SOURCE_ROOT/package.json"
+          test -f "$SOURCE_ROOT/server.js"
+          test -f "$SOURCE_ROOT/render-preflight.js"
+
+          if [ ! -d "$SOURCE_ROOT/apps/business-admin" ]; then
+            echo "ERROR: apps/business-admin is missing from replacement ZIP."
             exit 1
           fi
 
-          echo ""
-          echo "=========================================="
-          echo "PROJECT ROOT"
-          echo "=========================================="
-          echo "$ROOT"
-
-          echo "project_root=$ROOT" >> "$GITHUB_OUTPUT"
-
-      # =========================================================
-      # 6. Validate BEFORE touching old project
-      # =========================================================
-      - name: Validate new project
-        if: steps.zip_change.outputs.should_process == 'true'
-        shell: bash
-        env:
-          PROJECT_ROOT: ${{ steps.project.outputs.project_root }}
-        run: |
-          set -euo pipefail
-
-          echo "Validating new project..."
-
-          test -f "$PROJECT_ROOT/package.json"
-
-          echo "package.json: OK"
-
-          if [ -d "$PROJECT_ROOT/apps/business-admin" ]; then
-            echo "apps/business-admin detected."
-
-            if [ -f "$PROJECT_ROOT/apps/business-admin/package.json" ]; then
-              echo "business-admin/package.json: OK"
-            fi
+          if [ -d "$SOURCE_ROOT/apps/public-web" ]; then
+            echo "ERROR: Public website detected in replacement ZIP."
+            echo "The replacement package must NOT contain apps/public-web."
+            exit 1
           fi
 
-          echo ""
-          echo "New project validation passed."
+          node -e "
+            const p = require('./$SOURCE_ROOT/package.json');
+            if (!p.scripts || !p.scripts.start) {
+              throw new Error('Root package.json is missing scripts.start');
+            }
+            console.log('Root package:', p.name);
+            console.log('Start command:', p.scripts.start);
+          "
 
-      # =========================================================
-      # 7. Stage new project
-      # =========================================================
-      - name: Stage new project
-        if: steps.zip_change.outputs.should_process == 'true'
-        shell: bash
-        env:
-          PROJECT_ROOT: ${{ steps.project.outputs.project_root }}
+      - name: Protect public website
         run: |
           set -euo pipefail
 
-          rm -rf /tmp/project-ready
-          mkdir -p /tmp/project-ready
+          if [ ! -d "apps/public-web" ]; then
+            echo "WARNING: apps/public-web does not currently exist in repository."
+            echo "The workflow will not create or delete it."
+          else
+            echo "Public website found and will be preserved:"
+            du -sh apps/public-web
+          fi
 
-          cp -a "$PROJECT_ROOT"/. /tmp/project-ready/
-
-          echo "New project staged successfully."
-
-      # =========================================================
-      # 8. Remove old application
-      #
-      # NEVER remove .git or .github.
-      # =========================================================
-      - name: Remove old application
-        if: steps.zip_change.outputs.should_process == 'true'
-        shell: bash
+      - name: Remove old Business Admin
         run: |
           set -euo pipefail
 
-          echo "Removing old application..."
+          rm -rf apps/business-admin
 
-          find . \
-            -mindepth 1 \
-            -maxdepth 1 \
-            ! -name ".git" \
-            ! -name ".github" \
-            -exec rm -rf {} +
+          echo "Old Business Admin removed."
 
-          echo "Old application removed."
-
-      # =========================================================
-      # 9. Install new application
-      # =========================================================
-      - name: Install new application
-        if: steps.zip_change.outputs.should_process == 'true'
-        shell: bash
+      - name: Remove old root backend
         run: |
           set -euo pipefail
 
-          cp -a /tmp/project-ready/. .
+          # These are backend/application files that belong to the
+          # Render root deployment.
+          #
+          # IMPORTANT:
+          # apps/public-web is NOT touched.
 
-          echo "New application installed."
+          BACKEND_FILES=(
+            "server.js"
+            "render-preflight.js"
+            "package.json"
+            "package-lock.json"
+            "npm-shrinkwrap.json"
 
-      # =========================================================
-      # 10. Delete ALL ZIP files
-      # =========================================================
-      - name: Delete all ZIP files
-        if: steps.zip_change.outputs.should_process == 'true'
-        shell: bash
+            "deployment-readiness.js"
+            "production-smoke.js"
+            "cross-module-audit.js"
+            "schema-reconciliation-audit.js"
+
+            "inventory-unit-audit.js"
+            "receiving-batch-audit.js"
+            "warehouse-transfer-audit.js"
+            "order-serial-assignment-audit.js"
+            "serialized-status-history-audit.js"
+            "fulfilment-delivery-audit.js"
+
+            "tv-master-catalogue-audit.js"
+            "audio-catalogue-audit.js"
+
+            "phase017-020-deep-audit.js"
+            "phase016-deep-audit.js"
+            "phase18-security-regression.js"
+          )
+
+          for FILE in "${BACKEND_FILES[@]}"; do
+            if [ -e "$FILE" ]; then
+              rm -rf "$FILE"
+              echo "Removed old: $FILE"
+            fi
+          done
+
+      - name: Remove old backend modules
         run: |
           set -euo pipefail
 
-          echo "Deleting all ZIP files..."
+          # Remove root-level backend service modules from the previous
+          # deployment. The replacement ZIP will restore the current set.
 
-          find . \
-            -type f \
-            -iname "*.zip" \
-            -not -path "./.git/*" \
+          for FILE in \
+            suppliers-procurement.js \
+            customers-crm.js \
+            sales-pos.js \
+            orders-ecommerce.js \
+            web-and-hosting.js \
+            pricing-promotions.js \
+            delivery-logistics.js \
+            warranty-repairs.js \
+            returns-refunds.js \
+            document-management.js \
+            credit-installments.js \
+            finance-accounting.js \
+            business-intelligence.js \
+            ai-business-intelligence.js \
+            integration-hub.js \
+            global-search-ux.js \
+            media-management.js \
+            system-operations.js \
+            monitoring-observability.js \
+            backup-recovery.js \
+            inventory-serialized.js \
+            serialized-unit-lifecycle.js
+          do
+            if [ -e "$FILE" ]; then
+              rm -rf "$FILE"
+              echo "Removed old backend module: $FILE"
+            fi
+          done
+
+      - name: Remove old database SQL
+        run: |
+          set -euo pipefail
+
+          # Database schema/migrations are supplied by the replacement ZIP.
+          # Remove old root-level SQL files only.
+          #
+          # Public website is untouched.
+
+          find . -maxdepth 1 -type f \
+            \( -name "*.sql" -o -name "*.pgsql" \) \
+            -print \
             -delete
 
-          echo "All ZIP files deleted."
+          echo "Old root database SQL files removed."
 
-      # =========================================================
-      # 11. Final verification
-      # =========================================================
-      - name: Final verification
-        if: steps.zip_change.outputs.should_process == 'true'
-        shell: bash
+      - name: Copy replacement Business Platform
+        env:
+          SOURCE_ROOT: ${{ steps.root.outputs.root }}
         run: |
           set -euo pipefail
 
-          echo "Verifying final project..."
+          echo "Copying replacement Business Platform..."
 
-          test -f package.json
+          # Copy everything except the public website.
+          rsync -a \
+            --exclude="apps/public-web/" \
+            "$SOURCE_ROOT/" \
+            ./
 
-          if [ -d "apps/business-admin" ]; then
-            test -f "apps/business-admin/package.json"
-            echo "Business Admin verified."
-          fi
+      - name: Verify public website was preserved
+        run: |
+          set -euo pipefail
 
-          REMAINING_ZIP="$(
-            find . \
-              -type f \
-              -iname "*.zip" \
-              -not -path "./.git/*" \
-              | head -n 1 \
-              || true
-          )"
-
-          if [ -n "$REMAINING_ZIP" ]; then
-            echo "ERROR: ZIP still exists:"
-            echo "$REMAINING_ZIP"
+          if [ -d "apps/public-web" ]; then
+            echo "SUCCESS: apps/public-web still exists."
+          else
+            echo "ERROR: apps/public-web is missing."
+            echo "The workflow must never remove the public website."
             exit 1
           fi
 
-          echo ""
-          echo "=========================================="
-          echo "PROJECT REPLACEMENT VERIFIED"
-          echo "=========================================="
+      - name: Verify Render root deployment
+        run: |
+          set -euo pipefail
 
-      # =========================================================
-      # 12. Commit
-      # =========================================================
+          echo "Checking Render root deployment..."
+
+          test -f "package.json"
+          test -f "server.js"
+          test -f "render-preflight.js"
+
+          node -e "
+            const fs = require('fs');
+            const p = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+
+            if (!p.scripts || !p.scripts.start) {
+              throw new Error('Missing root start script');
+            }
+
+            if (!p.engines || !p.engines.node) {
+              console.warn('WARNING: Node engine is not defined');
+            }
+
+            console.log('Render root package verified.');
+            console.log('Node:', p.engines?.node || 'not specified');
+            console.log('Start:', p.scripts.start);
+          "
+
+      - name: Verify Business Admin
+        run: |
+          set -euo pipefail
+
+          test -f "apps/business-admin/package.json"
+
+          node -e "
+            const fs = require('fs');
+            const p = JSON.parse(
+              fs.readFileSync('apps/business-admin/package.json', 'utf8')
+            );
+
+            if (!p.scripts || !p.scripts.build) {
+              throw new Error('Business Admin is missing build script');
+            }
+
+            console.log('Business Admin verified.');
+            console.log('Build:', p.scripts.build);
+          "
+
+      - name: Verify public website integrity
+        run: |
+          set -euo pipefail
+
+          echo "Public website remains separate from replacement package."
+
+          if [ -f "apps/public-web/package.json" ]; then
+            echo "Public website package.json preserved."
+          else
+            echo "WARNING: apps/public-web/package.json not found."
+          fi
+
+      - name: Remove replacement ZIP and temporary files
+        env:
+          ZIP_PATH: ${{ steps.zip.outputs.zip_path }}
+        run: |
+          set -euo pipefail
+
+          rm -f "$ZIP_PATH"
+          rm -rf .replacement
+
+      - name: Show resulting structure
+        run: |
+          set -euo pipefail
+
+          echo "=== Root ==="
+          find . -maxdepth 1 -type f -print | sort
+
+          echo
+          echo "=== Applications ==="
+          find apps -maxdepth 2 -type f \
+            \( -name "package.json" -o -name "next.config.*" \) \
+            -print | sort
+
+          echo
+          echo "=== Public website ==="
+          if [ -d "apps/public-web" ]; then
+            find apps/public-web -maxdepth 1 -type f -print | sort
+          fi
+
+      - name: Check Git status
+        run: |
+          git status --short
+
       - name: Commit replacement
-        if: steps.zip_change.outputs.should_process == 'true'
-        shell: bash
         run: |
           set -euo pipefail
 
@@ -440,33 +382,17 @@ jobs:
             exit 0
           fi
 
-          git commit -m "Replace project from uploaded ZIP"
+          git commit -m "Replace Business Admin, Backend and Database"
 
-      # =========================================================
-      # 13. Synchronize with latest main
-      # =========================================================
-      - name: Synchronize with latest main
-        if: steps.zip_change.outputs.should_process == 'true'
-        shell: bash
+      - name: Rebase latest main
         run: |
           set -euo pipefail
 
           git fetch origin main
-
           git rebase origin/main
 
-      # =========================================================
-      # 14. Push
-      # =========================================================
       - name: Push replacement
-        if: steps.zip_change.outputs.should_process == 'true'
-        shell: bash
         run: |
           set -euo pipefail
 
           git push origin HEAD:main
-
-          echo ""
-          echo "=========================================="
-          echo "PROJECT SUCCESSFULLY PUSHED TO MAIN"
-          echo "=========================================="
