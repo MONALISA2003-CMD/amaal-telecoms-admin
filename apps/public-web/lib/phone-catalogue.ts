@@ -673,9 +673,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "iPhone 15 is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Iphone 15.jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Iphone 15.jpg"
+    ]
   },
   {
     "slug": "apple-iphone-15-plus",
@@ -699,9 +702,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "iPhone 15 Plus is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Iphone 15 plus.jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Iphone 15 plus.jpg"
+    ]
   },
   {
     "slug": "apple-iphone-15-pro",
@@ -729,9 +735,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "iPhone 15 Pro is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/IPhone  15 pro.jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/IPhone  15 pro.jpg"
+    ]
   },
   {
     "slug": "apple-iphone-15-pro-max",
@@ -755,9 +764,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "iPhone 15 Pro Max is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Iphone 15 pro max.jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Iphone 15 pro max.jpg"
+    ]
   },
   {
     "slug": "apple-iphone-16",
@@ -781,9 +793,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "iPhone 16 is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Iphone 16 .jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Iphone 16 .jpg"
+    ]
   },
   {
     "slug": "apple-iphone-16-plus",
@@ -807,9 +822,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "iPhone 16 Plus is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Iphone 16 plus.jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Iphone 16 plus.jpg"
+    ]
   },
   {
     "slug": "apple-iphone-16-pro",
@@ -837,9 +855,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "iPhone 16 Pro is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Iphone 16 pro .jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Iphone 16 pro .jpg"
+    ]
   },
   {
     "slug": "apple-iphone-16-pro-max",
@@ -863,9 +884,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "iPhone 16 Pro Max is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Iphone 16 pro max .jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Iphone 16 pro max .jpg"
+    ]
   },
   {
     "slug": "apple-iphone-16e",
@@ -911,9 +935,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "iPhone 17 is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Iphone 17 .jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Iphone 17 .jpg"
+    ]
   },
   {
     "slug": "apple-iphone-air",
@@ -937,9 +964,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "iPhone Air is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Iphone 17 air .jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Iphone 17 air .jpg"
+    ]
   },
   {
     "slug": "apple-iphone-17-pro",
@@ -963,9 +993,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "iPhone 17 Pro is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Iphone 17 pro.jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Iphone 17 pro.jpg"
+    ]
   },
   {
     "slug": "apple-iphone-17-pro-max",
@@ -993,9 +1026,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "iPhone 17 Pro Max is an Apple iPhone model presented as one catalogue product with its available storage choices. The model-level experience is shared across the listed storage variants; customers choose the capacity that suits their needs. This public catalogue keeps storage as a selectable variant rather than creating separate product pages for each capacity.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Iphone 17 pro max.jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Iphone 17 pro max.jpg"
+    ]
   },
   {
     "slug": "apple-iphone-17e",
@@ -1080,9 +1116,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Galaxy A07 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Galaxy A07 .jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Galaxy A07 .jpg"
+    ]
   },
   {
     "slug": "samsung-galaxy-a16-4g",
@@ -1143,9 +1182,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Galaxy A17 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Galaxy A17 .jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Galaxy A17 .jpg"
+    ]
   },
   {
     "slug": "samsung-galaxy-a25-5g",
@@ -1315,7 +1357,8 @@ export const phoneCatalogue: PhoneProduct[] = [
     "photoNote": "Supplied Amaal product image",
     "source": "Mobile_Phone_Catalogue_Master_2026.md",
     "images": [
-      "/products/phones/Galaxy A57.jpg"
+      "/products/phones/Galaxy A57.jpg",
+      "/products/phones/Galaxy A57 .jpg"
     ]
   },
   {
@@ -1865,9 +1908,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Galaxy S25+ is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Galaxy S25 plus.jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Galaxy S25 plus.jpg"
+    ]
   },
   {
     "slug": "samsung-galaxy-s25-ultra",
@@ -1918,9 +1964,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Galaxy S25 Edge is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Galaxy S25 edge .jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Galaxy S25 edge .jpg"
+    ]
   },
   {
     "slug": "samsung-galaxy-s26",
@@ -1942,9 +1991,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Galaxy S26 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Galaxy S26 .jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Galaxy S26 .jpg"
+    ]
   },
   {
     "slug": "samsung-galaxy-s26-plus",
@@ -1998,9 +2050,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Galaxy S26 Ultra is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Galaxy S26 ultra.jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Galaxy S26 ultra.jpg"
+    ]
   },
   {
     "slug": "samsung-galaxy-z-fold6",
@@ -2027,9 +2082,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Galaxy Z Fold6 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Galaxy Z fold 6 .jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Galaxy Z fold 6 .jpg"
+    ]
   },
   {
     "slug": "samsung-galaxy-z-fold7",
@@ -2051,9 +2109,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Galaxy Z Fold7 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Galaxy fold 7.jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Galaxy fold 7.jpg"
+    ]
   },
   {
     "slug": "samsung-galaxy-z-fold8",
@@ -2080,9 +2141,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Galaxy Z Fold8 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Galaxy fold 8 standard passport.jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Galaxy fold 8 standard passport.jpg"
+    ]
   },
   {
     "slug": "samsung-galaxy-z-fold8-ultra",
@@ -2109,9 +2173,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Galaxy Z Fold8 Ultra is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Galaxy fold 8 ultra .jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Galaxy fold 8 ultra .jpg"
+    ]
   },
   {
     "slug": "samsung-galaxy-z-flip6",
@@ -2160,9 +2227,13 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Galaxy Z Flip7 is a Samsung Galaxy smartphone in the public Amaal catalogue. The available memory and storage combinations are grouped under this single model, with the selected RAM and storage shown as a variant. Model-level information belongs to the model itself, while capacity and memory identify the commercial variant.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Galaxy Z flip 7.jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Galaxy Z flip 7.jpg",
+      "/products/phones/Galaxy flip 7.jpg"
+    ]
   },
   {
     "slug": "samsung-galaxy-z-flip8",
@@ -2753,9 +2824,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Pixel 9a is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Pixel 9a.jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Pixel 9a.jpg"
+    ]
   },
   {
     "slug": "google-pixel-pixel-10",
@@ -2777,9 +2851,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Pixel 10 is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Pixel 10 .jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Pixel 10 .jpg"
+    ]
   },
   {
     "slug": "google-pixel-pixel-10-pro",
@@ -2811,9 +2888,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Pixel 10 Pro is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Pixel 10 pro .jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Pixel 10 pro .jpg"
+    ]
   },
   {
     "slug": "google-pixel-pixel-10-pro-xl",
@@ -2840,9 +2920,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Pixel 10 Pro XL is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Google pixel 10 pro Xl .jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Google pixel 10 pro Xl .jpg"
+    ]
   },
   {
     "slug": "google-pixel-pixel-10-pro-fold",
@@ -2869,9 +2952,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Pixel 10 Pro Fold is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Pixel 10 pro fold .jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Pixel 10 pro fold .jpg"
+    ]
   },
   {
     "slug": "google-pixel-pixel-10a",
@@ -2893,9 +2979,12 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Pixel 10a is a Google Pixel smartphone listed as a model-level catalogue entry. Available memory and storage combinations are presented as selectable variants, so customers can compare capacities without treating each capacity as a different phone model.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
-    "source": "Mobile_Phone_Catalogue_Master_2026.md"
+    "image": "/products/phones/Pixel 10a .jpg",
+    "photoNote": "Supplied Amaal product image",
+    "source": "Mobile_Phone_Catalogue_Master_2026.md",
+    "images": [
+      "/products/phones/Pixel 10a .jpg"
+    ]
   },
   {
     "slug": "google-pixel-pixel-11",
@@ -2996,15 +3085,18 @@ export const phoneCatalogue: PhoneProduct[] = [
       }
     ],
     "description": "Google Pixel 11 Pro XL is positioned as the largest conventional Pro-tier model in the Pixel 11 generation. It is aimed at customers who want the highest conventional Pixel tier and prefer the larger Pro XL format. The three catalogue storage choices—256GB, 512GB and 1TB—allow the product to serve users with different levels of content storage. The individual page should present the Pro XL as a premium, large-format Pixel while keeping the technical specification section strictly limited to verified information. No unverified camera, battery, display or chipset claims should be added to the product record. This makes the Pro XL a clear premium step above Pixel 11 Pro in the catalogue hierarchy without creating unsupported specifications.",
-    "image": "",
-    "photoNote": "Product photo to be supplied by Amaal",
+    "image": "/products/phones/Pixel 11 pro xl .jpg",
+    "photoNote": "Supplied Amaal product image",
     "source": "Mobile_Phone_Catalogue_Master_2026.md",
     "specifications": [
       "Storage: 256GB / 512GB / 1TB",
       "Model generation: Pixel 11 Pro XL",
       "Note: only specifications confirmed in the approved source-of-truth dataset are listed here; do not invent additional technical specifications."
     ],
-    "quickSpecs": "Pixel 11 Pro XL; 256GB/512GB/1TB; largest conventional Pro-tier positioning."
+    "quickSpecs": "Pixel 11 Pro XL; 256GB/512GB/1TB; largest conventional Pro-tier positioning.",
+    "images": [
+      "/products/phones/Pixel 11 pro xl .jpg"
+    ]
   },
   {
     "slug": "google-pixel-pixel-11-pro-fold",
@@ -3084,7 +3176,7 @@ export const phoneCatalogue: PhoneProduct[] = [
   {
     "slug": "tecno-spark-slim",
     "brand": "TECNO",
-    "family": "TECNO",
+    "family": "Spark",
     "series": "Spark",
     "name": "Spark Slim",
     "network": "See model / regional variant",
@@ -3115,7 +3207,8 @@ export const phoneCatalogue: PhoneProduct[] = [
     ],
     "quickSpecs": "6.78-inch 3D curved AMOLED 144Hz 1.5K; Helio G200; 8GB RAM configuration; 50MP rear; 13MP front; 5160mAh; 45W; NFC; IP64.",
     "images": [
-      "/products/phones/Tecno spark slim.jpg"
+      "/products/phones/Tecno spark slim.jpg",
+      "/products/phones/Tecno spark slim...jpg"
     ]
   },
   {

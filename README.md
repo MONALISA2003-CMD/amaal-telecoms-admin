@@ -370,3 +370,7 @@ Serialized fulfilment and delivery reconciliation is enforced through exact phys
 ## Phase 016 Commerce Core
 
 Server-backed cart, cart-to-checkout integrity, normalized product attributes, stronger search and comparison, compatibility-ready catalogue data, customer reorder, price/back-in-stock alerts, helpful review voting, saved-search foundation and commerce lifecycle visibility in Business Console. Payment provider integration is intentionally deferred to the final commerce phase.
+
+## Cloudflare R2 media storage
+
+Amaal is R2-ready for large public media. See `docs/R2_ARCHITECTURE.md`, `r2-media-storage.sql`, `.env.r2.example`, and `scripts/r2-migrate-media.mjs`. R2 credentials are server-only. Existing database-backed media remains supported; migration is non-destructive and preserves SHA-256 verification.
