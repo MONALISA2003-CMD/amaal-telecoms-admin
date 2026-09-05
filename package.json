@@ -19,15 +19,13 @@
     "audit:serialized-lifecycle": "node render-preflight.js && node serialized-status-history-audit.js && node order-serial-assignment-audit.js && node fulfilment-delivery-audit.js && node inventory-unit-audit.js && node cross-module-audit.js",
     "audit:catalog": "node render-preflight.js && node tv-master-catalogue-audit.js && node audio-catalogue-audit.js && node cross-module-audit.js",
     "audit:audio": "node audio-catalogue-audit.js && node render-preflight.js && node cross-module-audit.js",
-    "audit:growth": "node render-preflight.js && node phase017-020-deep-audit.js && node phase016-deep-audit.js && node phase18-security-regression.js && node cross-module-audit.js",
-    "r2:smoke": "node scripts/r2-connection-smoke.mjs"
+    "audit:growth": "node render-preflight.js && node phase017-020-deep-audit.js && node phase016-deep-audit.js && node phase18-security-regression.js && node cross-module-audit.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.16.3",
-    "@aws-sdk/client-s3": "^3.862.0"
+    "pg": "^8.16.3"
   },
   "engines": {
     "node": "20.x"
